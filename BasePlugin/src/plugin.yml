@@ -1,0 +1,8 @@
+name: CustomItems
+main: nl.knokko.customitems.plugin.CustomItemsPlugin
+version: 0.1
+commands:
+  customitems:
+    description: give a custom item to a player
+    useage: /ci give <item name> [player name]
+    aliases: [ci]
