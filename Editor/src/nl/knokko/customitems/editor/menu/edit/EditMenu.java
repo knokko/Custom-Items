@@ -2,6 +2,8 @@ package nl.knokko.customitems.editor.menu.edit;
 
 import java.awt.Color;
 
+import nl.knokko.customitems.editor.menu.edit.item.ItemOverview;
+import nl.knokko.customitems.editor.menu.edit.texture.TextureOverview;
 import nl.knokko.customitems.editor.menu.main.MainMenu;
 import nl.knokko.customitems.editor.set.ItemSet;
 import nl.knokko.gui.component.menu.GuiMenu;
@@ -27,6 +29,14 @@ public class EditMenu extends GuiMenu {
 	
 	public ItemSet getSet() {
 		return set;
+	}
+	
+	public ItemOverview getItemOverview() {
+		return itemOverview;
+	}
+	
+	public TextureOverview getTextureOverview() {
+		return textureOverview;
 	}
 
 	@Override

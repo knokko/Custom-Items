@@ -1,14 +1,15 @@
-package nl.knokko.customitems.editor.menu.edit;
+package nl.knokko.customitems.editor.menu.edit.item;
 
 import java.awt.Color;
-import java.util.Arrays;
 
+import nl.knokko.customitems.editor.menu.edit.EditMenu;
 import nl.knokko.customitems.editor.set.CustomItem;
+import nl.knokko.customitems.editor.set.NamedImage;
 import nl.knokko.customitems.item.ItemType;
 import nl.knokko.gui.color.GuiColor;
 import nl.knokko.gui.color.SimpleGuiColor;
 import nl.knokko.gui.component.menu.GuiMenu;
-import nl.knokko.gui.component.text.TextArrayEditMenu;
+import nl.knokko.gui.component.menu.TextArrayEditMenu;
 import nl.knokko.gui.component.text.TextButton;
 import nl.knokko.gui.component.text.TextComponent;
 import nl.knokko.gui.component.text.TextEditField;
@@ -31,6 +32,7 @@ public class ItemEdit extends GuiMenu {
 	protected TextEditField internalDamage;
 	protected TextEditField displayName;
 	protected String[] lore;
+	protected TextureSelect textureSelect;
 	protected TextComponent errorComponent;
 
 	public ItemEdit(EditMenu menu, CustomItem current) {
@@ -51,7 +53,7 @@ public class ItemEdit extends GuiMenu {
 	protected void addComponents() {
 		errorComponent = new TextComponent("", Properties.createLabel(Color.RED));
 		addComponent(new TextButton("Cancel", Properties.createButton(new Color(200, 0, 0), new Color(50, 0, 0)), Properties.createButton(new Color(250, 0, 0), new Color(65, 0, 0)), () -> {
-			state.getWindow().setMainComponent(menu.itemOverview);
+			state.getWindow().setMainComponent(menu.getItemOverview());
 		}), 0.1f, 0.7f, 0.25f, 0.8f);
 		addComponent(new TextComponent("Name: ", LABEL_PROPERTIES), 0.35f, 0.75f, 0.5f, 0.85f);
 		addComponent(new TextComponent("Internal item type: ", LABEL_PROPERTIES), 0.35f, 0.6f, 0.6f, 0.7f);
@@ -63,12 +65,13 @@ public class ItemEdit extends GuiMenu {
 			internalType = new ItemTypeSelect(previous.getItemType());
 			internalDamage = new TextEditField(Short.toString(previous.getItemDamage()), EDIT_PROPERTIES, ACTIVE_EDIT_PROPERTIES);
 			displayName = new TextEditField(previous.getDisplayName(), EDIT_PROPERTIES, ACTIVE_EDIT_PROPERTIES);
+			textureSelect = new TextureSelect(previous.getTexture());
 			addComponent(new TextButton("Apply", SAVE_PROPERTIES, SAVE_HOVER_PROPERTIES, () -> {
 				String error = null;
 				try {
 					short damage = Short.parseShort(internalDamage.getText());
 					if(damage > 0 && damage < internalType.currentType.getMaxDurability()) {
-						error = menu.getSet().changeItem(previous, internalType.currentType, damage, name.getText(), displayName.getText(), lore, null);
+						error = menu.getSet().changeItem(previous, internalType.currentType, damage, name.getText(), displayName.getText(), lore, textureSelect.currentTexture);
 					}
 					else {
 						error = "The internal item damage must be larger than 0 and smaller than " + internalType.currentType.getMaxDurability();
@@ -79,7 +82,7 @@ public class ItemEdit extends GuiMenu {
 				if(error != null)
 					errorComponent.setText(error);
 				else
-					state.getWindow().setMainComponent(menu.itemOverview);
+					state.getWindow().setMainComponent(menu.getItemOverview());
 			}), 0.1f, 0.1f, 0.25f, 0.2f);
 		}
 		else {
@@ -87,13 +90,16 @@ public class ItemEdit extends GuiMenu {
 			internalType = new ItemTypeSelect(ItemType.DIAMOND_HOE);
 			internalDamage = new TextEditField(Short.toString(menu.getSet().nextAvailableDamage(internalType.currentType)), EDIT_PROPERTIES, ACTIVE_EDIT_PROPERTIES);
 			displayName = new TextEditField("", EDIT_PROPERTIES, ACTIVE_EDIT_PROPERTIES);
+			textureSelect = new TextureSelect(null);
 			addComponent(new TextButton("Create", SAVE_PROPERTIES, SAVE_HOVER_PROPERTIES, () -> {
 				String error = null;
 				try {
 					short damage = Short.parseShort(internalDamage.getText());
 					if(damage > 0 && damage < internalType.currentType.getMaxDurability()) {
-						error = menu.getSet().addItem(new CustomItem(internalType.currentType, damage, name.getText(), displayName.getText(), lore, null));
-						//TODO use texture in both save buttons!
+						error = menu.getSet().addItem(new CustomItem(internalType.currentType, damage, name.getText(), displayName.getText(), lore, textureSelect.currentTexture));
+						if(error == null) {
+							state.getWindow().setMainComponent(menu.getItemOverview());
+						}
 					}
 					else {
 						error = "The internal item damage must be larger than 0 and smaller than " + internalType.currentType.getMaxDurability();
@@ -104,14 +110,16 @@ public class ItemEdit extends GuiMenu {
 				if(error != null)
 					errorComponent.setText(error);
 				else
-					state.getWindow().setMainComponent(menu.itemOverview);
+					state.getWindow().setMainComponent(menu.getItemOverview());
 			}), 0.1f, 0.1f, 0.25f, 0.2f);
 		}
-		addComponent(name, 0.65f, 0.75f, 0.85f, 0.85f);
-		addComponent(internalType, 0.65f, 0.6f, 0.85f, 0.7f);
-		addComponent(internalDamage, 0.65f, 0.45f, 0.85f, 0.55f);
-		addComponent(displayName, 0.65f, 0.3f, 0.85f, 0.4f);
+		addComponent(errorComponent, 0.1f, 0.9f, 0.9f, 1f);
+		addComponent(name, 0.65f, 0.8f, 0.85f, 0.9f);
+		addComponent(internalType, 0.65f, 0.65f, 0.85f, 0.75f);
+		addComponent(internalDamage, 0.65f, 0.5f, 0.85f, 0.6f);
+		addComponent(displayName, 0.65f, 0.35f, 0.85f, 0.45f);
 		addLoreComponent();
+		addComponent(textureSelect, 0.65f, 0.05f, 0.85f, 0.15f);
 	}
 	
 	public static final Properties SELECT_PROPERTIES = Properties.createButton(new Color(0, 0, 200), new Color(0, 0, 50));
@@ -138,6 +146,27 @@ public class ItemEdit extends GuiMenu {
 		}
 	}
 	
+	private class TextureSelect extends TextButton {
+		
+		private NamedImage currentTexture;
+		
+		private TextureSelect(NamedImage initial) {
+			super(initial != null ? initial.getName() : "None", SELECT_PROPERTIES, SELECT_HOVER_PROPERTIES, null);
+			currentTexture = initial;
+		}
+		
+		@Override
+		public void init() {
+			super.init();
+			clickAction = () -> {
+				state.getWindow().setMainComponent(new SelectTexture(menu.getSet(), ItemEdit.this, (NamedImage texture) -> {
+					currentTexture = texture;
+					setText(texture.getName());
+				}));
+			};
+		}
+	}
+	
 	public static final Properties LORE_BUTTON_PROPERTIES = Properties.createButton(new Color(200, 0, 200), new Color(50, 0, 50));
 	public static final Properties LORE_HOVER_PROPERTIES = Properties.createButton(new Color(255, 0, 255), new Color(65, 0, 65));
 	public static final Properties LORE_CANCEL_PROPERTIES = Properties.createButton(new Color(200, 200, 0), new Color(50, 50, 0));
@@ -147,8 +176,7 @@ public class ItemEdit extends GuiMenu {
 		addComponent(new TextButton("Change lore...", LORE_BUTTON_PROPERTIES, LORE_HOVER_PROPERTIES, () -> {
 			state.getWindow().setMainComponent(new TextArrayEditMenu(ItemEdit.this, (String[] newLore) -> {
 				lore = newLore;
-				System.out.println("Set lore to " + Arrays.toString(lore));
 			}, LORE_CANCEL_PROPERTIES, LORE_CANCEL_HOVER_PROPERTIES, SAVE_PROPERTIES, SAVE_HOVER_PROPERTIES, EDIT_PROPERTIES, ACTIVE_EDIT_PROPERTIES, lore));
-		}), 0.65f, 0.15f, 0.85f, 0.25f);
+		}), 0.65f, 0.25f, 0.85f, 0.35f);
 	}
 }

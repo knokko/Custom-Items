@@ -1,4 +1,4 @@
-package nl.knokko.customitems.editor.menu.edit;
+package nl.knokko.customitems.editor.menu.edit.item;
 
 import java.awt.Color;
 

@@ -171,6 +171,14 @@ public class ItemSet {
 		return items;
 	}
 	
+	/**
+	 * Do not modify this collection directly!
+	 * @return The NamedImage collection of this ItemSet
+	 */
+	public Collection<NamedImage> getTextures(){
+		return textures;
+	}
+	
 	public short nextAvailableDamage(ItemType type) {
 		boolean[] usedDamage = new boolean[type.getMaxDurability() - 1];
 		for(CustomItem item : items)
