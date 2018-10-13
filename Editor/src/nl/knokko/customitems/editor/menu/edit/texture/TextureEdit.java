@@ -15,7 +15,7 @@ import nl.knokko.gui.color.SimpleGuiColor;
 import nl.knokko.gui.component.WrapperComponent;
 import nl.knokko.gui.component.menu.FileChooserMenu;
 import nl.knokko.gui.component.menu.GuiMenu;
-import nl.knokko.gui.component.simple.SimpleImageComponent;
+import nl.knokko.gui.component.image.SimpleImageComponent;
 import nl.knokko.gui.component.text.TextButton;
 import nl.knokko.gui.component.text.TextComponent;
 import nl.knokko.gui.component.text.TextEditField;

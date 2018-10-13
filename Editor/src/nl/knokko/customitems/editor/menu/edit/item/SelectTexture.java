@@ -8,7 +8,7 @@ import nl.knokko.customitems.editor.set.NamedImage;
 import nl.knokko.gui.color.GuiColor;
 import nl.knokko.gui.component.GuiComponent;
 import nl.knokko.gui.component.menu.GuiMenu;
-import nl.knokko.gui.component.simple.SimpleImageComponent;
+import nl.knokko.gui.component.image.SimpleImageComponent;
 import nl.knokko.gui.component.text.TextButton;
 
 public class SelectTexture extends GuiMenu {
