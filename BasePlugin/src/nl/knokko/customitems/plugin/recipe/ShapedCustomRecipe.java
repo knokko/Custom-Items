@@ -53,7 +53,6 @@ public class ShapedCustomRecipe implements CustomRecipe {
         for(int index = 0; index < 9; index++)
         	recipe.setIngredient((char) ('a' + index), new MaterialData(ingredients[index].getType()));
         Bukkit.addRecipe(recipe);
-        CustomItemsPlugin.getInstance().getSet().register(this);
     }
 
 	@Override

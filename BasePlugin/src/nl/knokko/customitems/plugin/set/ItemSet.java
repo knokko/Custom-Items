@@ -55,6 +55,11 @@ public class ItemSet {
 		
 		// Recipes
 		int recipeAmount = input.readInt();
+		for(int counter = 0; counter < recipeAmount; counter++) {
+			CustomRecipe recipe = loadRecipe(input);
+			recipe.register();
+			register(recipe);
+		}
 	}
 	
 	private CustomItem loadItem(BitInput input) {
@@ -85,7 +90,11 @@ public class ItemSet {
 		map.put(item.getItemDamage(), item);
 	}
 	
-	public void register(CustomRecipe recipe) {
+	private CustomRecipe loadRecipe(BitInput input) {
+		
+	}
+	
+	private void register(CustomRecipe recipe) {
 		CustomRecipe[] recipes = recipeMap.get(recipe.getResult().getType());
 		if(recipes == null)
 			recipes = new CustomRecipe[1];
