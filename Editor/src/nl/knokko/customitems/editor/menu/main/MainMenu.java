@@ -11,6 +11,7 @@ import nl.knokko.gui.util.TextBuilder.Properties;
 public class MainMenu extends GuiMenu {
 	
 	public static final MainMenu INSTANCE = new MainMenu();
+	public static final GuiColor BACKGROUND = new SimpleGuiColor(200, 150, 0);
 	
 	public static final Properties BUTTON_PROPERTIES = Properties.createButton(new Color(0, 50, 200), new Color(0, 20, 80));
 	public static final Properties HOVER_PROPERTIES = Properties.createButton(new Color(0, 65, 250), new Color(0, 30, 100));
@@ -30,6 +31,6 @@ public class MainMenu extends GuiMenu {
 	
 	@Override
 	public GuiColor getBackgroundColor() {
-		return new SimpleGuiColor(200, 150, 0);
+		return BACKGROUND;
 	}
 }

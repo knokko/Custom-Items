@@ -37,7 +37,7 @@ public class LoadMenu extends GuiMenu {
 	
 	@Override
 	public GuiColor getBackgroundColor() {
-		return new SimpleGuiColor(200, 150, 0);
+		return MainMenu.BACKGROUND;
 	}
 	
 	private static class SetList extends GuiMenu {
@@ -56,13 +56,13 @@ public class LoadMenu extends GuiMenu {
 		}
 		
 		private void refresh() {
-			components.clear();
+			clearComponents();
 			File folder = Editor.getFolder();
 			File[] files = folder.listFiles(new FilenameFilter(){
 
 				@Override
 				public boolean accept(File dir, String name) {
-					return name.endsWith(".cis");
+					return name.endsWith(".cisb");
 				}
 			});
 			if(files != null) {
@@ -71,7 +71,7 @@ public class LoadMenu extends GuiMenu {
 					addComponent(new TextButton(file.getName(), BUTTON_PROPERTIES, HOVER_PROPERTIES, () -> {
 						try {
 							BitInput input = new BitInputStream(new FileInputStream(file));
-							ItemSet set = new ItemSet(file.getName().substring(0, file.getName().length() - 4), input);
+							ItemSet set = new ItemSet(file.getName().substring(0, file.getName().length() - 5), input);
 							input.terminate();
 							state.getWindow().setMainComponent(new EditMenu(set));
 						} catch(IOException ioex) {

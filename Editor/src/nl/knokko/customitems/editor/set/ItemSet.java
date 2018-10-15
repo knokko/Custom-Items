@@ -1,10 +1,22 @@
 package nl.knokko.customitems.editor.set;
 
+import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.EnumMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Set;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipOutputStream;
+
+import javax.imageio.ImageIO;
+import javax.imageio.stream.MemoryCacheImageOutputStream;
 
 import nl.knokko.customitems.editor.Editor;
 import nl.knokko.customitems.encoding.ItemEncoding;
@@ -77,9 +89,128 @@ public class ItemSet {
 			items.add(loadItem(input));
 	}
 	
+	/**
+	 * A String containing only the quote character.
+	 * I use this constant because it's annoying to get that character inside a String
+	 */
+	private static final String Q = "" + '"';
+	
+	public String export() {
+		try {
+			File file = new File(Editor.getFolder() + "/" + fileName + ".cis");// cis stands for Custom Item Set
+			BitOutput output = new BitOutputStream(new FileOutputStream(file));
+			export1(output);
+			output.terminate();
+			ZipOutputStream zipOutput = new ZipOutputStream(new FileOutputStream(new File(Editor.getFolder() + "/" + fileName + ".zip")));
+			
+			// Custom textures
+			for(NamedImage texture : textures) {
+				ZipEntry entry = new ZipEntry("assets/minecraft/textures/customitems/" + texture.getName() + ".png");
+				zipOutput.putNextEntry(entry);
+				ImageIO.write(texture.getImage(), "PNG", new MemoryCacheImageOutputStream(zipOutput));
+				zipOutput.closeEntry();
+			}
+			
+			// Custom item models
+			for(CustomItem item : items) {
+				ZipEntry entry = new ZipEntry("assets/minecraft/models/customitems/" + item.getName() + ".json");
+				zipOutput.putNextEntry(entry);
+				PrintWriter jsonWriter = new PrintWriter(zipOutput);
+				jsonWriter.println("{");
+				jsonWriter.println("    " + Q + "parent" + Q + ": " + Q + "item/handheld" + Q + ",");
+				jsonWriter.println("    " + Q + "textures" + Q + ": {");
+				jsonWriter.println("        " + Q + "layer0" + Q + ": " + Q + "customitems/" + item.getTexture().getName() + Q);
+				jsonWriter.println("    }");
+				jsonWriter.println("}");
+				jsonWriter.flush();
+				zipOutput.closeEntry();
+			}
+			
+			// Map all custom items by their item type
+			Map<ItemType, List<CustomItem>> itemMap = new EnumMap<ItemType, List<CustomItem>>(ItemType.class);
+			for(CustomItem item : items) {
+				List<CustomItem> list = itemMap.get(item.getItemType());
+				if(list == null) {
+					list = new ArrayList<CustomItem>();
+					itemMap.put(item.getItemType(), list);
+				}
+				list.add(item);
+			}
+			
+			// Now create the item model files for those models
+			Set<Entry<ItemType, List<CustomItem>>> entrySet = itemMap.entrySet();
+			for(Entry<ItemType, List<CustomItem>> entry : entrySet) {
+				List<CustomItem> list = entry.getValue();
+				if(list != null) {
+					// The items with low damage should come first
+					list.sort((CustomItem a, CustomItem b) -> {
+						if(a.getItemDamage() > b.getItemDamage()) return 1;
+						if(a.getItemDamage() < b.getItemDamage()) return -1;
+						if(a == b) return 0;
+						throw new IllegalArgumentException("a is " + a + " and b is " + b);
+					});
+					String name = entry.getKey().toString().toLowerCase();
+					ZipEntry zipEntry = new ZipEntry("assets/minecraft/models/item/" + name + ".json");
+					zipOutput.putNextEntry(zipEntry);
+					PrintWriter jsonWriter = new PrintWriter(zipOutput);
+					
+					// Begin of the json file
+					jsonWriter.println("{");
+					jsonWriter.println("    " + Q + "parent" + Q + ": " + Q + "item/handheld" + Q + ",");
+					jsonWriter.println("    " + Q + "textures" + Q + ": {");
+					jsonWriter.println("        " + Q + "layer0" + Q + ": " + Q + "items/" + name + Q);
+					jsonWriter.println("    },");
+					jsonWriter.println("    " + Q + "overrides" + Q + ": [");
+					
+					// Now the interesting part
+					for(CustomItem item : list) {
+						jsonWriter.println("        { " + Q + "predicate" + Q + ": {" + Q + "damaged" + Q + 
+								": 0, " + Q + "damage" + Q + ": " + 
+								(double) item.getItemDamage() / item.getItemType().getMaxDurability() + "}, " + Q 
+								+ "model" + Q + ": " + Q + "customitems/" + item.getName() + Q + "},");
+					}
+					
+					// End of the json file
+					jsonWriter.println("        { " + Q + "predicate" + Q + ": {" + Q + "damaged" + Q + ": 1, " + Q + "damage" + Q + 
+							": 0}, " + Q + "model" + Q + ": " + Q + "item/" + name + Q + "}");
+					jsonWriter.println("    ]");
+					jsonWriter.println("}");
+					jsonWriter.flush();
+					zipOutput.closeEntry();
+				}
+			}
+			
+			// pack.mcmeta
+			ZipEntry mcMeta = new ZipEntry("pack.mcmeta");
+			zipOutput.putNextEntry(mcMeta);
+			PrintWriter jsonWriter = new PrintWriter(zipOutput);
+			jsonWriter.println("{");
+			jsonWriter.println("    " + Q + "pack" + Q + ": {");
+			jsonWriter.println("        " + Q + "pack_format" + Q + ": 3,");
+			jsonWriter.println("        " + Q + "description" + Q + ": " + Q + "CustomItemSet" + Q);
+			jsonWriter.println("    }");
+			jsonWriter.println("}");
+			jsonWriter.flush();
+			zipOutput.closeEntry();
+			
+			zipOutput.close();
+			return null;
+		} catch(IOException ioex) {
+			ioex.printStackTrace();
+			return ioex.getMessage();
+		}
+	}
+	
+	private void export1(BitOutput output) {
+		output.addByte(ENCODING_1);
+		output.addInt(items.size());
+		for(CustomItem item : items)
+			item.export(output);
+	}
+	
 	public String save() {
 		try {
-			File file = new File(Editor.getFolder() + "/" + fileName + ".cis");
+			File file = new File(Editor.getFolder() + "/" + fileName + ".cisb");// cisb stands for Custom Item Set Builder
 			BitOutput output = new BitOutputStream(new FileOutputStream(file));
 			save1(output);
 			output.terminate();
@@ -101,13 +232,77 @@ public class ItemSet {
 	}
 	
 	/**
+	 * Attempts to add the specified texture to this item set.
+	 * If the texture can be added, it will be added.
+	 * If the texture can't be added, the reason is returned.
+	 * @param texture The texture that should be added to this item set
+	 * @return The reason the texture could not be added, or null if the texture was added successfully
+	 */
+	public String addTexture(NamedImage texture) {
+		if(texture == null)
+			return "Can't add null textures";
+		for(NamedImage current : textures) 
+			if(current.getName().equals(texture.getName()))
+				return "There is already a texture with that name";
+		textures.add(texture);
+		return null;
+	}
+	
+	/**
+	 * Attempts to change the specified texture in this item set.
+	 * If the texture can be changed, it will be changed.
+	 * if the texture can't be changed, the reason is returned.
+	 * @param texture The texture to change
+	 * @param newName The new name of the texture (possibly the old name)
+	 * @param newImage The new image of the texture (possibly the old image)
+	 * @return The reason the texture could not be changed, or null if the texture changed successfully
+	 */
+	public String changeTexture(NamedImage texture, String newName, BufferedImage newImage) {
+		boolean has = false;
+		for(NamedImage current : textures) {
+			if(current == texture)
+				has = true;
+			else if(current.getName().equals(texture.getName()))
+				return "Another texture has that name already";
+		}
+		if(!has) return "The previous texture is not in the list!";
+		texture.setName(newName);
+		texture.setImage(newImage);
+		return null;
+	}
+	
+	/**
+	 * Attempts to remove the specified texture from this item set.
+	 * If the texture could not be removed, the reason is returned.
+	 * If the texture could be removed, it will be removed.
+	 * @param texture The texture that should be removed from this set
+	 * @return The reason the texture could not be removed, or null if the texture was removed successfully.
+	 */
+	public String removeTexture(NamedImage texture) {
+		boolean has = false;
+		for(NamedImage current : textures) {
+			if(current == texture) {
+				has = true;
+				break;
+			}
+		}
+		if(!has) return "That texture is not in this item set.";
+		for(CustomItem item : items)
+			if(item.getTexture() == texture)
+				return "That texture is used by " + item.getName();
+		textures.remove(texture);
+		return null;
+	}
+	
+	/**
 	 * Attempts to add the specified item to this item set.
 	 * If the item can be added, it will be added.
 	 * If the item can't be added, the reason is returned.
 	 * @param item The item that should be added to this set
-	 * @return The reason the item could not be added, or null if the item was added succesfully
+	 * @return The reason the item could not be added, or null if the item was added successfully
 	 */
 	public String addItem(CustomItem item) {
+		if(item == null) return "Can't add null items";
 		for(CustomItem current : items) {
 			if(current.getName().equals(item.getName()))
 				return "There is already a custom item with that name";

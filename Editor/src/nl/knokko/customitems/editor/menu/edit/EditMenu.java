@@ -9,17 +9,23 @@ import nl.knokko.customitems.editor.set.ItemSet;
 import nl.knokko.gui.color.GuiColor;
 import nl.knokko.gui.component.menu.GuiMenu;
 import nl.knokko.gui.component.text.TextButton;
+import nl.knokko.gui.component.text.TextComponent;
 import nl.knokko.gui.util.TextBuilder.Properties;
 
 public class EditMenu extends GuiMenu {
 	
 	protected final ItemSet set;
 	
-	protected ItemOverview itemOverview;
-	protected TextureOverview textureOverview;
+	protected final TextComponent errorComponent;
+	
+	protected final ItemOverview itemOverview;
+	protected final TextureOverview textureOverview;
 
 	public EditMenu(ItemSet set) {
 		this.set = set;
+		itemOverview = new ItemOverview(this);
+		textureOverview = new TextureOverview(this);
+		errorComponent = new TextComponent("", EditProps.ERROR);
 	}
 	
 	public ItemSet getSet() {
@@ -41,18 +47,33 @@ public class EditMenu extends GuiMenu {
 
 	@Override
 	protected void addComponents() {
-		itemOverview = new ItemOverview(this);
-		textureOverview = new TextureOverview(this);
+		addComponent(errorComponent, 0.05f, 0.9f, 0.95f, 1f);
 		addComponent(new TextButton("Quit", Properties.createButton(new Color(200, 0, 0), new Color(50, 0, 0)), Properties.createButton(new Color(250, 0, 0), new Color(65, 0, 0)), () -> {
 			state.getWindow().setMainComponent(MainMenu.INSTANCE);
 		}), 0.1f, 0.7f, 0.3f, 0.8f);
 		addComponent(new TextButton("Save", EditProps.SAVE_BASE, EditProps.SAVE_HOVER, () -> {
-			set.save();
+			String error = set.save();
+			errorComponent.setText(error != null ? error : "");
 		}), 0.1f, 0.4f, 0.25f, 0.5f);
 		addComponent(new TextButton("Save and quit", EditProps.SAVE_BASE, EditProps.SAVE_HOVER, () -> {
-			set.save();
-			state.getWindow().setMainComponent(MainMenu.INSTANCE);
+			String error = set.save();
+			if(error != null)
+				errorComponent.setText(error);
+			else
+				state.getWindow().setMainComponent(MainMenu.INSTANCE);
 		}), 0.1f, 0.25f, 0.35f, 0.35f);
+		addComponent(new TextButton("Export", EditProps.SAVE_BASE, EditProps.SAVE_HOVER, () -> {
+			String error = set.save();
+			if(error != null)
+				errorComponent.setText(error);
+			else {
+				error = set.export();
+				if(error != null)
+					errorComponent.setText(error);
+				else
+					state.getWindow().setMainComponent(MainMenu.INSTANCE);
+			}
+		}), 0.1f, 0.05f, 0.25f, 0.15f);
 		addComponent(new TextButton("Items", EditProps.BUTTON, EditProps.HOVER, () -> {
 			state.getWindow().setMainComponent(itemOverview);
 		}), 0.6f, 0.75f, 0.8f, 0.85f);

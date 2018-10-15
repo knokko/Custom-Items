@@ -56,7 +56,7 @@ public class ItemOverview extends GuiMenu {
 		}
 		
 		private void refresh() {
-			components.clear();
+			clearComponents();
 			Collection<CustomItem> items = menu.getSet().getItems();
 			int index = 0;
 			for(CustomItem item : items) {

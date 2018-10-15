@@ -1,7 +1,5 @@
 package nl.knokko.customitems.editor.menu.edit.item;
 
-import java.awt.Color;
-
 import nl.knokko.customitems.editor.menu.edit.EditMenu;
 import nl.knokko.customitems.editor.menu.edit.EditProps;
 import nl.knokko.customitems.editor.set.CustomItem;
@@ -13,7 +11,6 @@ import nl.knokko.gui.component.menu.TextArrayEditMenu;
 import nl.knokko.gui.component.text.TextButton;
 import nl.knokko.gui.component.text.TextComponent;
 import nl.knokko.gui.component.text.TextEditField;
-import nl.knokko.gui.util.TextBuilder.Properties;
 
 public class ItemEdit extends GuiMenu {
 	
@@ -44,15 +41,16 @@ public class ItemEdit extends GuiMenu {
 
 	@Override
 	protected void addComponents() {
-		errorComponent = new TextComponent("", Properties.createLabel(Color.RED));
-		addComponent(new TextButton("Cancel", Properties.createButton(new Color(200, 0, 0), new Color(50, 0, 0)), Properties.createButton(new Color(250, 0, 0), new Color(65, 0, 0)), () -> {
+		errorComponent = new TextComponent("", EditProps.ERROR);
+		addComponent(new TextButton("Cancel", EditProps.CANCEL_BASE, EditProps.CANCEL_ACTIVE, () -> {
 			state.getWindow().setMainComponent(menu.getItemOverview());
 		}), 0.1f, 0.7f, 0.25f, 0.8f);
-		addComponent(new TextComponent("Name: ", EditProps.LABEL), 0.35f, 0.75f, 0.5f, 0.85f);
-		addComponent(new TextComponent("Internal item type: ", EditProps.LABEL), 0.35f, 0.6f, 0.6f, 0.7f);
-		addComponent(new TextComponent("Internal item damage: ", EditProps.LABEL), 0.35f, 0.45f, 0.6f, 0.55f);
-		addComponent(new TextComponent("Display name: ", EditProps.LABEL), 0.35f, 0.3f, 0.55f, 0.4f);
-		addComponent(new TextComponent("Lore: ", EditProps.LABEL), 0.35f, 0.15f, 0.45f, 0.25f);
+		addComponent(new TextComponent("Name: ", EditProps.LABEL), 0.35f, 0.8f, 0.5f, 0.9f);
+		addComponent(new TextComponent("Internal item type: ", EditProps.LABEL), 0.35f, 0.65f, 0.6f, 0.75f);
+		addComponent(new TextComponent("Internal item damage: ", EditProps.LABEL), 0.35f, 0.5f, 0.6f, 0.6f);
+		addComponent(new TextComponent("Display name: ", EditProps.LABEL), 0.35f, 0.35f, 0.55f, 0.45f);
+		addComponent(new TextComponent("Lore: ", EditProps.LABEL), 0.35f, 0.2f, 0.45f, 0.3f);
+		addComponent(new TextComponent("Texture: ", EditProps.LABEL), 0.35f, 0.05f, 0.5f, 0.15f);
 		if(previous != null) {
 			name = new TextEditField(previous.getName(), EditProps.EDIT_BASE, EditProps.EDIT_ACTIVE);
 			internalType = new ItemTypeSelect(previous.getItemType());
@@ -120,7 +118,7 @@ public class ItemEdit extends GuiMenu {
 		private ItemType currentType;
 
 		public ItemTypeSelect(ItemType initial) {
-			super(initial.toString(), EditProps.SAVE_BASE, EditProps.SELECT_HOVER, null);
+			super(initial.toString(), EditProps.SELECT_BASE, EditProps.SELECT_HOVER, null);
 			currentType = initial;
 		}
 		
@@ -162,6 +160,6 @@ public class ItemEdit extends GuiMenu {
 			state.getWindow().setMainComponent(new TextArrayEditMenu(ItemEdit.this, (String[] newLore) -> {
 				lore = newLore;
 			}, EditProps.CANCEL_BASE, EditProps.CANCEL_ACTIVE, EditProps.SAVE_BASE, EditProps.SAVE_HOVER, EditProps.EDIT_BASE, EditProps.EDIT_ACTIVE, lore));
-		}), 0.65f, 0.25f, 0.85f, 0.35f);
+		}), 0.65f, 0.2f, 0.85f, 0.3f);
 	}
 }

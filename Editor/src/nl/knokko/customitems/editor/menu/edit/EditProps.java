@@ -8,6 +8,8 @@ import nl.knokko.gui.util.TextBuilder.Properties;
 
 public class EditProps {
 	
+	public static final Properties ERROR = Properties.createLabel(Color.RED, 2048, 256);
+	
 	public static final Properties SAVE_BASE = Properties.createButton(new Color(0, 200, 0), new Color(0, 50, 0));
 	public static final Properties SAVE_HOVER = Properties.createButton(new Color(0, 255, 0), new Color(0, 65, 0));
 	
