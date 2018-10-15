@@ -79,14 +79,20 @@ public class ItemSet {
 	}
 	
 	private void load1(BitInput input) {
+		// Textures
 		int textureAmount = input.readInt();
 		textures = new ArrayList<NamedImage>(textureAmount);
 		for(int counter = 0; counter < textureAmount; counter++)
 			textures.add(new NamedImage(input));
+		
+		// Items
 		int itemAmount = input.readInt();
 		items = new ArrayList<CustomItem>(itemAmount);
 		for(int counter = 0; counter < itemAmount; counter++)
 			items.add(loadItem(input));
+		
+		// Recipes
+		int recipeAmount = input.readInt();
 	}
 	
 	/**
@@ -203,9 +209,14 @@ public class ItemSet {
 	
 	private void export1(BitOutput output) {
 		output.addByte(ENCODING_1);
+		
+		// Items
 		output.addInt(items.size());
 		for(CustomItem item : items)
 			item.export(output);
+		
+		// Recipes
+		output.addInt(0);
 	}
 	
 	public String save() {
@@ -229,6 +240,9 @@ public class ItemSet {
 		output.addInt(items.size());
 		for(CustomItem item : items)
 			item.save(output);
+		
+		// Recipes
+		output.addInt(0);
 	}
 	
 	/**

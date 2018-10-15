@@ -9,7 +9,6 @@ import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.ItemStack;
 
 import nl.knokko.customitems.plugin.recipe.CustomRecipe;
-import nl.knokko.customitems.plugin.recipe.CustomRecipes;
 import nl.knokko.customitems.plugin.set.item.CustomItem;
 
 public class CustomItemsEventHandler implements Listener {
@@ -28,7 +27,7 @@ public class CustomItemsEventHandler implements Listener {
 	public void beforeCraft(PrepareItemCraftEvent event) {
 		if(!event.isRepair()) {
 			ItemStack result = event.getInventory().getResult();
-			CustomRecipe[] recipes = CustomRecipes.getRecipes(result);
+			CustomRecipe[] recipes = CustomItemsPlugin.getInstance().getSet().getRecipes(result);
 			if(recipes.length > 0) {
 				ItemStack[] ingredients = event.getInventory().getStorageContents();
 				Material[] ingredientTypes = new Material[9];
