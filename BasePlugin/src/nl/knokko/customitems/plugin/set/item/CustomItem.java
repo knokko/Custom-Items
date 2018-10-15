@@ -21,7 +21,7 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package nl.knokko.customitems.plugin.item;
+package nl.knokko.customitems.plugin.set.item;
 
 import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;

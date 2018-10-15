@@ -26,7 +26,7 @@ package nl.knokko.customitems.plugin.recipe.ingredient;
 import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
 
-import nl.knokko.customitems.plugin.item.CustomItem;
+import nl.knokko.customitems.plugin.set.item.CustomItem;
 
 public class CustomIngredient implements Ingredient {
     

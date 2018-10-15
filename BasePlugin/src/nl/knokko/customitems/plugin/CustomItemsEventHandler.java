@@ -8,19 +8,18 @@ import org.bukkit.event.inventory.PrepareItemCraftEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.ItemStack;
 
-import nl.knokko.customitems.plugin.item.CustomItem;
-import nl.knokko.customitems.plugin.item.CustomItems;
 import nl.knokko.customitems.plugin.recipe.CustomRecipe;
 import nl.knokko.customitems.plugin.recipe.CustomRecipes;
+import nl.knokko.customitems.plugin.set.item.CustomItem;
 
 public class CustomItemsEventHandler implements Listener {
 	
 	@EventHandler
 	public void onItemUse(PlayerInteractEvent event) {
 		ItemStack item = event.getItem();
-		CustomItem custom = CustomItems.getCustomItem(item);
+		CustomItem custom = CustomItemsPlugin.getInstance().getSet().getItem(item);
 		if(custom != null) {
-			//for now, just make sure the custom item can't be used as the underlying tool
+			//for now, just make sure the custom item can't be used as their 'real' item
 			event.setCancelled(true);
 		}
 	}

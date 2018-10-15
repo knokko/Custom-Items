@@ -23,14 +23,23 @@
  */
 package nl.knokko.customitems.plugin;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.util.logging.Level;
+
 import org.bukkit.Bukkit;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import nl.knokko.customitems.plugin.command.CommandCustomItems;
+import nl.knokko.customitems.plugin.set.ItemSet;
+import nl.knokko.util.bits.BitInput;
+import nl.knokko.util.bits.BitInputStream;
 
 public class CustomItemsPlugin extends JavaPlugin {
     
     private static CustomItemsPlugin instance;
+    
+    private ItemSet set;
     
     public static CustomItemsPlugin getInstance(){
         return instance;
@@ -42,6 +51,7 @@ public class CustomItemsPlugin extends JavaPlugin {
     public void onEnable(){
         super.onEnable();
         instance = this;
+        loadSet();
         getCommand("customitems").setExecutor(new CommandCustomItems());
         Bukkit.getPluginManager().registerEvents(new CustomItemsEventHandler(), this);
     }
@@ -50,5 +60,50 @@ public class CustomItemsPlugin extends JavaPlugin {
     public void onDisable(){
         instance = null;
         super.onDisable();
+    }
+    
+    private void loadSet() {
+    	File folder = getDataFolder();
+    	folder.mkdirs();
+    	File[] files = folder.listFiles((File file, String name) -> {
+    		return name.endsWith(".cis");
+    	});
+    	if(files != null) {
+    		if(files.length == 1) {
+    			File file = files[0];
+    			try {
+    				BitInput input = new BitInputStream(new FileInputStream(file));
+    				set = new ItemSet(input);
+    				input.terminate();
+    			} catch(Exception ex) {
+    				Bukkit.getLogger().log(Level.SEVERE, "Failed to load the custom item set " + file, ex);
+    				set = new ItemSet();
+    			}
+    		}
+    		else if(files.length == 0) {
+    			Bukkit.getLogger().log(Level.WARNING, "No custom item set could be found in the Custom Items plugin data folder. It should contain a single file that ends with .cis");
+    			set = new ItemSet();
+    		}
+    		else {
+    			File file = files[0];
+    			Bukkit.getLogger().warning("Multiple custom item sets were found, so the item set " + file + " will be loaded.");
+    			try {
+    				BitInput input = new BitInputStream(new FileInputStream(file));
+    				set = new ItemSet(input);
+    				input.terminate();
+    			} catch(Exception ex) {
+    				Bukkit.getLogger().log(Level.SEVERE, "Failed to load the custom item set " + file, ex);
+    				set = new ItemSet();
+    			}
+    		}
+    	}
+    	else {
+    		Bukkit.getLogger().warning("Something is wrong with the Custom Items Plug-in data folder");
+    		set = new ItemSet();
+    	}
+    }
+    
+    public ItemSet getSet() {
+    	return set;
     }
 }

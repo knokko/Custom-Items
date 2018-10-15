@@ -10,8 +10,8 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
-import nl.knokko.customitems.plugin.item.CustomItem;
-import nl.knokko.customitems.plugin.item.CustomItems;
+import nl.knokko.customitems.plugin.CustomItemsPlugin;
+import nl.knokko.customitems.plugin.set.item.CustomItem;
 
 public class CommandCustomItems implements CommandExecutor {
 	
@@ -43,7 +43,7 @@ public class CommandCustomItems implements CommandExecutor {
 		else {
 			if(args[0].equals("give")) {
 				if(args.length == 2 || args.length == 3) {
-					CustomItem item = CustomItems.getCustomItem(args[1]);
+					CustomItem item = CustomItemsPlugin.getInstance().getSet().getItem(args[1]);
 					if(item != null) {
 						Player receiver = null;
 						if(args.length == 2) {
