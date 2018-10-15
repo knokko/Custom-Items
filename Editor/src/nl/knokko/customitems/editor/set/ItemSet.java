@@ -25,9 +25,9 @@ import nl.knokko.util.bits.BitInput;
 import nl.knokko.util.bits.BitOutput;
 import nl.knokko.util.bits.BitOutputStream;
 
+import static nl.knokko.customitems.encoding.SetEncoding.*;
+
 public class ItemSet {
-	
-	private static final byte ENCODING_1 = 0;
 	
 	private CustomItem loadItem(BitInput input) {
 		byte encoding = input.readByte();
