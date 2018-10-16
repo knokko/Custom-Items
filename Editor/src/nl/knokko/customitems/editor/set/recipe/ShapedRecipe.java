@@ -14,7 +14,7 @@ public class ShapedRecipe extends Recipe {
 	}
 	
 	public ShapedRecipe(BitInput input, ItemSet set) {
-		super(input);
+		super(input, set);
 		ingredients = new Ingredient[9];
 		for (int index = 0; index < ingredients.length; index++)
 			ingredients[index] = loadIngredient(input, set);

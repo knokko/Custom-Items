@@ -2,7 +2,7 @@ package nl.knokko.customitems.editor.set.recipe;
 
 import nl.knokko.customitems.editor.set.ItemSet;
 import nl.knokko.customitems.editor.set.recipe.ingredient.*;
-import nl.knokko.customitems.editor.set.recipe.result.Result;
+import nl.knokko.customitems.editor.set.recipe.result.*;
 import nl.knokko.customitems.encoding.RecipeEncoding;
 import nl.knokko.util.bits.BitInput;
 import nl.knokko.util.bits.BitOutput;
@@ -24,7 +24,7 @@ public abstract class Recipe {
 		throw new IllegalArgumentException("Unknown ingredient encoding: " + encoding);
 	}
 	
-	private static Result loadResult(BitInput input) {
+	private static Result loadResult(BitInput input, ItemSet set) {
 		byte encoding = input.readByte();
 		if (encoding == RecipeEncoding.Result.VANILLA_SIMPLE)
 			return new SimpleVanillaResult(input);
@@ -33,7 +33,7 @@ public abstract class Recipe {
 		if (encoding == RecipeEncoding.Result.VANILLA_ADVANCED_1)
 			throw new UnsupportedOperationException("Advanced vanilla results are not yet supported");
 		if (encoding == RecipeEncoding.Result.CUSTOM)
-			return new CustomItemResult(input);
+			return new CustomItemResult(input, set);
 		throw new IllegalArgumentException("Unknown result encoding: " + encoding);
 	}
 	
@@ -45,9 +45,9 @@ public abstract class Recipe {
 		result = null;
 	}
 	
-	public Recipe(BitInput input) {
+	public Recipe(BitInput input, ItemSet set) {
 		id = input.readJavaString();
-		result = loadResult(input);
+		result = loadResult(input, set);
 	}
 	
 	public final void save(BitOutput output) {

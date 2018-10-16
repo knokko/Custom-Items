@@ -17,7 +17,7 @@ public class ShapelessRecipe extends Recipe {
 	}
 
 	public ShapelessRecipe(BitInput input, ItemSet set) {
-		super(input);
+		super(input, set);
 		byte ingredientCount = input.readByte();
 		ingredients = new ArrayList<Ingredient>(ingredientCount);
 		for (int counter = 0; counter < ingredientCount; counter++)
