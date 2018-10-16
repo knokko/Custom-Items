@@ -36,9 +36,9 @@ public class ItemSet {
 	private Recipe loadRecipe(BitInput input) {
 		byte encoding = input.readByte();
 		if (encoding == RecipeEncoding.SHAPED_RECIPE)
-			return new ShapedRecipe(input);
+			return new ShapedRecipe(input, this);
 		if (encoding == RecipeEncoding.SHAPELESS_RECIPE)
-			return new ShapelessRecipe(input);
+			return new ShapelessRecipe(input, this);
 		throw new IllegalArgumentException("Unknown recipe encoding: " + encoding);
 	}
 	

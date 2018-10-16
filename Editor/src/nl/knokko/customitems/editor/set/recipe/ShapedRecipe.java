@@ -1,5 +1,6 @@
 package nl.knokko.customitems.editor.set.recipe;
 
+import nl.knokko.customitems.editor.set.ItemSet;
 import nl.knokko.customitems.editor.set.recipe.ingredient.Ingredient;
 import nl.knokko.util.bits.BitInput;
 import nl.knokko.util.bits.BitOutput;
@@ -12,16 +13,17 @@ public class ShapedRecipe extends Recipe {
 		ingredients = new Ingredient[9];
 	}
 	
-	public ShapedRecipe(BitInput input) {
+	public ShapedRecipe(BitInput input, ItemSet set) {
 		super(input);
 		ingredients = new Ingredient[9];
 		for (int index = 0; index < ingredients.length; index++)
-			ingredients[index] = loadIngredient(input);
+			ingredients[index] = loadIngredient(input, set);
 	}
 
 	@Override
 	protected void saveOwn(BitOutput output) {
 		for (Ingredient ingredient : ingredients) {
+			output.addByte(ingredient.getID());
 			ingredient.save(output);
 		}
 	}

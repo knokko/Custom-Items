@@ -5,4 +5,6 @@ import nl.knokko.util.bits.BitOutput;
 public interface Result {
 	
 	void save(BitOutput output);
+	
+	byte getID();
 }

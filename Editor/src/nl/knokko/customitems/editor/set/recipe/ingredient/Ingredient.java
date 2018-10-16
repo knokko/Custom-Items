@@ -5,4 +5,6 @@ import nl.knokko.util.bits.BitOutput;
 public interface Ingredient {
 	
 	void save(BitOutput output);
+	
+	byte getID();
 }
