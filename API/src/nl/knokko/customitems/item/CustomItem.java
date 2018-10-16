@@ -25,14 +25,14 @@ package nl.knokko.customitems.item;
 
 public class CustomItem {
     
-    protected ItemType itemType;
+    protected CustomItemType itemType;
     protected short itemDamage;
     
     protected String name;
     protected String displayName;
     protected String[] lore;
     
-    public CustomItem(ItemType itemType, short itemDamage, String name, String displayName, String[] lore){
+    public CustomItem(CustomItemType itemType, short itemDamage, String name, String displayName, String[] lore){
         this.itemType = itemType;
         this.itemDamage = itemDamage;
         this.name = name;
@@ -52,7 +52,7 @@ public class CustomItem {
     	return lore;
     }
     
-    public ItemType getItemType() {
+    public CustomItemType getItemType() {
     	return itemType;
     }
     

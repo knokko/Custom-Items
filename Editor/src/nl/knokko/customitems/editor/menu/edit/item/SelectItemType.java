@@ -1,7 +1,7 @@
 package nl.knokko.customitems.editor.menu.edit.item;
 
 import nl.knokko.customitems.editor.menu.edit.EditProps;
-import nl.knokko.customitems.item.ItemType;
+import nl.knokko.customitems.item.CustomItemType;
 import nl.knokko.gui.color.GuiColor;
 import nl.knokko.gui.component.GuiComponent;
 import nl.knokko.gui.component.menu.GuiMenu;
@@ -27,9 +27,9 @@ public class SelectItemType extends GuiMenu {
 		addComponent(new TextButton("Cancel", EditProps.CANCEL_BASE, EditProps.CANCEL_ACTIVE, () -> {
 			state.getWindow().setMainComponent(returnMenu);
 		}), 0.1f, 0.6f, 0.3f, 0.7f);
-		ItemType[] types = ItemType.values();
+		CustomItemType[] types = CustomItemType.values();
 		for(int index = 0; index < types.length; index++) {
-			final ItemType type = types[index];
+			final CustomItemType type = types[index];
 			addComponent(new TextButton(type.toString(), EditProps.SELECT_BASE, EditProps.SAVE_HOVER, () -> {
 				returnAction.onSelect(type);
 				state.getWindow().setMainComponent(returnMenu);
@@ -39,6 +39,6 @@ public class SelectItemType extends GuiMenu {
 	
 	public static interface ReturnAction {
 		
-		void onSelect(ItemType type);
+		void onSelect(CustomItemType type);
 	}
 }

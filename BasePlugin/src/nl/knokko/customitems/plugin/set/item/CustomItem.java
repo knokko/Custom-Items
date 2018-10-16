@@ -30,13 +30,13 @@ import org.bukkit.Bukkit;
 
 import com.google.common.collect.Lists;
 
-import nl.knokko.customitems.item.ItemType;
+import nl.knokko.customitems.item.CustomItemType;
 
 public class CustomItem extends nl.knokko.customitems.item.CustomItem {
 	
 	private final Material material;
     
-    public CustomItem(ItemType itemType, short itemDamage, String name, String displayName, String[] lore){
+    public CustomItem(CustomItemType itemType, short itemDamage, String name, String displayName, String[] lore){
         super(itemType, itemDamage, name, displayName, lore);
         material = Material.getMaterial(itemType.name());
     }

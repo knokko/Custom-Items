@@ -20,7 +20,7 @@ import javax.imageio.stream.MemoryCacheImageOutputStream;
 
 import nl.knokko.customitems.editor.Editor;
 import nl.knokko.customitems.encoding.ItemEncoding;
-import nl.knokko.customitems.item.ItemType;
+import nl.knokko.customitems.item.CustomItemType;
 import nl.knokko.util.bits.BitInput;
 import nl.knokko.util.bits.BitOutput;
 import nl.knokko.util.bits.BitOutputStream;
@@ -38,7 +38,7 @@ public class ItemSet {
 	}
 	
 	private CustomItem loadSimpleItem1(BitInput input) {
-		ItemType itemType = ItemType.valueOf(input.readJavaString());
+		CustomItemType itemType = CustomItemType.valueOf(input.readJavaString());
         short damage = input.readShort();
         String name = input.readJavaString();
         String displayName = input.readJavaString();
@@ -133,7 +133,7 @@ public class ItemSet {
 			}
 			
 			// Map all custom items by their item type
-			Map<ItemType, List<CustomItem>> itemMap = new EnumMap<ItemType, List<CustomItem>>(ItemType.class);
+			Map<CustomItemType, List<CustomItem>> itemMap = new EnumMap<CustomItemType, List<CustomItem>>(CustomItemType.class);
 			for(CustomItem item : items) {
 				List<CustomItem> list = itemMap.get(item.getItemType());
 				if(list == null) {
@@ -144,8 +144,8 @@ public class ItemSet {
 			}
 			
 			// Now create the item model files for those models
-			Set<Entry<ItemType, List<CustomItem>>> entrySet = itemMap.entrySet();
-			for(Entry<ItemType, List<CustomItem>> entry : entrySet) {
+			Set<Entry<CustomItemType, List<CustomItem>>> entrySet = itemMap.entrySet();
+			for(Entry<CustomItemType, List<CustomItem>> entry : entrySet) {
 				List<CustomItem> list = entry.getValue();
 				if(list != null) {
 					// The items with low damage should come first
@@ -340,7 +340,7 @@ public class ItemSet {
 	 * @param newImage The new image of the item
 	 * @return null if the item was changed successfully or the reason the item could not be changed
 	 */
-	public String changeItem(CustomItem item, ItemType newType, short newDamage, String newName, String newDisplayName, String[] newLore, NamedImage newImage) {
+	public String changeItem(CustomItem item, CustomItemType newType, short newDamage, String newName, String newDisplayName, String[] newLore, NamedImage newImage) {
 		boolean has = false;
 		for(CustomItem current : items) {
 			if(current == item) {
@@ -388,7 +388,7 @@ public class ItemSet {
 		return textures;
 	}
 	
-	public short nextAvailableDamage(ItemType type) {
+	public short nextAvailableDamage(CustomItemType type) {
 		boolean[] usedDamage = new boolean[type.getMaxDurability() - 1];
 		for(CustomItem item : items)
 			if(item.getItemType() == type)

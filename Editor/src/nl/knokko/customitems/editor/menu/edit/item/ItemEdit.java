@@ -4,7 +4,7 @@ import nl.knokko.customitems.editor.menu.edit.EditMenu;
 import nl.knokko.customitems.editor.menu.edit.EditProps;
 import nl.knokko.customitems.editor.set.CustomItem;
 import nl.knokko.customitems.editor.set.NamedImage;
-import nl.knokko.customitems.item.ItemType;
+import nl.knokko.customitems.item.CustomItemType;
 import nl.knokko.gui.color.GuiColor;
 import nl.knokko.gui.component.menu.GuiMenu;
 import nl.knokko.gui.component.menu.TextArrayEditMenu;
@@ -78,7 +78,7 @@ public class ItemEdit extends GuiMenu {
 		}
 		else {
 			name = new TextEditField("", EditProps.EDIT_BASE, EditProps.EDIT_ACTIVE);
-			internalType = new ItemTypeSelect(ItemType.DIAMOND_HOE);
+			internalType = new ItemTypeSelect(CustomItemType.DIAMOND_HOE);
 			internalDamage = new TextEditField(Short.toString(menu.getSet().nextAvailableDamage(internalType.currentType)), EditProps.EDIT_BASE, EditProps.EDIT_ACTIVE);
 			displayName = new TextEditField("", EditProps.EDIT_BASE, EditProps.EDIT_ACTIVE);
 			textureSelect = new TextureSelect(null);
@@ -115,9 +115,9 @@ public class ItemEdit extends GuiMenu {
 	
 	private class ItemTypeSelect extends TextButton {
 		
-		private ItemType currentType;
+		private CustomItemType currentType;
 
-		public ItemTypeSelect(ItemType initial) {
+		public ItemTypeSelect(CustomItemType initial) {
 			super(initial.toString(), EditProps.SELECT_BASE, EditProps.SELECT_HOVER, null);
 			currentType = initial;
 		}
@@ -126,7 +126,7 @@ public class ItemEdit extends GuiMenu {
 		public void init() {
 			super.init();
 			clickAction = () -> {
-				state.getWindow().setMainComponent(new SelectItemType(ItemEdit.this, (ItemType type) -> {
+				state.getWindow().setMainComponent(new SelectItemType(ItemEdit.this, (CustomItemType type) -> {
 					currentType = type;
 					setText(type.toString());
 				}));

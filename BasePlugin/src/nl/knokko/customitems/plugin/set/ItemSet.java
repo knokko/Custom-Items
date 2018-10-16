@@ -12,11 +12,19 @@ import org.bukkit.Material;
 import org.bukkit.craftbukkit.libs.it.unimi.dsi.fastutil.objects.ObjectSet;
 import org.bukkit.craftbukkit.libs.it.unimi.dsi.fastutil.shorts.Short2ObjectMap;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.material.MaterialData;
 
 import nl.knokko.customitems.encoding.ItemEncoding;
+import nl.knokko.customitems.encoding.RecipeEncoding;
 import nl.knokko.customitems.encoding.SetEncoding;
-import nl.knokko.customitems.item.ItemType;
+import nl.knokko.customitems.item.CustomItemType;
 import nl.knokko.customitems.plugin.recipe.CustomRecipe;
+import nl.knokko.customitems.plugin.recipe.ShapedCustomRecipe;
+import nl.knokko.customitems.plugin.recipe.ingredient.CustomIngredient;
+import nl.knokko.customitems.plugin.recipe.ingredient.DataVanillaIngredient;
+import nl.knokko.customitems.plugin.recipe.ingredient.Ingredient;
+import nl.knokko.customitems.plugin.recipe.ingredient.NoIngredient;
+import nl.knokko.customitems.plugin.recipe.ingredient.SimpleVanillaIngredient;
 import nl.knokko.customitems.plugin.set.item.CustomItem;
 import nl.knokko.util.bits.BitInput;
 
@@ -70,7 +78,7 @@ public class ItemSet {
 	}
 	
 	private CustomItem loadSimpleItem1(BitInput input) {
-		ItemType itemType = ItemType.valueOf(input.readJavaString());
+		CustomItemType itemType = CustomItemType.valueOf(input.readJavaString());
         short damage = input.readShort();
         String name = input.readJavaString();
         String displayName = input.readJavaString();
@@ -91,7 +99,60 @@ public class ItemSet {
 	}
 	
 	private CustomRecipe loadRecipe(BitInput input) {
-		
+		byte encoding = input.readByte();
+		if(encoding == RecipeEncoding.SHAPED_RECIPE)
+			return loadShapedRecipe(input);
+		if(encoding == RecipeEncoding.SHAPELESS_RECIPE)
+			return loadShapelessRecipe(input);
+		throw new IllegalArgumentException("Unknown recipe encoding: " + encoding);
+	}
+	
+	private CustomRecipe loadShapelessRecipe(BitInput input) {
+		throw new UnsupportedOperationException("Shapeless recipes are not yet supported");
+	}
+	
+	private CustomRecipe loadShapedRecipe(BitInput input) {
+		String id = input.readJavaString();
+		ItemStack result = loadResult(input);
+		Ingredient[] ingredients = new Ingredient[input.readInt()];
+		for (int index = 0; index < ingredients.length; index++)
+			ingredients[index] = loadIngredient(input);
+		return new ShapedCustomRecipe(id, result, ingredients);
+	}
+	
+	@SuppressWarnings("deprecation")
+	private ItemStack loadResult(BitInput input) {
+		byte amount = input.readByte();
+		byte encoding = input.readByte();
+		if(encoding == RecipeEncoding.Result.VANILLA_SIMPLE)
+			return new ItemStack(Material.valueOf(input.readJavaString()), amount);
+		if(encoding == RecipeEncoding.Result.VANILLA_DATA) {
+			ItemStack stack = new ItemStack(Material.valueOf(input.readJavaString()), amount);
+			MaterialData data = stack.getData();
+			data.setData(input.readByte());
+			stack.setData(data);
+			return stack;
+		}
+		if(encoding == RecipeEncoding.Result.VANILLA_ADVANCED_1)
+			throw new UnsupportedOperationException("Advanced vanilla results are not yet supported");
+		if(encoding == RecipeEncoding.Result.CUSTOM)
+			return getItem(input.readJavaString()).create(amount);
+		throw new IllegalArgumentException("Unknown result encoding: " + encoding);
+	}
+	
+	private Ingredient loadIngredient(BitInput input) {
+		byte encoding = input.readByte();
+		if(encoding == RecipeEncoding.Ingredient.NONE)
+			return new NoIngredient();
+		if(encoding == RecipeEncoding.Ingredient.VANILLA_SIMPLE)
+			return new SimpleVanillaIngredient(Material.valueOf(input.readJavaString()));
+		if(encoding == RecipeEncoding.Ingredient.VANILLA_DATA)
+			return new DataVanillaIngredient(Material.valueOf(input.readJavaString()), input.readByte());
+		if(encoding == RecipeEncoding.Ingredient.VANILLA_ADVANCED_1)
+			throw new UnsupportedOperationException("Advanced vanilla ingredients are not yet supported.");
+		if(encoding == RecipeEncoding.Ingredient.CUSTOM)
+			return new CustomIngredient(getItem(input.readJavaString()));
+		throw new IllegalArgumentException("Unknown ingredient encoding: " + encoding);
 	}
 	
 	private void register(CustomRecipe recipe) {

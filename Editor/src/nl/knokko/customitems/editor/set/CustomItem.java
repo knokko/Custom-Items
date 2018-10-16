@@ -1,14 +1,14 @@
 package nl.knokko.customitems.editor.set;
 
 import nl.knokko.customitems.encoding.ItemEncoding;
-import nl.knokko.customitems.item.ItemType;
+import nl.knokko.customitems.item.CustomItemType;
 import nl.knokko.util.bits.BitOutput;
 
 public class CustomItem extends nl.knokko.customitems.item.CustomItem {
 	
 	protected NamedImage texture;
 
-	public CustomItem(ItemType itemType, short itemDamage, String name, String displayName, String[] lore, NamedImage texture) {
+	public CustomItem(CustomItemType itemType, short itemDamage, String name, String displayName, String[] lore, NamedImage texture) {
 		super(itemType, itemDamage, name, displayName, lore);
 		this.texture = texture;
 	}
@@ -25,7 +25,7 @@ public class CustomItem extends nl.knokko.customitems.item.CustomItem {
 		displayName = name;
 	}
 	
-	public void setItemType(ItemType type) {
+	public void setItemType(CustomItemType type) {
 		itemType = type;
 	}
 	

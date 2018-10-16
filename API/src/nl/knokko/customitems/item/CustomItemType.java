@@ -1,6 +1,6 @@
 package nl.knokko.customitems.item;
 
-public enum ItemType {
+public enum CustomItemType {
 	
 	IRON_SPADE(250),
 	IRON_PICKAXE(250),
@@ -57,7 +57,7 @@ public enum ItemType {
 	
 	private final short maxDurability;
 	
-	ItemType(int maxDurability){
+	CustomItemType(int maxDurability){
 		this.maxDurability = (short) maxDurability;
 	}
 	
