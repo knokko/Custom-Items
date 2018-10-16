@@ -99,21 +99,21 @@ public class ItemSet {
 	}
 	
 	private CustomRecipe loadRecipe(BitInput input) {
+		String id = input.readJavaString();
+		ItemStack result = loadResult(input);
 		byte encoding = input.readByte();
 		if(encoding == RecipeEncoding.SHAPED_RECIPE)
-			return loadShapedRecipe(input);
+			return loadShapedRecipe(input, id, result);
 		if(encoding == RecipeEncoding.SHAPELESS_RECIPE)
-			return loadShapelessRecipe(input);
+			return loadShapelessRecipe(input, id, result);
 		throw new IllegalArgumentException("Unknown recipe encoding: " + encoding);
 	}
 	
-	private CustomRecipe loadShapelessRecipe(BitInput input) {
+	private CustomRecipe loadShapelessRecipe(BitInput input, String id, ItemStack result) {
 		throw new UnsupportedOperationException("Shapeless recipes are not yet supported");
 	}
 	
-	private CustomRecipe loadShapedRecipe(BitInput input) {
-		String id = input.readJavaString();
-		ItemStack result = loadResult(input);
+	private CustomRecipe loadShapedRecipe(BitInput input, String id, ItemStack result) {
 		Ingredient[] ingredients = new Ingredient[input.readInt()];
 		for (int index = 0; index < ingredients.length; index++)
 			ingredients[index] = loadIngredient(input);

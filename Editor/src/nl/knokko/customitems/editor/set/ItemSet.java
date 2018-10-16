@@ -19,7 +19,11 @@ import javax.imageio.ImageIO;
 import javax.imageio.stream.MemoryCacheImageOutputStream;
 
 import nl.knokko.customitems.editor.Editor;
+import nl.knokko.customitems.editor.set.recipe.Recipe;
+import nl.knokko.customitems.editor.set.recipe.ShapedRecipe;
+import nl.knokko.customitems.editor.set.recipe.ShapelessRecipe;
 import nl.knokko.customitems.encoding.ItemEncoding;
+import nl.knokko.customitems.encoding.RecipeEncoding;
 import nl.knokko.customitems.item.CustomItemType;
 import nl.knokko.util.bits.BitInput;
 import nl.knokko.util.bits.BitOutput;
@@ -28,6 +32,15 @@ import nl.knokko.util.bits.BitOutputStream;
 import static nl.knokko.customitems.encoding.SetEncoding.*;
 
 public class ItemSet {
+	
+	private Recipe loadRecipe(BitInput input) {
+		byte encoding = input.readByte();
+		if (encoding == RecipeEncoding.SHAPED_RECIPE)
+			return new ShapedRecipe(input);
+		if (encoding == RecipeEncoding.SHAPELESS_RECIPE)
+			return new ShapelessRecipe(input);
+		throw new IllegalArgumentException("Unknown recipe encoding: " + encoding);
+	}
 	
 	private CustomItem loadItem(BitInput input) {
 		byte encoding = input.readByte();
@@ -62,11 +75,13 @@ public class ItemSet {
 	
 	private Collection<NamedImage> textures;
 	private Collection<CustomItem> items;
+	private Collection<Recipe> recipes;
 	
 	public ItemSet(String fileName) {
 		this.fileName = fileName;
 		textures = new ArrayList<NamedImage>();
 		items = new ArrayList<CustomItem>();
+		recipes = new ArrayList<Recipe>();
 	}
 	
 	public ItemSet(String fileName, BitInput input) {
@@ -82,17 +97,20 @@ public class ItemSet {
 		// Textures
 		int textureAmount = input.readInt();
 		textures = new ArrayList<NamedImage>(textureAmount);
-		for(int counter = 0; counter < textureAmount; counter++)
+		for (int counter = 0; counter < textureAmount; counter++)
 			textures.add(new NamedImage(input));
 		
 		// Items
 		int itemAmount = input.readInt();
 		items = new ArrayList<CustomItem>(itemAmount);
-		for(int counter = 0; counter < itemAmount; counter++)
+		for (int counter = 0; counter < itemAmount; counter++)
 			items.add(loadItem(input));
 		
 		// Recipes
 		int recipeAmount = input.readInt();
+		recipes = new ArrayList<Recipe>(recipeAmount);
+		for (int counter = 0; counter < recipeAmount; counter++)
+			recipes.add(loadRecipe(input));
 	}
 	
 	/**
