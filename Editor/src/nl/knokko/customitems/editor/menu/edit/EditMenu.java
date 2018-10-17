@@ -3,6 +3,7 @@ package nl.knokko.customitems.editor.menu.edit;
 import java.awt.Color;
 
 import nl.knokko.customitems.editor.menu.edit.item.ItemOverview;
+import nl.knokko.customitems.editor.menu.edit.recipe.RecipeOverview;
 import nl.knokko.customitems.editor.menu.edit.texture.TextureOverview;
 import nl.knokko.customitems.editor.menu.main.MainMenu;
 import nl.knokko.customitems.editor.set.ItemSet;
@@ -20,11 +21,13 @@ public class EditMenu extends GuiMenu {
 	
 	protected final ItemOverview itemOverview;
 	protected final TextureOverview textureOverview;
+	protected final RecipeOverview recipeOverview;
 
 	public EditMenu(ItemSet set) {
 		this.set = set;
 		itemOverview = new ItemOverview(this);
 		textureOverview = new TextureOverview(this);
+		recipeOverview = new RecipeOverview(this);
 		errorComponent = new TextComponent("", EditProps.ERROR);
 	}
 	
@@ -38,6 +41,10 @@ public class EditMenu extends GuiMenu {
 	
 	public TextureOverview getTextureOverview() {
 		return textureOverview;
+	}
+	
+	public RecipeOverview getRecipeOverview() {
+		return recipeOverview;
 	}
 	
 	@Override
@@ -80,5 +87,8 @@ public class EditMenu extends GuiMenu {
 		addComponent(new TextButton("Textures", EditProps.BUTTON, EditProps.HOVER, () -> {
 			state.getWindow().setMainComponent(textureOverview);
 		}), 0.6f, 0.6f, 0.8f, 0.7f);
+		addComponent(new TextButton("Recipes", EditProps.BUTTON, EditProps.HOVER, () -> {
+			state.getWindow().setMainComponent(recipeOverview);
+		}), 0.6f, 0.45f, 0.8f, 0.55f);
 	}
 }
