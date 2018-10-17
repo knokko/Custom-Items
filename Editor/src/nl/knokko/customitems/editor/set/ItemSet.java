@@ -22,6 +22,7 @@ import nl.knokko.customitems.editor.Editor;
 import nl.knokko.customitems.editor.set.recipe.Recipe;
 import nl.knokko.customitems.editor.set.recipe.ShapedRecipe;
 import nl.knokko.customitems.editor.set.recipe.ShapelessRecipe;
+import nl.knokko.customitems.editor.set.recipe.result.CustomItemResult;
 import nl.knokko.customitems.encoding.ItemEncoding;
 import nl.knokko.customitems.encoding.RecipeEncoding;
 import nl.knokko.customitems.item.CustomItemType;
@@ -386,8 +387,26 @@ public class ItemSet {
 		return null;
 	}
 	
-	public void removeItem(CustomItem item) {
+	/**
+	 * Attempts to remove the specified item from this set.
+	 * If the item could not be removed, the reason is returned.
+	 * If the item can be removed, it will be removed and null will be returned.
+	 * @param item The item that should be removed from this ItemSet
+	 * @return The reason the item could not be removed, or null if the item was removed succesfully.
+	 */
+	public String removeItem(CustomItem item) {
+		for (Recipe recipe : recipes) {
+			if (recipe.getResult() instanceof CustomItemResult && ((CustomItemResult)recipe.getResult()).getItem() == item)
+				return "Recipe " + recipe.getID() + " has this item as result.";
+			if (recipe.requires(item))
+				return "Recipe " + recipe.getID() + " has this item as an ingredient.";
+		}
 		items.remove(item);
+		return null;
+	}
+	
+	public void removeRecipe(Recipe recipe) {
+		recipes.remove(recipe);
 	}
 	
 	/**
@@ -404,6 +423,14 @@ public class ItemSet {
 	 */
 	public Collection<NamedImage> getTextures(){
 		return textures;
+	}
+	
+	/**
+	 * Do not modify this collection directly!
+	 * @return The Recipe collection of this ItemSet
+	 */
+	public Collection<Recipe> getRecipes(){
+		return recipes;
 	}
 	
 	public short nextAvailableDamage(CustomItemType type) {

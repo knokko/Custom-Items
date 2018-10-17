@@ -1,5 +1,6 @@
 package nl.knokko.customitems.editor.set.recipe;
 
+import nl.knokko.customitems.editor.set.CustomItem;
 import nl.knokko.customitems.editor.set.ItemSet;
 import nl.knokko.customitems.editor.set.recipe.ingredient.*;
 import nl.knokko.customitems.editor.set.recipe.result.*;
@@ -58,6 +59,8 @@ public abstract class Recipe {
 	}
 	
 	protected abstract void saveOwn(BitOutput output);
+	
+	public abstract boolean requires(CustomItem item);
 	
 	public Result getResult() {
 		return result;

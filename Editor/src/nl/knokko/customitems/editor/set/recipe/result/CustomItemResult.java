@@ -27,6 +27,10 @@ public class CustomItemResult implements Result {
 		}
 		throw new IllegalArgumentException("There is no item with name " + name);
 	}
+	
+	public CustomItem getItem() {
+		return item;
+	}
 
 	@Override
 	public void save(BitOutput output) {
