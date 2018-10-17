@@ -2,20 +2,17 @@ package nl.knokko.customitems.editor.menu.edit.recipe;
 
 import nl.knokko.customitems.editor.menu.edit.EditMenu;
 import nl.knokko.customitems.editor.menu.edit.EditProps;
-import nl.knokko.customitems.editor.set.recipe.ShapedRecipe;
+import nl.knokko.customitems.editor.set.recipe.ShapelessRecipe;
 import nl.knokko.gui.color.GuiColor;
-import nl.knokko.gui.color.SimpleGuiColor;
 import nl.knokko.gui.component.menu.GuiMenu;
 import nl.knokko.gui.component.text.TextButton;
 
-public class ShapedRecipeEdit extends GuiMenu {
-	
-	private static final GuiColor INGREDIENT_BACKGROUND = new SimpleGuiColor(200, 100, 0);
+public class ShapelessRecipeEdit extends GuiMenu {
 	
 	private final EditMenu menu;
-	private final ShapedRecipe previous;
+	private final ShapelessRecipe previous;
 
-	public ShapedRecipeEdit(EditMenu menu, ShapedRecipe previous) {
+	public ShapelessRecipeEdit(EditMenu menu, ShapelessRecipe previous) {
 		this.menu = menu;
 		this.previous = previous;
 	}
@@ -30,19 +27,5 @@ public class ShapedRecipeEdit extends GuiMenu {
 	@Override
 	public GuiColor getBackgroundColor() {
 		return EditProps.BACKGROUND;
-	}
-	
-	private class Ingredients extends GuiMenu {
-
-		@Override
-		protected void addComponents() {
-			// TODO Auto-generated method stub
-			
-		}
-		
-		@Override
-		public GuiColor getBackgroundColor() {
-			return INGREDIENT_BACKGROUND;
-		}
 	}
 }

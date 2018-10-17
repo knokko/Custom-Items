@@ -7,6 +7,7 @@ import nl.knokko.customitems.editor.menu.edit.EditProps;
 import nl.knokko.customitems.editor.set.recipe.Recipe;
 import nl.knokko.customitems.editor.set.recipe.ShapedRecipe;
 import nl.knokko.customitems.editor.set.recipe.ShapelessRecipe;
+import nl.knokko.gui.color.GuiColor;
 import nl.knokko.gui.component.menu.GuiMenu;
 import nl.knokko.gui.component.text.TextButton;
 import nl.knokko.gui.component.text.TextComponent;
@@ -29,11 +30,16 @@ public class RecipeOverview extends GuiMenu {
 		}), 0.1f, 0.7f, 0.25f, 0.8f);
 		addComponent(new TextButton("Create shaped recipe", EditProps.BUTTON, EditProps.HOVER, () -> {
 			state.getWindow().setMainComponent(new ShapedRecipeEdit(menu, null));
-		}), 0.1f, 0.3f, 0.35f, 0.4f);
+		}), 0.05f, 0.3f, 0.4f, 0.4f);
 		addComponent(new TextButton("Create shapeless recipe", EditProps.BUTTON, EditProps.HOVER, () -> {
 			state.getWindow().setMainComponent(new ShapelessRecipeEdit(menu, null));
-		}), 0.1f, 0.1f, 0.35f, 0.2f);
+		}), 0.05f, 0.1f, 0.4f, 0.2f);
 		addComponent(list, 0.4f, 0.05f, 1f, 0.95f);
+	}
+	
+	@Override
+	public GuiColor getBackgroundColor() {
+		return EditProps.BACKGROUND;
 	}
 	
 	private class RecipeList extends GuiMenu {
