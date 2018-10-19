@@ -24,7 +24,7 @@ public class SelectItemType extends GuiMenu {
 
 	@Override
 	protected void addComponents() {
-		addComponent(new TextButton("Cancel", EditProps.CANCEL_BASE, EditProps.CANCEL_ACTIVE, () -> {
+		addComponent(new TextButton("Cancel", EditProps.CANCEL_BASE, EditProps.CANCEL_HOVER, () -> {
 			state.getWindow().setMainComponent(returnMenu);
 		}), 0.1f, 0.6f, 0.3f, 0.7f);
 		CustomItemType[] types = CustomItemType.values();

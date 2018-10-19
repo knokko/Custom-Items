@@ -38,7 +38,7 @@ public class TextureOverview extends GuiMenu {
 	protected void addComponents() {
 		addComponent(errorComponent, 0.05f, 0.9f, 0.95f, 1f);
 		addComponent(textureList, 0.3f, 0f, 1f, 0.9f);
-		addComponent(new TextButton("Back", EditProps.CANCEL_BASE, EditProps.CANCEL_ACTIVE, () -> {
+		addComponent(new TextButton("Back", EditProps.CANCEL_BASE, EditProps.CANCEL_HOVER, () -> {
 			state.getWindow().setMainComponent(menu);
 		}), 0.05f, 0.7f, 0.2f, 0.8f);
 		addComponent(new TextButton("Create texture", EditProps.BUTTON, EditProps.HOVER, () -> {

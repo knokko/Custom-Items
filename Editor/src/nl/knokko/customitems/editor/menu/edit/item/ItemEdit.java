@@ -42,7 +42,7 @@ public class ItemEdit extends GuiMenu {
 	@Override
 	protected void addComponents() {
 		errorComponent = new TextComponent("", EditProps.ERROR);
-		addComponent(new TextButton("Cancel", EditProps.CANCEL_BASE, EditProps.CANCEL_ACTIVE, () -> {
+		addComponent(new TextButton("Cancel", EditProps.CANCEL_BASE, EditProps.CANCEL_HOVER, () -> {
 			state.getWindow().setMainComponent(menu.getItemOverview());
 		}), 0.1f, 0.7f, 0.25f, 0.8f);
 		addComponent(new TextComponent("Name: ", EditProps.LABEL), 0.35f, 0.8f, 0.5f, 0.9f);
@@ -159,7 +159,7 @@ public class ItemEdit extends GuiMenu {
 		addComponent(new TextButton("Change lore...", EditProps.BUTTON, EditProps.HOVER, () -> {
 			state.getWindow().setMainComponent(new TextArrayEditMenu(ItemEdit.this, (String[] newLore) -> {
 				lore = newLore;
-			}, EditProps.CANCEL_BASE, EditProps.CANCEL_ACTIVE, EditProps.SAVE_BASE, EditProps.SAVE_HOVER, EditProps.EDIT_BASE, EditProps.EDIT_ACTIVE, lore));
+			}, EditProps.CANCEL_BASE, EditProps.CANCEL_HOVER, EditProps.SAVE_BASE, EditProps.SAVE_HOVER, EditProps.EDIT_BASE, EditProps.EDIT_ACTIVE, lore));
 		}), 0.65f, 0.2f, 0.85f, 0.3f);
 	}
 }

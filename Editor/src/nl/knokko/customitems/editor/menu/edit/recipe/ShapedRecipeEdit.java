@@ -30,9 +30,9 @@ public class ShapedRecipeEdit extends GuiMenu {
 		this.previous = previous;
 		errorComponent = new TextComponent("", EditProps.ERROR);
 		if (previous != null)
-			resultComponent = new ResultComponent(previous.getResult());
+			resultComponent = new ResultComponent(previous.getResult(), this);
 		else
-			resultComponent = new ResultComponent(new SimpleVanillaResult(Material.IRON_INGOT, (byte) 1));
+			resultComponent = new ResultComponent(new SimpleVanillaResult(Material.IRON_INGOT, (byte) 1), this);
 		if (previous != null)
 			ingredientsComponent = new Ingredients(previous.getIngredients());
 		else
@@ -41,7 +41,7 @@ public class ShapedRecipeEdit extends GuiMenu {
 
 	@Override
 	protected void addComponents() {
-		addComponent(new TextButton("Cancel", EditProps.CANCEL_BASE, EditProps.CANCEL_ACTIVE, () -> {
+		addComponent(new TextButton("Cancel", EditProps.CANCEL_BASE, EditProps.CANCEL_HOVER, () -> {
 			state.getWindow().setMainComponent(menu.getRecipeOverview());
 		}), 0.1f, 0.85f, 0.25f, 0.95f);
 		addComponent(new TextButton("Save", EditProps.SAVE_BASE, EditProps.SAVE_HOVER, () -> {
@@ -60,6 +60,7 @@ public class ShapedRecipeEdit extends GuiMenu {
 		}), 0.1f, 0.7f, 0.25f, 0.8f);
 		addComponent(ingredientsComponent, 0.05f, 0.1f, 0.65f, 0.6f);
 		addComponent(errorComponent, 0.35f, 0.85f, 0.95f, 0.95f);
+		addComponent(resultComponent, 0.75f, 0.275f, 0.95f, 0.425f);
 	}
 	
 	@Override

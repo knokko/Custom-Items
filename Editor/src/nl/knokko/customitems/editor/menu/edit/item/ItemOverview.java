@@ -35,7 +35,7 @@ public class ItemOverview extends GuiMenu {
 	protected void addComponents() {
 		itemList = new ItemList();
 		addComponent(itemList, 0.3f, 0f, 1f, 1f);
-		addComponent(new TextButton("Back", EditProps.CANCEL_BASE, EditProps.CANCEL_ACTIVE, () -> {
+		addComponent(new TextButton("Back", EditProps.CANCEL_BASE, EditProps.CANCEL_HOVER, () -> {
 			state.getWindow().setMainComponent(menu);
 		}), 0.05f, 0.7f, 0.2f, 0.8f);
 		addComponent(new TextButton("Create item", EditProps.BUTTON, EditProps.HOVER, () -> {

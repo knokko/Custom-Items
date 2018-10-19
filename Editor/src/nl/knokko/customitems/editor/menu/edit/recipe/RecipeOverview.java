@@ -43,6 +43,11 @@ public class RecipeOverview extends GuiMenu {
 	}
 	
 	private class RecipeList extends GuiMenu {
+		
+		@Override
+		public GuiColor getBackgroundColor() {
+			return EditProps.BACKGROUND;
+		}
 
 		@Override
 		protected void addComponents() {

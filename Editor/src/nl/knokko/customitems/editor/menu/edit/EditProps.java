@@ -17,7 +17,7 @@ public class EditProps {
 	public static final Properties QUIT_HOVER = Properties.createButton(new Color(250, 0, 0), new Color(65, 0, 0));
 	
 	public static final Properties CANCEL_BASE = Properties.createButton(new Color(200, 200, 0), new Color(50, 50, 0));
-	public static final Properties CANCEL_ACTIVE = Properties.createButton(new Color(255, 255, 0), new Color(65, 65, 0));
+	public static final Properties CANCEL_HOVER = Properties.createButton(new Color(255, 255, 0), new Color(65, 65, 0));
 	
 	public static final Properties BUTTON = Properties.createButton(new Color(0, 200, 200), new Color(0, 50, 50));
 	public static final Properties HOVER = Properties.createButton(new Color(0, 255, 255), new Color(0, 65, 65));

@@ -44,7 +44,7 @@ public class TextureEdit extends GuiMenu {
 	@Override
 	protected void addComponents() {
 		addComponent(errorComponent, 0.1f, 0.9f, 0.9f, 1f);
-		addComponent(new TextButton("Cancel", EditProps.CANCEL_BASE, EditProps.CANCEL_ACTIVE, () -> {
+		addComponent(new TextButton("Cancel", EditProps.CANCEL_BASE, EditProps.CANCEL_HOVER, () -> {
 			state.getWindow().setMainComponent(menu.getTextureOverview());
 		}), 0.1f, 0.7f, 0.25f, 0.8f);
 		if(previous != null) {
