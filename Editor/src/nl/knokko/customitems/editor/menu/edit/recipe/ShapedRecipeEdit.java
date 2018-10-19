@@ -32,7 +32,7 @@ public class ShapedRecipeEdit extends GuiMenu {
 		if (previous != null)
 			resultComponent = new ResultComponent(previous.getResult());
 		else
-			resultComponent = new ResultComponent(new SimpleVanillaResult(Material.IRON_INGOT));
+			resultComponent = new ResultComponent(new SimpleVanillaResult(Material.IRON_INGOT, (byte) 1));
 		if (previous != null)
 			ingredientsComponent = new Ingredients(previous.getIngredients());
 		else
@@ -58,7 +58,7 @@ public class ShapedRecipeEdit extends GuiMenu {
 				
 			}
 		}), 0.1f, 0.7f, 0.25f, 0.8f);
-		addComponent(ingredientsComponent, 0.1f, 0.1f, 0.7f, 0.6f);
+		addComponent(ingredientsComponent, 0.05f, 0.1f, 0.65f, 0.6f);
 		addComponent(errorComponent, 0.35f, 0.85f, 0.95f, 0.95f);
 	}
 	
@@ -74,13 +74,13 @@ public class ShapedRecipeEdit extends GuiMenu {
 		private Ingredients() {
 			ingredients = new IngredientComponent[9];
 			for (int index = 0; index < ingredients.length; index++)
-				ingredients[index] = new IngredientComponent(new NoIngredient());
+				ingredients[index] = new IngredientComponent(new NoIngredient(), ShapedRecipeEdit.this);
 		}
 		
 		private Ingredients(Ingredient[] ingredients) {
 			this.ingredients = new IngredientComponent[9];
 			for (int index = 0; index < ingredients.length; index++)
-				this.ingredients[index] = new IngredientComponent(ingredients[index]);
+				this.ingredients[index] = new IngredientComponent(ingredients[index], ShapedRecipeEdit.this);
 		}
 
 		@Override

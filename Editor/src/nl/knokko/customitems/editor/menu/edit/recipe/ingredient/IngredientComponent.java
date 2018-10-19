@@ -4,6 +4,7 @@ import java.awt.Color;
 
 import nl.knokko.customitems.editor.set.recipe.ingredient.Ingredient;
 import nl.knokko.customitems.editor.set.recipe.ingredient.NoIngredient;
+import nl.knokko.gui.component.GuiComponent;
 import nl.knokko.gui.component.text.TextButton;
 import nl.knokko.gui.util.TextBuilder.Properties;
 
@@ -13,17 +14,19 @@ public class IngredientComponent extends TextButton {
 	public static final Properties HOVER_PROPS = Properties.createLabel(Color.BLUE, new Color(255, 200, 0), 512, 128);
 	
 	private Ingredient current;
+	private final GuiComponent menu;
 
-	public IngredientComponent(Ingredient original) {
+	public IngredientComponent(Ingredient original, GuiComponent menu) {
 		super(original.toString(), PROPS, HOVER_PROPS, null);
 		this.clickAction = () -> {
 			state.getWindow().setMainComponent(new IngredientView(this));
 		};
 		current = original;
+		this.menu = menu;
 	}
 	
-	public IngredientComponent() {
-		this(new NoIngredient());
+	public IngredientComponent(GuiComponent menu) {
+		this(new NoIngredient(), menu);
 	}
 	
 	public void setIngredient(Ingredient ingredient) {
@@ -33,5 +36,9 @@ public class IngredientComponent extends TextButton {
 	
 	public Ingredient getIngredient() {
 		return current;
+	}
+	
+	public GuiComponent getMenu() {
+		return menu;
 	}
 }
