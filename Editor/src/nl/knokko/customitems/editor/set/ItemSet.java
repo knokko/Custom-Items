@@ -237,7 +237,9 @@ public class ItemSet {
 			item.export(output);
 		
 		// Recipes
-		output.addInt(0);
+		output.addInt(recipes.size());
+		for (Recipe recipe : recipes)
+			recipe.save(output);
 	}
 	
 	public String save() {
@@ -262,8 +264,9 @@ public class ItemSet {
 		for(CustomItem item : items)
 			item.save(output);
 		
-		// Recipes
-		output.addInt(0);
+		output.addInt(recipes.size());
+		for (Recipe recipe : recipes)
+			recipe.save(output);
 	}
 	
 	/**

@@ -5,23 +5,27 @@ import nl.knokko.customitems.encoding.RecipeEncoding;
 import nl.knokko.util.bits.BitInput;
 import nl.knokko.util.bits.BitOutput;
 
-public class DataVanillaResult implements Result {
+public class DataVanillaResult extends Result {
 	
 	private final Material type;
 	private final byte data;
 
-	public DataVanillaResult(Material type, byte data) {
+	public DataVanillaResult(Material type, byte data, byte amount) {
+		super(amount);
 		this.type = type;
 		this.data = data;
+		initInfo();
 	}
 	
 	public DataVanillaResult(BitInput input) {
+		super(input);
 		type = Material.valueOf(input.readJavaString());
 		data = input.readByte();
+		initInfo();
 	}
 
 	@Override
-	public void save(BitOutput output) {
+	protected void saveOwn(BitOutput output) {
 		output.addJavaString(type.name());
 		output.addByte(data);
 	}
@@ -29,5 +33,19 @@ public class DataVanillaResult implements Result {
 	@Override
 	public byte getID() {
 		return RecipeEncoding.Result.VANILLA_DATA;
+	}
+
+	@Override
+	protected String[] createInfo() {
+		return new String[] {
+				"Vanilla result:",
+				"Type: " + type.name().toLowerCase(),
+				"Data: " + data
+		};
+	}
+
+	@Override
+	public String getString() {
+		return type.name().toLowerCase() + "(" + data + ")";
 	}
 }
