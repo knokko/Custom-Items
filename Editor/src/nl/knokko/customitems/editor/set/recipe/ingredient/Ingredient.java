@@ -7,4 +7,6 @@ public interface Ingredient {
 	void save(BitOutput output);
 	
 	byte getID();
+	
+	boolean conflictsWith(Ingredient other);
 }

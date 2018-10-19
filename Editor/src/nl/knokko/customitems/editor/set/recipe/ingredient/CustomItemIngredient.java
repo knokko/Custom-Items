@@ -41,4 +41,14 @@ public class CustomItemIngredient implements Ingredient {
 	public byte getID() {
 		return RecipeEncoding.Ingredient.CUSTOM;
 	}
+
+	@Override
+	public boolean conflictsWith(Ingredient other) {
+		return  other instanceof CustomItemIngredient && ((CustomItemIngredient)other).item == item;
+	}
+	
+	@Override
+	public String toString() {
+		return item.getName();
+	}
 }

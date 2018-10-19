@@ -38,11 +38,27 @@ public class ShapedRecipe extends Recipe {
 		return false;
 	}
 	
+	@Override
+	public boolean hasConflictingIngredients(Ingredient[] ingredients) {
+		for (int index = 0; index < 9; index++)
+			if (!ingredients[index].conflictsWith(this.ingredients[index]))
+				return false;
+		return true;
+	}
+	
 	public Ingredient getIngredient(int x, int y) {
 		return ingredients[x + y * 3];
 	}
 	
-	public void setIngredient(Ingredient ingredient, int x, int y) {
-		ingredients[x + y * 3] = ingredient;
+	/**
+	 * Don't modify this array!
+	 * @return The array containing the ingredients of this shaped recipe
+	 */
+	public Ingredient[] getIngredients() {
+		return ingredients;
+	}
+	
+	public void setIngredients(Ingredient[] ingredients) {
+		System.arraycopy(ingredients, 0, this.ingredients, 0, 9);
 	}
 }

@@ -30,4 +30,13 @@ public class SimpleVanillaIngredient implements Ingredient {
 	public byte getID() {
 		return RecipeEncoding.Ingredient.VANILLA_SIMPLE;
 	}
+
+	@Override
+	public boolean conflictsWith(Ingredient other) {
+		if (other instanceof SimpleVanillaIngredient)
+			return ((SimpleVanillaIngredient) other).type == type;
+		if (other instanceof DataVanillaIngredient)
+			return ((DataVanillaIngredient) other).getType() == type;
+		return false;
+	}
 }

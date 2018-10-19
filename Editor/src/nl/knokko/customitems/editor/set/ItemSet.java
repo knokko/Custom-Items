@@ -22,7 +22,9 @@ import nl.knokko.customitems.editor.Editor;
 import nl.knokko.customitems.editor.set.recipe.Recipe;
 import nl.knokko.customitems.editor.set.recipe.ShapedRecipe;
 import nl.knokko.customitems.editor.set.recipe.ShapelessRecipe;
+import nl.knokko.customitems.editor.set.recipe.ingredient.Ingredient;
 import nl.knokko.customitems.editor.set.recipe.result.CustomItemResult;
+import nl.knokko.customitems.editor.set.recipe.result.Result;
 import nl.knokko.customitems.encoding.ItemEncoding;
 import nl.knokko.customitems.encoding.RecipeEncoding;
 import nl.knokko.customitems.item.CustomItemType;
@@ -392,7 +394,7 @@ public class ItemSet {
 	 * If the item could not be removed, the reason is returned.
 	 * If the item can be removed, it will be removed and null will be returned.
 	 * @param item The item that should be removed from this ItemSet
-	 * @return The reason the item could not be removed, or null if the item was removed succesfully.
+	 * @return The reason the item could not be removed, or null if the item was removed successfully.
 	 */
 	public String removeItem(CustomItem item) {
 		for (Recipe recipe : recipes) {
@@ -402,6 +404,31 @@ public class ItemSet {
 				return "Recipe " + recipe.getID() + " has this item as an ingredient.";
 		}
 		items.remove(item);
+		return null;
+	}
+	
+	/**
+	 * Attempts to change the ingredients and result of the specified ShapedRecipe.
+	 * If the recipe can be changed, it will be changed.
+	 * If the recipe can't be changed, the reason is returned.
+	 * @param previous The recipe to change
+	 * @param ingredients The new ingredients for the recipe
+	 * @param result The new result for the recipe
+	 * @return The reason the recipe can't be changed, or null if the recipe changed succesfully.
+	 */
+	public String changeShapedRecipe(ShapedRecipe previous, Ingredient[] ingredients, Result result) {
+		boolean has = false;
+		for (Recipe recipe : recipes) {
+			if (recipe == previous) {
+				has = true;
+				break;
+			} else if (recipe.hasConflictingIngredients(ingredients)) {
+				return "The recipe " + recipe.getID() + " has conflicting ingredients";
+			}
+		}
+		if (!has) return "That recipe is not in this item set";
+		previous.setIngredients(ingredients);
+		previous.setResult(result);
 		return null;
 	}
 	

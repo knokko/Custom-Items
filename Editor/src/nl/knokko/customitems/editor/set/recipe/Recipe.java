@@ -62,6 +62,8 @@ public abstract class Recipe {
 	
 	public abstract boolean requires(CustomItem item);
 	
+	public abstract boolean hasConflictingIngredients(Ingredient[] ingredients);
+	
 	public Result getResult() {
 		return result;
 	}

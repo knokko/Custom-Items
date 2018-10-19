@@ -12,4 +12,9 @@ public class NoIngredient implements Ingredient {
 	public byte getID() {
 		return RecipeEncoding.Ingredient.NONE;
 	}
+
+	@Override
+	public boolean conflictsWith(Ingredient other) {
+		return other instanceof NoIngredient;
+	}
 }

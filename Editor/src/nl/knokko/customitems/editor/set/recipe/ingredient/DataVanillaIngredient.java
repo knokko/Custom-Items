@@ -38,4 +38,15 @@ public class DataVanillaIngredient implements Ingredient {
 	public byte getID() {
 		return RecipeEncoding.Ingredient.VANILLA_DATA;
 	}
+
+	@Override
+	public boolean conflictsWith(Ingredient other) {
+		if (other instanceof SimpleVanillaIngredient)
+			return ((SimpleVanillaIngredient) other).getType() == type;
+		if (other instanceof DataVanillaIngredient) {
+			DataVanillaIngredient dvi = (DataVanillaIngredient) other;
+			return dvi.type == type && dvi.data == data;
+		}
+		return false;
+	}
 }

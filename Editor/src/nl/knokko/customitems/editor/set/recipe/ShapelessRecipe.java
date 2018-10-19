@@ -7,6 +7,7 @@ import nl.knokko.customitems.editor.set.CustomItem;
 import nl.knokko.customitems.editor.set.ItemSet;
 import nl.knokko.customitems.editor.set.recipe.ingredient.CustomItemIngredient;
 import nl.knokko.customitems.editor.set.recipe.ingredient.Ingredient;
+import nl.knokko.customitems.editor.set.recipe.ingredient.NoIngredient;
 import nl.knokko.util.bits.BitInput;
 import nl.knokko.util.bits.BitOutput;
 
@@ -45,5 +46,26 @@ public class ShapelessRecipe extends Recipe {
 	
 	public Collection<Ingredient> getIngredients(){
 		return ingredients;
+	}
+
+	@Override
+	public boolean hasConflictingIngredients(Ingredient[] ingredients) {
+		//TODO test this!
+		boolean[] used = new boolean[ingredients.length];
+		outerLoop:
+		for (Ingredient own : this.ingredients) {
+			for (int index = 0; index < used.length; index++) {
+				if (!used[index] && own.conflictsWith(ingredients[index])) {
+					used[index] = true;
+					continue outerLoop;
+				}
+			}
+			// If we reach this point, one of our required ingredients is not in the specified ingredients
+			return false;
+		}
+		for (int index = 0; index < used.length; index++)
+			if (!used[index] && !(ingredients[index] instanceof NoIngredient))
+				return false; // Although all of our ingredients are met, there are extra ingredients left
+		return true;
 	}
 }
