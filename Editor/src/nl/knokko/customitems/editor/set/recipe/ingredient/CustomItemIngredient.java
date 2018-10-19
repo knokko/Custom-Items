@@ -11,9 +11,11 @@ import nl.knokko.util.bits.BitOutput;
 public class CustomItemIngredient implements Ingredient {
 	
 	private final CustomItem item;
+	private String[] info;
 
 	public CustomItemIngredient(CustomItem item) {
 		this.item = item;
+		determineInfo();
 	}
 	
 	public CustomItemIngredient(BitInput input, ItemSet set) {
@@ -22,10 +24,18 @@ public class CustomItemIngredient implements Ingredient {
 		for (CustomItem item : items) {
 			if(item.getName().equals(name)) {
 				this.item = item;
+				determineInfo();
 				return;
 			}
 		}
 		throw new IllegalArgumentException("There is no custom item with name " + name);
+	}
+	
+	private void determineInfo() {
+		this.info = new String[] {
+				"Custom Item: ",
+				"Name: " + item.getName()
+		};
 	}
 	
 	public CustomItem getItem() {
@@ -50,5 +60,10 @@ public class CustomItemIngredient implements Ingredient {
 	@Override
 	public String toString() {
 		return item.getName();
+	}
+	
+	@Override
+	public String[] getInfo() {
+		return info;
 	}
 }

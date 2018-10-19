@@ -9,4 +9,6 @@ public interface Ingredient {
 	byte getID();
 	
 	boolean conflictsWith(Ingredient other);
+	
+	String[] getInfo();
 }

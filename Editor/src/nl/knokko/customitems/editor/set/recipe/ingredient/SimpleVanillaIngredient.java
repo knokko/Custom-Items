@@ -8,13 +8,24 @@ import nl.knokko.util.bits.BitOutput;
 public class SimpleVanillaIngredient implements Ingredient {
 	
 	private final Material type;
+	
+	private String[] info;
 
 	public SimpleVanillaIngredient(Material material) {
 		this.type = material;
+		determineInfo();
 	}
 	
 	public SimpleVanillaIngredient(BitInput input) {
 		type = Material.valueOf(input.readJavaString());
+		determineInfo();
+	}
+	
+	private void determineInfo() {
+		info = new String[] {
+				"Vanilla ingredient:",
+				"Type: " + type.name().toLowerCase()
+		};
 	}
 	
 	public Material getType() {
@@ -38,5 +49,15 @@ public class SimpleVanillaIngredient implements Ingredient {
 		if (other instanceof DataVanillaIngredient)
 			return ((DataVanillaIngredient) other).getType() == type;
 		return false;
+	}
+	
+	@Override
+	public String toString() {
+		return type.name().toLowerCase();
+	}
+
+	@Override
+	public String[] getInfo() {
+		return info;
 	}
 }

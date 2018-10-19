@@ -4,6 +4,8 @@ import nl.knokko.customitems.encoding.RecipeEncoding;
 import nl.knokko.util.bits.BitOutput;
 
 public class NoIngredient implements Ingredient {
+	
+	private static final String[] INFO = {"empty"};
 
 	@Override
 	public void save(BitOutput output) {}
@@ -16,5 +18,15 @@ public class NoIngredient implements Ingredient {
 	@Override
 	public boolean conflictsWith(Ingredient other) {
 		return other instanceof NoIngredient;
+	}
+
+	@Override
+	public String[] getInfo() {
+		return INFO;
+	}
+	
+	@Override
+	public String toString() {
+		return INFO[0];
 	}
 }
