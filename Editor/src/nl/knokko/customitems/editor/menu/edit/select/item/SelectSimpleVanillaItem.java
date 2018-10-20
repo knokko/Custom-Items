@@ -15,6 +15,7 @@ public class SelectSimpleVanillaItem extends GuiMenu {
 	public SelectSimpleVanillaItem(GuiComponent returnMenu, Receiver receiver) {
 		this.returnMenu = returnMenu;
 		this.receiver = receiver;
+		setScrollSpeed(5f);
 	}
 
 	@Override
@@ -26,7 +27,7 @@ public class SelectSimpleVanillaItem extends GuiMenu {
 		int index = 0;
 		Material[] materials = Material.values();
 		for (Material material : materials) {
-			addComponent(new TextButton(material.name().toLowerCase(), EditProps.SAVE_BASE, EditProps.SAVE_HOVER, () -> {
+			addComponent(new TextButton(material.name().toLowerCase(), EditProps.SELECT_BASE, EditProps.SELECT_HOVER, () -> {
 				receiver.onSelect(material);
 				state.getWindow().setMainComponent(returnMenu);
 			}), 0.35f, 0.9f - index * 0.1f, 0.7f, 1f - index * 0.1f);

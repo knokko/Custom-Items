@@ -1,5 +1,7 @@
 package nl.knokko.customitems.plugin;
 
+import java.util.Arrays;
+
 import org.bukkit.Material;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -25,30 +27,31 @@ public class CustomItemsEventHandler implements Listener {
 	
 	@EventHandler(priority = EventPriority.HIGH)
 	public void beforeCraft(PrepareItemCraftEvent event) {
-		if(!event.isRepair()) {
-			ItemStack result = event.getInventory().getResult();
-			CustomRecipe[] recipes = CustomItemsPlugin.getInstance().getSet().getRecipes(result);
-			if(recipes.length > 0) {
-				ItemStack[] ingredients = event.getInventory().getStorageContents();
-				Material[] ingredientTypes = new Material[9];
-				for(int index = 0; index < 9; index++)
-					ingredientTypes[index] = ingredients[index].getType();
-				boolean shouldCancel = false;
-				for(int index = 0; index < recipes.length; index++) {
-					if(recipes[index].areMaterialsCorrect(ingredientTypes)) {
-						if(recipes[index].shouldAccept(ingredients)) {
-							shouldCancel = false;
-							//make sure we don't use the result of another recipe with equal ingredient types
-							event.getInventory().setResult(recipes[index].getResult());
-							break;
-						}
-						else {
-							shouldCancel = true;
-						}
-					}
-				}
-				if(shouldCancel) {
+		ItemStack result = event.getInventory().getResult();
+		
+		// Block vanilla recipes that attempt to use custom items
+		if (result != null && result.getType() != Material.AIR) {
+			ItemStack[] ingredients = event.getInventory().getStorageContents();
+			for (ItemStack ingredient : ingredients) {
+				if (ingredient.hasItemMeta() && ingredient.getItemMeta().isUnbreakable() && ingredient.getDurability() > 0) {
 					event.getInventory().setResult(new ItemStack(Material.AIR));
+					break;
+				}
+			}
+		}
+		
+		// Check if there are any custom recipes matching the ingredients
+		CustomRecipe[] recipes = CustomItemsPlugin.getInstance().getSet().getRecipes();
+		if(recipes.length > 0) {
+			ItemStack[] ingredients = event.getInventory().getStorageContents();
+			ingredients = Arrays.copyOfRange(ingredients, 1, ingredients.length);
+			Material[] ingredientTypes = new Material[ingredients.length];
+			for(int index = 0; index < ingredients.length; index++)
+				ingredientTypes[index] = ingredients[index].getType();
+			for(int index = 0; index < recipes.length; index++) {
+				if(recipes[index].shouldAccept(ingredients)) {
+					event.getInventory().setResult(recipes[index].getResult());
+					return;
 				}
 			}
 		}

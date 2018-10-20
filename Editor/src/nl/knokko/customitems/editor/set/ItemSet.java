@@ -402,11 +402,28 @@ public class ItemSet {
 	public String removeItem(CustomItem item) {
 		for (Recipe recipe : recipes) {
 			if (recipe.getResult() instanceof CustomItemResult && ((CustomItemResult)recipe.getResult()).getItem() == item)
-				return "Recipe " + recipe.getID() + " has this item as result.";
+				return "At least one of your recipes has this item as result.";
 			if (recipe.requires(item))
-				return "Recipe " + recipe.getID() + " has this item as an ingredient.";
+				return "At least one of your recipes has this item as an ingredient.";
 		}
 		items.remove(item);
+		return null;
+	}
+	
+	/**
+	 * Attempts to add a shaped recipe with the specified id, ingredients and result to this ItemSet.
+	 * If the recipe can be added, it will be added.
+	 * If the recipe can't be added, the reason is returned.
+	 * @param id The id of the recipe to add
+	 * @param ingredients The ingredients of the recipe to add
+	 * @param result The result of the recipe to add
+	 * @return The reason why the recipe can't be added, or null if the recipe was added successfully
+	 */
+	public String addShapedRecipe(Ingredient[] ingredients, Result result) {
+		for (Recipe recipe : recipes) 
+			if (recipe.hasConflictingShapedIngredients(ingredients))
+				return "The ingredients of another recipe conflict with these ingredients.";
+		recipes.add(new ShapedRecipe(ingredients, result));
 		return null;
 	}
 	
@@ -425,8 +442,8 @@ public class ItemSet {
 			if (recipe == previous) {
 				has = true;
 				break;
-			} else if (recipe.hasConflictingIngredients(ingredients)) {
-				return "The recipe " + recipe.getID() + " has conflicting ingredients";
+			} else if (recipe.hasConflictingShapedIngredients(ingredients)) {
+				return "Another recipe has conflicting ingredients";
 			}
 		}
 		if (!has) return "That recipe is not in this item set";

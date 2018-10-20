@@ -53,7 +53,7 @@ public class CustomItem extends nl.knokko.customitems.item.CustomItem {
     }
     
     public boolean is(ItemStack item){
-        return item.getItemMeta().isUnbreakable() && item.getType() == material && item.getDurability() == itemDamage;
+        return item.hasItemMeta() && item.getItemMeta().isUnbreakable() && item.getType() == material && item.getDurability() == itemDamage;
     }
     
     public Material getMaterial() {

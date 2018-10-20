@@ -47,7 +47,7 @@ public abstract class Result {
 	
 	public void save(BitOutput output) {
 		output.addByte(getID());
-		output.addNumber(amount, (byte) 6, false);
+		output.addNumber(amount - 1, (byte) 6, false);
 		saveOwn(output);
 	}
 }

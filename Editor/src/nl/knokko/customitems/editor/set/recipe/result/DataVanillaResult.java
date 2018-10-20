@@ -20,14 +20,14 @@ public class DataVanillaResult extends Result {
 	public DataVanillaResult(BitInput input) {
 		super(input);
 		type = Material.valueOf(input.readJavaString());
-		data = input.readByte();
+		data = (byte) input.readNumber((byte) 4, false);
 		initInfo();
 	}
 
 	@Override
 	protected void saveOwn(BitOutput output) {
 		output.addJavaString(type.name());
-		output.addByte(data);
+		output.addNumber(data, (byte) 4, false);
 	}
 
 	@Override

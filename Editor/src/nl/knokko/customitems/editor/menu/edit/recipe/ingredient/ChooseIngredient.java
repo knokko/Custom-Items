@@ -2,11 +2,13 @@ package nl.knokko.customitems.editor.menu.edit.recipe.ingredient;
 
 import nl.knokko.customitems.editor.menu.edit.EditProps;
 import nl.knokko.customitems.editor.menu.edit.select.item.SelectCustomItem;
+import nl.knokko.customitems.editor.menu.edit.select.item.SelectDataVanillaItem;
 import nl.knokko.customitems.editor.menu.edit.select.item.SelectSimpleVanillaItem;
 import nl.knokko.customitems.editor.set.CustomItem;
 import nl.knokko.customitems.editor.set.ItemSet;
 import nl.knokko.customitems.editor.set.Material;
 import nl.knokko.customitems.editor.set.recipe.ingredient.CustomItemIngredient;
+import nl.knokko.customitems.editor.set.recipe.ingredient.DataVanillaIngredient;
 import nl.knokko.customitems.editor.set.recipe.ingredient.NoIngredient;
 import nl.knokko.customitems.editor.set.recipe.ingredient.SimpleVanillaIngredient;
 import nl.knokko.gui.color.GuiColor;

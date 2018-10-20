@@ -8,6 +8,8 @@ import nl.knokko.customitems.editor.set.ItemSet;
 import nl.knokko.customitems.editor.set.recipe.ingredient.CustomItemIngredient;
 import nl.knokko.customitems.editor.set.recipe.ingredient.Ingredient;
 import nl.knokko.customitems.editor.set.recipe.ingredient.NoIngredient;
+import nl.knokko.customitems.editor.set.recipe.result.Result;
+import nl.knokko.customitems.encoding.RecipeEncoding;
 import nl.knokko.util.bits.BitInput;
 import nl.knokko.util.bits.BitOutput;
 
@@ -15,8 +17,9 @@ public class ShapelessRecipe extends Recipe {
 	
 	private final Collection<Ingredient> ingredients;
 
-	public ShapelessRecipe() {
-		ingredients = new ArrayList<Ingredient>(9);
+	public ShapelessRecipe(Result result, Collection<Ingredient> ingredients) {
+		super(result);
+		this.ingredients = ingredients;
 	}
 
 	public ShapelessRecipe(BitInput input, ItemSet set) {
@@ -44,12 +47,20 @@ public class ShapelessRecipe extends Recipe {
 		return false;
 	}
 	
+	@Override
+	public byte getClassEncoding() {
+		return RecipeEncoding.SHAPELESS_RECIPE;
+	}
+	
 	public Collection<Ingredient> getIngredients(){
 		return ingredients;
 	}
-
+	
+	/**
+	 * Determines if this recipe has conflicting ingredients with a ShapedRecipe that would have the specified ingredients.
+	 */
 	@Override
-	public boolean hasConflictingIngredients(Ingredient[] ingredients) {
+	public boolean hasConflictingShapedIngredients(Ingredient[] ingredients) {
 		//TODO test this!
 		boolean[] used = new boolean[ingredients.length];
 		outerLoop:

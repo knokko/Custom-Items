@@ -2,6 +2,7 @@ package nl.knokko.customitems.editor.menu.edit.recipe.ingredient;
 
 import java.awt.Color;
 
+import nl.knokko.customitems.editor.set.ItemSet;
 import nl.knokko.customitems.editor.set.recipe.ingredient.Ingredient;
 import nl.knokko.customitems.editor.set.recipe.ingredient.NoIngredient;
 import nl.knokko.gui.component.GuiComponent;
@@ -16,17 +17,17 @@ public class IngredientComponent extends TextButton {
 	private Ingredient current;
 	private final GuiComponent menu;
 
-	public IngredientComponent(Ingredient original, GuiComponent menu) {
+	public IngredientComponent(Ingredient original, GuiComponent menu, ItemSet set) {
 		super(original.toString(), PROPS, HOVER_PROPS, null);
 		this.clickAction = () -> {
-			state.getWindow().setMainComponent(new IngredientView(this));
+			state.getWindow().setMainComponent(new IngredientView(this, set));
 		};
 		current = original;
 		this.menu = menu;
 	}
 	
-	public IngredientComponent(GuiComponent menu) {
-		this(new NoIngredient(), menu);
+	public IngredientComponent(GuiComponent menu, ItemSet set) {
+		this(new NoIngredient(), menu, set);
 	}
 	
 	public void setIngredient(Ingredient ingredient) {

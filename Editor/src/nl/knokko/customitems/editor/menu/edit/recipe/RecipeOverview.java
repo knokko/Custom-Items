@@ -22,6 +22,12 @@ public class RecipeOverview extends GuiMenu {
 		this.menu = menu;
 		list = new RecipeList();
 	}
+	
+	@Override
+	public void init() {
+		if (didInit) list.refresh();
+		super.init();
+	}
 
 	@Override
 	protected void addComponents() {
@@ -59,7 +65,7 @@ public class RecipeOverview extends GuiMenu {
 			Collection<Recipe> recipes = menu.getSet().getRecipes();
 			int index = 0;
 			for (Recipe recipe : recipes) {
-				addComponent(new TextComponent(recipe.getID(), EditProps.LABEL), 0f, 0.9f - index * 0.15f, 0.6f, 1f - index * 0.15f);
+				addComponent(new TextComponent(recipe.getResult().getString(), EditProps.LABEL), 0f, 0.9f - index * 0.15f, 0.6f, 1f - index * 0.15f);
 				addComponent(new TextButton("Edit", EditProps.BUTTON, EditProps.HOVER, () -> {
 					if (recipe instanceof ShapedRecipe)
 						state.getWindow().setMainComponent(new ShapedRecipeEdit(menu, (ShapedRecipe) recipe));

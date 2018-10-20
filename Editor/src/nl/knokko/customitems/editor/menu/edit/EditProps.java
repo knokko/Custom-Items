@@ -27,8 +27,9 @@ public class EditProps {
 	public static final Properties EDIT_BASE = Properties.createEdit(new Color(200, 200, 200), new Color(10, 30, 30));
 	public static final Properties EDIT_ACTIVE = Properties.createEdit(new Color(255, 255, 255), new Color(100, 255, 255));
 	
-	public static final Properties SELECT_BASE = Properties.createLabel(Color.BLACK, new Color(0, 200, 200));
-	public static final Properties SELECT_HOVER = Properties.createLabel(new Color(50, 50, 50), new Color(0, 250, 250));
+	public static final Properties SELECT_BASE = Properties.createLabel(Color.BLACK, new Color(0, 200, 200), 512, 128);
+	public static final Properties SELECT_HOVER = Properties.createLabel(new Color(50, 50, 50), new Color(0, 250, 250), 512, 128);
+	public static final Properties SELECT_ACTIVE = Properties.createLabel(new Color(70, 70, 70), new Color(50, 255, 255), 512, 128);
 	
 	public static final Properties CHOOSE_BASE = Properties.createButton(new Color(200, 0, 200), new Color(50, 0, 50));
 	public static final Properties CHOOSE_HOVER = Properties.createButton(new Color(255, 0, 255), new Color(65, 0, 65));

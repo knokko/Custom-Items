@@ -39,30 +39,28 @@ public abstract class Recipe {
 	}
 	
 	protected Result result;
-	protected String id;
 	
-	public Recipe() {
-		id = "id...";
-		result = null;
+	public Recipe(Result result) {
+		this.result = result;
 	}
 	
 	public Recipe(BitInput input, ItemSet set) {
-		id = input.readJavaString();
 		result = loadResult(input, set);
 	}
 	
 	public final void save(BitOutput output) {
-		output.addJavaString(id);
-		output.addByte(result.getID());
+		output.addByte(getClassEncoding());
 		result.save(output);
 		saveOwn(output);
 	}
 	
 	protected abstract void saveOwn(BitOutput output);
 	
+	protected abstract byte getClassEncoding();
+	
 	public abstract boolean requires(CustomItem item);
 	
-	public abstract boolean hasConflictingIngredients(Ingredient[] ingredients);
+	public abstract boolean hasConflictingShapedIngredients(Ingredient[] ingredients);
 	
 	public Result getResult() {
 		return result;
@@ -70,13 +68,5 @@ public abstract class Recipe {
 	
 	public void setResult(Result newResult) {
 		result = newResult;
-	}
-	
-	public String getID() {
-		return id;
-	}
-	
-	public void setID(String newID) {
-		id = newID;
 	}
 }

@@ -20,7 +20,7 @@ public class DataVanillaIngredient implements Ingredient {
 	
 	public DataVanillaIngredient(BitInput input) {
 		type = Material.valueOf(input.readJavaString());
-		data = input.readByte();
+		data = (byte) input.readNumber((byte) 4, false);
 		determineInfo();
 	}
 	
@@ -43,7 +43,7 @@ public class DataVanillaIngredient implements Ingredient {
 	@Override
 	public void save(BitOutput output) {
 		output.addJavaString(type.name());
-		output.addByte(data);
+		output.addNumber(data, (byte) 4, false);
 	}
 
 	@Override

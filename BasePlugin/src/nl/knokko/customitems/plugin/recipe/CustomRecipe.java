@@ -23,30 +23,14 @@
  */
 package nl.knokko.customitems.plugin.recipe;
 
-import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
 
 public interface CustomRecipe {
-    
-	/**
-	 * Register this recipe to Bukkit
-	 */
-    void register();
     
     /**
      * @return The result of this recipe
      */
     ItemStack getResult();
-    
-    /**
-     * Checks if the materials of the specified ingredients are correct for this recipe.
-     * If this is the case, the shouldAccept method will be called and the crafting of the result
-     * will be cancelled if the recipe is not entirely correct.
-     * This is to prevent players from crafting items with the wrong ingredients.
-     * @param ingredients The types of the ingredients, from left to right and up to down
-     * @return True if the types of the ingredients are correct for this recipe
-     */
-    boolean areMaterialsCorrect(Material[] ingredients);
     
     /**
      * Checks if the specified ingredients are sufficient to craft the result of this recipe.

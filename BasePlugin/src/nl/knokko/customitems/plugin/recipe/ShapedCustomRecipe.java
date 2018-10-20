@@ -23,14 +23,8 @@
  */
 package nl.knokko.customitems.plugin.recipe;
 
-import nl.knokko.customitems.plugin.CustomItemsPlugin;
 import nl.knokko.customitems.plugin.recipe.ingredient.Ingredient;
 
-import org.bukkit.inventory.ShapedRecipe;
-import org.bukkit.material.MaterialData;
-import org.bukkit.Bukkit;
-import org.bukkit.Material;
-import org.bukkit.NamespacedKey;
 import org.bukkit.inventory.ItemStack;
 
 public class ShapedCustomRecipe implements CustomRecipe {
@@ -38,21 +32,9 @@ public class ShapedCustomRecipe implements CustomRecipe {
     private final Ingredient[] ingredients;
     private final ItemStack result;
     
-    private final String id;
-    
-    public ShapedCustomRecipe(String id, ItemStack result, Ingredient[] ingredients){
+    public ShapedCustomRecipe(ItemStack result, Ingredient[] ingredients){
         this.ingredients = ingredients;
         this.result = result;
-        this.id = id;
-    }
-
-    @Override
-    public void register() {
-        ShapedRecipe recipe = new ShapedRecipe(new NamespacedKey(CustomItemsPlugin.getInstance(), id), result);//use NameSpacedKey
-        recipe.shape("abc", "def", "ghi");
-        for(int index = 0; index < 9; index++)
-        	recipe.setIngredient((char) ('a' + index), new MaterialData(ingredients[index].getType()));
-        Bukkit.addRecipe(recipe);
     }
 
 	@Override
@@ -61,18 +43,13 @@ public class ShapedCustomRecipe implements CustomRecipe {
 	}
 
 	@Override
-	public boolean areMaterialsCorrect(Material[] ingredients) {
-		for(int index = 0; index < 9; index++)
-			if(ingredients[index] != this.ingredients[index].getType())
-				return false;
-		return true;
-	}
-
-	@Override
 	public boolean shouldAccept(ItemStack[] ingredients) {
-		for(int index = 0; index < 9; index++) 
-			if(!this.ingredients[index].accept(ingredients[index]))
-				return false;
-		return true;
+		if (ingredients.length == 9) {
+			for(int index = 0; index < 9; index++) 
+				if(!this.ingredients[index].accept(ingredients[index]))
+					return false;
+			return true;
+		}
+		return false;
 	}
 }

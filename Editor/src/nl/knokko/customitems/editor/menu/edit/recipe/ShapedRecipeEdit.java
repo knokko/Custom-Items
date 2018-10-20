@@ -55,7 +55,14 @@ public class ShapedRecipeEdit extends GuiMenu {
 				else
 					state.getWindow().setMainComponent(menu.getRecipeOverview());
 			} else {
-				
+				Ingredient[] ingredients = new Ingredient[9];
+				for (int index = 0; index < ingredients.length; index++)
+					ingredients[index] = ingredientsComponent.ingredients[index].getIngredient();
+				String error = menu.getSet().addShapedRecipe(ingredients, resultComponent.getResult());
+				if (error != null)
+					errorComponent.setText(error);
+				else
+					state.getWindow().setMainComponent(menu.getRecipeOverview());
 			}
 		}), 0.1f, 0.7f, 0.25f, 0.8f);
 		addComponent(ingredientsComponent, 0.05f, 0.1f, 0.65f, 0.6f);
@@ -75,13 +82,13 @@ public class ShapedRecipeEdit extends GuiMenu {
 		private Ingredients() {
 			ingredients = new IngredientComponent[9];
 			for (int index = 0; index < ingredients.length; index++)
-				ingredients[index] = new IngredientComponent(new NoIngredient(), ShapedRecipeEdit.this);
+				ingredients[index] = new IngredientComponent(new NoIngredient(), ShapedRecipeEdit.this, menu.getSet());
 		}
 		
 		private Ingredients(Ingredient[] ingredients) {
 			this.ingredients = new IngredientComponent[9];
 			for (int index = 0; index < ingredients.length; index++)
-				this.ingredients[index] = new IngredientComponent(ingredients[index], ShapedRecipeEdit.this);
+				this.ingredients[index] = new IngredientComponent(ingredients[index], ShapedRecipeEdit.this, menu.getSet());
 		}
 
 		@Override

@@ -4,6 +4,8 @@ import nl.knokko.customitems.editor.set.CustomItem;
 import nl.knokko.customitems.editor.set.ItemSet;
 import nl.knokko.customitems.editor.set.recipe.ingredient.CustomItemIngredient;
 import nl.knokko.customitems.editor.set.recipe.ingredient.Ingredient;
+import nl.knokko.customitems.editor.set.recipe.result.Result;
+import nl.knokko.customitems.encoding.RecipeEncoding;
 import nl.knokko.util.bits.BitInput;
 import nl.knokko.util.bits.BitOutput;
 
@@ -11,8 +13,9 @@ public class ShapedRecipe extends Recipe {
 	
 	private final Ingredient[] ingredients;
 
-	public ShapedRecipe() {
-		ingredients = new Ingredient[9];
+	public ShapedRecipe(Ingredient[] ingredients, Result result) {
+		super(result);
+		this.ingredients = ingredients;
 	}
 	
 	public ShapedRecipe(BitInput input, ItemSet set) {
@@ -39,11 +42,16 @@ public class ShapedRecipe extends Recipe {
 	}
 	
 	@Override
-	public boolean hasConflictingIngredients(Ingredient[] ingredients) {
+	public boolean hasConflictingShapedIngredients(Ingredient[] ingredients) {
 		for (int index = 0; index < 9; index++)
 			if (!ingredients[index].conflictsWith(this.ingredients[index]))
 				return false;
 		return true;
+	}
+	
+	@Override
+	protected byte getClassEncoding() {
+		return RecipeEncoding.SHAPED_RECIPE;
 	}
 	
 	public Ingredient getIngredient(int x, int y) {
