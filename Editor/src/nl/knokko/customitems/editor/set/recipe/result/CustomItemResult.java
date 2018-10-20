@@ -58,4 +58,9 @@ public class CustomItemResult extends Result {
 	public String getString() {
 		return item.getName();
 	}
+
+	@Override
+	public Result amountClone(byte amount) {
+		return new CustomItemResult(item, amount);
+	}
 }

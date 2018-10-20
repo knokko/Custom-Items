@@ -2,6 +2,7 @@ package nl.knokko.customitems.editor.menu.edit.recipe.result;
 
 import java.awt.Color;
 
+import nl.knokko.customitems.editor.set.ItemSet;
 import nl.knokko.customitems.editor.set.recipe.result.Result;
 import nl.knokko.gui.component.GuiComponent;
 import nl.knokko.gui.component.text.TextButton;
@@ -16,10 +17,10 @@ public class ResultComponent extends TextButton {
 	
 	private final GuiComponent menu;
 
-	public ResultComponent(Result original, GuiComponent menu) {
+	public ResultComponent(Result original, GuiComponent menu, ItemSet set) {
 		super(original.toString(), PROPS, HOVER_PROPS, null);
 		clickAction = () -> {
-			state.getWindow().setMainComponent(new ResultView(this));
+			state.getWindow().setMainComponent(new ResultView(this, set));
 		};
 		current = original;
 		this.menu = menu;
@@ -27,6 +28,7 @@ public class ResultComponent extends TextButton {
 	
 	public void setResult(Result newResult) {
 		current = newResult;
+		setText(newResult.toString());
 	}
 	
 	public Result getResult() {

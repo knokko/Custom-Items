@@ -43,4 +43,9 @@ public class SimpleVanillaResult extends Result {
 	public String getString() {
 		return type.name().toLowerCase();
 	}
+
+	@Override
+	public Result amountClone(byte amount) {
+		return new SimpleVanillaResult(type, amount);
+	}
 }

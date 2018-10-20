@@ -32,6 +32,12 @@ public abstract class Result {
 	
 	public abstract String getString();
 	
+	/**
+	 * @param amount The new amount
+	 * @return A copy of this result, but with different amount
+	 */
+	public abstract Result amountClone(byte amount);
+	
 	@Override
 	public String toString() {
 		return getString() + " x " + amount;

@@ -30,9 +30,9 @@ public class ShapedRecipeEdit extends GuiMenu {
 		this.previous = previous;
 		errorComponent = new TextComponent("", EditProps.ERROR);
 		if (previous != null)
-			resultComponent = new ResultComponent(previous.getResult(), this);
+			resultComponent = new ResultComponent(previous.getResult(), this, menu.getSet());
 		else
-			resultComponent = new ResultComponent(new SimpleVanillaResult(Material.IRON_INGOT, (byte) 1), this);
+			resultComponent = new ResultComponent(new SimpleVanillaResult(Material.IRON_INGOT, (byte) 1), this, menu.getSet());
 		if (previous != null)
 			ingredientsComponent = new Ingredients(previous.getIngredients());
 		else
