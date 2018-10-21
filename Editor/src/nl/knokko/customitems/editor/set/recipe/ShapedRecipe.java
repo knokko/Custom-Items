@@ -69,4 +69,12 @@ public class ShapedRecipe extends Recipe {
 	public void setIngredients(Ingredient[] ingredients) {
 		System.arraycopy(ingredients, 0, this.ingredients, 0, 9);
 	}
+	
+	/**
+	 * Shaped recipes simply have more priority than shapeless recipes
+	 */
+	@Override
+	public boolean hasConflictingShapelessIngredients(Ingredient[] ingredients) {
+		return false;
+	}
 }

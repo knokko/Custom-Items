@@ -26,4 +26,9 @@ public class ComplexVanillaIngredient implements Ingredient {
 	public Material getType() {
 		return type;
 	}
+
+	@Override
+	public short getData() {
+		return data;
+	}
 }

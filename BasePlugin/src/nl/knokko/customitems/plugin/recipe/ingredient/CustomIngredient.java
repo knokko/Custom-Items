@@ -45,4 +45,9 @@ public class CustomIngredient implements Ingredient {
 	public Material getType() {
 		return item.getMaterial();
 	}
+
+	@Override
+	public short getData() {
+		return Short.MAX_VALUE;
+	}
 }

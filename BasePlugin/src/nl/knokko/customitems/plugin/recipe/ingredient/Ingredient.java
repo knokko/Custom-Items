@@ -31,4 +31,9 @@ public interface Ingredient {
     boolean accept(ItemStack item);
     
     Material getType();
+    
+    /**
+     * The data value of the ItemStack, use Short.MAX_VALUE to accept all
+     */
+    short getData();
 }

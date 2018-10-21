@@ -76,6 +76,7 @@ public class RecipeOverview extends GuiMenu {
 				}), 0.65f, 0.9f - index * 0.15f, 0.75f, 1f - index * 0.15f);
 				addComponent(new TextButton("Delete", EditProps.QUIT_BASE, EditProps.QUIT_HOVER, () -> {
 					menu.getSet().removeRecipe(recipe);
+					refresh();
 				}), 0.8f, 0.9f - index * 0.15f, 0.95f, 1f - index * 0.15f);
 				index++;
 			}

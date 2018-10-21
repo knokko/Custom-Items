@@ -1,5 +1,6 @@
 package nl.knokko.customitems.plugin.recipe;
 
+import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
 
 import nl.knokko.customitems.plugin.recipe.ingredient.Ingredient;
@@ -22,11 +23,14 @@ public class ShapelessCustomRecipe implements CustomRecipe {
 	@Override
 	public boolean shouldAccept(ItemStack[] ingredients) {
 		boolean[] has = new boolean[this.ingredients.length];
+		outerLoop:
 		for (ItemStack ingredient : ingredients) {
-			for (int index = 0; index < has.length; index++) {
-				if (!has[index] && this.ingredients[index].accept(ingredient)) {
-					has[index] = true;
-					continue;
+			if (ingredient.getType() != Material.AIR) {
+				for (int index = 0; index < has.length; index++) {
+					if (!has[index] && this.ingredients[index].accept(ingredient)) {
+						has[index] = true;
+						continue outerLoop;
+					}
 				}
 				// When we reach this code, we don't need that ingredient
 				return false;

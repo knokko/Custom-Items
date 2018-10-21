@@ -14,4 +14,9 @@ public class NoIngredient implements Ingredient {
 	public Material getType() {
 		return Material.AIR;
 	}
+
+	@Override
+	public short getData() {
+		return 0;
+	}
 }

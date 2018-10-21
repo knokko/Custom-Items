@@ -125,7 +125,9 @@ public class ItemSet {
 			ItemStack stack = new ItemStack(Material.valueOf(input.readJavaString()), amount);
 			MaterialData data = stack.getData();
 			data.setData((byte) input.readNumber((byte) 4, false));
+			System.out.println("Stack data has been set to " + data.getData());
 			stack.setData(data);
+			stack.setDurability(data.getData());
 			return stack;
 		}
 		if(encoding == RecipeEncoding.Result.VANILLA_ADVANCED_1)

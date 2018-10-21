@@ -43,4 +43,9 @@ public class SimpleVanillaIngredient implements Ingredient {
 	public Material getType() {
 		return type;
 	}
+
+	@Override
+	public short getData() {
+		return Short.MAX_VALUE;
+	}
 }

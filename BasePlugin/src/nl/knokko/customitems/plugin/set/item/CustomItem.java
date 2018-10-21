@@ -52,8 +52,19 @@ public class CustomItem extends nl.knokko.customitems.item.CustomItem {
         return item;
     }
     
+    public static short getDamage(ItemStack item) {
+    	return item.getDurability();
+    }
+    
     public boolean is(ItemStack item){
-        return item.hasItemMeta() && item.getItemMeta().isUnbreakable() && item.getType() == material && item.getDurability() == itemDamage;
+    	/*
+    	 * This is my debug for when custom shit doesn't work
+    	if (item.getType() == material)
+    		System.out.println("CustomItem.is: other durability is " + item.getDurability() + " and unbreakable is " + item.getItemMeta().isUnbreakable());
+    	else
+    		System.out.println("CustomItem.is: wrong material");
+    		*/
+        return item.hasItemMeta() && item.getItemMeta().isUnbreakable() && item.getType() == material && getDamage(item) == itemDamage;
     }
     
     public Material getMaterial() {

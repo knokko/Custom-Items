@@ -443,12 +443,53 @@ public class ItemSet {
 				has = true;
 				break;
 			} else if (recipe.hasConflictingShapedIngredients(ingredients)) {
-				return "Another recipe has conflicting ingredients";
+				return "Another shaped recipe (" + recipe.getResult() + ") has conflicting ingredients";
 			}
 		}
 		if (!has) return "That recipe is not in this item set";
 		previous.setIngredients(ingredients);
 		previous.setResult(result);
+		return null;
+	}
+	
+	/**
+	 * Attempts to add a shapeless recipe with the specified ingredients and result to this set.
+	 * If the recipe can be added, it will be added.
+	 * If the recipe can't be added, the reason is returned.
+	 * @param ingredients The ingredients of the shapeless recipe
+	 * @param result The result of the shapeless recipe
+	 * @return The reason the recipe could not be added, or null if the recipe was added successfully
+	 */
+	public String addShapelessRecipe(Ingredient[] ingredients, Result result) {
+		for (Recipe recipe : recipes)
+			if (recipe.hasConflictingShapelessIngredients(ingredients))
+				return "Another shapeless recipe (" + recipe.getResult() + ") has conflicting ingredients";
+		recipes.add(new ShapelessRecipe(result, ingredients));
+		return null;
+	}
+	
+	/**
+	 * Attempts to change the ingredients and result of the specified shapeless recipe.
+	 * If the recipe can be changed, it will be changed.
+	 * If the recipe can't be changed, the reason is returned.
+	 * @param previous The shapeless recipe to change
+	 * @param newIngredients The new ingredients of the recipe
+	 * @param newResult The new result of the recipe
+	 * @return The reason the recipe could not be changed, or null if the recipe was changed successfully.
+	 */
+	public String changeShapelessRecipe(ShapelessRecipe previous, Ingredient[] newIngredients, Result newResult) {
+		boolean has = false;
+		for (Recipe recipe : recipes) {
+			if (recipe == previous) {
+				has = true;
+				break;
+			} else if (recipe.hasConflictingShapelessIngredients(newIngredients)) {
+				return "Another shapeless recipe (" + recipe.getResult() + ") has conflicting ingredients";
+			}
+		}
+		if (!has) return "That recipe is not in this item set";
+		previous.setIngredients(newIngredients);
+		previous.setResult(newResult);
 		return null;
 	}
 	

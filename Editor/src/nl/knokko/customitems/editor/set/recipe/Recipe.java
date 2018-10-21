@@ -62,6 +62,8 @@ public abstract class Recipe {
 	
 	public abstract boolean hasConflictingShapedIngredients(Ingredient[] ingredients);
 	
+	public abstract boolean hasConflictingShapelessIngredients(Ingredient[] ingredients);
+	
 	public Result getResult() {
 		return result;
 	}
