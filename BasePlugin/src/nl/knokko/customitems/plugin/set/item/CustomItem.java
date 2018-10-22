@@ -43,12 +43,12 @@ public class CustomItem extends nl.knokko.customitems.item.CustomItem {
     
     public ItemStack create(int amount){
         ItemStack item = new ItemStack(material, amount);
-        item.setDurability(itemDamage);
         ItemMeta meta = Bukkit.getItemFactory().getItemMeta(material);
         meta.setDisplayName(displayName);
         meta.setLore(Lists.newArrayList(lore));
         meta.setUnbreakable(true);
         item.setItemMeta(meta);
+        item.setDurability(itemDamage);
         return item;
     }
     
