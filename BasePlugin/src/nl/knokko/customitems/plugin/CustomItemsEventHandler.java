@@ -77,7 +77,7 @@ public class CustomItemsEventHandler implements Listener {
 					event.setResult(Result.DENY);
 				}
 			}
-		} else if (action == InventoryAction.NOTHING || action == InventoryAction.PICKUP_ONE) {
+		} else if (action == InventoryAction.NOTHING || action == InventoryAction.PICKUP_ONE || action == InventoryAction.PICKUP_SOME) {
 			ItemStack cursor = event.getCursor();
 			ItemStack current = event.getCurrentItem();
 			// This block makes custom items stackable
