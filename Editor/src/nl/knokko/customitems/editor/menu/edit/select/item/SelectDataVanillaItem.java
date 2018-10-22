@@ -1,11 +1,12 @@
 package nl.knokko.customitems.editor.menu.edit.select.item;
 
+import java.util.Arrays;
+
 import nl.knokko.customitems.editor.menu.edit.EditProps;
 import nl.knokko.customitems.editor.set.Material;
 import nl.knokko.gui.color.GuiColor;
 import nl.knokko.gui.component.GuiComponent;
 import nl.knokko.gui.component.menu.GuiMenu;
-import nl.knokko.gui.component.text.ActivatableTextButton;
 import nl.knokko.gui.component.text.ConditionalTextButton;
 import nl.knokko.gui.component.text.TextButton;
 import nl.knokko.gui.component.text.TextComponent;
@@ -53,8 +54,11 @@ public class SelectDataVanillaItem extends GuiMenu {
 		
 		int index = 0;
 		Material[] materials = Material.values();
+		Arrays.sort(materials, (Material a, Material b) -> {
+			return a.name().compareTo(b.name());
+		});
 		for (Material material : materials) {
-			addComponent(new ActivatableTextButton(material.name().toLowerCase(), EditProps.SELECT_BASE, EditProps.SELECT_HOVER, EditProps.SELECT_ACTIVE, () -> {
+			addComponent(new SelectItemButton.Active(state.getWindow().getTextureLoader(), material, () -> {
 				selected = material;
 			}, () -> {
 				return selected == material;

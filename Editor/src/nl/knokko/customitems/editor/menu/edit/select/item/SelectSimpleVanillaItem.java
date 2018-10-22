@@ -1,5 +1,7 @@
 package nl.knokko.customitems.editor.menu.edit.select.item;
 
+import java.util.Arrays;
+
 import nl.knokko.customitems.editor.menu.edit.EditProps;
 import nl.knokko.customitems.editor.set.Material;
 import nl.knokko.gui.color.GuiColor;
@@ -26,8 +28,11 @@ public class SelectSimpleVanillaItem extends GuiMenu {
 		
 		int index = 0;
 		Material[] materials = Material.values();
+		Arrays.sort(materials, (Material a, Material b) -> {
+			return a.name().compareTo(b.name());
+		});
 		for (Material material : materials) {
-			addComponent(new TextButton(material.name().toLowerCase(), EditProps.SELECT_BASE, EditProps.SELECT_HOVER, () -> {
+			addComponent(new SelectItemButton(state.getWindow().getTextureLoader(), material, () -> {
 				receiver.onSelect(material);
 				state.getWindow().setMainComponent(returnMenu);
 			}), 0.35f, 0.9f - index * 0.1f, 0.7f, 1f - index * 0.1f);
