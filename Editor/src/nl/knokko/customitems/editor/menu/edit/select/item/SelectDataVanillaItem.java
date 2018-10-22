@@ -18,6 +18,7 @@ public class SelectDataVanillaItem extends GuiMenu {
 	private final Receiver receiver;
 	private final TextEditField dataField;
 	private final TextComponent errorComponent;
+	private final List list;
 	
 	private Material selected;
 
@@ -26,6 +27,7 @@ public class SelectDataVanillaItem extends GuiMenu {
 		this.receiver = receiver;
 		this.dataField = new TextEditField("0", EditProps.EDIT_BASE, EditProps.EDIT_ACTIVE);
 		this.errorComponent = new TextComponent("", EditProps.ERROR);
+		this.list = new List();
 	}
 
 	@Override
@@ -51,25 +53,38 @@ public class SelectDataVanillaItem extends GuiMenu {
 		}, () -> {
 			return selected != null;
 		}), 0.1f, 0.1f, 0.2f, 0.2f);
-		
-		int index = 0;
-		Material[] materials = Material.values();
-		Arrays.sort(materials, (Material a, Material b) -> {
-			return a.name().compareTo(b.name());
-		});
-		for (Material material : materials) {
-			addComponent(new SelectItemButton.Active(state.getWindow().getTextureLoader(), material, () -> {
-				selected = material;
-			}, () -> {
-				return selected == material;
-			}), 0.35f, 0.9f - index * 0.1f, 0.7f, 1f - index * 0.1f);
-			index++;
-		}
+		addComponent(list, 0.35f, 0f, 1f, 1f);
 	}
 	
 	@Override
 	public GuiColor getBackgroundColor() {
 		return EditProps.BACKGROUND;
+	}
+	
+	private class List extends GuiMenu {
+
+		@Override
+		protected void addComponents() {
+			setScrollSpeed(13f);
+			int index = 0;
+			Material[] materials = Material.values();
+			Arrays.sort(materials, (Material a, Material b) -> {
+				return a.name().compareTo(b.name());
+			});
+			for (Material material : materials) {
+				addComponent(new SelectItemButton.Active(state.getWindow().getTextureLoader(), material, () -> {
+					selected = material;
+				}, () -> {
+					return selected == material;
+				}), 0f, 0.9f - index * 0.1f, 1f, 1f - index * 0.1f);
+				index++;
+			}
+		}
+		
+		@Override
+		public GuiColor getBackgroundColor() {
+			return EditProps.BACKGROUND;
+		}
 	}
 	
 	public static interface Receiver {

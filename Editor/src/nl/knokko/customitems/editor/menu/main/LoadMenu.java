@@ -42,8 +42,8 @@ public class LoadMenu extends GuiMenu {
 	
 	private static class SetList extends GuiMenu {
 		
-		private static final Properties BUTTON_PROPERTIES = Properties.createButton(new Color(0, 200, 0), new Color(0, 50, 0));
-		private static final Properties HOVER_PROPERTIES = Properties.createButton(new Color(0, 250, 0), new Color(0, 70, 0));
+		private static final Properties BUTTON_PROPERTIES = Properties.createButton(new Color(0, 200, 0), new Color(0, 50, 0), 512, 128);
+		private static final Properties HOVER_PROPERTIES = Properties.createButton(new Color(0, 250, 0), new Color(0, 70, 0), 512, 128);
 
 		@Override
 		protected void addComponents() {
@@ -68,7 +68,7 @@ public class LoadMenu extends GuiMenu {
 			if(files != null) {
 				for(int index = 0; index < files.length; index++) {
 					final File file = files[index];
-					addComponent(new TextButton(file.getName(), BUTTON_PROPERTIES, HOVER_PROPERTIES, () -> {
+					addComponent(new TextButton(file.getName().substring(0, file.getName().length() - 5), BUTTON_PROPERTIES, HOVER_PROPERTIES, () -> {
 						try {
 							BitInput input = new BitInputStream(new FileInputStream(file));
 							ItemSet set = new ItemSet(file.getName().substring(0, file.getName().length() - 5), input);
