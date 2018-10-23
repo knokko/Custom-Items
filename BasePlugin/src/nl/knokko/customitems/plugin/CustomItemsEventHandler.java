@@ -11,11 +11,14 @@ import org.bukkit.event.Event.Result;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
+import org.bukkit.event.enchantment.PrepareItemEnchantEvent;
 import org.bukkit.event.inventory.InventoryAction;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryType.SlotType;
+import org.bukkit.event.inventory.PrepareAnvilEvent;
 import org.bukkit.event.inventory.PrepareItemCraftEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
+import org.bukkit.inventory.CraftingInventory;
 import org.bukkit.inventory.ItemStack;
 
 import nl.knokko.customitems.plugin.recipe.CustomRecipe;
@@ -38,11 +41,28 @@ public class CustomItemsEventHandler implements Listener {
 	}
 	
 	@EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
+	public void cancelAnvil(PrepareAnvilEvent event) {
+		ItemStack[] contents = event.getInventory().getStorageContents();
+		for (ItemStack item : contents) {
+			if (CustomItem.isCustom(item)) {
+				event.setResult(null);
+				break;
+			}
+		}
+	}
+	
+	@EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
+	public void cancelEnchanting(PrepareItemEnchantEvent event) {
+		if (CustomItem.isCustom(event.getItem()))
+			event.setCancelled(true);
+	}
+	
+	@EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
 	public void onInventoryClick(InventoryClickEvent event) {
 		SlotType type = event.getSlotType();
 		InventoryAction action = event.getAction();
-		if (type == SlotType.RESULT && action != InventoryAction.NOTHING) {
-			if (shouldInterfere.get(event.getWhoClicked().getUniqueId())) {
+		if (type == SlotType.RESULT && action != InventoryAction.NOTHING && event.getInventory() instanceof CraftingInventory) {
+			if (shouldInterfere.getOrDefault(event.getWhoClicked().getUniqueId(), false)) {
 				if (action == InventoryAction.PICKUP_ALL) {
 					// This block deals with normal crafting
 					Bukkit.getScheduler().scheduleSyncDelayedTask(CustomItemsPlugin.getInstance(), () -> {
@@ -81,7 +101,7 @@ public class CustomItemsEventHandler implements Listener {
 			ItemStack cursor = event.getCursor();
 			ItemStack current = event.getCurrentItem();
 			// This block makes custom items stackable
-			if (cursor.getType() != Material.AIR && cursor.getType() == current.getType() && cursor.hasItemMeta() && cursor.getItemMeta().isUnbreakable()
+			if (cursor != null && cursor.getType() != Material.AIR && cursor.getType() == current.getType() && cursor.hasItemMeta() && cursor.getItemMeta().isUnbreakable()
 					&& current.hasItemMeta() && current.getItemMeta().isUnbreakable()
 					&& CustomItem.getDamage(current) == CustomItem.getDamage(cursor)) {
 				event.setResult(Result.DENY);
@@ -107,7 +127,7 @@ public class CustomItemsEventHandler implements Listener {
 		if (result != null && result.getType() != Material.AIR) {
 			ItemStack[] ingredients = event.getInventory().getStorageContents();
 			for (ItemStack ingredient : ingredients) {
-				if (ingredient.hasItemMeta() && ingredient.getItemMeta().isUnbreakable()) {
+				if (CustomItem.isCustom(ingredient)) {
 					event.getInventory().setResult(new ItemStack(Material.AIR));
 					break;
 				}

@@ -24,15 +24,21 @@
 package nl.knokko.customitems.plugin.set.item;
 
 import org.bukkit.Material;
+import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.Bukkit;
 
 import com.google.common.collect.Lists;
 
+import nl.knokko.core.plugin.item.attributes.ItemAttributes;
 import nl.knokko.customitems.item.CustomItemType;
 
 public class CustomItem extends nl.knokko.customitems.item.CustomItem {
+	
+	public static boolean isCustom(ItemStack item) {
+		return item != null && item.hasItemMeta() && item.getItemMeta().isUnbreakable() && item.getDurability() > 0;
+	}
 	
 	private final Material material;
     
@@ -47,9 +53,10 @@ public class CustomItem extends nl.knokko.customitems.item.CustomItem {
         meta.setDisplayName(displayName);
         meta.setLore(Lists.newArrayList(lore));
         meta.setUnbreakable(true);
+        meta.addItemFlags(ItemFlag.HIDE_UNBREAKABLE);
         item.setItemMeta(meta);
         item.setDurability(itemDamage);
-        return item;
+        return ItemAttributes.clearAttributes(item);
     }
     
     public static short getDamage(ItemStack item) {
