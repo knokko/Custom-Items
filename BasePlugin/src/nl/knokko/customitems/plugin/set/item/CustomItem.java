@@ -63,6 +63,10 @@ public class CustomItem extends nl.knokko.customitems.item.CustomItem {
     	return item.getDurability();
     }
     
+    public boolean forbidDefaultUse(ItemStack item) {
+    	return true;
+    }
+    
     public boolean is(ItemStack item){
     	/*
     	 * This is my debug for when custom shit doesn't work

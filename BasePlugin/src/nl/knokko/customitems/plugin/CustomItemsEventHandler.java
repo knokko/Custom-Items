@@ -17,8 +17,10 @@ import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryType.SlotType;
 import org.bukkit.event.inventory.PrepareAnvilEvent;
 import org.bukkit.event.inventory.PrepareItemCraftEvent;
+import org.bukkit.event.player.PlayerInteractAtEntityEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.CraftingInventory;
+import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.inventory.ItemStack;
 
 import nl.knokko.customitems.plugin.recipe.CustomRecipe;
@@ -34,8 +36,22 @@ public class CustomItemsEventHandler implements Listener {
 	public void onItemUse(PlayerInteractEvent event) {
 		ItemStack item = event.getItem();
 		CustomItem custom = CustomItemsPlugin.getInstance().getSet().getItem(item);
-		if(custom != null) {
-			//for now, just make sure the custom item can't be used as their 'real' item
+		if(custom != null && custom.forbidDefaultUse(item)) {
+			// Don't let custom items be used as their internal item
+			event.setCancelled(true);
+		}
+	}
+	
+	@EventHandler
+	public void onItemInteract(PlayerInteractAtEntityEvent event) {
+		ItemStack item;
+		if (event.getHand() == EquipmentSlot.HAND)
+			item = event.getPlayer().getInventory().getItemInMainHand();
+		else
+			item = event.getPlayer().getInventory().getItemInOffHand();
+		CustomItem custom = CustomItemsPlugin.getInstance().getSet().getItem(item);
+		if(custom != null && custom.forbidDefaultUse(item)) {
+			// Don't let custom items be used as their internal item
 			event.setCancelled(true);
 		}
 	}
