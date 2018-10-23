@@ -19,6 +19,7 @@ import org.bukkit.event.inventory.PrepareAnvilEvent;
 import org.bukkit.event.inventory.PrepareItemCraftEvent;
 import org.bukkit.event.player.PlayerInteractAtEntityEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
+import org.bukkit.event.player.PlayerShearEntityEvent;
 import org.bukkit.inventory.CraftingInventory;
 import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.inventory.ItemStack;
@@ -38,6 +39,18 @@ public class CustomItemsEventHandler implements Listener {
 		CustomItem custom = CustomItemsPlugin.getInstance().getSet().getItem(item);
 		if(custom != null && custom.forbidDefaultUse(item)) {
 			// Don't let custom items be used as their internal item
+			event.setCancelled(true);
+		}
+	}
+	
+	@EventHandler
+	public void onShear(PlayerShearEntityEvent event) {
+		ItemStack main = event.getPlayer().getInventory().getItemInMainHand();
+		ItemStack off = event.getPlayer().getInventory().getItemInOffHand();
+		CustomItem customMain = main.getType() == Material.SHEARS ? CustomItemsPlugin.getInstance().getSet().getItem(main) : null;
+		CustomItem customOff = off.getType() == Material.SHEARS ? CustomItemsPlugin.getInstance().getSet().getItem(off) : null;
+		if((customMain != null && customMain.forbidDefaultUse(main)) || (customOff != null && customOff.forbidDefaultUse(off))) {
+			// Don't let custom shears be used as real shears
 			event.setCancelled(true);
 		}
 	}

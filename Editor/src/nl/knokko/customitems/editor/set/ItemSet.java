@@ -177,6 +177,8 @@ public class ItemSet {
 						throw new IllegalArgumentException("a is " + a + " and b is " + b);
 					});
 					String name = entry.getKey().toString().toLowerCase();
+					if (entry.getKey() == CustomItemType.CARROT_STICK)
+						name = "carrot_on_a_stick";
 					ZipEntry zipEntry = new ZipEntry("assets/minecraft/models/item/" + name + ".json");
 					zipOutput.putNextEntry(zipEntry);
 					PrintWriter jsonWriter = new PrintWriter(zipOutput);

@@ -11,10 +11,12 @@ public class SelectItemType extends GuiMenu {
 	
 	private final ReturnAction returnAction;
 	private final GuiComponent returnMenu;
+	private final CustomItemType.Category category;
 	
-	public SelectItemType(GuiComponent returnMenu, ReturnAction returnAction) {
+	public SelectItemType(GuiComponent returnMenu, ReturnAction returnAction, CustomItemType.Category category) {
 		this.returnMenu = returnMenu;
 		this.returnAction = returnAction;
+		this.category = category;
 	}
 	
 	@Override
@@ -28,12 +30,15 @@ public class SelectItemType extends GuiMenu {
 			state.getWindow().setMainComponent(returnMenu);
 		}), 0.1f, 0.6f, 0.3f, 0.7f);
 		CustomItemType[] types = CustomItemType.values();
-		for(int index = 0; index < types.length; index++) {
-			final CustomItemType type = types[index];
-			addComponent(new TextButton(type.toString(), EditProps.SELECT_BASE, EditProps.SAVE_HOVER, () -> {
-				returnAction.onSelect(type);
-				state.getWindow().setMainComponent(returnMenu);
-			}), 0.5f, 0.9f - index * 0.1f, 0.8f, 1 - index * 0.1f);
+		int index = 0;
+		for(CustomItemType type : types) {
+			if (type.canServe(category)) {
+				addComponent(new TextButton(type.toString(), EditProps.SELECT_BASE, EditProps.SELECT_HOVER, () -> {
+					returnAction.onSelect(type);
+					state.getWindow().setMainComponent(returnMenu);
+				}), 0.5f, 0.9f - index * 0.1f, 0.8f, 1 - index * 0.1f);
+				index++;
+			}
 		}
 	}
 	

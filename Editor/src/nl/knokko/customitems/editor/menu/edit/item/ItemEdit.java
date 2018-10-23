@@ -129,7 +129,7 @@ public class ItemEdit extends GuiMenu {
 				state.getWindow().setMainComponent(new SelectItemType(ItemEdit.this, (CustomItemType type) -> {
 					currentType = type;
 					setText(type.toString());
-				}));
+				}, CustomItemType.Category.DEFAULT));
 			};
 		}
 	}
