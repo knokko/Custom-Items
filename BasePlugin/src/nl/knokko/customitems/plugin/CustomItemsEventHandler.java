@@ -90,7 +90,7 @@ public class CustomItemsEventHandler implements Listener {
 	public void onInventoryClick(InventoryClickEvent event) {
 		SlotType type = event.getSlotType();
 		InventoryAction action = event.getAction();
-		if (type == SlotType.RESULT && action != InventoryAction.NOTHING && event.getInventory() instanceof CraftingInventory) {
+		if (type == SlotType.RESULT && event.getInventory() instanceof CraftingInventory) {
 			if (shouldInterfere.getOrDefault(event.getWhoClicked().getUniqueId(), false)) {
 				if (action == InventoryAction.PICKUP_ALL) {
 					// This block deals with normal crafting
@@ -121,12 +121,26 @@ public class CustomItemsEventHandler implements Listener {
 					result.setAmount(amountPerCraft * minAmount);
 					event.getInventory().setItem(0, new ItemStack(Material.AIR));
 					event.getWhoClicked().getInventory().addItem(result);
+				} else if(action == InventoryAction.NOTHING) {
+					// This case is possible when a custom item is on the cursor because it isn't really stackable
+					ItemStack cursor = event.getCursor();
+					ItemStack current = event.getCurrentItem();
+					if (CustomItem.isCustom(cursor) && CustomItem.isCustom(current) && cursor.getType() == current.getType()
+							&& cursor.getDurability() == current.getDurability()) {
+						Bukkit.getScheduler().scheduleSyncDelayedTask(CustomItemsPlugin.getInstance(), () -> {
+							ItemStack[] contents = event.getInventory().getContents();
+							for (int index = 1; index < contents.length; index++)
+								contents[index].setAmount(contents[index].getAmount() - 1);
+							cursor.setAmount(cursor.getAmount() + current.getAmount());
+							event.getView().getPlayer().setItemOnCursor(cursor);
+						});
+					}
 				} else {
 					// Maybe, there is some edge case I don't know about, so cancel it just to be sure
 					event.setResult(Result.DENY);
 				}
 			}
-		} else if (action == InventoryAction.NOTHING || action == InventoryAction.PICKUP_ONE || action == InventoryAction.PICKUP_SOME) {
+		} else if (action == InventoryAction.NOTHING || action == InventoryAction.PICKUP_ONE || action == InventoryAction.PICKUP_SOME || action == InventoryAction.SWAP_WITH_CURSOR) {
 			ItemStack cursor = event.getCursor();
 			ItemStack current = event.getCurrentItem();
 			// This block makes custom items stackable
