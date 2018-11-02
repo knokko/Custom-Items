@@ -27,6 +27,7 @@ import org.bukkit.inventory.ItemStack;
 import nl.knokko.customitems.plugin.recipe.CustomRecipe;
 import nl.knokko.customitems.plugin.recipe.ShapedCustomRecipe;
 import nl.knokko.customitems.plugin.recipe.ShapelessCustomRecipe;
+import nl.knokko.customitems.plugin.set.ItemSet;
 import nl.knokko.customitems.plugin.set.item.CustomItem;
 
 public class CustomItemsEventHandler implements Listener {
@@ -73,7 +74,8 @@ public class CustomItemsEventHandler implements Listener {
 	public void cancelAnvil(PrepareAnvilEvent event) {
 		ItemStack[] contents = event.getInventory().getStorageContents();
 		for (ItemStack item : contents) {
-			if (CustomItem.isCustom(item)) {
+			CustomItem custom = CustomItemsPlugin.getInstance().getSet().getItem(item);
+			if (custom != null && !custom.allowVanillaAnvilActions()) {
 				event.setResult(null);
 				break;
 			}
@@ -82,7 +84,8 @@ public class CustomItemsEventHandler implements Listener {
 	
 	@EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
 	public void cancelEnchanting(PrepareItemEnchantEvent event) {
-		if (CustomItem.isCustom(event.getItem()))
+		CustomItem custom = CustomItemsPlugin.getInstance().getSet().getItem(event.getItem());
+		if (custom != null && !custom.allowVanillaEnchanting())
 			event.setCancelled(true);
 	}
 	
@@ -118,9 +121,26 @@ public class CustomItemsEventHandler implements Listener {
 					event.setResult(Result.DENY);
 					for (int index = 1; index < contents.length; index++)
 						contents[index].setAmount(contents[index].getAmount() - minAmount);
-					result.setAmount(amountPerCraft * minAmount);
 					event.getInventory().setItem(0, new ItemStack(Material.AIR));
-					event.getWhoClicked().getInventory().addItem(result);
+					CustomItem customResult = CustomItemsPlugin.getInstance().getSet().getItem(result);
+					int amountToGive = amountPerCraft * minAmount;
+					if (customResult != null && !customResult.canStack()) {
+						for (int counter = 0; counter < amountToGive; counter++) {
+							event.getWhoClicked().getInventory().addItem(result);
+						}
+					} else {
+						for (int counter = 0; counter < amountToGive; counter += 64) {
+							int left = amountToGive - counter;
+							if (left > 64) {
+								result.setAmount(64);
+								event.getWhoClicked().getInventory().addItem(result);
+							} else {
+								result.setAmount(left);
+								event.getWhoClicked().getInventory().addItem(result);
+								break;
+							}
+						}
+					}
 				} else if(action == InventoryAction.NOTHING) {
 					// This case is possible when a custom item is on the cursor because it isn't really stackable
 					ItemStack cursor = event.getCursor();
@@ -144,19 +164,22 @@ public class CustomItemsEventHandler implements Listener {
 			ItemStack cursor = event.getCursor();
 			ItemStack current = event.getCurrentItem();
 			// This block makes custom items stackable
-			if (cursor != null && cursor.getType() != Material.AIR && cursor.getType() == current.getType() && cursor.hasItemMeta() && cursor.getItemMeta().isUnbreakable()
-					&& current.hasItemMeta() && current.getItemMeta().isUnbreakable()
-					&& CustomItem.getDamage(current) == CustomItem.getDamage(cursor)) {
-				event.setResult(Result.DENY);
-				int amount = current.getAmount() + cursor.getAmount();
-				if (amount <= 64) {
-					current.setAmount(amount);
-					Bukkit.getScheduler().scheduleSyncDelayedTask(CustomItemsPlugin.getInstance(), () -> {
-						event.getView().getPlayer().setItemOnCursor(new ItemStack(Material.AIR));
-					});
-				} else {
-					current.setAmount(64);
-					cursor.setAmount(amount - 64);
+			if (CustomItem.isCustom(cursor) && CustomItem.isCustom(current)) {
+				ItemSet set = CustomItemsPlugin.getInstance().getSet();
+				CustomItem customCursor = set.getItem(cursor);
+				CustomItem customCurrent = set.getItem(current);
+				if (customCursor != null && customCursor == customCurrent && customCursor.canStack()) {
+					event.setResult(Result.DENY);
+					int amount = current.getAmount() + cursor.getAmount();
+					if (amount <= 64) {
+						current.setAmount(amount);
+						Bukkit.getScheduler().scheduleSyncDelayedTask(CustomItemsPlugin.getInstance(), () -> {
+							event.getView().getPlayer().setItemOnCursor(new ItemStack(Material.AIR));
+						});
+					} else {
+						current.setAmount(64);
+						cursor.setAmount(amount - 64);
+					}
 				}
 			}
 		}

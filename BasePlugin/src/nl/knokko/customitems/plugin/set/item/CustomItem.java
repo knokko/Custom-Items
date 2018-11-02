@@ -81,4 +81,16 @@ public class CustomItem extends nl.knokko.customitems.item.CustomItem {
     public Material getMaterial() {
     	return material;
     }
+    
+    public boolean canStack() {
+    	return true;
+    }
+    
+    public boolean allowVanillaEnchanting() {
+    	return false;
+    }
+    
+    public boolean allowVanillaAnvilActions() {
+    	return false;
+    }
 }
