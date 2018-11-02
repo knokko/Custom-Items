@@ -2,8 +2,8 @@ package nl.knokko.customitems.editor.set.recipe.result;
 
 import java.util.Collection;
 
-import nl.knokko.customitems.editor.set.CustomItem;
 import nl.knokko.customitems.editor.set.ItemSet;
+import nl.knokko.customitems.editor.set.item.CustomItem;
 import nl.knokko.customitems.encoding.RecipeEncoding;
 import nl.knokko.util.bits.BitInput;
 import nl.knokko.util.bits.BitOutput;

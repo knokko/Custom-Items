@@ -9,7 +9,7 @@ import javax.imageio.ImageIO;
 import nl.knokko.customitems.editor.menu.edit.EditMenu;
 import nl.knokko.customitems.editor.menu.edit.EditProps;
 import nl.knokko.customitems.editor.menu.main.CreateMenu;
-import nl.knokko.customitems.editor.set.NamedImage;
+import nl.knokko.customitems.editor.set.item.NamedImage;
 import nl.knokko.gui.color.GuiColor;
 import nl.knokko.gui.component.WrapperComponent;
 import nl.knokko.gui.component.menu.FileChooserMenu;

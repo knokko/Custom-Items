@@ -7,7 +7,7 @@ import nl.knokko.customitems.editor.menu.edit.EditProps;
 import nl.knokko.customitems.editor.menu.edit.recipe.ingredient.ChooseIngredient;
 import nl.knokko.customitems.editor.menu.edit.recipe.ingredient.IngredientComponent;
 import nl.knokko.customitems.editor.menu.edit.recipe.result.ResultComponent;
-import nl.knokko.customitems.editor.set.Material;
+import nl.knokko.customitems.editor.set.item.Material;
 import nl.knokko.customitems.editor.set.recipe.ShapelessRecipe;
 import nl.knokko.customitems.editor.set.recipe.ingredient.Ingredient;
 import nl.knokko.customitems.editor.set.recipe.result.SimpleVanillaResult;

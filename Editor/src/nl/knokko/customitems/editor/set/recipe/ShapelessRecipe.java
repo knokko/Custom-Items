@@ -1,7 +1,7 @@
 package nl.knokko.customitems.editor.set.recipe;
 
-import nl.knokko.customitems.editor.set.CustomItem;
 import nl.knokko.customitems.editor.set.ItemSet;
+import nl.knokko.customitems.editor.set.item.CustomItem;
 import nl.knokko.customitems.editor.set.recipe.ingredient.CustomItemIngredient;
 import nl.knokko.customitems.editor.set.recipe.ingredient.Ingredient;
 import nl.knokko.customitems.editor.set.recipe.result.Result;

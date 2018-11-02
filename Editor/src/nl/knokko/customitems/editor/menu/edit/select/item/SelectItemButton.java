@@ -1,7 +1,7 @@
 package nl.knokko.customitems.editor.menu.edit.select.item;
 
 import nl.knokko.customitems.editor.menu.edit.EditProps;
-import nl.knokko.customitems.editor.set.Material;
+import nl.knokko.customitems.editor.set.item.Material;
 import nl.knokko.gui.component.image.ImageButton;
 import nl.knokko.gui.render.GuiRenderer;
 import nl.knokko.gui.texture.GuiTexture;

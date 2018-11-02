@@ -1,4 +1,4 @@
-package nl.knokko.customitems.editor.set;
+package nl.knokko.customitems.editor.set.item;
 
 import java.awt.image.BufferedImage;
 

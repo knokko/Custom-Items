@@ -4,7 +4,7 @@ import java.util.Collection;
 
 import nl.knokko.customitems.editor.menu.edit.EditProps;
 import nl.knokko.customitems.editor.set.ItemSet;
-import nl.knokko.customitems.editor.set.NamedImage;
+import nl.knokko.customitems.editor.set.item.NamedImage;
 import nl.knokko.gui.color.GuiColor;
 import nl.knokko.gui.component.GuiComponent;
 import nl.knokko.gui.component.menu.GuiMenu;

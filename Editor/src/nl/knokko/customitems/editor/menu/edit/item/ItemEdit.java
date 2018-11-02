@@ -2,8 +2,8 @@ package nl.knokko.customitems.editor.menu.edit.item;
 
 import nl.knokko.customitems.editor.menu.edit.EditMenu;
 import nl.knokko.customitems.editor.menu.edit.EditProps;
-import nl.knokko.customitems.editor.set.CustomItem;
-import nl.knokko.customitems.editor.set.NamedImage;
+import nl.knokko.customitems.editor.set.item.CustomItem;
+import nl.knokko.customitems.editor.set.item.NamedImage;
 import nl.knokko.customitems.item.CustomItemType;
 import nl.knokko.gui.color.GuiColor;
 import nl.knokko.gui.component.menu.GuiMenu;

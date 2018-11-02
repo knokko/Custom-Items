@@ -1,6 +1,6 @@
 package nl.knokko.customitems.editor.set.recipe.ingredient;
 
-import nl.knokko.customitems.editor.set.Material;
+import nl.knokko.customitems.editor.set.item.Material;
 import nl.knokko.customitems.encoding.RecipeEncoding;
 import nl.knokko.util.bits.BitInput;
 import nl.knokko.util.bits.BitOutput;

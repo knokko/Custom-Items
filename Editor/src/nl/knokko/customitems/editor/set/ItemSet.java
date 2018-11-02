@@ -19,6 +19,9 @@ import javax.imageio.ImageIO;
 import javax.imageio.stream.MemoryCacheImageOutputStream;
 
 import nl.knokko.customitems.editor.Editor;
+import nl.knokko.customitems.editor.set.item.CustomItem;
+import nl.knokko.customitems.editor.set.item.CustomTool;
+import nl.knokko.customitems.editor.set.item.NamedImage;
 import nl.knokko.customitems.editor.set.recipe.Recipe;
 import nl.knokko.customitems.editor.set.recipe.ShapedRecipe;
 import nl.knokko.customitems.editor.set.recipe.ShapelessRecipe;
@@ -27,7 +30,11 @@ import nl.knokko.customitems.editor.set.recipe.result.CustomItemResult;
 import nl.knokko.customitems.editor.set.recipe.result.Result;
 import nl.knokko.customitems.encoding.ItemEncoding;
 import nl.knokko.customitems.encoding.RecipeEncoding;
+import nl.knokko.customitems.item.AttributeModifier;
 import nl.knokko.customitems.item.CustomItemType;
+import nl.knokko.customitems.item.AttributeModifier.Attribute;
+import nl.knokko.customitems.item.AttributeModifier.Operation;
+import nl.knokko.customitems.item.AttributeModifier.Slot;
 import nl.knokko.util.bits.BitInput;
 import nl.knokko.util.bits.BitOutput;
 import nl.knokko.util.bits.BitOutputStream;
@@ -47,9 +54,12 @@ public class ItemSet {
 	
 	private CustomItem loadItem(BitInput input) {
 		byte encoding = input.readByte();
-        if(encoding == ItemEncoding.ENCODING_SIMPLE_1){
+        if (encoding == ItemEncoding.ENCODING_SIMPLE_1)
             return loadSimpleItem1(input);
-        }
+        else if (encoding == ItemEncoding.ENCODING_SIMPLE_2)
+        	return loadSimpleItem2(input);
+        else if (encoding == ItemEncoding.ENCODING_TOOL_2)
+        	return loadTool2(input);
         throw new IllegalArgumentException("Unknown encoding: " + encoding);
 	}
 	
@@ -62,6 +72,7 @@ public class ItemSet {
         for(int index = 0; index < lore.length; index++){
             lore[index] = input.readJavaString();
         }
+        AttributeModifier[] attributes = new AttributeModifier[0];
         String imageName = input.readJavaString();
         NamedImage texture = null;
         for(NamedImage current : textures) {
@@ -71,7 +82,63 @@ public class ItemSet {
         	}
         }
         if(texture == null) throw new IllegalArgumentException("Can't find texture " + imageName);
-        return new CustomItem(itemType, damage, name, displayName, lore, texture);
+        return new CustomItem(itemType, damage, name, displayName, lore, attributes, texture);
+	}
+	
+	private CustomItem loadSimpleItem2(BitInput input) {
+		CustomItemType itemType = CustomItemType.valueOf(input.readJavaString());
+        short damage = input.readShort();
+        String name = input.readJavaString();
+        String displayName = input.readJavaString();
+        String[] lore = new String[input.readByte() & 0xFF];
+        for(int index = 0; index < lore.length; index++){
+            lore[index] = input.readJavaString();
+        }
+        AttributeModifier[] attributes = new AttributeModifier[input.readByte() & 0xFF];
+        for (int index = 0; index < attributes.length; index++)
+        	attributes[index] = loadAttribute2(input);
+        String imageName = input.readJavaString();
+        NamedImage texture = null;
+        for(NamedImage current : textures) {
+        	if(current.getName().equals(imageName)) {
+        		texture = current;
+        		break;
+        	}
+        }
+        if(texture == null) throw new IllegalArgumentException("Can't find texture " + imageName);
+        return new CustomItem(itemType, damage, name, displayName, lore, attributes, texture);
+	}
+	
+	private CustomItem loadTool2(BitInput input) {
+		CustomItemType itemType = CustomItemType.valueOf(input.readJavaString());
+        short damage = input.readShort();
+        String name = input.readJavaString();
+        String displayName = input.readJavaString();
+        String[] lore = new String[input.readByte() & 0xFF];
+        for(int index = 0; index < lore.length; index++){
+            lore[index] = input.readJavaString();
+        }
+        AttributeModifier[] attributes = new AttributeModifier[input.readByte() & 0xFF];
+        for (int index = 0; index < attributes.length; index++)
+        	attributes[index] = loadAttribute2(input);
+        int durability = input.readInt();
+        boolean allowEnchanting = input.readBoolean();
+        boolean allowAnvil = input.readBoolean();
+        String imageName = input.readJavaString();
+        NamedImage texture = null;
+        for(NamedImage current : textures) {
+        	if(current.getName().equals(imageName)) {
+        		texture = current;
+        		break;
+        	}
+        }
+        if(texture == null) throw new IllegalArgumentException("Can't find texture " + imageName);
+        return new CustomTool(itemType, damage, name, displayName, lore, attributes, durability, allowEnchanting, allowAnvil, texture);
+	}
+	
+	private AttributeModifier loadAttribute2(BitInput input) {
+		return new AttributeModifier(Attribute.valueOf(input.readJavaString()), Slot.valueOf(input.readJavaString()), 
+				Operation.values()[(int) input.readNumber((byte) 2, false)], input.readDouble());
 	}
 	
 	private final String fileName;

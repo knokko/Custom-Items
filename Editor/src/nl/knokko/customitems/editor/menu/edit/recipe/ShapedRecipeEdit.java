@@ -4,7 +4,7 @@ import nl.knokko.customitems.editor.menu.edit.EditMenu;
 import nl.knokko.customitems.editor.menu.edit.EditProps;
 import nl.knokko.customitems.editor.menu.edit.recipe.ingredient.IngredientComponent;
 import nl.knokko.customitems.editor.menu.edit.recipe.result.ResultComponent;
-import nl.knokko.customitems.editor.set.Material;
+import nl.knokko.customitems.editor.set.item.Material;
 import nl.knokko.customitems.editor.set.recipe.ShapedRecipe;
 import nl.knokko.customitems.editor.set.recipe.ingredient.Ingredient;
 import nl.knokko.customitems.editor.set.recipe.ingredient.NoIngredient;
