@@ -14,6 +14,10 @@ import org.bukkit.material.MaterialData;
 import nl.knokko.customitems.encoding.ItemEncoding;
 import nl.knokko.customitems.encoding.RecipeEncoding;
 import nl.knokko.customitems.encoding.SetEncoding;
+import nl.knokko.customitems.item.AttributeModifier;
+import nl.knokko.customitems.item.AttributeModifier.Attribute;
+import nl.knokko.customitems.item.AttributeModifier.Operation;
+import nl.knokko.customitems.item.AttributeModifier.Slot;
 import nl.knokko.customitems.item.CustomItemType;
 import nl.knokko.customitems.plugin.recipe.CustomRecipe;
 import nl.knokko.customitems.plugin.recipe.ShapedCustomRecipe;
@@ -24,6 +28,7 @@ import nl.knokko.customitems.plugin.recipe.ingredient.Ingredient;
 import nl.knokko.customitems.plugin.recipe.ingredient.NoIngredient;
 import nl.knokko.customitems.plugin.recipe.ingredient.SimpleVanillaIngredient;
 import nl.knokko.customitems.plugin.set.item.CustomItem;
+import nl.knokko.customitems.plugin.set.item.CustomTool;
 import nl.knokko.util.bits.BitInput;
 
 public class ItemSet {
@@ -65,8 +70,12 @@ public class ItemSet {
 	
 	private CustomItem loadItem(BitInput input) {
 		byte encoding = input.readByte();
-        if(encoding == ItemEncoding.ENCODING_SIMPLE_1)
+        if (encoding == ItemEncoding.ENCODING_SIMPLE_1)
             return loadSimpleItem1(input);
+        else if (encoding == ItemEncoding.ENCODING_SIMPLE_2)
+        	return loadSimpleItem2(input);
+        else if (encoding == ItemEncoding.ENCODING_TOOL_2)
+        	return loadTool2(input);
         throw new IllegalArgumentException("Unknown encoding: " + encoding);
 	}
 	
@@ -78,7 +87,44 @@ public class ItemSet {
         String[] lore = new String[input.readByte() & 0xFF];
         for(int index = 0; index < lore.length; index++)
             lore[index] = input.readJavaString();
-        return new CustomItem(itemType, damage, name, displayName, lore);
+        AttributeModifier[] attributes = new AttributeModifier[0];
+        return new CustomItem(itemType, damage, name, displayName, lore, attributes);
+	}
+	
+	private CustomItem loadSimpleItem2(BitInput input) {
+		CustomItemType itemType = CustomItemType.valueOf(input.readJavaString());
+        short damage = input.readShort();
+        String name = input.readJavaString();
+        String displayName = input.readJavaString();
+        String[] lore = new String[input.readByte() & 0xFF];
+        for(int index = 0; index < lore.length; index++)
+            lore[index] = input.readJavaString();
+        AttributeModifier[] attributes = new AttributeModifier[input.readByte() & 0xFF];
+        for (int index = 0; index < attributes.length; index++)
+        	attributes[index] = loadAttribute2(input);
+        return new CustomItem(itemType, damage, name, displayName, lore, attributes);
+	}
+	
+	private CustomItem loadTool2(BitInput input) {
+		CustomItemType itemType = CustomItemType.valueOf(input.readJavaString());
+        short damage = input.readShort();
+        String name = input.readJavaString();
+        String displayName = input.readJavaString();
+        String[] lore = new String[input.readByte() & 0xFF];
+        for(int index = 0; index < lore.length; index++)
+            lore[index] = input.readJavaString();
+        AttributeModifier[] attributes = new AttributeModifier[input.readByte() & 0xFF];
+        for (int index = 0; index < attributes.length; index++)
+        	attributes[index] = loadAttribute2(input);
+        int durability = input.readInt();
+        boolean allowEnchanting = input.readBoolean();
+        boolean allowAnvil = input.readBoolean();
+        return new CustomTool(itemType, damage, name, displayName, lore, attributes, durability, allowEnchanting, allowAnvil);
+	}
+	
+	private AttributeModifier loadAttribute2(BitInput input) {
+		return new AttributeModifier(Attribute.valueOf(input.readJavaString()), Slot.valueOf(input.readJavaString()), 
+				Operation.values()[(int) input.readNumber((byte) 2, false)], input.readDouble());
 	}
 	
 	private void register(CustomItem item, int index) {

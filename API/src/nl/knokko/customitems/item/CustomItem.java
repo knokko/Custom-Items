@@ -34,12 +34,15 @@ public class CustomItem {
     protected String displayName;
     protected String[] lore;
     
-    public CustomItem(CustomItemType itemType, short itemDamage, String name, String displayName, String[] lore){
+    protected AttributeModifier[] attributes;
+    
+    public CustomItem(CustomItemType itemType, short itemDamage, String name, String displayName, String[] lore, AttributeModifier[] attributes){
         this.itemType = itemType;
         this.itemDamage = itemDamage;
         this.name = name;
         this.displayName = displayName;
         this.lore = lore;
+        this.attributes = attributes;
     }
     
     public String getName(){
@@ -60,5 +63,9 @@ public class CustomItem {
     
     public short getItemDamage() {
     	return itemDamage;
+    }
+    
+    public AttributeModifier[] getAttributes() {
+    	return attributes;
     }
 }

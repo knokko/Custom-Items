@@ -73,12 +73,15 @@ public class CustomItemsEventHandler implements Listener {
 	@EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
 	public void cancelAnvil(PrepareAnvilEvent event) {
 		ItemStack[] contents = event.getInventory().getStorageContents();
-		for (ItemStack item : contents) {
-			CustomItem custom = CustomItemsPlugin.getInstance().getSet().getItem(item);
-			if (custom != null && !custom.allowVanillaAnvilActions()) {
-				event.setResult(null);
-				break;
-			}
+		CustomItem custom1 = null;
+		CustomItem custom2 = null;
+		if (CustomItem.isCustom(contents[0]))
+			custom1 = CustomItemsPlugin.getInstance().getSet().getItem(contents[0]);
+		if (CustomItem.isCustom(contents[1]))
+			custom2 = CustomItemsPlugin.getInstance().getSet().getItem(contents[1]);
+		// The PrepareAnvilEvent doesn't seem to fit my requirements, so I will disable it for now
+		if (custom1 != null || custom2 != null) {
+			event.setResult(null);
 		}
 	}
 	

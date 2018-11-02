@@ -32,6 +32,7 @@ import org.bukkit.Bukkit;
 import com.google.common.collect.Lists;
 
 import nl.knokko.core.plugin.item.attributes.ItemAttributes;
+import nl.knokko.customitems.item.AttributeModifier;
 import nl.knokko.customitems.item.CustomItemType;
 
 public class CustomItem extends nl.knokko.customitems.item.CustomItem {
@@ -40,10 +41,10 @@ public class CustomItem extends nl.knokko.customitems.item.CustomItem {
 		return item != null && item.hasItemMeta() && item.getItemMeta().isUnbreakable() && item.getDurability() > 0;
 	}
 	
-	private final Material material;
+	protected final Material material;
     
-    public CustomItem(CustomItemType itemType, short itemDamage, String name, String displayName, String[] lore){
-        super(itemType, itemDamage, name, displayName, lore);
+    public CustomItem(CustomItemType itemType, short itemDamage, String name, String displayName, String[] lore, AttributeModifier[] attributes){
+        super(itemType, itemDamage, name, displayName, lore, attributes);
         material = Material.getMaterial(itemType.name());
     }
     
@@ -90,7 +91,7 @@ public class CustomItem extends nl.knokko.customitems.item.CustomItem {
     	return false;
     }
     
-    public boolean allowVanillaAnvilActions() {
+    public boolean allowAnvilActions() {
     	return false;
     }
 }
