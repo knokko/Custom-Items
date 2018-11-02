@@ -24,6 +24,8 @@
 package nl.knokko.customitems.item;
 
 public class CustomItem {
+	
+	public static final int UNBREAKABLE_TOOL_DURABILITY = -1;
     
     protected CustomItemType itemType;
     protected short itemDamage;
