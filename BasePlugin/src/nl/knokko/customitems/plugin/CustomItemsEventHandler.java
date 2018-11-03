@@ -3,10 +3,13 @@ package nl.knokko.customitems.plugin;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Set;
 import java.util.UUID;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
+import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.event.Event.Result;
 import org.bukkit.event.EventHandler;
@@ -26,12 +29,14 @@ import org.bukkit.event.player.PlayerShearEntityEvent;
 import org.bukkit.inventory.CraftingInventory;
 import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.ItemMeta;
 
 import nl.knokko.customitems.plugin.recipe.CustomRecipe;
 import nl.knokko.customitems.plugin.recipe.ShapedCustomRecipe;
 import nl.knokko.customitems.plugin.recipe.ShapelessCustomRecipe;
 import nl.knokko.customitems.plugin.set.ItemSet;
 import nl.knokko.customitems.plugin.set.item.CustomItem;
+import nl.knokko.customitems.plugin.set.item.CustomTool;
 
 public class CustomItemsEventHandler implements Listener {
 	
@@ -102,7 +107,7 @@ public class CustomItemsEventHandler implements Listener {
 	}
 	
 	@EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
-	public void cancelAnvil(PrepareAnvilEvent event) {
+	public void processAnvil(PrepareAnvilEvent event) {
 		ItemStack[] contents = event.getInventory().getStorageContents();
 		CustomItem custom1 = null;
 		CustomItem custom2 = null;
@@ -110,10 +115,35 @@ public class CustomItemsEventHandler implements Listener {
 			custom1 = CustomItemsPlugin.getInstance().getSet().getItem(contents[0]);
 		if (CustomItem.isCustom(contents[1]))
 			custom2 = CustomItemsPlugin.getInstance().getSet().getItem(contents[1]);
-		// The PrepareAnvilEvent doesn't seem to fit my requirements, so I will disable it for now
-		if (custom1 != null || custom2 != null) {
+		if (custom1 != null) {
+			if (custom1.allowAnvilActions() && custom1 instanceof CustomTool && custom1 == custom2) {
+				CustomTool tool = (CustomTool) custom1;
+				int durability1 = tool.getDurability(contents[0]);
+				int durability2 = tool.getDurability(contents[1]);
+				int resultDurability = Math.min(durability1 + durability2, tool.getMaxDurability());
+				Map<Enchantment,Integer> enchantments1 = contents[0].getEnchantments();
+				Map<Enchantment,Integer> enchantments2 = contents[1].getEnchantments();
+				ItemStack result = tool.create(1, resultDurability);
+				if (!event.getInventory().getRenameText().isEmpty()) {
+					ItemMeta meta = result.getItemMeta();
+					meta.setDisplayName(event.getInventory().getRenameText());
+					result.setItemMeta(meta);
+				}
+				result.addUnsafeEnchantments(enchantments1);
+				Set<Entry<Enchantment,Integer>> entrySet = enchantments2.entrySet();
+				for (Entry<Enchantment,Integer> entry : entrySet) {
+					try {
+						result.addEnchantment(entry.getKey(), entry.getValue());
+					} catch (IllegalArgumentException illegal) {} // Only add enchantments that can be added
+				}
+				event.setResult(result);
+			} else if (custom1.allowAnvilActions() && contents[1] == null || contents[1].getType() == Material.AIR){
+				// I think everything will resolve itself, but test this!
+			} else {
+				event.setResult(null);
+			}
+		} else if (custom2 != null) {
 			event.setResult(null);
-			
 		}
 	}
 	

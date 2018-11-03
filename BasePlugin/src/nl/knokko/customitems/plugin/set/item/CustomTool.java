@@ -59,6 +59,10 @@ public class CustomTool extends CustomItem {
 	
 	@Override
 	public ItemStack create(int amount) {
+		return create(amount, maxDurability);
+	}
+	
+	public ItemStack create(int amount, int durability) {
 		if (amount != 1) throw new IllegalArgumentException("Amount must be 1, but is " + amount);
 		ItemStack item = new ItemStack(material, amount);
         ItemMeta meta = Bukkit.getItemFactory().getItemMeta(material);
@@ -67,7 +71,7 @@ public class CustomTool extends CustomItem {
         	meta.setLore(Lists.newArrayList(lore));
         } else {
         	List<String> itemLore = new ArrayList<String>(lore.length + 2);
-        	itemLore.add(DURABILITY_PREFIX + maxDurability + DURABILITY_SPLIT + maxDurability);
+        	itemLore.add(DURABILITY_PREFIX + durability + DURABILITY_SPLIT + maxDurability);
         	itemLore.add("");
         	for (String s : lore)
         		itemLore.add(s);
@@ -101,9 +105,8 @@ public class CustomTool extends CustomItem {
 	 * @return True if the stack breaks, false if it only loses durability
 	 */
 	public boolean decreaseDurability(ItemStack stack, int damage) {
-		ItemMeta meta = stack.getItemMeta();
-		double damageChance = 1.0 / (1 + stack.getEnchantmentLevel(Enchantment.DURABILITY));
-		if (Math.random() <= damageChance) {
+		if (Math.random() <= 1.0 / (1 + stack.getEnchantmentLevel(Enchantment.DURABILITY))) {
+			ItemMeta meta = stack.getItemMeta();
 			List<String> lore = meta.getLore();
 			String durabilityString = lore.get(0);
 			// Check whether or not the tool is unbreakable
@@ -123,5 +126,21 @@ public class CustomTool extends CustomItem {
 		} else {
 			return false;
 		}
+	}
+	
+	public int getDurability(ItemStack stack) {
+		ItemMeta meta = stack.getItemMeta();
+		List<String> lore = meta.getLore();
+		String durabilityString = lore.get(0);
+		// Check whether or not the tool is unbreakable
+		if (durabilityString.startsWith(DURABILITY_PREFIX)) {
+			return Integer.parseInt(durabilityString.substring(DURABILITY_PREFIX.length(), durabilityString.indexOf(DURABILITY_SPLIT)));
+		} else {
+			return CustomItem.UNBREAKABLE_TOOL_DURABILITY;
+		}
+	}
+	
+	public int getMaxDurability() {
+		return maxDurability;
 	}
 }
