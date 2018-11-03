@@ -7,11 +7,14 @@ import java.util.UUID;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
+import org.bukkit.entity.LivingEntity;
 import org.bukkit.event.Event.Result;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
+import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.enchantment.PrepareItemEnchantEvent;
+import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.inventory.InventoryAction;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryType.SlotType;
@@ -57,6 +60,34 @@ public class CustomItemsEventHandler implements Listener {
 	}
 	
 	@EventHandler
+	public void onBlockBreak(BlockBreakEvent event) {
+		ItemStack item = event.getPlayer().getInventory().getItemInMainHand();
+		if (CustomItem.isCustom(item)) {
+			CustomItem custom = CustomItemsPlugin.getInstance().getSet().getItem(item);
+			if (custom != null) {
+				custom.onBlockBreak(event.getPlayer(), item, event.getBlock());
+			} else {
+				Bukkit.getLogger().warning("Interesting item: " + item);
+			}
+		}
+	}
+	
+	@EventHandler
+	public void onEntityHit(EntityDamageByEntityEvent event) {
+		if (event.getDamager() instanceof LivingEntity) {
+			ItemStack weapon = ((LivingEntity) event.getDamager()).getEquipment().getItemInMainHand();
+			if (CustomItem.isCustom(weapon)) {
+				CustomItem custom = CustomItemsPlugin.getInstance().getSet().getItem(weapon);
+				if (custom != null) {
+					custom.onEntityHit((LivingEntity) event.getDamager(), weapon, event.getEntity());
+				} else {
+					Bukkit.getLogger().warning("Interesting item: " + weapon);
+				}
+			}
+		}
+	}
+	
+	@EventHandler
 	public void onItemInteract(PlayerInteractAtEntityEvent event) {
 		ItemStack item;
 		if (event.getHand() == EquipmentSlot.HAND)
@@ -82,6 +113,7 @@ public class CustomItemsEventHandler implements Listener {
 		// The PrepareAnvilEvent doesn't seem to fit my requirements, so I will disable it for now
 		if (custom1 != null || custom2 != null) {
 			event.setResult(null);
+			
 		}
 	}
 	

@@ -24,6 +24,10 @@
 package nl.knokko.customitems.plugin.set.item;
 
 import org.bukkit.Material;
+import org.bukkit.block.Block;
+import org.bukkit.entity.Entity;
+import org.bukkit.entity.LivingEntity;
+import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
@@ -94,4 +98,8 @@ public class CustomItem extends nl.knokko.customitems.item.CustomItem {
     public boolean allowAnvilActions() {
     	return false;
     }
+    
+    public void onBlockBreak(Player player, ItemStack item, Block block) {}
+    
+    public void onEntityHit(LivingEntity attacker, ItemStack weapon, Entity target) {}
 }
