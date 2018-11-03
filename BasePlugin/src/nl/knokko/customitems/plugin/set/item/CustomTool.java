@@ -5,6 +5,7 @@ import java.util.List;
 
 import org.bukkit.Bukkit;
 import org.bukkit.block.Block;
+import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
@@ -101,18 +102,23 @@ public class CustomTool extends CustomItem {
 	 */
 	public boolean decreaseDurability(ItemStack stack, int damage) {
 		ItemMeta meta = stack.getItemMeta();
-		List<String> lore = meta.getLore();
-		String durabilityString = lore.get(0);
-		// Check whether or not the tool is unbreakable
-		if (durabilityString.startsWith(DURABILITY_PREFIX)) {
-			int durability = Integer.parseInt(durabilityString.substring(DURABILITY_PREFIX.length(), durabilityString.indexOf(DURABILITY_SPLIT)));
-			if (durability > 1) {
-				durability -= damage;
-				lore.set(0, DURABILITY_PREFIX + durability + DURABILITY_SPLIT + maxDurability);
-				meta.setLore(lore);
-				return false;
+		double damageChance = 1.0 / (1 + stack.getEnchantmentLevel(Enchantment.DURABILITY));
+		if (Math.random() <= damageChance) {
+			List<String> lore = meta.getLore();
+			String durabilityString = lore.get(0);
+			// Check whether or not the tool is unbreakable
+			if (durabilityString.startsWith(DURABILITY_PREFIX)) {
+				int durability = Integer.parseInt(durabilityString.substring(DURABILITY_PREFIX.length(), durabilityString.indexOf(DURABILITY_SPLIT)));
+				if (durability > 1) {
+					durability -= damage;
+					lore.set(0, DURABILITY_PREFIX + durability + DURABILITY_SPLIT + maxDurability);
+					meta.setLore(lore);
+					return false;
+				} else {
+					return true;
+				}
 			} else {
-				return true;
+				return false;
 			}
 		} else {
 			return false;
