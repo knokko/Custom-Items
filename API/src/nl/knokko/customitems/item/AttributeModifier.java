@@ -75,5 +75,10 @@ public class AttributeModifier {
 		public int getOperation() {
 			return ordinal();
 		}
+		
+		@Override
+		public String toString() {
+			return Character.toUpperCase(name().charAt(0)) + name().substring(1).toLowerCase().replace('_', ' ');
+		}
 	}
 }
