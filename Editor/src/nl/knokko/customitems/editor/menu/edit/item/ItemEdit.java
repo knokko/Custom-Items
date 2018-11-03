@@ -4,6 +4,7 @@ import nl.knokko.customitems.editor.menu.edit.EditMenu;
 import nl.knokko.customitems.editor.menu.edit.EditProps;
 import nl.knokko.customitems.editor.set.item.CustomItem;
 import nl.knokko.customitems.editor.set.item.NamedImage;
+import nl.knokko.customitems.item.AttributeModifier;
 import nl.knokko.customitems.item.CustomItemType;
 import nl.knokko.gui.color.GuiColor;
 import nl.knokko.gui.component.menu.GuiMenu;
@@ -22,6 +23,7 @@ public class ItemEdit extends GuiMenu {
 	protected TextEditField internalDamage;
 	protected TextEditField displayName;
 	protected String[] lore;
+	protected AttributeModifier[] attributes;
 	protected TextureSelect textureSelect;
 	protected TextComponent errorComponent;
 
