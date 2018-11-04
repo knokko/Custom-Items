@@ -36,6 +36,7 @@ import org.bukkit.Bukkit;
 import com.google.common.collect.Lists;
 
 import nl.knokko.core.plugin.item.attributes.ItemAttributes;
+import nl.knokko.core.plugin.item.attributes.ItemAttributes.Single;
 import nl.knokko.customitems.item.AttributeModifier;
 import nl.knokko.customitems.item.CustomItemType;
 
@@ -46,10 +47,17 @@ public class CustomItem extends nl.knokko.customitems.item.CustomItem {
 	}
 	
 	protected final Material material;
+	
+	protected final Single[] attributeModifiers;
     
     public CustomItem(CustomItemType itemType, short itemDamage, String name, String displayName, String[] lore, AttributeModifier[] attributes){
         super(itemType, itemDamage, name, displayName, lore, attributes);
         material = Material.getMaterial(itemType.name());
+        attributeModifiers = new Single[attributes.length];
+        for (int index = 0; index < attributes.length; index++) {
+        	AttributeModifier a = attributes[index];
+        	attributeModifiers[index] = new Single(a.getAttribute().getName(), a.getSlot().getSlot(), a.getOperation().getOperation(), a.getValue());
+        }
     }
     
     public ItemStack create(int amount){
@@ -61,7 +69,7 @@ public class CustomItem extends nl.knokko.customitems.item.CustomItem {
         meta.addItemFlags(ItemFlag.HIDE_UNBREAKABLE);
         item.setItemMeta(meta);
         item.setDurability(itemDamage);
-        return ItemAttributes.clearAttributes(item);
+        return ItemAttributes.setAttributes(ItemAttributes.clearAttributes(item), attributeModifiers);
     }
     
     public static short getDamage(ItemStack item) {

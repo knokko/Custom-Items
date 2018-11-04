@@ -81,7 +81,7 @@ public class CustomTool extends CustomItem {
         meta.addItemFlags(ItemFlag.HIDE_UNBREAKABLE);
         item.setItemMeta(meta);
         item.setDurability(itemDamage);
-        return ItemAttributes.clearAttributes(item);
+        return ItemAttributes.setAttributes(ItemAttributes.clearAttributes(item), attributeModifiers);
 	}
 	
 	@Override
@@ -116,6 +116,7 @@ public class CustomTool extends CustomItem {
 					durability -= damage;
 					lore.set(0, DURABILITY_PREFIX + durability + DURABILITY_SPLIT + maxDurability);
 					meta.setLore(lore);
+					stack.setItemMeta(meta);
 					return false;
 				} else {
 					return true;
