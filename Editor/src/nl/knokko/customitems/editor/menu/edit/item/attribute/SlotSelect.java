@@ -2,6 +2,7 @@ package nl.knokko.customitems.editor.menu.edit.item.attribute;
 
 import nl.knokko.customitems.editor.menu.edit.EditProps;
 import nl.knokko.customitems.item.AttributeModifier.Slot;
+import nl.knokko.gui.color.GuiColor;
 import nl.knokko.gui.component.GuiComponent;
 import nl.knokko.gui.component.menu.GuiMenu;
 import nl.knokko.gui.component.text.TextButton;
@@ -14,6 +15,11 @@ public class SlotSelect extends GuiMenu {
 	public SlotSelect(GuiComponent returnMenu, Receiver receiver) {
 		this.returnMenu = returnMenu;
 		this.receiver = receiver;
+	}
+	
+	@Override
+	public GuiColor getBackgroundColor() {
+		return EditProps.BACKGROUND;
 	}
 
 	@Override

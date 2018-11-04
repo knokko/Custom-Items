@@ -41,4 +41,28 @@ public class CustomTool extends CustomItem {
 		output.addBoolean(allowEnchanting);
 		output.addBoolean(allowAnvil);
 	}
+	
+	public boolean allowEnchanting() {
+		return allowEnchanting;
+	}
+	
+	public boolean allowAnvilActions() {
+		return allowAnvil;
+	}
+	
+	public int getDurability() {
+		return durability;
+	}
+	
+	public void setAllowEnchanting(boolean allow) {
+		allowEnchanting = allow;
+	}
+	
+	public void setAllowAnvilActions(boolean allow) {
+		allowAnvil = allow;
+	}
+	
+	public void setDurability(int durability) {
+		this.durability = durability;
+	}
 }

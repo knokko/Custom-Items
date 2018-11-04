@@ -7,6 +7,7 @@ import nl.knokko.customitems.item.AttributeModifier;
 import nl.knokko.customitems.item.AttributeModifier.Attribute;
 import nl.knokko.customitems.item.AttributeModifier.Operation;
 import nl.knokko.customitems.item.AttributeModifier.Slot;
+import nl.knokko.gui.color.GuiColor;
 import nl.knokko.gui.component.GuiComponent;
 import nl.knokko.gui.component.image.ImageButton;
 import nl.knokko.gui.component.menu.GuiMenu;
@@ -34,6 +35,11 @@ public class AttributesOverview extends GuiMenu {
 		this.receiver = receiver;
 		this.returnMenu = returnMenu;
 		this.errorComponent = new TextComponent("", EditProps.ERROR);
+	}
+	
+	@Override
+	public GuiColor getBackgroundColor() {
+		return EditProps.BACKGROUND;
 	}
 
 	@Override
@@ -91,6 +97,11 @@ public class AttributesOverview extends GuiMenu {
 			this.operation = attribute.getOperation();
 			this.valueField = new TextEditField(attribute.getValue() + "", EditProps.EDIT_BASE, EditProps.EDIT_ACTIVE);
 		}
+		
+		@Override
+		public GuiColor getBackgroundColor() {
+			return EditProps.BACKGROUND;
+		}
 
 		@Override
 		protected void addComponents() {
@@ -114,11 +125,11 @@ public class AttributesOverview extends GuiMenu {
 			});
 			addComponent(new ImageButton(deleteBase, deleteHover, () -> {
 				AttributesOverview.this.removeComponent(this);
-			}), 0.025f, 0f, 0.075f, 1f);
-			addComponent(attributeButton, 0.1f, 0f, 0.35f, 1f);
-			addComponent(slotButton, 0.375f, 0f, 0.5f, 1f);
-			addComponent(operationButton, 0.55f, 0f, 0.75f, 1f);
-			addComponent(new TextComponent("Value: ", EditProps.LABEL), 0.775f, 0f, 0.85f, 1f);
+			}), 0f, 0f, 0.075f, 1f);
+			addComponent(attributeButton, 0.09f, 0f, 0.41f, 1f);
+			addComponent(slotButton, 0.425f, 0f, 0.55f, 1f);
+			addComponent(operationButton, 0.56f, 0f, 0.76f, 1f);
+			addComponent(new TextComponent("Value: ", EditProps.LABEL), 0.775f, 0f, 0.87f, 1f);
 			addComponent(valueField, 0.875f, 0f, 0.975f, 1f);
 		}
 	}

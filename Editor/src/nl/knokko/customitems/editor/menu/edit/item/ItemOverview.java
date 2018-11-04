@@ -5,6 +5,7 @@ import java.util.Collection;
 import nl.knokko.customitems.editor.menu.edit.EditMenu;
 import nl.knokko.customitems.editor.menu.edit.EditProps;
 import nl.knokko.customitems.editor.set.item.CustomItem;
+import nl.knokko.customitems.editor.set.item.CustomTool;
 import nl.knokko.gui.color.GuiColor;
 import nl.knokko.gui.component.menu.GuiMenu;
 import nl.knokko.gui.component.text.TextButton;
@@ -39,7 +40,7 @@ public class ItemOverview extends GuiMenu {
 			state.getWindow().setMainComponent(menu);
 		}), 0.05f, 0.7f, 0.2f, 0.8f);
 		addComponent(new TextButton("Create item", EditProps.BUTTON, EditProps.HOVER, () -> {
-			state.getWindow().setMainComponent(new ItemEdit(menu, null));
+			state.getWindow().setMainComponent(new CreateItem(menu));
 		}), 0.05f, 0.4f, 0.25f, 0.5f);
 	}
 	
@@ -64,7 +65,10 @@ public class ItemOverview extends GuiMenu {
 				float maxY = 1f - index * 0.1f;
 				addComponent(new TextComponent(item.getName(), EditProps.LABEL), 0f, minY, 0.5f, maxY);
 				addComponent(new TextButton("Edit", EditProps.BUTTON, EditProps.HOVER, () -> {
-					state.getWindow().setMainComponent(new ItemEdit(menu, item));
+					if (item instanceof CustomTool)
+						state.getWindow().setMainComponent(new EditItemTool(menu, (CustomTool) item, item.getItemType().getMainCategory()));
+					else
+						state.getWindow().setMainComponent(new EditItemSimple(menu, item));
 				}), 0.6f, minY, 0.7f, maxY);
 				addComponent(new TextButton("Delete", EditProps.QUIT_BASE, EditProps.QUIT_HOVER, () -> {
 					menu.getSet().removeItem(item);

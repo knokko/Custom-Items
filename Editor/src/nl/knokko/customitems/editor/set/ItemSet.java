@@ -402,14 +402,15 @@ public class ItemSet {
 	}
 	
 	/**
-	 * Attempts to add the specified item to this item set.
-	 * If the item can be added, it will be added.
-	 * If the item can't be added, the reason is returned.
-	 * @param item The item that should be added to this set
-	 * @return The reason the item could not be added, or null if the item was added successfully
+	 * Attempts to add the specified tool to this item set.
+	 * If the tool can be added, it will be added.
+	 * If the tool can't be added, the reason is returned.
+	 * @param item The tool that should be added to this item set
+	 * @return The reason the tool could not be added, or null if the tool was added succesfully
 	 */
-	public String addItem(CustomItem item) {
-		if(item == null) return "Can't add null items";
+	public String addTool(CustomTool item) {
+		if (item == null) return "Can't add null items";
+		if (item.getClass() != CustomTool.class) return "Use the appropriate method for that class";
 		for(CustomItem current : items) {
 			if(current.getName().equals(item.getName()))
 				return "There is already a custom item with that name";
@@ -421,19 +422,25 @@ public class ItemSet {
 	}
 	
 	/**
-	 * Attempts to change the specified item in this item set.
-	 * If the item can be changed, it will be changed.
-	 * If the item can't be changed, the reason is returned.
-	 * @param item The item that should be changed
-	 * @param newType The new type of the item
-	 * @param newDamage The new damage of the item
-	 * @param newName The new name of the item
-	 * @param newDisplayName The new display name of the item
-	 * @param newLore The new lore of the item
-	 * @param newImage The new image of the item
-	 * @return null if the item was changed successfully or the reason the item could not be changed
+	 * Attempts to change the specified tool in this item set.
+	 * If the tool can be changed, it will be changed.
+	 * If the tool can't be changed, the reason is returned.
+	 * @param item The tool that should be changed
+	 * @param newType The new item type of the tool
+	 * @param newDamage The new internal damage of the tool
+	 * @param newName The new name of the tool
+	 * @param newDisplayName The new display name of the tool
+	 * @param newLore The new lore of the tool
+	 * @param newAttributes The new attribute modifiers of the tool
+	 * @param allowEnchanting The new value of allowEnchanting of the tool
+	 * @param allowAnvil The new value of allowAnvil of the tool
+	 * @param newDurability The new maximum uses of the tool
+	 * @param newImage The new image of the tool
+	 * @return The reason the tool could not be changed, or null if the tool was changed successfully
 	 */
-	public String changeItem(CustomItem item, CustomItemType newType, short newDamage, String newName, String newDisplayName, String[] newLore, NamedImage newImage) {
+	public String changeTool(CustomTool item, CustomItemType newType, short newDamage, String newName, 
+			String newDisplayName, String[] newLore, AttributeModifier[] newAttributes, boolean allowEnchanting,
+			boolean allowAnvil, int newDurability, NamedImage newImage) {
 		boolean has = false;
 		for(CustomItem current : items) {
 			if(current == item) {
@@ -457,6 +464,74 @@ public class ItemSet {
 		item.setName(newName);
 		item.setDisplayName(newDisplayName);
 		item.setLore(newLore);
+		item.setAttributes(newAttributes);
+		item.setAllowEnchanting(allowEnchanting);
+		item.setAllowAnvilActions(allowAnvil);
+		item.setDurability(newDurability);
+		item.setTexture(newImage);
+		return null;
+	}
+	
+	/**
+	 * Attempts to add the specified item to this item set.
+	 * If the item can be added, it will be added.
+	 * If the item can't be added, the reason is returned.
+	 * @param item The item that should be added to this set
+	 * @return The reason the item could not be added, or null if the item was added successfully
+	 */
+	public String addItem(CustomItem item) {
+		if (item == null) return "Can't add null items";
+		if (item.getClass() != CustomItem.class) return "Use the appropriate method for that class";
+		for(CustomItem current : items) {
+			if(current.getName().equals(item.getName()))
+				return "There is already a custom item with that name";
+			if(current.getItemType() == item.getItemType() && current.getItemDamage() == item.getItemDamage())
+				return "There is already a custom item with the same item type and damage";
+		}
+		items.add(item);
+		return null;
+	}
+	
+	/**
+	 * Attempts to change the specified item in this item set.
+	 * If the item can be changed, it will be changed.
+	 * If the item can't be changed, the reason is returned.
+	 * @param item The item that should be changed
+	 * @param newType The new type of the item
+	 * @param newDamage The new damage of the item
+	 * @param newName The new name of the item
+	 * @param newDisplayName The new display name of the item
+	 * @param newLore The new lore of the item
+	 * @param newAttributes The new attribute modifiers of the item
+	 * @param newImage The new image of the item
+	 * @return null if the item was changed successfully or the reason the item could not be changed
+	 */
+	public String changeItem(CustomItem item, CustomItemType newType, short newDamage, String newName, 
+			String newDisplayName, String[] newLore, AttributeModifier[] newAttributes, NamedImage newImage) {
+		boolean has = false;
+		for(CustomItem current : items) {
+			if(current == item) {
+				has = true;
+				break;
+			}
+			else {
+				if(current.getItemType() == newType && current.getItemDamage() == newDamage) {
+					return "The item " + current.getName() + " has the same internal type and damage.";
+				}
+			}
+		}
+		if(!has) return "There is no previous item!";
+		has = false;
+		for(NamedImage texture : textures)
+			if(texture == newImage)
+				has = true;
+		if(!has) return "The specified texture is not in the texture list!";
+		item.setItemType(newType);
+		item.setItemDamage(newDamage);
+		item.setName(newName);
+		item.setDisplayName(newDisplayName);
+		item.setLore(newLore);
+		item.setAttributes(newAttributes);
 		item.setTexture(newImage);
 		return null;
 	}

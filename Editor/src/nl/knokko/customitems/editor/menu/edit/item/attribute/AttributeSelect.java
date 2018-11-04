@@ -2,6 +2,7 @@ package nl.knokko.customitems.editor.menu.edit.item.attribute;
 
 import nl.knokko.customitems.editor.menu.edit.EditProps;
 import nl.knokko.customitems.item.AttributeModifier.Attribute;
+import nl.knokko.gui.color.GuiColor;
 import nl.knokko.gui.component.GuiComponent;
 import nl.knokko.gui.component.menu.GuiMenu;
 import nl.knokko.gui.component.text.TextButton;
@@ -14,6 +15,11 @@ public class AttributeSelect extends GuiMenu {
 	public AttributeSelect(Receiver receiver, GuiComponent returnMenu) {
 		this.receiver = receiver;
 		this.returnMenu = returnMenu;
+	}
+	
+	@Override
+	public GuiColor getBackgroundColor() {
+		return EditProps.BACKGROUND;
 	}
 
 	@Override
@@ -30,7 +36,7 @@ public class AttributeSelect extends GuiMenu {
 				state.getWindow().setMainComponent(returnMenu);
 			}), x, y - 0.1f, x + 0.25f, y);
 			y -= 0.125f;
-			if (y < 1.5f) {
+			if (y < 0.15f) {
 				y = 0.9f;
 				x += 0.3f;
 			}
