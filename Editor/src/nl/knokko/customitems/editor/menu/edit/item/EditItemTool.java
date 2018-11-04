@@ -39,7 +39,7 @@ public class EditItemTool extends EditItemBase {
 		else if (toolCategory == Category.AXE)
 			internalType.currentType = CustomItemType.IRON_AXE;
 		else if (toolCategory == Category.SHOVEL)
-			internalType.currentType = CustomItemType.IRON_SPADE;
+			internalType.currentType = CustomItemType.IRON_SHOVEL;
 		else if (toolCategory == Category.HOE)
 			internalType.currentType = CustomItemType.IRON_HOE;
 		else if (toolCategory == Category.SHEAR)
