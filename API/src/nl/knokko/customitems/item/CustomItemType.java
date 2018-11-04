@@ -26,11 +26,11 @@ public enum CustomItemType {
 	GOLD_SPADE(32, SHOVEL),
 	GOLD_PICKAXE(32, PICKAXE),
 	GOLD_AXE(32, AXE),
-	WOOD_HOE(59, DEFAULT, HOE),
-	STONE_HOE(131, DEFAULT, HOE),
-	IRON_HOE(250, DEFAULT, HOE),
-	DIAMOND_HOE(1561, DEFAULT, HOE),
-	GOLD_HOE(32, DEFAULT, HOE),
+	WOOD_HOE(59, HOE, DEFAULT),
+	STONE_HOE(131, HOE, DEFAULT),
+	IRON_HOE(250, HOE, DEFAULT),
+	DIAMOND_HOE(1561, HOE, DEFAULT),
+	GOLD_HOE(32, HOE, DEFAULT),
 	LEATHER_HELMET(55, HELMET),
 	LEATHER_CHESTPLATE(80, CHESTPLATE),
 	LEATHER_LEGGINGS(75, LEGGINGS),
@@ -52,7 +52,7 @@ public enum CustomItemType {
 	GOLD_LEGGINGS(105, LEGGINGS),
 	GOLD_BOOTS(91, BOOTS),
 	FISHING_ROD(64, FISHING),
-	SHEARS(238, DEFAULT, SHEAR),
+	SHEARS(238, SHEAR, DEFAULT),
 	CARROT_STICK(25, CARROTSTICK),
 	SHIELD(336, Category.SHIELD),
 	ELYTRA(431, Category.ELYTRA);
@@ -74,6 +74,10 @@ public enum CustomItemType {
 			if (current == category)
 				return true;
 		return false;
+	}
+	
+	public Category getMainCategory() {
+		return categories[0];
 	}
 	
 	public static enum Category {
