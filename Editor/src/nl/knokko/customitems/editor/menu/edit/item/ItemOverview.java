@@ -14,11 +14,13 @@ import nl.knokko.gui.component.text.TextComponent;
 public class ItemOverview extends GuiMenu {
 	
 	protected final EditMenu menu;
+	private final TextComponent errorComponent;
 	
 	protected ItemList itemList;
 
 	public ItemOverview(EditMenu menu) {
 		this.menu = menu;
+		errorComponent = new TextComponent("", EditProps.ERROR);
 	}
 	
 	@Override
@@ -35,10 +37,11 @@ public class ItemOverview extends GuiMenu {
 	@Override
 	protected void addComponents() {
 		itemList = new ItemList();
-		addComponent(itemList, 0.3f, 0f, 1f, 1f);
+		addComponent(itemList, 0.3f, 0f, 1f, 0.9f);
 		addComponent(new TextButton("Back", EditProps.CANCEL_BASE, EditProps.CANCEL_HOVER, () -> {
 			state.getWindow().setMainComponent(menu);
 		}), 0.05f, 0.7f, 0.2f, 0.8f);
+		addComponent(errorComponent, 0.05f, 0.9f, 0.95f, 1f);
 		addComponent(new TextButton("Create item", EditProps.BUTTON, EditProps.HOVER, () -> {
 			state.getWindow().setMainComponent(new CreateItem(menu));
 		}), 0.05f, 0.4f, 0.25f, 0.5f);
@@ -71,8 +74,11 @@ public class ItemOverview extends GuiMenu {
 						state.getWindow().setMainComponent(new EditItemSimple(menu, item));
 				}), 0.6f, minY, 0.7f, maxY);
 				addComponent(new TextButton("Delete", EditProps.QUIT_BASE, EditProps.QUIT_HOVER, () -> {
-					menu.getSet().removeItem(item);
-					refresh();
+					String error = menu.getSet().removeItem(item);
+					if (error != null)
+						errorComponent.setText(error);
+					else
+						refresh();
 				}), 0.8f, minY, 0.95f, maxY);
 				index++;
 			}
