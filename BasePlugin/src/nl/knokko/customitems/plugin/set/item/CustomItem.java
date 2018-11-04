@@ -52,7 +52,8 @@ public class CustomItem extends nl.knokko.customitems.item.CustomItem {
     
     public CustomItem(CustomItemType itemType, short itemDamage, String name, String displayName, String[] lore, AttributeModifier[] attributes){
         super(itemType, itemDamage, name, displayName, lore, attributes);
-        material = Material.getMaterial(itemType.name());
+        // Why Bukkit?
+        material = Material.getMaterial(itemType.name().replace("SHOVEL", "SPADE"));
         attributeModifiers = new Single[attributes.length];
         for (int index = 0; index < attributes.length; index++) {
         	AttributeModifier a = attributes[index];
