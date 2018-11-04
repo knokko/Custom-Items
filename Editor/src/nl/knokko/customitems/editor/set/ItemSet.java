@@ -243,7 +243,7 @@ public class ItemSet {
 						if(a == b) return 0;
 						throw new IllegalArgumentException("a is " + a + " and b is " + b);
 					});
-					String name = entry.getKey().toString().toLowerCase();
+					String name = entry.getKey().name().toLowerCase();
 					if (entry.getKey() == CustomItemType.CARROT_STICK)
 						name = "carrot_on_a_stick";
 					ZipEntry zipEntry = new ZipEntry("assets/minecraft/models/item/" + name + ".json");
