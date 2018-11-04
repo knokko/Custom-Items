@@ -65,6 +65,11 @@ public enum CustomItemType {
 		this.categories = categories;
 	}
 	
+	@Override
+	public String toString() {
+		return name().charAt(0) + name().substring(1).toLowerCase().replaceAll("_", " ");
+	}
+	
 	public short getMaxDurability() {
 		return maxDurability;
 	}
