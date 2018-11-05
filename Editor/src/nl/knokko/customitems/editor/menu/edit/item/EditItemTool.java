@@ -29,7 +29,7 @@ public class EditItemTool extends EditItemBase {
 			durability = new TextEditField(previous.getDurability() + "", EditProps.EDIT_BASE, EditProps.EDIT_ACTIVE);
 		} else {
 			allowEnchanting = new CheckboxComponent(true);
-			allowAnvil = new CheckboxComponent(true);
+			allowAnvil = new CheckboxComponent(false);
 			durability = new TextEditField("500", EditProps.EDIT_BASE, EditProps.EDIT_ACTIVE);
 		}
 		if (toolCategory == Category.SWORD)
@@ -54,8 +54,8 @@ public class EditItemTool extends EditItemBase {
 		internalType.setText(internalType.currentType.toString());
 		addComponent(allowEnchanting, 0.75f, 0.7f, 0.775f, 0.725f);
 		addComponent(new TextComponent("Allow enchanting", EditProps.LABEL), 0.8f, 0.7f, 0.95f, 0.8f);
-		addComponent(allowAnvil, 0.75f, 0.6f, 0.775f, 0.625f);
-		addComponent(new TextComponent("Allow anvil actions", EditProps.LABEL), 0.8f, 0.6f, 0.95f, 0.7f);
+		//addComponent(allowAnvil, 0.75f, 0.6f, 0.775f, 0.625f);
+		//addComponent(new TextComponent("Allow anvil actions", EditProps.LABEL), 0.8f, 0.6f, 0.95f, 0.7f);
 		addComponent(durability, 0.9f, 0.5f, 0.95f, 0.6f);
 		addComponent(new TextComponent("Max uses: ", EditProps.LABEL), 0.75f, 0.5f, 0.875f, 0.6f);
 	}
