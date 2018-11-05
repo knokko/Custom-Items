@@ -10,6 +10,7 @@ import java.util.UUID;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.enchantments.Enchantment;
+import org.bukkit.entity.HumanEntity;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.event.Event.Result;
 import org.bukkit.event.EventHandler;
@@ -212,13 +213,22 @@ public class CustomItemsEventHandler implements Listener {
 					ItemStack current = event.getCurrentItem();
 					if (CustomItem.isCustom(cursor) && CustomItem.isCustom(current) && cursor.getType() == current.getType()
 							&& cursor.getDurability() == current.getDurability()) {
-						Bukkit.getScheduler().scheduleSyncDelayedTask(CustomItemsPlugin.getInstance(), () -> {
-							ItemStack[] contents = event.getInventory().getContents();
-							for (int index = 1; index < contents.length; index++)
-								contents[index].setAmount(contents[index].getAmount() - 1);
-							cursor.setAmount(cursor.getAmount() + current.getAmount());
-							event.getView().getPlayer().setItemOnCursor(cursor);
-						});
+						CustomItem custom = CustomItemsPlugin.getInstance().getSet().getItem(current);
+						if (custom != null && custom.canStack()) {
+							Bukkit.getScheduler().scheduleSyncDelayedTask(CustomItemsPlugin.getInstance(), () -> {
+								ItemStack[] contents = event.getInventory().getContents();
+								for (int index = 1; index < contents.length; index++) {
+									if (contents[index].getAmount() > 1)
+										contents[index].setAmount(contents[index].getAmount() - 1);
+									else
+										contents[index] = null;
+								}
+								event.getInventory().setContents(contents);
+								cursor.setAmount(cursor.getAmount() + current.getAmount());
+								event.getView().getPlayer().setItemOnCursor(cursor);
+								beforeCraft((CraftingInventory) event.getInventory(), event.getView().getPlayer());
+							});
+						}
 					}
 				} else {
 					// Maybe, there is some edge case I don't know about, so cancel it just to be sure
@@ -252,14 +262,18 @@ public class CustomItemsEventHandler implements Listener {
 	
 	@EventHandler(priority = EventPriority.HIGH)
 	public void beforeCraft(PrepareItemCraftEvent event) {
-		ItemStack result = event.getInventory().getResult();
+		beforeCraft(event.getInventory(), event.getView().getPlayer());
+	}
+	
+	public void beforeCraft(CraftingInventory inventory, HumanEntity owner) {
+		ItemStack result = inventory.getResult();
 		
 		// Block vanilla recipes that attempt to use custom items
 		if (result != null && result.getType() != Material.AIR) {
-			ItemStack[] ingredients = event.getInventory().getStorageContents();
+			ItemStack[] ingredients = inventory.getStorageContents();
 			for (ItemStack ingredient : ingredients) {
 				if (CustomItem.isCustom(ingredient)) {
-					event.getInventory().setResult(new ItemStack(Material.AIR));
+					inventory.setResult(new ItemStack(Material.AIR));
 					break;
 				}
 			}
@@ -269,7 +283,7 @@ public class CustomItemsEventHandler implements Listener {
 		CustomRecipe[] recipes = CustomItemsPlugin.getInstance().getSet().getRecipes();
 		if(recipes.length > 0) {
 			// Determine ingredients
-			ItemStack[] ingredients = event.getInventory().getStorageContents();
+			ItemStack[] ingredients = inventory.getStorageContents();
 			ingredients = Arrays.copyOfRange(ingredients, 1, ingredients.length);
 			Material[] ingredientTypes = new Material[ingredients.length];
 			for(int index = 0; index < ingredients.length; index++)
@@ -278,8 +292,8 @@ public class CustomItemsEventHandler implements Listener {
 			// Shaped recipes first because they have priority
 			for(int index = 0; index < recipes.length; index++) {
 				if(recipes[index] instanceof ShapedCustomRecipe && recipes[index].shouldAccept(ingredients)) {
-					event.getInventory().setResult(recipes[index].getResult());
-					shouldInterfere.put(event.getView().getPlayer().getUniqueId(), true);
+					inventory.setResult(recipes[index].getResult());
+					shouldInterfere.put(owner.getUniqueId(), true);
 					return;
 				}
 			}
@@ -287,12 +301,12 @@ public class CustomItemsEventHandler implements Listener {
 			// No shaped recipe fits, so try the shapeless recipes
 			for(int index = 0; index < recipes.length; index++) {
 				if(recipes[index] instanceof ShapelessCustomRecipe && recipes[index].shouldAccept(ingredients)) {
-					event.getInventory().setResult(recipes[index].getResult());
-					shouldInterfere.put(event.getView().getPlayer().getUniqueId(), true);
+					inventory.setResult(recipes[index].getResult());
+					shouldInterfere.put(owner.getUniqueId(), true);
 					return;
 				}
 			}
 		}
-		shouldInterfere.put(event.getView().getPlayer().getUniqueId(), false);
+		shouldInterfere.put(owner.getUniqueId(), false);
 	}
 }
