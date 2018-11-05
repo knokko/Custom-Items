@@ -246,6 +246,8 @@ public class ItemSet {
 					String name = entry.getKey().name().toLowerCase();
 					if (entry.getKey() == CustomItemType.CARROT_STICK)
 						name = "carrot_on_a_stick";
+					if (name.startsWith("gold"))
+						name = name.replace("gold", "golden");
 					ZipEntry zipEntry = new ZipEntry("assets/minecraft/models/item/" + name + ".json");
 					zipOutput.putNextEntry(zipEntry);
 					PrintWriter jsonWriter = new PrintWriter(zipOutput);
