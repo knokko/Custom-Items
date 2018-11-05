@@ -81,11 +81,11 @@ public class EditMenu extends GuiMenu {
 					state.getWindow().setMainComponent(MainMenu.INSTANCE);
 			}
 		}), 0.1f, 0.05f, 0.25f, 0.15f);
-		addComponent(new TextButton("Items", EditProps.BUTTON, EditProps.HOVER, () -> {
-			state.getWindow().setMainComponent(itemOverview);
-		}), 0.6f, 0.75f, 0.8f, 0.85f);
 		addComponent(new TextButton("Textures", EditProps.BUTTON, EditProps.HOVER, () -> {
 			state.getWindow().setMainComponent(textureOverview);
+		}), 0.6f, 0.75f, 0.8f, 0.85f);
+		addComponent(new TextButton("Items", EditProps.BUTTON, EditProps.HOVER, () -> {
+			state.getWindow().setMainComponent(itemOverview);
 		}), 0.6f, 0.6f, 0.8f, 0.7f);
 		addComponent(new TextButton("Recipes", EditProps.BUTTON, EditProps.HOVER, () -> {
 			state.getWindow().setMainComponent(recipeOverview);
