@@ -1,6 +1,7 @@
 package nl.knokko.customitems.editor;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 
 import javax.swing.filechooser.FileSystemView;
 
@@ -16,6 +17,16 @@ public class Editor {
 
 	public static void main(String[] args) {
 		FOLDER.mkdirs();
+		try {
+			LOGS_FOLDER.mkdir();
+			long time = System.currentTimeMillis();
+			System.setOut(new Logger(new File(LOGS_FOLDER + "/out " + time + ".txt"), System.out));
+			System.setErr(new Logger(new File(LOGS_FOLDER + "/err " + time + ".txt"), System.err));
+		} catch (FileNotFoundException ex) {
+			ex.printStackTrace();
+		}
+		System.out.println("test out");
+		System.err.println("test error");
 		GuiWindow window = new AWTGuiWindow();
 		window.setMainComponent(MainMenu.INSTANCE);
 		window.open("Custom Items Editor", true);
