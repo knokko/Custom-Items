@@ -48,7 +48,7 @@ public class ShapelessRecipeEdit extends GuiMenu {
 		}, () -> {
 			return ingredients.getComponents().size() < 18;
 		}), 0.1f, 0.4f, 0.3f, 0.5f);
-		addComponent(new ConditionalTextButton("Save", EditProps.SAVE_BASE, EditProps.SAVE_HOVER, () -> {
+		addComponent(new ConditionalTextButton("Apply", EditProps.SAVE_BASE, EditProps.SAVE_HOVER, () -> {
 			Collection<SubComponent> components = ingredients.getComponents();
 			Ingredient[] ingredients = new Ingredient[components.size() / 2];
 			int index = 0;

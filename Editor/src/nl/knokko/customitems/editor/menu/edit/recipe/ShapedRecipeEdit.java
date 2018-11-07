@@ -44,7 +44,7 @@ public class ShapedRecipeEdit extends GuiMenu {
 		addComponent(new TextButton("Cancel", EditProps.CANCEL_BASE, EditProps.CANCEL_HOVER, () -> {
 			state.getWindow().setMainComponent(menu.getRecipeOverview());
 		}), 0.1f, 0.85f, 0.25f, 0.95f);
-		addComponent(new TextButton("Save", EditProps.SAVE_BASE, EditProps.SAVE_HOVER, () -> {
+		addComponent(new TextButton("Apply", EditProps.SAVE_BASE, EditProps.SAVE_HOVER, () -> {
 			if (previous != null) {
 				Ingredient[] ingredients = new Ingredient[9];
 				for (int index = 0; index < ingredients.length; index++)

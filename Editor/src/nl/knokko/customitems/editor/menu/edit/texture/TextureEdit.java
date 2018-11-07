@@ -60,7 +60,7 @@ public class TextureEdit extends GuiMenu {
 		addComponent(new TextComponent("Texture: ", EditProps.LABEL), 0.4f, 0.4f, 0.55f, 0.5f);
 		addComponent(wrapper, 0.6f, 0.4f, 0.7f, 0.5f);
 		addComponent(createImageSelect(), 0.75f, 0.4f, 0.9f, 0.5f);
-		addComponent(new TextButton(previous != null ? "Save" : "Create", EditProps.SAVE_BASE, EditProps.SAVE_HOVER, () -> {
+		addComponent(new TextButton(previous != null ? "Apply" : "Create", EditProps.SAVE_BASE, EditProps.SAVE_HOVER, () -> {
 			if(image != null) {
 				String error = CreateMenu.testFileName(name.getText() + ".png");
 				if(error != null)
