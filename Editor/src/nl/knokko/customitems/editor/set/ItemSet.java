@@ -38,6 +38,7 @@ import nl.knokko.customitems.item.AttributeModifier.Slot;
 import nl.knokko.util.bits.BitInput;
 import nl.knokko.util.bits.BitOutput;
 import nl.knokko.util.bits.BitOutputStream;
+import nl.knokko.util.bits.ByteArrayBitOutput;
 
 import static nl.knokko.customitems.encoding.SetEncoding.*;
 
@@ -68,7 +69,10 @@ public class ItemSet {
         short damage = input.readShort();
         String name = input.readJavaString();
         String displayName = input.readJavaString();
+        //System.out.println("itemType is " + itemType.name());
+        //System.out.println("loadSimple item with damage " + damage + " and name " + name + " and displayName " + displayName);
         String[] lore = new String[input.readByte() & 0xFF];
+        //System.out.println("lore length is " + lore.length);
         for(int index = 0; index < lore.length; index++){
             lore[index] = input.readJavaString();
         }
@@ -166,12 +170,14 @@ public class ItemSet {
 	private void load1(BitInput input) {
 		// Textures
 		int textureAmount = input.readInt();
+		//System.out.println("amount of textures is " + textureAmount);
 		textures = new ArrayList<NamedImage>(textureAmount);
 		for (int counter = 0; counter < textureAmount; counter++)
 			textures.add(new NamedImage(input));
-		
+		//System.out.println("textures are " + textures);
 		// Items
 		int itemAmount = input.readInt();
+		//System.out.println("amount of items is " + itemAmount);
 		items = new ArrayList<CustomItem>(itemAmount);
 		for (int counter = 0; counter < itemAmount; counter++)
 			items.add(loadItem(input));
@@ -316,10 +322,19 @@ public class ItemSet {
 	
 	public String save() {
 		try {
+			Editor.getFolder().mkdir();
+			Editor.getBackupFolder().mkdir();
 			File file = new File(Editor.getFolder() + "/" + fileName + ".cisb");// cisb stands for Custom Item Set Builder
-			BitOutput output = new BitOutputStream(new FileOutputStream(file));
+			ByteArrayBitOutput output = new ByteArrayBitOutput();
 			save1(output);
 			output.terminate();
+			byte[] bytes = output.getBytes();
+			FileOutputStream mainOutput = new FileOutputStream(file);
+			mainOutput.write(bytes);
+			mainOutput.close();
+			FileOutputStream backupOutput = new FileOutputStream(new File(Editor.getBackupFolder() + "/" + fileName + " " + System.currentTimeMillis() + ".cisb"));
+			backupOutput.write(bytes);
+			backupOutput.close();
 			return null;
 		} catch(IOException ioex) {
 			ioex.printStackTrace();

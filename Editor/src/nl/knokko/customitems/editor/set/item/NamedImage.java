@@ -25,6 +25,11 @@ public class NamedImage {
 				image.setRGB(x, y, input.readDirectInt());
 	}
 	
+	@Override
+	public String toString() {
+		return "Texture " + name;
+	}
+	
 	public String getName() {
 		return name;
 	}
