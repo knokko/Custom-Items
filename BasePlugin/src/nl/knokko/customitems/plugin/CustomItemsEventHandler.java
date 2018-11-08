@@ -24,9 +24,9 @@ import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryType.SlotType;
 import org.bukkit.event.inventory.PrepareAnvilEvent;
 import org.bukkit.event.inventory.PrepareItemCraftEvent;
+import org.bukkit.event.player.PlayerExpChangeEvent;
 import org.bukkit.event.player.PlayerInteractAtEntityEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
-import org.bukkit.event.player.PlayerItemMendEvent;
 import org.bukkit.event.player.PlayerShearEntityEvent;
 import org.bukkit.inventory.CraftingInventory;
 import org.bukkit.inventory.EquipmentSlot;
@@ -108,7 +108,9 @@ public class CustomItemsEventHandler implements Listener {
 		}
 	}
 	
-	@EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
+	/*
+	 * The mending enchantment is ignored on unbreakable items
+	@EventHandler(priority = EventPriority.HIGHEST)
 	public void handleCustomMending(PlayerItemMendEvent event) {
 		if (CustomItem.isCustom(event.getItem())) {
 			CustomItem custom = CustomItemsPlugin.getInstance().getSet().getItem(event.getItem());
@@ -122,6 +124,22 @@ public class CustomItemsEventHandler implements Listener {
 					event.getExperienceOrb().setExperience(newXP);
 				}
 				event.setCancelled(true);
+			}
+		}
+	}*/
+	
+	@EventHandler
+	public void beforeXP(PlayerExpChangeEvent event) {
+		ItemStack item = event.getPlayer().getInventory().getItemInMainHand();
+		if (CustomItem.isCustom(item)) {
+			CustomItem custom = CustomItemsPlugin.getInstance().getSet().getItem(item);
+			if (custom != null) {
+				if (custom instanceof CustomTool) {
+					CustomTool tool = (CustomTool) custom;
+					int repaired = tool.increaseDurability(item, event.getAmount() * 2);
+					int newXP = event.getAmount() - repaired / 2;
+					event.setAmount(newXP);
+				}
 			}
 		}
 	}

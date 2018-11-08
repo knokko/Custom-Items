@@ -108,13 +108,13 @@ public class CustomTool extends CustomItem {
 		if (Math.random() <= 1.0 / (1 + stack.getEnchantmentLevel(Enchantment.DURABILITY))) {
 			ItemMeta meta = stack.getItemMeta();
 			List<String> lore = meta.getLore();
-			String durabilityString = lore.get(0);
+			String durabilityString = getDurabilityString(lore);
 			// Check whether or not the tool is unbreakable
 			if (durabilityString.startsWith(DURABILITY_PREFIX)) {
 				int durability = Integer.parseInt(durabilityString.substring(DURABILITY_PREFIX.length(), durabilityString.indexOf(DURABILITY_SPLIT)));
 				if (durability > 1) {
 					durability -= damage;
-					lore.set(0, DURABILITY_PREFIX + durability + DURABILITY_SPLIT + maxDurability);
+					lore.set(lore.indexOf(durabilityString), DURABILITY_PREFIX + durability + DURABILITY_SPLIT + maxDurability);
 					meta.setLore(lore);
 					stack.setItemMeta(meta);
 					return false;
@@ -132,7 +132,7 @@ public class CustomTool extends CustomItem {
 	public int increaseDurability(ItemStack stack, int amount) {
 		ItemMeta meta = stack.getItemMeta();
 		List<String> lore = meta.getLore();
-		String durabilityString = lore.get(0);
+		String durabilityString = getDurabilityString(lore);
 		// Check whether or not the tool is unbreakable
 		if (durabilityString.startsWith(DURABILITY_PREFIX)) {
 			int durability = Integer.parseInt(durabilityString.substring(DURABILITY_PREFIX.length(), durabilityString.indexOf(DURABILITY_SPLIT)));
@@ -140,7 +140,7 @@ public class CustomTool extends CustomItem {
 			durability += amount;
 			if (durability > maxDurability)
 				durability = maxDurability;
-			lore.set(0, DURABILITY_PREFIX + durability + DURABILITY_SPLIT + maxDurability);
+			lore.set(lore.indexOf(durabilityString), DURABILITY_PREFIX + durability + DURABILITY_SPLIT + maxDurability);
 			meta.setLore(lore);
 			stack.setItemMeta(meta);
 			return durability - old;
@@ -152,13 +152,20 @@ public class CustomTool extends CustomItem {
 	public int getDurability(ItemStack stack) {
 		ItemMeta meta = stack.getItemMeta();
 		List<String> lore = meta.getLore();
-		String durabilityString = lore.get(0);
+		String durabilityString = getDurabilityString(lore);
 		// Check whether or not the tool is unbreakable
 		if (durabilityString.startsWith(DURABILITY_PREFIX)) {
 			return Integer.parseInt(durabilityString.substring(DURABILITY_PREFIX.length(), durabilityString.indexOf(DURABILITY_SPLIT)));
 		} else {
 			return CustomItem.UNBREAKABLE_TOOL_DURABILITY;
 		}
+	}
+	
+	private String getDurabilityString(List<String> lore) {
+		for (String line : lore)
+			if (line.startsWith(DURABILITY_PREFIX))
+				return line;
+		return null;
 	}
 	
 	public int getMaxDurability() {

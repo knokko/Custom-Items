@@ -31,6 +31,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import nl.knokko.customitems.plugin.command.CommandCustomItems;
+import nl.knokko.customitems.plugin.multisupport.crazyenchantments.CrazyEnchantmentsSupport;
 import nl.knokko.customitems.plugin.set.ItemSet;
 import nl.knokko.util.bits.BitInput;
 import nl.knokko.util.bits.BitInputStream;
@@ -54,6 +55,7 @@ public class CustomItemsPlugin extends JavaPlugin {
         loadSet();
         getCommand("customitems").setExecutor(new CommandCustomItems());
         Bukkit.getPluginManager().registerEvents(new CustomItemsEventHandler(), this);
+        CrazyEnchantmentsSupport.onEnable();
     }
     
     @Override
