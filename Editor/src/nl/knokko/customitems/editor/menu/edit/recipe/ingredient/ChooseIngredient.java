@@ -55,6 +55,7 @@ public class ChooseIngredient extends GuiMenu {
 		if (allowEmpty) {
 			addComponent(new TextButton("Empty", EditProps.BUTTON, EditProps.HOVER, () -> {
 				listener.set(new NoIngredient());
+				state.getWindow().setMainComponent(returnMenu);
 			}), 0.6f, 0.25f, 0.8f, 0.35f);
 		}
 	}
