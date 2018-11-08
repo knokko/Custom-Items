@@ -26,6 +26,7 @@ import org.bukkit.event.inventory.PrepareAnvilEvent;
 import org.bukkit.event.inventory.PrepareItemCraftEvent;
 import org.bukkit.event.player.PlayerInteractAtEntityEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
+import org.bukkit.event.player.PlayerItemMendEvent;
 import org.bukkit.event.player.PlayerShearEntityEvent;
 import org.bukkit.inventory.CraftingInventory;
 import org.bukkit.inventory.EquipmentSlot;
@@ -104,6 +105,24 @@ public class CustomItemsEventHandler implements Listener {
 		if(custom != null && custom.forbidDefaultUse(item)) {
 			// Don't let custom items be used as their internal item
 			event.setCancelled(true);
+		}
+	}
+	
+	@EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
+	public void handleCustomMending(PlayerItemMendEvent event) {
+		if (CustomItem.isCustom(event.getItem())) {
+			CustomItem custom = CustomItemsPlugin.getInstance().getSet().getItem(event.getItem());
+			if (custom != null) {
+				if (custom instanceof CustomTool) {
+					CustomTool tool = (CustomTool) custom;
+					int repaired = tool.increaseDurability(event.getItem(), event.getRepairAmount());
+					int newXP = event.getExperienceOrb().getExperience() - repaired / 2;
+					if (newXP < 0)
+						event.getExperienceOrb().remove();
+					event.getExperienceOrb().setExperience(newXP);
+				}
+				event.setCancelled(true);
+			}
 		}
 	}
 	

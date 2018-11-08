@@ -129,6 +129,26 @@ public class CustomTool extends CustomItem {
 		}
 	}
 	
+	public int increaseDurability(ItemStack stack, int amount) {
+		ItemMeta meta = stack.getItemMeta();
+		List<String> lore = meta.getLore();
+		String durabilityString = lore.get(0);
+		// Check whether or not the tool is unbreakable
+		if (durabilityString.startsWith(DURABILITY_PREFIX)) {
+			int durability = Integer.parseInt(durabilityString.substring(DURABILITY_PREFIX.length(), durabilityString.indexOf(DURABILITY_SPLIT)));
+			int old = durability;
+			durability += amount;
+			if (durability > maxDurability)
+				durability = maxDurability;
+			lore.set(0, DURABILITY_PREFIX + durability + DURABILITY_SPLIT + maxDurability);
+			meta.setLore(lore);
+			stack.setItemMeta(meta);
+			return durability - old;
+		} else {
+			return 0;
+		}
+	}
+	
 	public int getDurability(ItemStack stack) {
 		ItemMeta meta = stack.getItemMeta();
 		List<String> lore = meta.getLore();
