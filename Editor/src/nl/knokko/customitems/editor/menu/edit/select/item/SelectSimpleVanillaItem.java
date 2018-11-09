@@ -8,6 +8,7 @@ import nl.knokko.gui.color.GuiColor;
 import nl.knokko.gui.component.GuiComponent;
 import nl.knokko.gui.component.menu.GuiMenu;
 import nl.knokko.gui.component.text.TextButton;
+import nl.knokko.gui.component.text.dynamic.DynamicTextButton;
 
 public class SelectSimpleVanillaItem extends GuiMenu {
 	
@@ -45,7 +46,7 @@ public class SelectSimpleVanillaItem extends GuiMenu {
 				return a.name().compareTo(b.name());
 			});
 			for (Material material : materials) {
-				addComponent(new SelectItemButton(state.getWindow().getTextureLoader(), material, () -> {
+				addComponent(new DynamicTextButton(material.name(), EditProps.SELECT_BASE, EditProps.SELECT_HOVER, () -> {
 					receiver.onSelect(material);
 					state.getWindow().setMainComponent(returnMenu);
 				}), 0f, 0.9f - index * 0.1f, 1f, 1f - index * 0.1f);

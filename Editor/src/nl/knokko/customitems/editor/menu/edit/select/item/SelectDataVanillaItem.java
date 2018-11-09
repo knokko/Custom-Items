@@ -11,6 +11,7 @@ import nl.knokko.gui.component.text.ConditionalTextButton;
 import nl.knokko.gui.component.text.TextButton;
 import nl.knokko.gui.component.text.TextComponent;
 import nl.knokko.gui.component.text.TextEditField;
+import nl.knokko.gui.component.text.dynamic.DynamicActivatableTextButton;
 
 public class SelectDataVanillaItem extends GuiMenu {
 	
@@ -72,7 +73,7 @@ public class SelectDataVanillaItem extends GuiMenu {
 				return a.name().compareTo(b.name());
 			});
 			for (Material material : materials) {
-				addComponent(new SelectItemButton.Active(state.getWindow().getTextureLoader(), material, () -> {
+				addComponent(new DynamicActivatableTextButton(material.name(), EditProps.SELECT_BASE, EditProps.SELECT_HOVER, EditProps.SELECT_ACTIVE, () -> {
 					selected = material;
 				}, () -> {
 					return selected == material;
