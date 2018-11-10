@@ -33,7 +33,7 @@ import nl.knokko.util.bits.BitOutput;
 
 public abstract class Recipe {
 	
-	protected static Ingredient loadIngredient(BitInput input, ItemSet set) {
+	public static Ingredient loadIngredient(BitInput input, ItemSet set) {
 		byte encoding = input.readByte();
 		if (encoding == RecipeEncoding.Ingredient.NONE)
 			return new NoIngredient();

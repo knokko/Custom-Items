@@ -105,13 +105,13 @@ public class ShapedRecipeEdit extends GuiMenu {
 		private Ingredients() {
 			ingredients = new IngredientComponent[9];
 			for (int index = 0; index < ingredients.length; index++)
-				ingredients[index] = new IngredientComponent(new NoIngredient(), ShapedRecipeEdit.this, menu.getSet());
+				ingredients[index] = new IngredientComponent("empty", new NoIngredient(), ShapedRecipeEdit.this, menu.getSet());
 		}
 		
 		private Ingredients(Ingredient[] ingredients) {
 			this.ingredients = new IngredientComponent[9];
 			for (int index = 0; index < ingredients.length; index++)
-				this.ingredients[index] = new IngredientComponent(ingredients[index], ShapedRecipeEdit.this, menu.getSet());
+				this.ingredients[index] = new IngredientComponent("empty", ingredients[index], ShapedRecipeEdit.this, menu.getSet());
 		}
 
 		@Override

@@ -38,10 +38,13 @@ public class SelectSimpleVanillaItem extends GuiMenu {
 	private final GuiComponent returnMenu;
 	private final Receiver receiver;
 	private final List list;
+	
+	private final boolean addNoneButton;
 
-	public SelectSimpleVanillaItem(GuiComponent returnMenu, Receiver receiver) {
+	public SelectSimpleVanillaItem(GuiComponent returnMenu, Receiver receiver, boolean addNoneButton) {
 		this.returnMenu = returnMenu;
 		this.receiver = receiver;
+		this.addNoneButton = addNoneButton;
 		this.list = new List();
 	}
 
@@ -68,6 +71,13 @@ public class SelectSimpleVanillaItem extends GuiMenu {
 			Arrays.sort(materials, (Material a, Material b) -> {
 				return a.name().compareTo(b.name());
 			});
+			if (addNoneButton) {
+				addComponent(new DynamicTextButton("None", EditProps.SELECT_BASE, EditProps.SELECT_HOVER, () -> {
+					receiver.onSelect(null);
+					state.getWindow().setMainComponent(returnMenu);
+				}), 0f, 0.9f - index * 0.1f, 1f, 1f - index * 0.1f);
+				index++;
+			}
 			for (Material material : materials) {
 				addComponent(new DynamicTextButton(material.name(), EditProps.SELECT_BASE, EditProps.SELECT_HOVER, () -> {
 					receiver.onSelect(material);

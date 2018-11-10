@@ -67,6 +67,7 @@ public class CustomItemIngredient implements Ingredient {
 
 	@Override
 	public void save(BitOutput output) {
+		output.addByte(getID());
 		output.addJavaString(item.getName());
 	}
 
@@ -81,12 +82,12 @@ public class CustomItemIngredient implements Ingredient {
 	}
 	
 	@Override
-	public String toString() {
+	public String toString(String emptyString) {
 		return item.getName();
 	}
 	
 	@Override
-	public String[] getInfo() {
+	public String[] getInfo(String emptyString) {
 		return info;
 	}
 }

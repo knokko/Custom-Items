@@ -59,6 +59,7 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.inventory.meta.Repairable;
 
+import nl.knokko.core.plugin.item.ItemHelper;
 import nl.knokko.customitems.plugin.recipe.CustomRecipe;
 import nl.knokko.customitems.plugin.recipe.ShapedCustomRecipe;
 import nl.knokko.customitems.plugin.recipe.ShapelessCustomRecipe;
@@ -184,8 +185,10 @@ public class CustomItemsEventHandler implements Listener {
 		if (custom1 != null) {
 			if (custom1.allowAnvilActions()) {
 				if (custom1 instanceof CustomTool) {
+					CustomTool tool = (CustomTool) custom1;
+					String renameText = event.getInventory().getRenameText();
+					String oldName = ItemHelper.getStackName(contents[0]);
 					if (custom1 == custom2) {
-						CustomTool tool = (CustomTool) custom1;
 						int durability1 = tool.getDurability(contents[0]);
 						int durability2 = tool.getDurability(contents[1]);
 						int resultDurability = Math.min(durability1 + durability2, tool.getMaxDurability());
@@ -194,7 +197,7 @@ public class CustomItemsEventHandler implements Listener {
 						ItemStack result = tool.create(1, resultDurability);
 						int levelCost = 0;
 						boolean hasChange = false;
-						if (!event.getInventory().getRenameText().isEmpty() && !event.getInventory().getRenameText().equals(tool.getDisplayName())) {
+						if (!renameText.isEmpty() && !renameText.equals(oldName)) {
 							ItemMeta meta = result.getItemMeta();
 							meta.setDisplayName(event.getInventory().getRenameText());
 							result.setItemMeta(meta);
@@ -240,8 +243,6 @@ public class CustomItemsEventHandler implements Listener {
 						}
 						if (hasChange) {
 							event.setResult(result);
-							if (levelCost < 2)
-								levelCost = 2;
 							int finalLevelCost = levelCost;
 							Bukkit.getScheduler().scheduleSyncDelayedTask(CustomItemsPlugin.getInstance(), () -> {
 								// Apparently, settings the repair cost during the event has no effect
@@ -304,6 +305,45 @@ public class CustomItemsEventHandler implements Listener {
 						} else {
 							event.setResult(null);
 						}*/
+					} else if (contents[1] != null && contents[1].getType() != Material.AIR && tool.getRepairItem().accept(contents[1])) {
+						int durability = tool.getDurability(contents[0]);
+						int maxDurability = tool.getMaxDurability();
+						int neededDurability = maxDurability - durability;
+						if (neededDurability > 0) {
+							int neededAmount = (int) Math.ceil(neededDurability * 4.0 / maxDurability);
+							int usedAmount = Math.min(neededAmount, contents[1].getAmount());
+							int resultDurability = Math.min(durability + tool.getMaxDurability() * usedAmount / 4, tool.getMaxDurability());
+							ItemStack result = tool.create(1, resultDurability);
+							result.addUnsafeEnchantments(contents[0].getEnchantments());
+							int levelCost = usedAmount;
+							if (!renameText.isEmpty() && !renameText.equals(oldName))
+								levelCost++;
+							ItemMeta meta = result.getItemMeta();
+							meta.setDisplayName(event.getInventory().getRenameText());
+							result.setItemMeta(meta);
+							int repairCost = 0;
+							ItemMeta meta1 = contents[0].getItemMeta();
+							if (meta1 instanceof Repairable) {
+								Repairable repairable = (Repairable) meta1;
+								repairCost = repairable.getRepairCost();
+								levelCost += repairCost;
+							}
+							ItemMeta resultMeta = result.getItemMeta();
+							int repairCount = (int) Math.round(Math.log(repairCost + 1) / Math.log(2));
+							// TODO repair cost becomes invisible above 34 ?
+							((Repairable) resultMeta).setRepairCost((int) Math.round(Math.pow(2, repairCount + 1) - 1));
+							result.setItemMeta(resultMeta);
+							event.setResult(result);
+							int finalLevelCost = levelCost;
+							Bukkit.getScheduler().scheduleSyncDelayedTask(CustomItemsPlugin.getInstance(), () -> {
+								// Apparently, settings the repair cost during the event has no effect
+								event.getInventory().setRepairCost(finalLevelCost);
+							});
+						} else {
+							event.setResult(null);
+						}
+					} else {
+						event.setResult(null);
 					}
 				} else {
 					event.setResult(null);
@@ -451,13 +491,35 @@ public class CustomItemsEventHandler implements Listener {
 				ItemStack current = event.getCurrentItem();
 				if ((cursor == null || cursor.getType() == Material.AIR) && CustomItem.isCustom(current)) {
 					AnvilInventory ai = (AnvilInventory) event.getInventory();
-					if (event.getView().getPlayer() instanceof Player) {
+					CustomItem custom = CustomItemsPlugin.getInstance().getSet().getItem(current);
+					if (custom != null && event.getView().getPlayer() instanceof Player) {
 						Player player = (Player) event.getView().getPlayer();
 						int repairCost = ai.getRepairCost();
 						if (player.getLevel() >= repairCost) {
 							player.setItemOnCursor(current);
 							player.setLevel(player.getLevel() - repairCost);
-							ai.setContents(new ItemStack[3]);
+							ItemStack[] contents = ai.getContents();
+							if (custom instanceof CustomTool && contents[1] != null && contents[1].getType() != Material.AIR) {
+								CustomTool tool = (CustomTool) custom;
+								if (tool.getRepairItem().accept(contents[1])) {
+									int durability = tool.getDurability(contents[0]);
+									int maxDurability = tool.getMaxDurability();
+									int neededDurability = maxDurability - durability;
+									int neededAmount = (int) Math.ceil(neededDurability * 4.0 / maxDurability);
+									int usedAmount = Math.min(neededAmount, contents[1].getAmount());
+									if (usedAmount < contents[1].getAmount())
+										contents[1].setAmount(contents[1].getAmount() - usedAmount);
+									else
+										contents[1] = null;
+								} else {
+									contents[1] = null;
+								}
+							} else {
+								contents[1] = null;
+							}
+							contents[0] = null;
+							// apparently, the length of contents is 2
+							ai.setContents(contents);
 						}
 					}
 				}
@@ -473,15 +535,34 @@ public class CustomItemsEventHandler implements Listener {
 				CustomItem customCurrent = set.getItem(current);
 				if (customCursor != null && customCursor == customCurrent && customCursor.canStack()) {
 					event.setResult(Result.DENY);
-					int amount = current.getAmount() + cursor.getAmount();
-					if (amount <= 64) {
-						current.setAmount(amount);
-						Bukkit.getScheduler().scheduleSyncDelayedTask(CustomItemsPlugin.getInstance(), () -> {
-							event.getView().getPlayer().setItemOnCursor(new ItemStack(Material.AIR));
-						});
+					int oldCurrentAmount = current.getAmount();
+					if (event.isLeftClick()) {
+						int amount = current.getAmount() + cursor.getAmount();
+						if (amount <= 64) {
+							current.setAmount(amount);
+							cursor.setAmount(0);
+						} else {
+							current.setAmount(64);
+							cursor.setAmount(amount - 64);
+						}
 					} else {
-						current.setAmount(64);
-						cursor.setAmount(amount - 64);
+						int newAmount = current.getAmount() + 1;
+						if (newAmount <= 64) {
+							cursor.setAmount(cursor.getAmount() - 1);
+							current.setAmount(newAmount);
+						}
+					}
+					// Don't ask why this is necessary, just minecraft/bukkit logics
+					if (oldCurrentAmount == 1) {
+						Bukkit.getScheduler().scheduleSyncDelayedTask(CustomItemsPlugin.getInstance(), () -> {
+							event.getView().getPlayer().setItemOnCursor(cursor);
+						});
+					}
+					// Force an PrepareAnvilEvent
+					if (event.getInventory() instanceof AnvilInventory) {
+						Bukkit.getScheduler().scheduleSyncDelayedTask(CustomItemsPlugin.getInstance(), () -> {
+							event.getInventory().setItem(0, event.getInventory().getItem(0));
+						});
 					}
 				}
 			}

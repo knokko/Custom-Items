@@ -89,7 +89,7 @@ public class CustomItem extends nl.knokko.customitems.item.CustomItem {
     	else
     		System.out.println("CustomItem.is: wrong material");
     		*/
-        return item.hasItemMeta() && item.getItemMeta().isUnbreakable() && item.getType() == material && getDamage(item) == itemDamage;
+        return item != null && item.hasItemMeta() && item.getItemMeta().isUnbreakable() && item.getType() == material && getDamage(item) == itemDamage;
     }
     
     public Material getMaterial() {

@@ -65,6 +65,7 @@ public class DataVanillaIngredient implements Ingredient {
 
 	@Override
 	public void save(BitOutput output) {
+		output.addByte(getID());
 		output.addJavaString(type.name());
 		output.addNumber(data, (byte) 4, false);
 	}
@@ -86,12 +87,12 @@ public class DataVanillaIngredient implements Ingredient {
 	}
 	
 	@Override
-	public String toString() {
+	public String toString(String emptyString) {
 		return type.name().toLowerCase() + "(" + data + ")";
 	}
 
 	@Override
-	public String[] getInfo() {
+	public String[] getInfo(String emptyString) {
 		return info;
 	}
 }

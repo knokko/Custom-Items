@@ -99,6 +99,8 @@ public class ItemSet {
         	return loadSimpleItem2(input);
         else if (encoding == ItemEncoding.ENCODING_TOOL_2)
         	return loadTool2(input);
+        else if (encoding == ItemEncoding.ENCODING_TOOL_3)
+        	return loadTool3(input);
         throw new IllegalArgumentException("Unknown encoding: " + encoding);
 	}
 	
@@ -142,7 +144,27 @@ public class ItemSet {
         int durability = input.readInt();
         boolean allowEnchanting = input.readBoolean();
         boolean allowAnvil = input.readBoolean();
-        return new CustomTool(itemType, damage, name, displayName, lore, attributes, durability, allowEnchanting, allowAnvil);
+        return new CustomTool(itemType, damage, name, displayName, lore, attributes, durability, 
+        		allowEnchanting, allowAnvil, new NoIngredient());
+	}
+	
+	private CustomItem loadTool3(BitInput input) {
+		CustomItemType itemType = CustomItemType.valueOf(input.readJavaString());
+        short damage = input.readShort();
+        String name = input.readJavaString();
+        String displayName = input.readJavaString();
+        String[] lore = new String[input.readByte() & 0xFF];
+        for(int index = 0; index < lore.length; index++)
+            lore[index] = input.readJavaString();
+        AttributeModifier[] attributes = new AttributeModifier[input.readByte() & 0xFF];
+        for (int index = 0; index < attributes.length; index++)
+        	attributes[index] = loadAttribute2(input);
+        int durability = input.readInt();
+        boolean allowEnchanting = input.readBoolean();
+        boolean allowAnvil = input.readBoolean();
+        Ingredient repairItem = loadIngredient(input);
+        return new CustomTool(itemType, damage, name, displayName, lore, attributes, durability, 
+        		allowEnchanting, allowAnvil, repairItem);
 	}
 	
 	private AttributeModifier loadAttribute2(BitInput input) {

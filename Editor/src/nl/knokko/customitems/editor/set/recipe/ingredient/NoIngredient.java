@@ -27,11 +27,11 @@ import nl.knokko.customitems.encoding.RecipeEncoding;
 import nl.knokko.util.bits.BitOutput;
 
 public class NoIngredient implements Ingredient {
-	
-	private static final String[] INFO = {"empty"};
 
 	@Override
-	public void save(BitOutput output) {}
+	public void save(BitOutput output) {
+		output.addByte(getID());
+	}
 
 	@Override
 	public byte getID() {
@@ -44,12 +44,12 @@ public class NoIngredient implements Ingredient {
 	}
 
 	@Override
-	public String[] getInfo() {
-		return INFO;
+	public String[] getInfo(String emptyString) {
+		return new String[] {emptyString};
 	}
 	
 	@Override
-	public String toString() {
-		return INFO[0];
+	public String toString(String emptyString) {
+		return emptyString;
 	}
 }

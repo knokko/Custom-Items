@@ -57,6 +57,7 @@ public class SimpleVanillaIngredient implements Ingredient {
 
 	@Override
 	public void save(BitOutput output) {
+		output.addByte(getID());
 		output.addJavaString(type.name());
 	}
 
@@ -75,12 +76,12 @@ public class SimpleVanillaIngredient implements Ingredient {
 	}
 	
 	@Override
-	public String toString() {
+	public String toString(String emptyString) {
 		return type.name().toLowerCase();
 	}
 
 	@Override
-	public String[] getInfo() {
+	public String[] getInfo(String emptyString) {
 		return info;
 	}
 }

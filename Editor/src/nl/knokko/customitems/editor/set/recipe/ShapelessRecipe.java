@@ -52,10 +52,8 @@ public class ShapelessRecipe extends Recipe {
 	@Override
 	protected void saveOwn(BitOutput output) {
 		output.addNumber(ingredients.length, (byte) 4, false);
-		for (Ingredient ingredient : ingredients) {
-			output.addByte(ingredient.getID());
+		for (Ingredient ingredient : ingredients)
 			ingredient.save(output);
-		}
 	}
 	
 	@Override

@@ -30,7 +30,12 @@ public class ItemEncoding {
 	 */
 	public static final byte ENCODING_SIMPLE_1 = 0;
 	
-	// All encodings that end with a 2 have support for attribute modifiers
+	// All encodings that end with a 2 or greater have support for attribute modifiers
 	public static final byte ENCODING_SIMPLE_2 = 1;
 	public static final byte ENCODING_TOOL_2 = 2;
+	
+	/**
+	 * Those tools can also have repair materials for anvil
+	 */
+	public static final byte ENCODING_TOOL_3 = 3;
 }

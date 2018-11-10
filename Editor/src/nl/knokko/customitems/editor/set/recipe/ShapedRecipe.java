@@ -50,10 +50,8 @@ public class ShapedRecipe extends Recipe {
 
 	@Override
 	protected void saveOwn(BitOutput output) {
-		for (Ingredient ingredient : ingredients) {
-			output.addByte(ingredient.getID());
+		for (Ingredient ingredient : ingredients)
 			ingredient.save(output);
-		}
 	}
 	
 	@Override

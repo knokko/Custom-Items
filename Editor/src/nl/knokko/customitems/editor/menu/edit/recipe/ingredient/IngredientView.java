@@ -35,8 +35,10 @@ public class IngredientView extends GuiMenu {
 	
 	private final IngredientComponent component;
 	private final ItemSet set;
+	private final String emptyString;
 
-	public IngredientView(IngredientComponent component, ItemSet set) {
+	public IngredientView(String emptyString, IngredientComponent component, ItemSet set) {
+		this.emptyString = emptyString;
 		this.component = component;
 		this.set = set;
 	}
@@ -51,7 +53,7 @@ public class IngredientView extends GuiMenu {
 				IngredientView.this.component.setIngredient(newIngredient);
 			}, true, set));
 		}), 0.1f, 0.3f, 0.25f, 0.4f);
-		String[] info = component.getIngredient().getInfo();
+		String[] info = component.getIngredient().getInfo(emptyString);
 		for (int index = 0; index < info.length; index++)
 			addComponent(new TextComponent(info[index], EditProps.LABEL), 0.4f, 0.8f - index * 0.15f, 0.7f, 0.9f - index * 0.15f);
 	}

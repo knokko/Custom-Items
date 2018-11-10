@@ -33,5 +33,7 @@ public interface Ingredient {
 	
 	boolean conflictsWith(Ingredient other);
 	
-	String[] getInfo();
+	String[] getInfo(String emptyString);
+	
+	String toString(String emptyString);
 }

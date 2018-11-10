@@ -126,7 +126,7 @@ public class ShapelessRecipeEdit extends GuiMenu {
 		}
 		
 		private void addIngredient(Ingredient ingredient, int index) {
-			IngredientComponent ic = new IngredientComponent(ingredient, ShapelessRecipeEdit.this, menu.getSet());
+			IngredientComponent ic = new IngredientComponent(null, ingredient, ShapelessRecipeEdit.this, menu.getSet());
 			addComponent(ic, 0f, 0.89f - index * 0.11f, 0.6f, 1f - index * 0.11f);
 			addComponent(new ImageButton(deleteBase, deleteHover, () -> {
 				Ingredients.this.removeComponent(ic);

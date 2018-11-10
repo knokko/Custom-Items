@@ -68,7 +68,7 @@ public class ChooseIngredient extends GuiMenu {
 			state.getWindow().setMainComponent(new SelectSimpleVanillaItem(returnMenu, (Material material) -> {
 				listener.set(new SimpleVanillaIngredient(material));
 				//the SelectSimpleVanillaItem will go to the returnGui automatically
-			}));
+			}, false));
 		}), 0.6f, 0.55f, 0.8f, 0.65f);
 		addComponent(new TextButton("Vanilla item with datavalue", EditProps.BUTTON, EditProps.HOVER, () -> {
 			state.getWindow().setMainComponent(new SelectDataVanillaItem(returnMenu, (Material material, byte data) -> {

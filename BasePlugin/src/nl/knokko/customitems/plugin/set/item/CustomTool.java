@@ -41,6 +41,7 @@ import com.google.common.collect.Lists;
 import nl.knokko.core.plugin.item.attributes.ItemAttributes;
 import nl.knokko.customitems.item.AttributeModifier;
 import nl.knokko.customitems.item.CustomItemType;
+import nl.knokko.customitems.plugin.recipe.ingredient.Ingredient;
 
 public class CustomTool extends CustomItem {
 	
@@ -52,14 +53,18 @@ public class CustomTool extends CustomItem {
 	private final boolean allowEnchanting;
 	private final boolean allowAnvil;
 	
+	private final Ingredient repairItem;
+	
 	private final boolean isSword;
 
 	public CustomTool(CustomItemType itemType, short itemDamage, String name, String displayName, String[] lore, 
-			AttributeModifier[] attributes, int maxDurability, boolean allowEnchanting, boolean allowAnvil) {
+			AttributeModifier[] attributes, int maxDurability, boolean allowEnchanting, boolean allowAnvil, 
+			Ingredient repairItem) {
 		super(itemType, itemDamage, name, displayName, lore, attributes);
 		this.maxDurability = maxDurability;
 		this.allowEnchanting = allowEnchanting;
 		this.allowAnvil = allowAnvil;
+		this.repairItem = repairItem;
 		isSword = itemType == CustomItemType.WOOD_SWORD || itemType == CustomItemType.STONE_SWORD
 				|| itemType == CustomItemType.IRON_SWORD || itemType == CustomItemType.GOLD_SWORD
 				|| itemType == CustomItemType.DIAMOND_SWORD;
@@ -78,6 +83,10 @@ public class CustomTool extends CustomItem {
 	@Override
 	public boolean allowAnvilActions() {
 		return allowAnvil;
+	}
+	
+	public Ingredient getRepairItem() {
+		return repairItem;
 	}
 	
 	@Override

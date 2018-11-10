@@ -76,7 +76,7 @@ public class ChooseResult extends GuiMenu {
 			state.getWindow().setMainComponent(new SelectSimpleVanillaItem(this, (Material material) -> {
 				// Fix the amount with the Choose button
 				current = new SimpleVanillaResult(material, (byte) 1);
-			}));
+			}, false));
 		}), 0.6f, 0.55f, 0.8f, 0.65f);
 		addComponent(new TextButton("Vanilla item with datavalue", EditProps.BUTTON, EditProps.HOVER, () -> {
 			state.getWindow().setMainComponent(new SelectDataVanillaItem(this, (Material material, byte data) -> {

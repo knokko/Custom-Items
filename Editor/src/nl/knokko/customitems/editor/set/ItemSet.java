@@ -48,7 +48,9 @@ import nl.knokko.customitems.editor.set.item.NamedImage;
 import nl.knokko.customitems.editor.set.recipe.Recipe;
 import nl.knokko.customitems.editor.set.recipe.ShapedRecipe;
 import nl.knokko.customitems.editor.set.recipe.ShapelessRecipe;
+import nl.knokko.customitems.editor.set.recipe.ingredient.CustomItemIngredient;
 import nl.knokko.customitems.editor.set.recipe.ingredient.Ingredient;
+import nl.knokko.customitems.editor.set.recipe.ingredient.NoIngredient;
 import nl.knokko.customitems.editor.set.recipe.result.CustomItemResult;
 import nl.knokko.customitems.editor.set.recipe.result.Result;
 import nl.knokko.customitems.encoding.ItemEncoding;
@@ -84,6 +86,8 @@ public class ItemSet {
         	return loadSimpleItem2(input);
         else if (encoding == ItemEncoding.ENCODING_TOOL_2)
         	return loadTool2(input);
+        else if (encoding == ItemEncoding.ENCODING_TOOL_3)
+        	return loadTool3(input);
         throw new IllegalArgumentException("Unknown encoding: " + encoding);
 	}
 	
@@ -160,7 +164,37 @@ public class ItemSet {
         	}
         }
         if(texture == null) throw new IllegalArgumentException("Can't find texture " + imageName);
-        return new CustomTool(itemType, damage, name, displayName, lore, attributes, durability, allowEnchanting, allowAnvil, texture);
+        return new CustomTool(itemType, damage, name, displayName, lore, attributes, durability, 
+        		allowEnchanting, allowAnvil, new NoIngredient(), texture);
+	}
+	
+	private CustomItem loadTool3(BitInput input) {
+		CustomItemType itemType = CustomItemType.valueOf(input.readJavaString());
+        short damage = input.readShort();
+        String name = input.readJavaString();
+        String displayName = input.readJavaString();
+        String[] lore = new String[input.readByte() & 0xFF];
+        for(int index = 0; index < lore.length; index++){
+            lore[index] = input.readJavaString();
+        }
+        AttributeModifier[] attributes = new AttributeModifier[input.readByte() & 0xFF];
+        for (int index = 0; index < attributes.length; index++)
+        	attributes[index] = loadAttribute2(input);
+        int durability = input.readInt();
+        boolean allowEnchanting = input.readBoolean();
+        boolean allowAnvil = input.readBoolean();
+        Ingredient repairItem = Recipe.loadIngredient(input, this);
+        String imageName = input.readJavaString();
+        NamedImage texture = null;
+        for(NamedImage current : textures) {
+        	if(current.getName().equals(imageName)) {
+        		texture = current;
+        		break;
+        	}
+        }
+        if(texture == null) throw new IllegalArgumentException("Can't find texture " + imageName);
+        return new CustomTool(itemType, damage, name, displayName, lore, attributes, durability, 
+        		allowEnchanting, allowAnvil, repairItem, texture);
 	}
 	
 	private AttributeModifier loadAttribute2(BitInput input) {
@@ -371,7 +405,20 @@ public class ItemSet {
 		for(NamedImage texture : textures)
 			texture.save(output);
 		output.addInt(items.size());
-		for(CustomItem item : items)
+		
+		// Save the normal items before the tools so that tools can use normal items as repair item
+		List<CustomItem> sorted = new ArrayList<CustomItem>(items.size());
+		for (CustomItem item : items) {
+			if (!(item instanceof CustomTool)) {
+				sorted.add(item);
+			}
+		}
+		for (CustomItem item : items) {
+			if (item instanceof CustomTool) {
+				sorted.add(item);
+			}
+		}
+		for(CustomItem item : sorted)
 			item.save(output);
 		
 		output.addInt(recipes.size());
@@ -458,6 +505,8 @@ public class ItemSet {
 			if(current.getItemType() == item.getItemType() && current.getItemDamage() == item.getItemDamage())
 				return "There is already a custom item with the same item type and damage";
 		}
+		if (item.getRepairItem() instanceof CustomItemIngredient && !(((CustomItemIngredient) item.getRepairItem()).getItem().getClass() == CustomItem.class))
+			return "Only vanilla items and simple custom items are allowed as repair item.";
 		items.add(item);
 		return null;
 	}
@@ -481,7 +530,7 @@ public class ItemSet {
 	 */
 	public String changeTool(CustomTool item, CustomItemType newType, short newDamage, String newName, 
 			String newDisplayName, String[] newLore, AttributeModifier[] newAttributes, boolean allowEnchanting,
-			boolean allowAnvil, int newDurability, NamedImage newImage) {
+			boolean allowAnvil, Ingredient repairItem, int newDurability, NamedImage newImage) {
 		boolean has = false;
 		for(CustomItem current : items) {
 			if(current == item) {
@@ -500,6 +549,8 @@ public class ItemSet {
 			if(texture == newImage)
 				has = true;
 		if(!has) return "The specified texture is not in the texture list!";
+		if (repairItem instanceof CustomItemIngredient && !(((CustomItemIngredient) repairItem).getItem().getClass() == CustomItem.class))
+			return "Only vanilla items and simple custom items are allowed as repair item.";
 		item.setItemType(newType);
 		item.setItemDamage(newDamage);
 		item.setName(newName);
@@ -508,6 +559,7 @@ public class ItemSet {
 		item.setAttributes(newAttributes);
 		item.setAllowEnchanting(allowEnchanting);
 		item.setAllowAnvilActions(allowAnvil);
+		item.setRepairItem(repairItem);
 		item.setDurability(newDurability);
 		item.setTexture(newImage);
 		return null;

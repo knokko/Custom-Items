@@ -25,8 +25,10 @@ package nl.knokko.customitems.editor.menu.edit.item;
 
 import nl.knokko.customitems.editor.menu.edit.EditMenu;
 import nl.knokko.customitems.editor.menu.edit.EditProps;
+import nl.knokko.customitems.editor.menu.edit.recipe.ingredient.IngredientComponent;
 import nl.knokko.customitems.editor.set.item.CustomItem;
 import nl.knokko.customitems.editor.set.item.CustomTool;
+import nl.knokko.customitems.editor.set.recipe.ingredient.NoIngredient;
 import nl.knokko.customitems.item.CustomItemType;
 import nl.knokko.customitems.item.CustomItemType.Category;
 import nl.knokko.gui.component.image.CheckboxComponent;
@@ -41,6 +43,7 @@ public class EditItemTool extends EditItemBase {
 	private final CheckboxComponent allowEnchanting;
 	private final CheckboxComponent allowAnvil;
 	private final TextEditField durability;
+	private final IngredientComponent repairItem;
 
 	public EditItemTool(EditMenu menu, CustomTool previous, Category toolCategory) {
 		super(menu, previous);
@@ -49,10 +52,12 @@ public class EditItemTool extends EditItemBase {
 		if (previous != null) {
 			allowEnchanting = new CheckboxComponent(previous.allowEnchanting());
 			allowAnvil = new CheckboxComponent(previous.allowAnvilActions());
+			repairItem = new IngredientComponent("None", previous.getRepairItem(), this, menu.getSet());
 			durability = new TextEditField(previous.getDurability() + "", EditProps.EDIT_BASE, EditProps.EDIT_ACTIVE);
 		} else {
 			allowEnchanting = new CheckboxComponent(true);
 			allowAnvil = new CheckboxComponent(true);
+			repairItem = new IngredientComponent("None", new NoIngredient(), this, menu.getSet());
 			durability = new TextEditField("500", EditProps.EDIT_BASE, EditProps.EDIT_ACTIVE);
 		}
 		if (toolCategory == Category.SWORD)
@@ -81,6 +86,8 @@ public class EditItemTool extends EditItemBase {
 		addComponent(new TextComponent("Allow anvil actions", EditProps.LABEL), 0.8f, 0.6f, 0.95f, 0.7f);
 		addComponent(durability, 0.9f, 0.5f, 0.95f, 0.6f);
 		addComponent(new TextComponent("Max uses: ", EditProps.LABEL), 0.75f, 0.5f, 0.875f, 0.6f);
+		addComponent(new TextComponent("Repair item: ", EditProps.LABEL), 0.8f, 0.4f, 0.95f, 0.5f);
+		addComponent(repairItem, 0.8f, 0.3f, 0.95f, 0.4f);
 	}
 
 	@Override
@@ -94,7 +101,7 @@ public class EditItemTool extends EditItemBase {
 					if (maxUses > 0 || maxUses == CustomItem.UNBREAKABLE_TOOL_DURABILITY) {
 						error = menu.getSet().addTool(new CustomTool(internalType.currentType, damage, name.getText(), 
 								displayName.getText(), lore, attributes, maxUses, allowEnchanting.isChecked(), 
-								allowAnvil.isChecked(), textureSelect.currentTexture));
+								allowAnvil.isChecked(), repairItem.getIngredient(), textureSelect.currentTexture));
 					} else
 						error = "The max uses must be greater than 0 or " + CustomItem.UNBREAKABLE_TOOL_DURABILITY + " to become unbreakable";
 				} catch (NumberFormatException nfe) {
@@ -119,7 +126,7 @@ public class EditItemTool extends EditItemBase {
 					if (maxUses > 0 || maxUses == CustomItem.UNBREAKABLE_TOOL_DURABILITY) {
 						error = menu.getSet().changeTool(previous, internalType.currentType, damage, name.getText(), 
 								displayName.getText(), lore, attributes, allowEnchanting.isChecked(), 
-								allowAnvil.isChecked(), maxUses, textureSelect.currentTexture);
+								allowAnvil.isChecked(), repairItem.getIngredient(), maxUses, textureSelect.currentTexture);
 					} else
 						error = "The max uses must be greater than 0 or " + CustomItem.UNBREAKABLE_TOOL_DURABILITY + " to become unbreakable";
 				} catch (NumberFormatException nfe) {

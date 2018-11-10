@@ -39,23 +39,25 @@ public class IngredientComponent extends TextButton {
 	
 	private Ingredient current;
 	private final GuiComponent menu;
+	private final String emptyText;
 
-	public IngredientComponent(Ingredient original, GuiComponent menu, ItemSet set) {
-		super(original.toString(), PROPS, HOVER_PROPS, null);
+	public IngredientComponent(String emptyText, Ingredient original, GuiComponent menu, ItemSet set) {
+		super(original.toString(emptyText), PROPS, HOVER_PROPS, null);
 		this.clickAction = () -> {
-			state.getWindow().setMainComponent(new IngredientView(this, set));
+			state.getWindow().setMainComponent(new IngredientView(emptyText, this, set));
 		};
 		current = original;
+		this.emptyText = emptyText;
 		this.menu = menu;
 	}
 	
-	public IngredientComponent(GuiComponent menu, ItemSet set) {
-		this(new NoIngredient(), menu, set);
+	public IngredientComponent(String emptyText, GuiComponent menu, ItemSet set) {
+		this(emptyText, new NoIngredient(), menu, set);
 	}
 	
 	public void setIngredient(Ingredient ingredient) {
 		current = ingredient;
-		setText(current.toString());
+		setText(current.toString(emptyText));
 	}
 	
 	public Ingredient getIngredient() {
