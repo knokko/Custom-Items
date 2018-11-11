@@ -43,7 +43,7 @@ public class EditItemSimple extends EditItemBase {
 		try {
 			short damage = Short.parseShort(internalDamage.getText());
 			if(damage > 0 && damage < internalType.currentType.getMaxDurability())
-				error = menu.getSet().addItem(new CustomItem(internalType.currentType, damage, name.getText(), displayName.getText(), lore, attributes, textureSelect.currentTexture));
+				error = menu.getSet().addItem(new CustomItem(internalType.currentType, damage, name.getText(), getDisplayName(), lore, attributes, textureSelect.currentTexture));
 			else
 				error = "The internal item damage must be larger than 0 and smaller than " + internalType.currentType.getMaxDurability();
 		} catch (NumberFormatException nfe) {
@@ -58,7 +58,7 @@ public class EditItemSimple extends EditItemBase {
 		try {
 			short damage = Short.parseShort(internalDamage.getText());
 			if(damage > 0 && damage < internalType.currentType.getMaxDurability())
-				error = menu.getSet().changeItem(previous, internalType.currentType, damage, name.getText(), displayName.getText(), lore, attributes, textureSelect.currentTexture);
+				error = menu.getSet().changeItem(previous, internalType.currentType, damage, name.getText(), getDisplayName(), lore, attributes, textureSelect.currentTexture);
 			else
 				error = "The internal item damage must be larger than 0 and smaller than " + internalType.currentType.getMaxDurability();
 		} catch (NumberFormatException nfe) {

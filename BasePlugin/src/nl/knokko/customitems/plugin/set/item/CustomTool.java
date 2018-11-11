@@ -41,6 +41,7 @@ import com.google.common.collect.Lists;
 import nl.knokko.core.plugin.item.attributes.ItemAttributes;
 import nl.knokko.customitems.item.AttributeModifier;
 import nl.knokko.customitems.item.CustomItemType;
+import nl.knokko.customitems.item.CustomItemType.Category;
 import nl.knokko.customitems.plugin.recipe.ingredient.Ingredient;
 
 public class CustomTool extends CustomItem {
@@ -65,9 +66,7 @@ public class CustomTool extends CustomItem {
 		this.allowEnchanting = allowEnchanting;
 		this.allowAnvil = allowAnvil;
 		this.repairItem = repairItem;
-		isSword = itemType == CustomItemType.WOOD_SWORD || itemType == CustomItemType.STONE_SWORD
-				|| itemType == CustomItemType.IRON_SWORD || itemType == CustomItemType.GOLD_SWORD
-				|| itemType == CustomItemType.DIAMOND_SWORD;
+		isSword = itemType.getMainCategory() == Category.SWORD;
 	}
 	
 	@Override
@@ -118,8 +117,10 @@ public class CustomTool extends CustomItem {
 	
 	@Override
 	public void onBlockBreak(Player player, ItemStack tool, Block block) {
-		if (decreaseDurability(tool, isSword ? 2 : 1))
-			player.getInventory().setItemInMainHand(null);
+		if (itemType.getMainCategory() != Category.HOE) {
+			if (decreaseDurability(tool, isSword ? 2 : 1))
+				player.getInventory().setItemInMainHand(null);
+		}
 	}
 	
 	@Override
@@ -142,7 +143,7 @@ public class CustomTool extends CustomItem {
 			List<String> lore = meta.getLore();
 			String durabilityString = getDurabilityString(lore);
 			// Check whether or not the tool is unbreakable
-			if (durabilityString.startsWith(DURABILITY_PREFIX)) {
+			if (durabilityString != null) {
 				int durability = Integer.parseInt(durabilityString.substring(DURABILITY_PREFIX.length(), durabilityString.indexOf(DURABILITY_SPLIT)));
 				if (durability > 1) {
 					durability -= damage;
@@ -186,7 +187,7 @@ public class CustomTool extends CustomItem {
 		List<String> lore = meta.getLore();
 		String durabilityString = getDurabilityString(lore);
 		// Check whether or not the tool is unbreakable
-		if (durabilityString.startsWith(DURABILITY_PREFIX)) {
+		if (durabilityString != null) {
 			return Integer.parseInt(durabilityString.substring(DURABILITY_PREFIX.length(), durabilityString.indexOf(DURABILITY_SPLIT)));
 		} else {
 			return CustomItem.UNBREAKABLE_TOOL_DURABILITY;

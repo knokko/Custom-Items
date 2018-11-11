@@ -507,8 +507,9 @@ public class ItemSet {
 		}
 		if (item.getRepairItem() instanceof CustomItemIngredient && !(((CustomItemIngredient) item.getRepairItem()).getItem().getClass() == CustomItem.class))
 			return "Only vanilla items and simple custom items are allowed as repair item.";
-		items.add(item);
-		return null;
+		if (item.allowAnvilActions() && item.getDisplayName().contains("§"))
+			return "Items with color codes in their display name can not allow anvil actions";
+		return addItem(item, false);
 	}
 	
 	/**
@@ -532,6 +533,9 @@ public class ItemSet {
 			String newDisplayName, String[] newLore, AttributeModifier[] newAttributes, boolean allowEnchanting,
 			boolean allowAnvil, Ingredient repairItem, int newDurability, NamedImage newImage) {
 		boolean has = false;
+		if (newImage == null) return "Every item needs a texture";
+		if (allowAnvil && newDisplayName.contains("§"))
+			return "Items with color codes in their display name can not allow anvil actions";
 		for(CustomItem current : items) {
 			if(current == item) {
 				has = true;
@@ -565,16 +569,10 @@ public class ItemSet {
 		return null;
 	}
 	
-	/**
-	 * Attempts to add the specified item to this item set.
-	 * If the item can be added, it will be added.
-	 * If the item can't be added, the reason is returned.
-	 * @param item The item that should be added to this set
-	 * @return The reason the item could not be added, or null if the item was added successfully
-	 */
-	public String addItem(CustomItem item) {
+	private String addItem(CustomItem item, boolean doClassCheck) {
 		if (item == null) return "Can't add null items";
-		if (item.getClass() != CustomItem.class) return "Use the appropriate method for that class";
+		if (doClassCheck && item.getClass() != CustomItem.class) return "Use the appropriate method for that class";
+		if (item.getTexture() == null) return "Every item needs a texture";
 		for(CustomItem current : items) {
 			if(current.getName().equals(item.getName()))
 				return "There is already a custom item with that name";
@@ -583,6 +581,17 @@ public class ItemSet {
 		}
 		items.add(item);
 		return null;
+	}
+	
+	/**
+	 * Attempts to add the specified item to this item set.
+	 * If the item can be added, it will be added.
+	 * If the item can't be added, the reason is returned.
+	 * @param item The item that should be added to this set
+	 * @return The reason the item could not be added, or null if the item was added successfully
+	 */
+	public String addItem(CustomItem item) {
+		return addItem(item, true);
 	}
 	
 	/**
@@ -602,6 +611,7 @@ public class ItemSet {
 	public String changeItem(CustomItem item, CustomItemType newType, short newDamage, String newName, 
 			String newDisplayName, String[] newLore, AttributeModifier[] newAttributes, NamedImage newImage) {
 		boolean has = false;
+		if (newImage == null) return "Every item needs a texture";
 		for(CustomItem current : items) {
 			if(current == item) {
 				has = true;

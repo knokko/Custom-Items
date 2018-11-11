@@ -128,6 +128,10 @@ public abstract class EditItemBase extends GuiMenu {
 	
 	protected abstract CustomItem previous();
 	
+	protected String getDisplayName() {
+		return displayName.getText().replaceAll("&", "§");
+	}
+	
 	protected class ItemTypeSelect extends TextButton {
 		
 		protected CustomItemType currentType;

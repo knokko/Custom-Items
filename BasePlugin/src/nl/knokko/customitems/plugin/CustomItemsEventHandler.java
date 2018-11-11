@@ -40,6 +40,7 @@ import org.bukkit.event.Event.Result;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
+import org.bukkit.event.block.Action;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.enchantment.PrepareItemEnchantEvent;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
@@ -60,6 +61,7 @@ import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.inventory.meta.Repairable;
 
 import nl.knokko.core.plugin.item.ItemHelper;
+import nl.knokko.customitems.item.CustomItemType.Category;
 import nl.knokko.customitems.plugin.recipe.CustomRecipe;
 import nl.knokko.customitems.plugin.recipe.ShapedCustomRecipe;
 import nl.knokko.customitems.plugin.recipe.ShapelessCustomRecipe;
@@ -73,17 +75,32 @@ public class CustomItemsEventHandler implements Listener {
 
 	private Map<UUID, Boolean> shouldInterfere = new HashMap<UUID, Boolean>();
 
-	@EventHandler
+	@EventHandler(ignoreCancelled = true)
 	public void onItemUse(PlayerInteractEvent event) {
-		ItemStack item = event.getItem();
-		CustomItem custom = CustomItemsPlugin.getInstance().getSet().getItem(item);
-		if (custom != null && custom.forbidDefaultUse(item)) {
-			// Don't let custom items be used as their internal item
-			event.setCancelled(true);
+		if (event.getAction() == Action.RIGHT_CLICK_BLOCK) {
+			ItemStack item = event.getItem();
+			CustomItem custom = CustomItemsPlugin.getInstance().getSet().getItem(item);
+			if (custom != null) {
+				// Don't let custom items be used as their internal item
+				if (custom.forbidDefaultUse(item))
+					event.setCancelled(true);
+				else if (custom instanceof CustomTool) {
+					CustomTool tool = (CustomTool) custom;
+					if (tool.getItemType().getMainCategory() == Category.HOE) {
+						Material type = event.getClickedBlock().getType();
+						if ((type == Material.DIRT || type == Material.GRASS) && tool.decreaseDurability(item, 1)) {
+							if (event.getHand() == EquipmentSlot.HAND)
+								event.getPlayer().getInventory().setItemInMainHand(null);
+							else
+								event.getPlayer().getInventory().setItemInOffHand(null);
+						}
+					}
+				}
+			}
 		}
 	}
 
-	@EventHandler
+	@EventHandler(ignoreCancelled = true)
 	public void onShear(PlayerShearEntityEvent event) {
 		ItemStack main = event.getPlayer().getInventory().getItemInMainHand();
 		ItemStack off = event.getPlayer().getInventory().getItemInOffHand();
@@ -92,10 +109,24 @@ public class CustomItemsEventHandler implements Listener {
 				: null;
 		CustomItem customOff = off.getType() == Material.SHEARS ? CustomItemsPlugin.getInstance().getSet().getItem(off)
 				: null;
-		if ((customMain != null && customMain.forbidDefaultUse(main))
-				|| (customOff != null && customOff.forbidDefaultUse(off))) {
-			// Don't let custom shears be used as real shears
-			event.setCancelled(true);
+		if (customMain != null) {
+			if (customMain.forbidDefaultUse(main))
+				event.setCancelled(true);
+			else if (customMain instanceof CustomTool) {
+				CustomTool tool = (CustomTool) customMain;
+				if (tool.decreaseDurability(main, 1))
+					event.getPlayer().getInventory().setItemInMainHand(null);
+			} else
+				Bukkit.getLogger().warning("Interesting custom main shear: " + customMain);
+		} else if (customOff != null) {
+			if (customOff.forbidDefaultUse(off))
+				event.setCancelled(true);
+			else if (customOff instanceof CustomTool) {
+				CustomTool tool = (CustomTool) customOff;
+				if (tool.decreaseDurability(off, 1))
+					event.getPlayer().getInventory().setItemInOffHand(null);
+			} else
+				Bukkit.getLogger().warning("Interesting custom off shear: " + customOff);
 		}
 	}
 
@@ -127,7 +158,7 @@ public class CustomItemsEventHandler implements Listener {
 		}
 	}
 
-	@EventHandler
+	@EventHandler(ignoreCancelled = true)
 	public void onItemInteract(PlayerInteractAtEntityEvent event) {
 		ItemStack item;
 		if (event.getHand() == EquipmentSlot.HAND)
@@ -203,6 +234,10 @@ public class CustomItemsEventHandler implements Listener {
 							result.setItemMeta(meta);
 							levelCost++;
 							hasChange = true;
+						} else {
+							ItemMeta meta = result.getItemMeta();
+							meta.setDisplayName(oldName);
+							result.setItemMeta(meta);
 						}
 						result.addUnsafeEnchantments(enchantments1);
 						Set<Entry<Enchantment, Integer>> entrySet = enchantments2.entrySet();
@@ -253,74 +288,63 @@ public class CustomItemsEventHandler implements Listener {
 						}
 					} else if (contents[1] != null && contents[1].getType() == Material.ENCHANTED_BOOK) {
 						/*
-						 * Ehm... yes... I kinda forgot this works fine automatically before writing this...
+						 * Ehm... yes... I kinda forgot this works fine automatically before writing
+						 * this...
 						 * 
-						ItemMeta meta2 = contents[1].getItemMeta();
-						ItemStack result = contents[0].clone();
-						if (meta2 instanceof EnchantmentStorageMeta) {
-							EnchantmentStorageMeta esm = (EnchantmentStorageMeta) meta2;
-							int levelCost = 2;
-							Set<Entry<Enchantment,Integer>> entrySet = esm.getStoredEnchants().entrySet();
-							for (Entry<Enchantment,Integer> entry : entrySet) {
-								if (entry.getKey().canEnchantItem(result)) {
-									try {
-										result.addEnchantment(entry.getKey(), entry.getValue());
-										levelCost += entry.getValue() * getBookEnchantFactor(entry.getKey());
-									} catch (IllegalArgumentException illegal) {
-										// The rules from the wiki
-										levelCost++;
-									} // Only add enchantments that can be added
-								}
-							}
-							int repairCount1 = 0;
-							int repairCount2 = 0;
-							ItemMeta meta1 = contents[0].getItemMeta();
-							if (meta1 instanceof Repairable) {
-								Repairable repairable = (Repairable) meta1;
-								System.out.println("repairable1: " + repairable.getRepairCost());
-								repairCount1 = repairable.getRepairCost();
-								levelCost += Math.pow(2, repairCount1) - 1;
-							}
-							if (meta2 instanceof Repairable) {
-								Repairable repairable = (Repairable) meta2;
-								System.out.println("repairable2: " + repairable.getRepairCost());
-								repairCount2 = repairable.getRepairCost();
-								levelCost += Math.pow(2, repairCount2) - 1;
-							}
-							if (!event.getInventory().getRenameText().isEmpty()) {
-								ItemMeta meta = result.getItemMeta();
-								meta.setDisplayName(event.getInventory().getRenameText());
-								result.setItemMeta(meta);
-								levelCost++;
-							}
-							ItemMeta resultMeta = result.getItemMeta();
-							((Repairable) resultMeta).setRepairCost(Math.max(repairCount1, repairCount2) + 1);
-							result.setItemMeta(resultMeta);
-							event.setResult(result);
-							int finalLevelCost = levelCost;
-							Bukkit.getScheduler().scheduleSyncDelayedTask(CustomItemsPlugin.getInstance(), () -> {
-								// Apparently, settings the repair cost during the event has no effect
-								event.getInventory().setRepairCost(finalLevelCost);
-							});
-						} else {
-							event.setResult(null);
-						}*/
-					} else if (contents[1] != null && contents[1].getType() != Material.AIR && tool.getRepairItem().accept(contents[1])) {
+						 * ItemMeta meta2 = contents[1].getItemMeta(); ItemStack result =
+						 * contents[0].clone(); if (meta2 instanceof EnchantmentStorageMeta) {
+						 * EnchantmentStorageMeta esm = (EnchantmentStorageMeta) meta2; int levelCost =
+						 * 2; Set<Entry<Enchantment,Integer>> entrySet =
+						 * esm.getStoredEnchants().entrySet(); for (Entry<Enchantment,Integer> entry :
+						 * entrySet) { if (entry.getKey().canEnchantItem(result)) { try {
+						 * result.addEnchantment(entry.getKey(), entry.getValue()); levelCost +=
+						 * entry.getValue() * getBookEnchantFactor(entry.getKey()); } catch
+						 * (IllegalArgumentException illegal) { // The rules from the wiki levelCost++;
+						 * } // Only add enchantments that can be added } } int repairCount1 = 0; int
+						 * repairCount2 = 0; ItemMeta meta1 = contents[0].getItemMeta(); if (meta1
+						 * instanceof Repairable) { Repairable repairable = (Repairable) meta1;
+						 * System.out.println("repairable1: " + repairable.getRepairCost());
+						 * repairCount1 = repairable.getRepairCost(); levelCost += Math.pow(2,
+						 * repairCount1) - 1; } if (meta2 instanceof Repairable) { Repairable repairable
+						 * = (Repairable) meta2; System.out.println("repairable2: " +
+						 * repairable.getRepairCost()); repairCount2 = repairable.getRepairCost();
+						 * levelCost += Math.pow(2, repairCount2) - 1; } if
+						 * (!event.getInventory().getRenameText().isEmpty()) { ItemMeta meta =
+						 * result.getItemMeta();
+						 * meta.setDisplayName(event.getInventory().getRenameText());
+						 * result.setItemMeta(meta); levelCost++; } ItemMeta resultMeta =
+						 * result.getItemMeta(); ((Repairable)
+						 * resultMeta).setRepairCost(Math.max(repairCount1, repairCount2) + 1);
+						 * result.setItemMeta(resultMeta); event.setResult(result); int finalLevelCost =
+						 * levelCost;
+						 * Bukkit.getScheduler().scheduleSyncDelayedTask(CustomItemsPlugin.getInstance()
+						 * , () -> { // Apparently, settings the repair cost during the event has no
+						 * effect event.getInventory().setRepairCost(finalLevelCost); }); } else {
+						 * event.setResult(null); }
+						 */
+					} else if (contents[1] != null && contents[1].getType() != Material.AIR
+							&& tool.getRepairItem().accept(contents[1])) {
 						int durability = tool.getDurability(contents[0]);
 						int maxDurability = tool.getMaxDurability();
 						int neededDurability = maxDurability - durability;
 						if (neededDurability > 0) {
 							int neededAmount = (int) Math.ceil(neededDurability * 4.0 / maxDurability);
 							int usedAmount = Math.min(neededAmount, contents[1].getAmount());
-							int resultDurability = Math.min(durability + tool.getMaxDurability() * usedAmount / 4, tool.getMaxDurability());
+							int resultDurability = Math.min(durability + tool.getMaxDurability() * usedAmount / 4,
+									tool.getMaxDurability());
 							ItemStack result = tool.create(1, resultDurability);
 							result.addUnsafeEnchantments(contents[0].getEnchantments());
 							int levelCost = usedAmount;
-							if (!renameText.isEmpty() && !renameText.equals(oldName))
+							if (!renameText.isEmpty() && !renameText.equals(oldName)) {
 								levelCost++;
-							ItemMeta meta = result.getItemMeta();
-							meta.setDisplayName(event.getInventory().getRenameText());
-							result.setItemMeta(meta);
+								ItemMeta meta = result.getItemMeta();
+								meta.setDisplayName(event.getInventory().getRenameText());
+								result.setItemMeta(meta);
+							} else {
+								ItemMeta meta = result.getItemMeta();
+								meta.setDisplayName(oldName);
+								result.setItemMeta(meta);
+							}
 							int repairCost = 0;
 							ItemMeta meta1 = contents[0].getItemMeta();
 							if (meta1 instanceof Repairable) {
@@ -330,7 +354,7 @@ public class CustomItemsEventHandler implements Listener {
 							}
 							ItemMeta resultMeta = result.getItemMeta();
 							int repairCount = (int) Math.round(Math.log(repairCost + 1) / Math.log(2));
-							// TODO repair cost becomes invisible above 34 ?
+							// TODO repair cost becomes invisible after no change?
 							((Repairable) resultMeta).setRepairCost((int) Math.round(Math.pow(2, repairCount + 1) - 1));
 							result.setItemMeta(resultMeta);
 							event.setResult(result);
@@ -338,6 +362,13 @@ public class CustomItemsEventHandler implements Listener {
 							Bukkit.getScheduler().scheduleSyncDelayedTask(CustomItemsPlugin.getInstance(), () -> {
 								// Apparently, settings the repair cost during the event has no effect
 								event.getInventory().setRepairCost(finalLevelCost);
+								/*
+								 * if (finalLevelCost == event.getInventory().getRepairCost()) {
+								 * System.out.println("Force level cost update");
+								 * Bukkit.getScheduler().scheduleSyncDelayedTask(CustomItemsPlugin.getInstance()
+								 * , () -> { event.getInventory().setItem(0, event.getInventory().getItem(0));
+								 * }); }
+								 */
 							});
 						} else {
 							event.setResult(null);
@@ -348,8 +379,6 @@ public class CustomItemsEventHandler implements Listener {
 				} else {
 					event.setResult(null);
 				}
-			} else if (contents[1] == null || contents[1].getType() == Material.AIR) {
-				// Don't prevent renaming
 			} else {
 				event.setResult(null);
 			}
@@ -359,40 +388,36 @@ public class CustomItemsEventHandler implements Listener {
 	}
 
 	private static int getItemEnchantFactor(Enchantment e) {
-		if (e.equals(PROTECTION_FIRE) || e.equals(PROTECTION_FALL)
-				|| e.equals(PROTECTION_PROJECTILE) || e.equals(DAMAGE_UNDEAD)
-				|| e.equals(DAMAGE_ARTHROPODS) || e.equals(KNOCKBACK) || e.equals(DURABILITY)) {
+		if (e.equals(PROTECTION_FIRE) || e.equals(PROTECTION_FALL) || e.equals(PROTECTION_PROJECTILE)
+				|| e.equals(DAMAGE_UNDEAD) || e.equals(DAMAGE_ARTHROPODS) || e.equals(KNOCKBACK)
+				|| e.equals(DURABILITY)) {
 			return 2;
 		}
-		if (e.equals(PROTECTION_EXPLOSIONS) || e.equals(OXYGEN) || e.equals(WATER_WORKER)
-				|| e.equals(DEPTH_STRIDER) || e.equals(FROST_WALKER) || e.equals(FIRE_ASPECT)
-				|| e.equals(LOOT_BONUS_MOBS) || e.equals(SWEEPING_EDGE)
-				|| e.equals(LOOT_BONUS_BLOCKS) || e.equals(ARROW_KNOCKBACK) || e.equals(ARROW_FIRE)
-				|| e.equals(LUCK) || e.equals(LURE) || e.equals(MENDING)) {
+		if (e.equals(PROTECTION_EXPLOSIONS) || e.equals(OXYGEN) || e.equals(WATER_WORKER) || e.equals(DEPTH_STRIDER)
+				|| e.equals(FROST_WALKER) || e.equals(FIRE_ASPECT) || e.equals(LOOT_BONUS_MOBS)
+				|| e.equals(SWEEPING_EDGE) || e.equals(LOOT_BONUS_BLOCKS) || e.equals(ARROW_KNOCKBACK)
+				|| e.equals(ARROW_FIRE) || e.equals(LUCK) || e.equals(LURE) || e.equals(MENDING)) {
 			return 4;
 		}
-		if (e.equals(THORNS) || e.equals(BINDING_CURSE) || e.equals(SILK_TOUCH)
-				|| e.equals(ARROW_INFINITE) || e.equals(VANISHING_CURSE)) {
+		if (e.equals(THORNS) || e.equals(BINDING_CURSE) || e.equals(SILK_TOUCH) || e.equals(ARROW_INFINITE)
+				|| e.equals(VANISHING_CURSE)) {
 			return 8;
 		}
 		return 1;
 	}
-	
+
 	/*
-	private static int getBookEnchantFactor(Enchantment e) {
-		if (e == Enchantment.PROTECTION_EXPLOSIONS || e == Enchantment.OXYGEN || e == Enchantment.WATER_WORKER
-				|| e == Enchantment.DEPTH_STRIDER || e == Enchantment.FROST_WALKER || e == Enchantment.LOOT_BONUS_MOBS
-				|| e == Enchantment.SWEEPING_EDGE || e == Enchantment.LOOT_BONUS_BLOCKS
-				|| e == Enchantment.ARROW_KNOCKBACK || e == Enchantment.ARROW_FIRE || e == Enchantment.LUCK
-				|| e == Enchantment.LURE || e == Enchantment.MENDING) {
-			return 2;
-		}
-		if (e == Enchantment.THORNS || e == Enchantment.BINDING_CURSE || e == Enchantment.SILK_TOUCH
-				|| e == Enchantment.ARROW_INFINITE || e == Enchantment.VANISHING_CURSE) {
-			return 4;
-		}
-		return 1;
-	}*/
+	 * private static int getBookEnchantFactor(Enchantment e) { if (e ==
+	 * Enchantment.PROTECTION_EXPLOSIONS || e == Enchantment.OXYGEN || e ==
+	 * Enchantment.WATER_WORKER || e == Enchantment.DEPTH_STRIDER || e ==
+	 * Enchantment.FROST_WALKER || e == Enchantment.LOOT_BONUS_MOBS || e ==
+	 * Enchantment.SWEEPING_EDGE || e == Enchantment.LOOT_BONUS_BLOCKS || e ==
+	 * Enchantment.ARROW_KNOCKBACK || e == Enchantment.ARROW_FIRE || e ==
+	 * Enchantment.LUCK || e == Enchantment.LURE || e == Enchantment.MENDING) {
+	 * return 2; } if (e == Enchantment.THORNS || e == Enchantment.BINDING_CURSE ||
+	 * e == Enchantment.SILK_TOUCH || e == Enchantment.ARROW_INFINITE || e ==
+	 * Enchantment.VANISHING_CURSE) { return 4; } return 1; }
+	 */
 
 	@EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
 	public void cancelEnchanting(PrepareItemEnchantEvent event) {
@@ -489,17 +514,38 @@ public class CustomItemsEventHandler implements Listener {
 				// anvil, so...
 				ItemStack cursor = event.getCursor();
 				ItemStack current = event.getCurrentItem();
-				if ((cursor == null || cursor.getType() == Material.AIR) && CustomItem.isCustom(current)) {
+				if (event.getCurrentItem() == null || event.getCurrentItem().getType() == Material.AIR) {
+					event.setCancelled(true);
+					Bukkit.getScheduler().scheduleSyncDelayedTask(CustomItemsPlugin.getInstance(), () -> {
+						if (event.getWhoClicked() instanceof Player) {
+							Player player = (Player) event.getWhoClicked();
+							player.setExp(player.getExp());
+							player.closeInventory();
+						}
+					});
+				}
+				else if ((cursor == null || cursor.getType() == Material.AIR) && CustomItem.isCustom(current)) {
 					AnvilInventory ai = (AnvilInventory) event.getInventory();
 					CustomItem custom = CustomItemsPlugin.getInstance().getSet().getItem(current);
-					if (custom != null && event.getView().getPlayer() instanceof Player) {
+					ItemStack first = event.getInventory().getItem(0);
+					CustomItem customFirst = CustomItemsPlugin.getInstance().getSet().getItem(first);
+					if (customFirst != null && !customFirst.allowAnvilActions()) {
+						event.setCancelled(true);
+						Bukkit.getScheduler().scheduleSyncDelayedTask(CustomItemsPlugin.getInstance(), () -> {
+							if (event.getWhoClicked() instanceof Player) {
+								Player player = (Player) event.getWhoClicked();
+								player.setExp(player.getExp());
+							}
+						});
+					} else if (custom != null && event.getView().getPlayer() instanceof Player) {
 						Player player = (Player) event.getView().getPlayer();
 						int repairCost = ai.getRepairCost();
 						if (player.getLevel() >= repairCost) {
 							player.setItemOnCursor(current);
 							player.setLevel(player.getLevel() - repairCost);
 							ItemStack[] contents = ai.getContents();
-							if (custom instanceof CustomTool && contents[1] != null && contents[1].getType() != Material.AIR) {
+							if (custom instanceof CustomTool && contents[1] != null
+									&& contents[1].getType() != Material.AIR) {
 								CustomTool tool = (CustomTool) custom;
 								if (tool.getRepairItem().accept(contents[1])) {
 									int durability = tool.getDurability(contents[0]);
@@ -535,7 +581,6 @@ public class CustomItemsEventHandler implements Listener {
 				CustomItem customCurrent = set.getItem(current);
 				if (customCursor != null && customCursor == customCurrent && customCursor.canStack()) {
 					event.setResult(Result.DENY);
-					int oldCurrentAmount = current.getAmount();
 					if (event.isLeftClick()) {
 						int amount = current.getAmount() + cursor.getAmount();
 						if (amount <= 64) {
@@ -552,20 +597,17 @@ public class CustomItemsEventHandler implements Listener {
 							current.setAmount(newAmount);
 						}
 					}
-					// Don't ask why this is necessary, just minecraft/bukkit logics
-					if (oldCurrentAmount == 1) {
-						Bukkit.getScheduler().scheduleSyncDelayedTask(CustomItemsPlugin.getInstance(), () -> {
-							event.getView().getPlayer().setItemOnCursor(cursor);
-						});
-					}
-					// Force an PrepareAnvilEvent
-					if (event.getInventory() instanceof AnvilInventory) {
-						Bukkit.getScheduler().scheduleSyncDelayedTask(CustomItemsPlugin.getInstance(), () -> {
-							event.getInventory().setItem(0, event.getInventory().getItem(0));
-						});
-					}
+					Bukkit.getScheduler().scheduleSyncDelayedTask(CustomItemsPlugin.getInstance(), () -> {
+						event.getView().getPlayer().setItemOnCursor(cursor);
+					});
 				}
 			}
+		}
+		// Force a PrepareAnvilEvent
+		if (event.getInventory() instanceof AnvilInventory) {
+			Bukkit.getScheduler().scheduleSyncDelayedTask(CustomItemsPlugin.getInstance(), () -> {
+				event.getInventory().setItem(0, event.getInventory().getItem(0));
+			});
 		}
 	}
 

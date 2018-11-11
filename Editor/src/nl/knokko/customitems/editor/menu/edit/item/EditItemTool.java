@@ -59,21 +59,22 @@ public class EditItemTool extends EditItemBase {
 			allowAnvil = new CheckboxComponent(true);
 			repairItem = new IngredientComponent("None", new NoIngredient(), this, menu.getSet());
 			durability = new TextEditField("500", EditProps.EDIT_BASE, EditProps.EDIT_ACTIVE);
+			if (toolCategory == Category.SWORD)
+				internalType.currentType = CustomItemType.IRON_SWORD;
+			else if (toolCategory == Category.PICKAXE)
+				internalType.currentType = CustomItemType.IRON_PICKAXE;
+			else if (toolCategory == Category.AXE)
+				internalType.currentType = CustomItemType.IRON_AXE;
+			else if (toolCategory == Category.SHOVEL)
+				internalType.currentType = CustomItemType.IRON_SHOVEL;
+			else if (toolCategory == Category.HOE)
+				internalType.currentType = CustomItemType.IRON_HOE;
+			else if (toolCategory == Category.SHEAR)
+				internalType.currentType = CustomItemType.SHEARS;
+			else
+				throw new Error("Unsupported category for EditItemTool: " + toolCategory);
+			internalDamage.setDirectText(Short.toString(menu.getSet().nextAvailableDamage(internalType.currentType)));
 		}
-		if (toolCategory == Category.SWORD)
-			internalType.currentType = CustomItemType.IRON_SWORD;
-		else if (toolCategory == Category.PICKAXE)
-			internalType.currentType = CustomItemType.IRON_PICKAXE;
-		else if (toolCategory == Category.AXE)
-			internalType.currentType = CustomItemType.IRON_AXE;
-		else if (toolCategory == Category.SHOVEL)
-			internalType.currentType = CustomItemType.IRON_SHOVEL;
-		else if (toolCategory == Category.HOE)
-			internalType.currentType = CustomItemType.IRON_HOE;
-		else if (toolCategory == Category.SHEAR)
-			internalType.currentType = CustomItemType.SHEARS;
-		else
-			throw new Error("Unsupported category for EditItemTool: " + toolCategory);
 	}
 	
 	@Override
@@ -100,7 +101,7 @@ public class EditItemTool extends EditItemBase {
 					int maxUses = Integer.parseInt(durability.getText());
 					if (maxUses > 0 || maxUses == CustomItem.UNBREAKABLE_TOOL_DURABILITY) {
 						error = menu.getSet().addTool(new CustomTool(internalType.currentType, damage, name.getText(), 
-								displayName.getText(), lore, attributes, maxUses, allowEnchanting.isChecked(), 
+								getDisplayName(), lore, attributes, maxUses, allowEnchanting.isChecked(), 
 								allowAnvil.isChecked(), repairItem.getIngredient(), textureSelect.currentTexture));
 					} else
 						error = "The max uses must be greater than 0 or " + CustomItem.UNBREAKABLE_TOOL_DURABILITY + " to become unbreakable";
@@ -125,7 +126,7 @@ public class EditItemTool extends EditItemBase {
 					int maxUses = Integer.parseInt(durability.getText());
 					if (maxUses > 0 || maxUses == CustomItem.UNBREAKABLE_TOOL_DURABILITY) {
 						error = menu.getSet().changeTool(previous, internalType.currentType, damage, name.getText(), 
-								displayName.getText(), lore, attributes, allowEnchanting.isChecked(), 
+								getDisplayName(), lore, attributes, allowEnchanting.isChecked(), 
 								allowAnvil.isChecked(), repairItem.getIngredient(), maxUses, textureSelect.currentTexture);
 					} else
 						error = "The max uses must be greater than 0 or " + CustomItem.UNBREAKABLE_TOOL_DURABILITY + " to become unbreakable";
