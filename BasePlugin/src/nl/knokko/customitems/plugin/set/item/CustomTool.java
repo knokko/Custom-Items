@@ -1,3 +1,26 @@
+/*******************************************************************************
+ * The MIT License
+ *
+ * Copyright (c) 2018 knokko
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ *  of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ *  
+ * The above copyright notice and this permission notice shall be included in
+ * all copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+ * THE SOFTWARE.
+ *******************************************************************************/
 package nl.knokko.customitems.plugin.set.item;
 
 import java.util.ArrayList;
@@ -18,6 +41,8 @@ import com.google.common.collect.Lists;
 import nl.knokko.core.plugin.item.attributes.ItemAttributes;
 import nl.knokko.customitems.item.AttributeModifier;
 import nl.knokko.customitems.item.CustomItemType;
+import nl.knokko.customitems.item.CustomItemType.Category;
+import nl.knokko.customitems.plugin.recipe.ingredient.Ingredient;
 
 public class CustomTool extends CustomItem {
 	
@@ -29,17 +54,19 @@ public class CustomTool extends CustomItem {
 	private final boolean allowEnchanting;
 	private final boolean allowAnvil;
 	
+	private final Ingredient repairItem;
+	
 	private final boolean isSword;
 
 	public CustomTool(CustomItemType itemType, short itemDamage, String name, String displayName, String[] lore, 
-			AttributeModifier[] attributes, int maxDurability, boolean allowEnchanting, boolean allowAnvil) {
+			AttributeModifier[] attributes, int maxDurability, boolean allowEnchanting, boolean allowAnvil, 
+			Ingredient repairItem) {
 		super(itemType, itemDamage, name, displayName, lore, attributes);
 		this.maxDurability = maxDurability;
 		this.allowEnchanting = allowEnchanting;
 		this.allowAnvil = allowAnvil;
-		isSword = itemType == CustomItemType.WOOD_SWORD || itemType == CustomItemType.STONE_SWORD
-				|| itemType == CustomItemType.IRON_SWORD || itemType == CustomItemType.GOLD_SWORD
-				|| itemType == CustomItemType.DIAMOND_SWORD;
+		this.repairItem = repairItem;
+		isSword = itemType.getMainCategory() == Category.SWORD;
 	}
 	
 	@Override
@@ -55,6 +82,10 @@ public class CustomTool extends CustomItem {
 	@Override
 	public boolean allowAnvilActions() {
 		return allowAnvil;
+	}
+	
+	public Ingredient getRepairItem() {
+		return repairItem;
 	}
 	
 	@Override
@@ -86,8 +117,10 @@ public class CustomTool extends CustomItem {
 	
 	@Override
 	public void onBlockBreak(Player player, ItemStack tool, Block block) {
-		if (decreaseDurability(tool, isSword ? 2 : 1))
-			player.getInventory().setItemInMainHand(null);
+		if (itemType.getMainCategory() != Category.HOE) {
+			if (decreaseDurability(tool, isSword ? 2 : 1))
+				player.getInventory().setItemInMainHand(null);
+		}
 	}
 	
 	@Override
@@ -110,7 +143,7 @@ public class CustomTool extends CustomItem {
 			List<String> lore = meta.getLore();
 			String durabilityString = getDurabilityString(lore);
 			// Check whether or not the tool is unbreakable
-			if (durabilityString.startsWith(DURABILITY_PREFIX)) {
+			if (durabilityString != null) {
 				int durability = Integer.parseInt(durabilityString.substring(DURABILITY_PREFIX.length(), durabilityString.indexOf(DURABILITY_SPLIT)));
 				if (durability > 1) {
 					durability -= damage;
@@ -154,7 +187,7 @@ public class CustomTool extends CustomItem {
 		List<String> lore = meta.getLore();
 		String durabilityString = getDurabilityString(lore);
 		// Check whether or not the tool is unbreakable
-		if (durabilityString.startsWith(DURABILITY_PREFIX)) {
+		if (durabilityString != null) {
 			return Integer.parseInt(durabilityString.substring(DURABILITY_PREFIX.length(), durabilityString.indexOf(DURABILITY_SPLIT)));
 		} else {
 			return CustomItem.UNBREAKABLE_TOOL_DURABILITY;
