@@ -224,6 +224,17 @@ public class ItemSet {
 			throw new IllegalArgumentException("Unknown encoding: " + encoding);
 	}
 	
+	private String checkName(String name) {
+		for (int index = 0; index < name.length(); index++) {
+			char c = name.charAt(index);
+			if (c >= 'A' && c <= 'Z')
+				return "Uppercase characters are not allowed in names.";
+			if ((c < 'a' || c > 'z') && c != '_')
+				return "The _ character is the only special character that is allowed in names.";
+		}
+		return null;
+	}
+	
 	private void load1(BitInput input) {
 		// Textures
 		int textureAmount = input.readInt();
@@ -436,6 +447,9 @@ public class ItemSet {
 	public String addTexture(NamedImage texture) {
 		if(texture == null)
 			return "Can't add null textures";
+		String nameError = checkName(texture.getName());
+		if (nameError != null)
+			return nameError;
 		for(NamedImage current : textures) 
 			if(current.getName().equals(texture.getName()))
 				return "There is already a texture with that name";
@@ -453,6 +467,9 @@ public class ItemSet {
 	 * @return The reason the texture could not be changed, or null if the texture changed successfully
 	 */
 	public String changeTexture(NamedImage texture, String newName, BufferedImage newImage) {
+		String nameError = checkName(newName);
+		if (nameError != null)
+			return nameError;
 		boolean has = false;
 		for(NamedImage current : textures) {
 			if(current == texture)
@@ -532,6 +549,9 @@ public class ItemSet {
 	public String changeTool(CustomTool item, CustomItemType newType, short newDamage, String newName, 
 			String newDisplayName, String[] newLore, AttributeModifier[] newAttributes, boolean allowEnchanting,
 			boolean allowAnvil, Ingredient repairItem, int newDurability, NamedImage newImage) {
+		String nameError = checkName(newName);
+		if (nameError != null)
+			return nameError;
 		boolean has = false;
 		if (newImage == null) return "Every item needs a texture";
 		if (allowAnvil && newDisplayName.contains("§"))
@@ -571,6 +591,9 @@ public class ItemSet {
 	
 	private String addItem(CustomItem item, boolean doClassCheck) {
 		if (item == null) return "Can't add null items";
+		String nameError = checkName(item.getName());
+		if (nameError != null)
+			return nameError;
 		if (doClassCheck && item.getClass() != CustomItem.class) return "Use the appropriate method for that class";
 		if (item.getTexture() == null) return "Every item needs a texture";
 		for(CustomItem current : items) {
@@ -610,6 +633,9 @@ public class ItemSet {
 	 */
 	public String changeItem(CustomItem item, CustomItemType newType, short newDamage, String newName, 
 			String newDisplayName, String[] newLore, AttributeModifier[] newAttributes, NamedImage newImage) {
+		String nameError = checkName(newName);
+		if (nameError != null)
+			return nameError;
 		boolean has = false;
 		if (newImage == null) return "Every item needs a texture";
 		for(CustomItem current : items) {
