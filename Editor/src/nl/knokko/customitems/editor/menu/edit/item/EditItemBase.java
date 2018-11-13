@@ -71,7 +71,7 @@ public abstract class EditItemBase extends GuiMenu {
 			internalDamage = new TextEditField(Short.toString(menu.getSet().nextAvailableDamage(internalType.currentType)), EditProps.EDIT_BASE, EditProps.EDIT_ACTIVE);
 			displayName = new TextEditField("", EditProps.EDIT_BASE, EditProps.EDIT_ACTIVE);
 			textureSelect = new TextureSelect(null);
-			lore = new String[] {"First line", "Second line"};
+			lore = new String[] {};
 			attributes = DEFAULT_ATTRIBUTES;
 		}
 	}
@@ -178,6 +178,8 @@ public abstract class EditItemBase extends GuiMenu {
 		addComponent(new TextButton("Change lore...", EditProps.BUTTON, EditProps.HOVER, () -> {
 			state.getWindow().setMainComponent(new TextArrayEditMenu(EditItemBase.this, (String[] newLore) -> {
 				lore = newLore;
+				for (int index = 0; index < lore.length; index++)
+					lore[index] = lore[index].replaceAll("&", "§");
 			}, EditProps.BACKGROUND, EditProps.CANCEL_BASE, EditProps.CANCEL_HOVER, EditProps.SAVE_BASE, EditProps.SAVE_HOVER, EditProps.EDIT_BASE, EditProps.EDIT_ACTIVE, lore));
 		}), BUTTON_X, 0.3f, BUTTON_X + 0.2f, 0.4f);
 	}
