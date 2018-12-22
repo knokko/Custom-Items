@@ -40,10 +40,10 @@ public class EditItemTool extends EditItemBase {
 	private final CustomTool previous;
 	private final Category category;
 	
-	private final CheckboxComponent allowEnchanting;
-	private final CheckboxComponent allowAnvil;
-	private final TextEditField durability;
-	private final IngredientComponent repairItem;
+	protected final CheckboxComponent allowEnchanting;
+	protected final CheckboxComponent allowAnvil;
+	protected final TextEditField durability;
+	protected final IngredientComponent repairItem;
 
 	public EditItemTool(EditMenu menu, CustomTool previous, Category toolCategory) {
 		super(menu, previous);
@@ -71,6 +71,8 @@ public class EditItemTool extends EditItemBase {
 				internalType.currentType = CustomItemType.IRON_HOE;
 			else if (toolCategory == Category.SHEAR)
 				internalType.currentType = CustomItemType.SHEARS;
+			else if (toolCategory == Category.BOW)
+				internalType.currentType = CustomItemType.BOW;
 			else
 				throw new Error("Unsupported category for EditItemTool: " + toolCategory);
 			internalDamage.setDirectText(Short.toString(menu.getSet().nextAvailableDamage(internalType.currentType)));
@@ -81,14 +83,14 @@ public class EditItemTool extends EditItemBase {
 	protected void addComponents() {
 		super.addComponents();
 		internalType.setText(internalType.currentType.toString());
-		addComponent(allowEnchanting, 0.75f, 0.7f, 0.775f, 0.725f);
-		addComponent(new TextComponent("Allow enchanting", EditProps.LABEL), 0.8f, 0.7f, 0.95f, 0.8f);
-		addComponent(allowAnvil, 0.75f, 0.6f, 0.775f, 0.625f);
-		addComponent(new TextComponent("Allow anvil actions", EditProps.LABEL), 0.8f, 0.6f, 0.95f, 0.7f);
-		addComponent(durability, 0.9f, 0.5f, 0.95f, 0.6f);
-		addComponent(new TextComponent("Max uses: ", EditProps.LABEL), 0.75f, 0.5f, 0.875f, 0.6f);
-		addComponent(new TextComponent("Repair item: ", EditProps.LABEL), 0.8f, 0.4f, 0.95f, 0.5f);
-		addComponent(repairItem, 0.8f, 0.3f, 0.95f, 0.4f);
+		addComponent(allowEnchanting, 0.75f, 0.8f, 0.775f, 0.825f);
+		addComponent(new TextComponent("Allow enchanting", EditProps.LABEL), 0.8f, 0.8f, 0.95f, 0.9f);
+		addComponent(allowAnvil, 0.75f, 0.7f, 0.775f, 0.725f);
+		addComponent(new TextComponent("Allow anvil actions", EditProps.LABEL), 0.8f, 0.7f, 0.95f, 0.8f);
+		addComponent(durability, 0.85f, 0.6f, 0.9f, 0.7f);
+		addComponent(new TextComponent("Max uses: ", EditProps.LABEL), 0.71f, 0.6f, 0.84f, 0.7f);
+		addComponent(new TextComponent("Repair item: ", EditProps.LABEL), 0.71f, 0.5f, 0.84f, 0.6f);
+		addComponent(repairItem, 0.85f, 0.5f, 0.99f, 0.6f);
 	}
 
 	@Override
@@ -102,7 +104,7 @@ public class EditItemTool extends EditItemBase {
 					if (maxUses > 0 || maxUses == CustomItem.UNBREAKABLE_TOOL_DURABILITY) {
 						error = menu.getSet().addTool(new CustomTool(internalType.currentType, damage, name.getText(), 
 								getDisplayName(), lore, attributes, maxUses, allowEnchanting.isChecked(), 
-								allowAnvil.isChecked(), repairItem.getIngredient(), textureSelect.currentTexture));
+								allowAnvil.isChecked(), repairItem.getIngredient(), textureSelect.currentTexture), true);
 					} else
 						error = "The max uses must be greater than 0 or " + CustomItem.UNBREAKABLE_TOOL_DURABILITY + " to become unbreakable";
 				} catch (NumberFormatException nfe) {
@@ -127,7 +129,7 @@ public class EditItemTool extends EditItemBase {
 					if (maxUses > 0 || maxUses == CustomItem.UNBREAKABLE_TOOL_DURABILITY) {
 						error = menu.getSet().changeTool(previous, internalType.currentType, damage, name.getText(), 
 								getDisplayName(), lore, attributes, allowEnchanting.isChecked(), 
-								allowAnvil.isChecked(), repairItem.getIngredient(), maxUses, textureSelect.currentTexture);
+								allowAnvil.isChecked(), repairItem.getIngredient(), maxUses, textureSelect.currentTexture, true);
 					} else
 						error = "The max uses must be greater than 0 or " + CustomItem.UNBREAKABLE_TOOL_DURABILITY + " to become unbreakable";
 				} catch (NumberFormatException nfe) {

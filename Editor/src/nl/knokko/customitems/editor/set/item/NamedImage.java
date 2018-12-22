@@ -30,6 +30,9 @@ import nl.knokko.util.bits.BitOutput;
 
 public class NamedImage {
 	
+	public static final byte ENCODING_SIMPLE = 0;
+	public static final byte ENCODING_BOW = 1;
+	
 	private String name;
 	
 	private BufferedImage image;

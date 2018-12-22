@@ -35,17 +35,19 @@ import nl.knokko.gui.component.image.SimpleImageComponent;
 import nl.knokko.gui.component.text.TextButton;
 
 public class SelectTexture extends GuiMenu {
-	
+
 	private final GuiComponent returnMenu;
 	private final ReturnAction returnAction;
+	private final TextureFilter filter;
 	private final ItemSet set;
 
-	public SelectTexture(ItemSet set, GuiComponent returnMenu, ReturnAction returnAction) {
+	public SelectTexture(ItemSet set, GuiComponent returnMenu, TextureFilter filter, ReturnAction returnAction) {
 		this.returnMenu = returnMenu;
 		this.returnAction = returnAction;
+		this.filter = filter;
 		this.set = set;
 	}
-	
+
 	@Override
 	public GuiColor getBackgroundColor() {
 		return EditProps.BACKGROUND;
@@ -58,18 +60,27 @@ public class SelectTexture extends GuiMenu {
 		}), 0.1f, 0.6f, 0.3f, 0.7f);
 		Collection<NamedImage> textures = set.getTextures();
 		int index = 0;
-		for(NamedImage texture : textures) {
-			addComponent(new SimpleImageComponent(state.getWindow().getTextureLoader().loadTexture(texture.getImage())), 0.4f, 0.9f - index * 0.15f, 0.5f, 1f - index * 0.15f);
-			addComponent(new TextButton(texture.getName(), EditProps.SELECT_BASE, EditProps.SELECT_HOVER, () -> {
-				returnAction.onSelect(texture);
-				state.getWindow().setMainComponent(returnMenu);
-			}), 0.55f, 0.9f - index * 0.15f, 0.85f, 1f - index * 0.15f);
-			index++;
+		for (NamedImage texture : textures) {
+			if (filter.approve(texture)) {
+				addComponent(
+						new SimpleImageComponent(state.getWindow().getTextureLoader().loadTexture(texture.getImage())),
+						0.4f, 0.9f - index * 0.15f, 0.5f, 1f - index * 0.15f);
+				addComponent(new TextButton(texture.getName(), EditProps.SELECT_BASE, EditProps.SELECT_HOVER, () -> {
+					returnAction.onSelect(texture);
+					state.getWindow().setMainComponent(returnMenu);
+				}), 0.55f, 0.9f - index * 0.15f, 0.85f, 1f - index * 0.15f);
+				index++;
+			}
 		}
 	}
-	
+
 	public static interface ReturnAction {
-		
+
 		void onSelect(NamedImage texture);
+	}
+
+	public static interface TextureFilter {
+
+		boolean approve(NamedImage texture);
 	}
 }

@@ -1,6 +1,6 @@
 name: CustomItems
 main: nl.knokko.customitems.plugin.CustomItemsPlugin
-version: 0.1
+version: 3.0
 commands:
   customitems:
     description: give a custom item to a player

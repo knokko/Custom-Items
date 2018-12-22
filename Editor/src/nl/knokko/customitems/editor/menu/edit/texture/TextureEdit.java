@@ -34,6 +34,7 @@ import nl.knokko.customitems.editor.menu.edit.EditProps;
 import nl.knokko.customitems.editor.menu.main.CreateMenu;
 import nl.knokko.customitems.editor.set.item.NamedImage;
 import nl.knokko.gui.color.GuiColor;
+import nl.knokko.gui.component.GuiComponent;
 import nl.knokko.gui.component.WrapperComponent;
 import nl.knokko.gui.component.menu.FileChooserMenu;
 import nl.knokko.gui.component.menu.GuiMenu;
@@ -90,14 +91,14 @@ public class TextureEdit extends GuiMenu {
 					errorComponent.setText(error);
 				else {
 					if(previous != null) {
-						error = menu.getSet().changeTexture(previous, name.getText(), image);
+						error = menu.getSet().changeTexture(previous, name.getText(), image, true);
 						if(error != null)
 							errorComponent.setText(error);
 						else
 							state.getWindow().setMainComponent(menu.getTextureOverview());
 					}
 					else {
-						error = menu.getSet().addTexture(new NamedImage(name.getText(), image));
+						error = menu.getSet().addTexture(new NamedImage(name.getText(), image), true);
 						if(error != null)
 							errorComponent.setText(error);
 						else
@@ -109,9 +110,9 @@ public class TextureEdit extends GuiMenu {
 		}), 0.4f, 0.3f, 0.6f, 0.4f);
 	}
 	
-	private TextButton createImageSelect() {
+	public static TextButton createImageSelect(ImageListener listener, TextComponent errorComponent, GuiComponent returnMenu) {
 		return new TextButton("Edit...", EditProps.CHOOSE_BASE, EditProps.CHOOSE_HOVER, () -> {
-			state.getWindow().setMainComponent(new FileChooserMenu(TextureEdit.this, (File file) -> {
+			returnMenu.getState().getWindow().setMainComponent(new FileChooserMenu(returnMenu, (File file) -> {
 				try {
 					BufferedImage loaded = ImageIO.read(file);
 					if(loaded != null) {
@@ -120,8 +121,7 @@ public class TextureEdit extends GuiMenu {
 							if(width >= 16) {
 								if(width <= 512) {
 									if(width == 16 || width == 32 || width == 64 || width == 128 || width == 256 || width == 512) {
-										image = loaded;
-										wrapper.setComponent(new SimpleImageComponent(state.getWindow().getTextureLoader().loadTexture(image)));
+										listener.listen(loaded);
 									} else
 										errorComponent.setText("The width and height (" + width + ") should be a power of 2");
 								} else
@@ -129,7 +129,7 @@ public class TextureEdit extends GuiMenu {
 							} else
 								errorComponent.setText("The image should be at least 16 x 16 pixels.");
 						} else
-							errorComponent.setText("The width (" + image.getWidth() + ") of this image should be equal to the height (" + image.getHeight() + ")");
+							errorComponent.setText("The width (" + loaded.getWidth() + ") of this image should be equal to the height (" + loaded.getHeight() + ")");
 					} else
 						errorComponent.setText("This image can't be read.");
 				} catch(IOException ioex) {
@@ -139,5 +139,17 @@ public class TextureEdit extends GuiMenu {
 				return file.getName().endsWith(".png");
 			}));
 		});
+	}
+	
+	private TextButton createImageSelect() {
+		return createImageSelect((BufferedImage loaded) -> {
+			image = loaded;
+			wrapper.setComponent(new SimpleImageComponent(state.getWindow().getTextureLoader().loadTexture(image)));
+		}, errorComponent, this);
+	}
+	
+	public static interface ImageListener {
+		
+		void listen(BufferedImage image);
 	}
 }

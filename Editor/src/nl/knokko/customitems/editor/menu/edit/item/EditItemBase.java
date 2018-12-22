@@ -167,6 +167,8 @@ public abstract class EditItemBase extends GuiMenu {
 			super.init();
 			clickAction = () -> {
 				state.getWindow().setMainComponent(new SelectTexture(menu.getSet(), EditItemBase.this, (NamedImage texture) -> {
+					return allowTexture(texture);
+				}, (NamedImage texture) -> {
 					currentTexture = texture;
 					setText(texture.getName());
 				}));
@@ -193,4 +195,8 @@ public abstract class EditItemBase extends GuiMenu {
 	}
 	
 	protected abstract CustomItemType.Category getCategory();
+	
+	protected boolean allowTexture(NamedImage texture) {
+		return true;
+	}
 }

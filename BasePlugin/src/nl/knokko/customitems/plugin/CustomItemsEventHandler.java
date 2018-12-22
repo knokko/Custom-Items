@@ -25,6 +25,7 @@ package nl.knokko.customitems.plugin;
 
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
@@ -33,6 +34,8 @@ import java.util.UUID;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.enchantments.Enchantment;
+import org.bukkit.entity.Arrow;
+import org.bukkit.entity.Entity;
 import org.bukkit.entity.HumanEntity;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
@@ -44,6 +47,7 @@ import org.bukkit.event.block.Action;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.enchantment.PrepareItemEnchantEvent;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
+import org.bukkit.event.entity.EntityShootBowEvent;
 import org.bukkit.event.inventory.InventoryAction;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryType.SlotType;
@@ -59,6 +63,8 @@ import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.inventory.meta.Repairable;
+import org.bukkit.metadata.MetadataValue;
+import org.bukkit.plugin.Plugin;
 
 import nl.knokko.core.plugin.item.ItemHelper;
 import nl.knokko.customitems.item.CustomItemType.Category;
@@ -66,6 +72,7 @@ import nl.knokko.customitems.plugin.recipe.CustomRecipe;
 import nl.knokko.customitems.plugin.recipe.ShapedCustomRecipe;
 import nl.knokko.customitems.plugin.recipe.ShapelessCustomRecipe;
 import nl.knokko.customitems.plugin.set.ItemSet;
+import nl.knokko.customitems.plugin.set.item.CustomBow;
 import nl.knokko.customitems.plugin.set.item.CustomItem;
 import nl.knokko.customitems.plugin.set.item.CustomTool;
 
@@ -96,6 +103,100 @@ public class CustomItemsEventHandler implements Listener {
 						}
 					}
 				}
+			}
+		}
+	}
+	
+	@EventHandler(ignoreCancelled = true)
+	public void processCustomBowDamage(EntityDamageByEntityEvent event) {
+		if (event.getDamager() instanceof Arrow) {
+			List<MetadataValue> metas = event.getDamager().getMetadata("CustomBowDamageMultiplier");
+			for (MetadataValue meta : metas) {
+				event.setDamage(event.getDamage() * meta.asDouble());
+			}
+		}
+	}
+	
+	@EventHandler(ignoreCancelled = true)
+	public void onBowShoot(EntityShootBowEvent event) {
+		if (CustomItem.isCustom(event.getBow())) {
+			CustomItem customItem = CustomItemsPlugin.getInstance().getSet().getItem(event.getBow());
+			if (customItem instanceof CustomBow) {
+				CustomBow bow = (CustomBow) customItem;
+				Entity projectile = event.getProjectile();
+				if (projectile instanceof Arrow) {
+					if (event.getEntity() instanceof Player && bow.decreaseDurability(event.getBow(), 1)) {
+						Player player = (Player) event.getEntity();
+						if (player.getInventory().getItemInMainHand() != null && player.getInventory().getItemInMainHand().getType() == Material.BOW) {
+							player.getInventory().setItemInMainHand(null);
+						} else {
+							player.getInventory().setItemInOffHand(null);
+						}
+					}
+					Arrow arrow = (Arrow) projectile;
+					arrow.setKnockbackStrength(arrow.getKnockbackStrength() + bow.getKnockbackStrength());
+					arrow.setVelocity(arrow.getVelocity().multiply(bow.getSpeedMultiplier()));
+					arrow.setGravity(bow.hasGravity());
+					arrow.setMetadata("CustomBowDamageMultiplier", new MetadataValue() {
+
+						@Override
+						public Object value() {
+							return null;
+						}
+
+						@Override
+						public int asInt() {
+							return 0;
+						}
+
+						@Override
+						public float asFloat() {
+							return 0;
+						}
+
+						@Override
+						public double asDouble() {
+							return bow.getDamageMultiplier();
+						}
+
+						@Override
+						public long asLong() {
+							return 0;
+						}
+
+						@Override
+						public short asShort() {
+							return 0;
+						}
+
+						@Override
+						public byte asByte() {
+							return 0;
+						}
+
+						@Override
+						public boolean asBoolean() {
+							return false;
+						}
+
+						@Override
+						public String asString() {
+							return null;
+						}
+
+						@Override
+						public Plugin getOwningPlugin() {
+							return CustomItemsPlugin.getInstance();
+						}
+
+						@Override
+						public void invalidate() {}
+					});
+				} else {
+					Bukkit.getLogger().warning("A bow was shot, but it didn't shoot an arrow");
+				}
+			} else {
+				Bukkit.getLogger().warning("A bow is being used as custom item, but is not a custom bow");
 			}
 		}
 	}

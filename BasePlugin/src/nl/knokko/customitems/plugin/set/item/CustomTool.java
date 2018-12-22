@@ -117,15 +117,13 @@ public class CustomTool extends CustomItem {
 	
 	@Override
 	public void onBlockBreak(Player player, ItemStack tool, Block block) {
-		if (itemType.getMainCategory() != Category.HOE) {
-			if (decreaseDurability(tool, isSword ? 2 : 1))
-				player.getInventory().setItemInMainHand(null);
-		}
+		if (itemType.getMainCategory() != Category.HOE && itemType.getMainCategory() != Category.BOW && decreaseDurability(tool, isSword ? 2 : 1))
+			player.getInventory().setItemInMainHand(null);
 	}
 	
 	@Override
 	public void onEntityHit(LivingEntity attacker, ItemStack tool, Entity target) {
-		if (decreaseDurability(tool, isSword ? 1 : 2))
+		if (itemType.getMainCategory() != Category.HOE && itemType.getMainCategory() != Category.BOW && decreaseDurability(tool, isSword ? 1 : 2))
 			attacker.getEquipment().setItemInMainHand(null);
 	}
 	

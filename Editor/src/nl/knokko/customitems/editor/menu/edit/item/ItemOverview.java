@@ -27,6 +27,7 @@ import java.util.Collection;
 
 import nl.knokko.customitems.editor.menu.edit.EditMenu;
 import nl.knokko.customitems.editor.menu.edit.EditProps;
+import nl.knokko.customitems.editor.set.item.CustomBow;
 import nl.knokko.customitems.editor.set.item.CustomItem;
 import nl.knokko.customitems.editor.set.item.CustomTool;
 import nl.knokko.gui.color.GuiColor;
@@ -91,7 +92,9 @@ public class ItemOverview extends GuiMenu {
 				float maxY = 1f - index * 0.1f;
 				addComponent(new TextComponent(item.getName(), EditProps.LABEL), 0f, minY, 0.5f, maxY);
 				addComponent(new TextButton("Edit", EditProps.BUTTON, EditProps.HOVER, () -> {
-					if (item instanceof CustomTool)
+					if (item instanceof CustomBow)
+						state.getWindow().setMainComponent(new EditItemBow(menu, (CustomBow) item));
+					else if (item instanceof CustomTool)
 						state.getWindow().setMainComponent(new EditItemTool(menu, (CustomTool) item, item.getItemType().getMainCategory()));
 					else
 						state.getWindow().setMainComponent(new EditItemSimple(menu, item));

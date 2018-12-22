@@ -21,22 +21,43 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  *******************************************************************************/
-package nl.knokko.customitems.encoding;
+package nl.knokko.customitems.plugin.set.item;
 
-public class ItemEncoding {
-	
-	/**
-	 * The first item encoding
-	 */
-	public static final byte ENCODING_SIMPLE_1 = 0;
-	
-	// All encodings that end with a 2 or greater have support for attribute modifiers
-	public static final byte ENCODING_SIMPLE_2 = 1;
-	public static final byte ENCODING_TOOL_2 = 2;
-	
-	/**
-	 * Those tools can also have repair materials for anvil
-	 */
-	public static final byte ENCODING_TOOL_3 = 3;
-	public static final byte ENCODING_BOW_3 = 4;
+import nl.knokko.customitems.item.AttributeModifier;
+import nl.knokko.customitems.item.CustomItemType;
+import nl.knokko.customitems.plugin.recipe.ingredient.Ingredient;
+
+public class CustomBow extends CustomTool {
+
+	private final double damageMultiplier;
+	private final double speedMultiplier;
+	private final int knockbackStrength;
+	private final boolean hasGravity;
+
+	public CustomBow(short itemDamage, String name, String displayName, String[] lore, AttributeModifier[] attributes,
+			int maxDurability, double damageMultiplier, double speedMultiplier, int knockbackStrength,
+			boolean hasGravity, boolean allowEnchanting, boolean allowAnvil, Ingredient repairItem) {
+		super(CustomItemType.BOW, itemDamage, name, displayName, lore, attributes, maxDurability, allowEnchanting,
+				allowAnvil, repairItem);
+		this.damageMultiplier = damageMultiplier;
+		this.speedMultiplier = speedMultiplier;
+		this.knockbackStrength = knockbackStrength;
+		this.hasGravity = hasGravity;
+	}
+
+	public double getDamageMultiplier() {
+		return damageMultiplier;
+	}
+
+	public double getSpeedMultiplier() {
+		return speedMultiplier;
+	}
+
+	public int getKnockbackStrength() {
+		return knockbackStrength;
+	}
+
+	public boolean hasGravity() {
+		return hasGravity;
+	}
 }

@@ -42,9 +42,11 @@ import javax.imageio.ImageIO;
 import javax.imageio.stream.MemoryCacheImageOutputStream;
 
 import nl.knokko.customitems.editor.Editor;
+import nl.knokko.customitems.editor.set.item.CustomBow;
 import nl.knokko.customitems.editor.set.item.CustomItem;
 import nl.knokko.customitems.editor.set.item.CustomTool;
 import nl.knokko.customitems.editor.set.item.NamedImage;
+import nl.knokko.customitems.editor.set.item.texture.BowTextures;
 import nl.knokko.customitems.editor.set.recipe.Recipe;
 import nl.knokko.customitems.editor.set.recipe.ShapedRecipe;
 import nl.knokko.customitems.editor.set.recipe.ShapelessRecipe;
@@ -68,7 +70,7 @@ import nl.knokko.util.bits.ByteArrayBitOutput;
 import static nl.knokko.customitems.encoding.SetEncoding.*;
 
 public class ItemSet {
-	
+
 	private Recipe loadRecipe(BitInput input) {
 		byte encoding = input.readByte();
 		if (encoding == RecipeEncoding.SHAPED_RECIPE)
@@ -77,154 +79,198 @@ public class ItemSet {
 			return new ShapelessRecipe(input, this);
 		throw new IllegalArgumentException("Unknown recipe encoding: " + encoding);
 	}
-	
+
 	private CustomItem loadItem(BitInput input) {
 		byte encoding = input.readByte();
-        if (encoding == ItemEncoding.ENCODING_SIMPLE_1)
-            return loadSimpleItem1(input);
-        else if (encoding == ItemEncoding.ENCODING_SIMPLE_2)
-        	return loadSimpleItem2(input);
-        else if (encoding == ItemEncoding.ENCODING_TOOL_2)
-        	return loadTool2(input);
-        else if (encoding == ItemEncoding.ENCODING_TOOL_3)
-        	return loadTool3(input);
-        throw new IllegalArgumentException("Unknown encoding: " + encoding);
+		if (encoding == ItemEncoding.ENCODING_SIMPLE_1)
+			return loadSimpleItem1(input);
+		else if (encoding == ItemEncoding.ENCODING_SIMPLE_2)
+			return loadSimpleItem2(input);
+		else if (encoding == ItemEncoding.ENCODING_TOOL_2)
+			return loadTool2(input);
+		else if (encoding == ItemEncoding.ENCODING_TOOL_3)
+			return loadTool3(input);
+		else if (encoding == ItemEncoding.ENCODING_BOW_3)
+			return loadBow3(input);
+		throw new IllegalArgumentException("Unknown encoding: " + encoding);
 	}
-	
+
 	private CustomItem loadSimpleItem1(BitInput input) {
 		CustomItemType itemType = CustomItemType.valueOf(input.readJavaString());
-        short damage = input.readShort();
-        String name = input.readJavaString();
-        String displayName = input.readJavaString();
-        //System.out.println("itemType is " + itemType.name());
-        //System.out.println("loadSimple item with damage " + damage + " and name " + name + " and displayName " + displayName);
-        String[] lore = new String[input.readByte() & 0xFF];
-        //System.out.println("lore length is " + lore.length);
-        for(int index = 0; index < lore.length; index++){
-            lore[index] = input.readJavaString();
-        }
-        AttributeModifier[] attributes = new AttributeModifier[0];
-        String imageName = input.readJavaString();
-        NamedImage texture = null;
-        for(NamedImage current : textures) {
-        	if(current.getName().equals(imageName)) {
-        		texture = current;
-        		break;
-        	}
-        }
-        if(texture == null) throw new IllegalArgumentException("Can't find texture " + imageName);
-        return new CustomItem(itemType, damage, name, displayName, lore, attributes, texture);
+		short damage = input.readShort();
+		String name = input.readJavaString();
+		String displayName = input.readJavaString();
+		// System.out.println("itemType is " + itemType.name());
+		// System.out.println("loadSimple item with damage " + damage + " and name " +
+		// name + " and displayName " + displayName);
+		String[] lore = new String[input.readByte() & 0xFF];
+		// System.out.println("lore length is " + lore.length);
+		for (int index = 0; index < lore.length; index++) {
+			lore[index] = input.readJavaString();
+		}
+		AttributeModifier[] attributes = new AttributeModifier[0];
+		String imageName = input.readJavaString();
+		NamedImage texture = null;
+		for (NamedImage current : textures) {
+			if (current.getName().equals(imageName)) {
+				texture = current;
+				break;
+			}
+		}
+		if (texture == null)
+			throw new IllegalArgumentException("Can't find texture " + imageName);
+		return new CustomItem(itemType, damage, name, displayName, lore, attributes, texture);
 	}
-	
+
 	private CustomItem loadSimpleItem2(BitInput input) {
 		CustomItemType itemType = CustomItemType.valueOf(input.readJavaString());
-        short damage = input.readShort();
-        String name = input.readJavaString();
-        String displayName = input.readJavaString();
-        String[] lore = new String[input.readByte() & 0xFF];
-        for(int index = 0; index < lore.length; index++){
-            lore[index] = input.readJavaString();
-        }
-        AttributeModifier[] attributes = new AttributeModifier[input.readByte() & 0xFF];
-        for (int index = 0; index < attributes.length; index++)
-        	attributes[index] = loadAttribute2(input);
-        String imageName = input.readJavaString();
-        NamedImage texture = null;
-        for(NamedImage current : textures) {
-        	if(current.getName().equals(imageName)) {
-        		texture = current;
-        		break;
-        	}
-        }
-        if(texture == null) throw new IllegalArgumentException("Can't find texture " + imageName);
-        return new CustomItem(itemType, damage, name, displayName, lore, attributes, texture);
+		short damage = input.readShort();
+		String name = input.readJavaString();
+		String displayName = input.readJavaString();
+		String[] lore = new String[input.readByte() & 0xFF];
+		for (int index = 0; index < lore.length; index++) {
+			lore[index] = input.readJavaString();
+		}
+		AttributeModifier[] attributes = new AttributeModifier[input.readByte() & 0xFF];
+		for (int index = 0; index < attributes.length; index++)
+			attributes[index] = loadAttribute2(input);
+		String imageName = input.readJavaString();
+		NamedImage texture = null;
+		for (NamedImage current : textures) {
+			if (current.getName().equals(imageName)) {
+				texture = current;
+				break;
+			}
+		}
+		if (texture == null)
+			throw new IllegalArgumentException("Can't find texture " + imageName);
+		return new CustomItem(itemType, damage, name, displayName, lore, attributes, texture);
 	}
-	
+
 	private CustomItem loadTool2(BitInput input) {
 		CustomItemType itemType = CustomItemType.valueOf(input.readJavaString());
-        short damage = input.readShort();
-        String name = input.readJavaString();
-        String displayName = input.readJavaString();
-        String[] lore = new String[input.readByte() & 0xFF];
-        for(int index = 0; index < lore.length; index++){
-            lore[index] = input.readJavaString();
-        }
-        AttributeModifier[] attributes = new AttributeModifier[input.readByte() & 0xFF];
-        for (int index = 0; index < attributes.length; index++)
-        	attributes[index] = loadAttribute2(input);
-        int durability = input.readInt();
-        boolean allowEnchanting = input.readBoolean();
-        boolean allowAnvil = input.readBoolean();
-        String imageName = input.readJavaString();
-        NamedImage texture = null;
-        for(NamedImage current : textures) {
-        	if(current.getName().equals(imageName)) {
-        		texture = current;
-        		break;
-        	}
-        }
-        if(texture == null) throw new IllegalArgumentException("Can't find texture " + imageName);
-        return new CustomTool(itemType, damage, name, displayName, lore, attributes, durability, 
-        		allowEnchanting, allowAnvil, new NoIngredient(), texture);
+		short damage = input.readShort();
+		String name = input.readJavaString();
+		String displayName = input.readJavaString();
+		String[] lore = new String[input.readByte() & 0xFF];
+		for (int index = 0; index < lore.length; index++) {
+			lore[index] = input.readJavaString();
+		}
+		AttributeModifier[] attributes = new AttributeModifier[input.readByte() & 0xFF];
+		for (int index = 0; index < attributes.length; index++)
+			attributes[index] = loadAttribute2(input);
+		int durability = input.readInt();
+		boolean allowEnchanting = input.readBoolean();
+		boolean allowAnvil = input.readBoolean();
+		String imageName = input.readJavaString();
+		NamedImage texture = null;
+		for (NamedImage current : textures) {
+			if (current.getName().equals(imageName)) {
+				texture = current;
+				break;
+			}
+		}
+		if (texture == null)
+			throw new IllegalArgumentException("Can't find texture " + imageName);
+		return new CustomTool(itemType, damage, name, displayName, lore, attributes, durability, allowEnchanting,
+				allowAnvil, new NoIngredient(), texture);
 	}
-	
+
 	private CustomItem loadTool3(BitInput input) {
 		CustomItemType itemType = CustomItemType.valueOf(input.readJavaString());
-        short damage = input.readShort();
-        String name = input.readJavaString();
-        String displayName = input.readJavaString();
-        String[] lore = new String[input.readByte() & 0xFF];
-        for(int index = 0; index < lore.length; index++){
-            lore[index] = input.readJavaString();
-        }
-        AttributeModifier[] attributes = new AttributeModifier[input.readByte() & 0xFF];
-        for (int index = 0; index < attributes.length; index++)
-        	attributes[index] = loadAttribute2(input);
-        int durability = input.readInt();
-        boolean allowEnchanting = input.readBoolean();
-        boolean allowAnvil = input.readBoolean();
-        Ingredient repairItem = Recipe.loadIngredient(input, this);
-        String imageName = input.readJavaString();
-        NamedImage texture = null;
-        for(NamedImage current : textures) {
-        	if(current.getName().equals(imageName)) {
-        		texture = current;
-        		break;
-        	}
-        }
-        if(texture == null) throw new IllegalArgumentException("Can't find texture " + imageName);
-        return new CustomTool(itemType, damage, name, displayName, lore, attributes, durability, 
-        		allowEnchanting, allowAnvil, repairItem, texture);
+		short damage = input.readShort();
+		String name = input.readJavaString();
+		String displayName = input.readJavaString();
+		String[] lore = new String[input.readByte() & 0xFF];
+		for (int index = 0; index < lore.length; index++) {
+			lore[index] = input.readJavaString();
+		}
+		AttributeModifier[] attributes = new AttributeModifier[input.readByte() & 0xFF];
+		for (int index = 0; index < attributes.length; index++)
+			attributes[index] = loadAttribute2(input);
+		int durability = input.readInt();
+		boolean allowEnchanting = input.readBoolean();
+		boolean allowAnvil = input.readBoolean();
+		Ingredient repairItem = Recipe.loadIngredient(input, this);
+		String imageName = input.readJavaString();
+		NamedImage texture = null;
+		for (NamedImage current : textures) {
+			if (current.getName().equals(imageName)) {
+				texture = current;
+				break;
+			}
+		}
+		if (texture == null)
+			throw new IllegalArgumentException("Can't find texture " + imageName);
+		return new CustomTool(itemType, damage, name, displayName, lore, attributes, durability, allowEnchanting,
+				allowAnvil, repairItem, texture);
 	}
-	
+
+	private CustomBow loadBow3(BitInput input) {
+		short damage = input.readShort();
+		String name = input.readJavaString();
+		String displayName = input.readJavaString();
+		String[] lore = new String[input.readByte() & 0xFF];
+		for (int index = 0; index < lore.length; index++) {
+			lore[index] = input.readJavaString();
+		}
+		AttributeModifier[] attributes = new AttributeModifier[input.readByte() & 0xFF];
+		for (int index = 0; index < attributes.length; index++)
+			attributes[index] = loadAttribute2(input);
+		int durability = input.readInt();
+		double damageMultiplier = input.readDouble();
+		double speedMultiplier = input.readDouble();
+		int knockbackStrength = input.readInt();
+		boolean gravity = input.readBoolean();
+		boolean allowEnchanting = input.readBoolean();
+		boolean allowAnvil = input.readBoolean();
+		Ingredient repairItem = Recipe.loadIngredient(input, this);
+		String imageName = input.readJavaString();
+		NamedImage texture = null;
+		for (NamedImage current : textures) {
+			if (current.getName().equals(imageName)) {
+				texture = current;
+				break;
+			}
+		}
+		if (texture == null)
+			throw new IllegalArgumentException("Can't find texture " + imageName);
+		return new CustomBow(damage, name, displayName, lore, attributes, durability, damageMultiplier, speedMultiplier,
+				knockbackStrength, gravity, allowEnchanting, allowAnvil, repairItem, (BowTextures) texture);
+	}
+
 	private AttributeModifier loadAttribute2(BitInput input) {
-		return new AttributeModifier(Attribute.valueOf(input.readJavaString()), Slot.valueOf(input.readJavaString()), 
+		return new AttributeModifier(Attribute.valueOf(input.readJavaString()), Slot.valueOf(input.readJavaString()),
 				Operation.values()[(int) input.readNumber((byte) 2, false)], input.readDouble());
 	}
-	
+
 	private final String fileName;
-	
+
 	private Collection<NamedImage> textures;
 	private Collection<CustomItem> items;
 	private Collection<Recipe> recipes;
-	
+
 	public ItemSet(String fileName) {
 		this.fileName = fileName;
 		textures = new ArrayList<NamedImage>();
 		items = new ArrayList<CustomItem>();
 		recipes = new ArrayList<Recipe>();
 	}
-	
+
 	public ItemSet(String fileName, BitInput input) {
 		this.fileName = fileName;
 		byte encoding = input.readByte();
-		if(encoding == ENCODING_1)
+		if (encoding == ENCODING_1)
 			load1(input);
+		else if (encoding == ENCODING_2)
+			load2(input);
 		else
 			throw new IllegalArgumentException("Unknown encoding: " + encoding);
 	}
-	
+
 	private String checkName(String name) {
+		if (name.isEmpty())
+			return "You can't leave the name empty.";
 		for (int index = 0; index < name.length(); index++) {
 			char c = name.charAt(index);
 			if (c >= 'A' && c <= 'Z')
@@ -234,87 +280,166 @@ public class ItemSet {
 		}
 		return null;
 	}
-	
+
 	private void load1(BitInput input) {
 		// Textures
 		int textureAmount = input.readInt();
-		//System.out.println("amount of textures is " + textureAmount);
+		// System.out.println("amount of textures is " + textureAmount);
 		textures = new ArrayList<NamedImage>(textureAmount);
 		for (int counter = 0; counter < textureAmount; counter++)
 			textures.add(new NamedImage(input));
-		//System.out.println("textures are " + textures);
+		// System.out.println("textures are " + textures);
 		// Items
 		int itemAmount = input.readInt();
-		//System.out.println("amount of items is " + itemAmount);
+		// System.out.println("amount of items is " + itemAmount);
 		items = new ArrayList<CustomItem>(itemAmount);
 		for (int counter = 0; counter < itemAmount; counter++)
 			items.add(loadItem(input));
-		
+
 		// Recipes
 		int recipeAmount = input.readInt();
 		recipes = new ArrayList<Recipe>(recipeAmount);
 		for (int counter = 0; counter < recipeAmount; counter++)
 			recipes.add(loadRecipe(input));
 	}
-	
+
+	private void load2(BitInput input) {
+		// Textures
+		int textureAmount = input.readInt();
+		// System.out.println("amount of textures is " + textureAmount);
+		textures = new ArrayList<NamedImage>(textureAmount);
+		for (int counter = 0; counter < textureAmount; counter++) {
+			byte textureType = input.readByte();
+			if (textureType == NamedImage.ENCODING_BOW)
+				textures.add(new BowTextures(input));
+			else if (textureType == NamedImage.ENCODING_SIMPLE)
+				textures.add(new NamedImage(input));
+			else
+				throw new IllegalArgumentException("Unknown texture encoding: " + textureType);
+		}
+		// System.out.println("textures are " + textures);
+		// Items
+		int itemAmount = input.readInt();
+		// System.out.println("amount of items is " + itemAmount);
+		items = new ArrayList<CustomItem>(itemAmount);
+		for (int counter = 0; counter < itemAmount; counter++)
+			items.add(loadItem(input));
+
+		// Recipes
+		int recipeAmount = input.readInt();
+		recipes = new ArrayList<Recipe>(recipeAmount);
+		for (int counter = 0; counter < recipeAmount; counter++)
+			recipes.add(loadRecipe(input));
+	}
+
 	/**
-	 * A String containing only the quote character.
-	 * I use this constant because it's annoying to get that character inside a String
+	 * A String containing only the quote character. I use this constant because
+	 * it's annoying to get that character inside a String
 	 */
 	private static final String Q = "" + '"';
-	
+
 	public String export() {
 		try {
 			File file = new File(Editor.getFolder() + "/" + fileName + ".cis");// cis stands for Custom Item Set
 			BitOutput output = new BitOutputStream(new FileOutputStream(file));
 			export1(output);
 			output.terminate();
-			ZipOutputStream zipOutput = new ZipOutputStream(new FileOutputStream(new File(Editor.getFolder() + "/" + fileName + ".zip")));
-			
+			ZipOutputStream zipOutput = new ZipOutputStream(
+					new FileOutputStream(new File(Editor.getFolder() + "/" + fileName + ".zip")));
+
 			// Custom textures
-			for(NamedImage texture : textures) {
-				ZipEntry entry = new ZipEntry("assets/minecraft/textures/customitems/" + texture.getName() + ".png");
+			for (NamedImage texture : textures) {
+				String textureName = texture.getName();
+				if (texture instanceof BowTextures) {
+					textureName += "_standby";
+					BowTextures bt = (BowTextures) texture;
+					List<BowTextures.Entry> pullTextures = bt.getPullTextures();
+					int index = 0;
+					for (BowTextures.Entry pullTexture : pullTextures) {
+						ZipEntry entry = new ZipEntry("assets/minecraft/textures/customitems/" + bt.getName()
+								+ "_pulling_" + index++ + ".png");
+						zipOutput.putNextEntry(entry);
+						ImageIO.write(pullTexture.getTexture(), "PNG", new MemoryCacheImageOutputStream(zipOutput));
+						zipOutput.closeEntry();
+					}
+				}
+				ZipEntry entry = new ZipEntry("assets/minecraft/textures/customitems/" + textureName + ".png");
 				zipOutput.putNextEntry(entry);
 				ImageIO.write(texture.getImage(), "PNG", new MemoryCacheImageOutputStream(zipOutput));
 				zipOutput.closeEntry();
 			}
-			
+
 			// Custom item models
-			for(CustomItem item : items) {
+			for (CustomItem item : items) {
 				ZipEntry entry = new ZipEntry("assets/minecraft/models/customitems/" + item.getName() + ".json");
 				zipOutput.putNextEntry(entry);
 				PrintWriter jsonWriter = new PrintWriter(zipOutput);
-				jsonWriter.println("{");
-				jsonWriter.println("    " + Q + "parent" + Q + ": " + Q + "item/handheld" + Q + ",");
-				jsonWriter.println("    " + Q + "textures" + Q + ": {");
-				jsonWriter.println("        " + Q + "layer0" + Q + ": " + Q + "customitems/" + item.getTexture().getName() + Q);
-				jsonWriter.println("    }");
-				jsonWriter.println("}");
+				if (item instanceof CustomBow) {
+					jsonWriter.println("{");
+					jsonWriter.println("    " + Q + "parent" + Q + ": " + Q + "item/generated" + Q + ",");
+					jsonWriter.println("    " + Q + "textures" + Q + ": {");
+					jsonWriter.println("        " + Q + "layer0" + Q + ": " + Q + "customitems/"
+							+ item.getTexture().getName() + "_standby" + Q);
+					jsonWriter.println("    }");
+					jsonWriter.println("}");
+				} else {
+					jsonWriter.println("{");
+					jsonWriter.println("    " + Q + "parent" + Q + ": " + Q + "item/handheld" + Q + ",");
+					jsonWriter.println("    " + Q + "textures" + Q + ": {");
+					jsonWriter.println("        " + Q + "layer0" + Q + ": " + Q + "customitems/"
+							+ item.getTexture().getName() + Q);
+					jsonWriter.println("    }");
+					jsonWriter.println("}");
+				}
 				jsonWriter.flush();
 				zipOutput.closeEntry();
+				if (item instanceof CustomBow) {
+					CustomBow bow = (CustomBow) item;
+					List<BowTextures.Entry> pullTextures = bow.getTexture().getPullTextures();
+					String textureName = item.getTexture().getName() + "_pulling_";
+					for (int index = 0; index < pullTextures.size(); index++) {
+						entry = new ZipEntry("assets/minecraft/models/customitems/" + item.getName() + "_pulling_"
+								+ index + ".json");
+						zipOutput.putNextEntry(entry);
+						jsonWriter = new PrintWriter(zipOutput);
+						jsonWriter.println("{");
+						jsonWriter.println("    " + Q + "parent" + Q + ": " + Q + "item/bow" + Q + ",");
+						jsonWriter.println("    " + Q + "textures" + Q + ": {");
+						jsonWriter.println(
+								"        " + Q + "layer0" + Q + ": " + Q + "customitems/" + textureName + index + Q);
+						jsonWriter.println("    }");
+						jsonWriter.println("}");
+						jsonWriter.flush();
+						zipOutput.closeEntry();
+					}
+				}
 			}
-			
+
 			// Map all custom items by their item type
-			Map<CustomItemType, List<CustomItem>> itemMap = new EnumMap<CustomItemType, List<CustomItem>>(CustomItemType.class);
-			for(CustomItem item : items) {
+			Map<CustomItemType, List<CustomItem>> itemMap = new EnumMap<CustomItemType, List<CustomItem>>(
+					CustomItemType.class);
+			for (CustomItem item : items) {
 				List<CustomItem> list = itemMap.get(item.getItemType());
-				if(list == null) {
+				if (list == null) {
 					list = new ArrayList<CustomItem>();
 					itemMap.put(item.getItemType(), list);
 				}
 				list.add(item);
 			}
-			
+
 			// Now create the item model files for those models
 			Set<Entry<CustomItemType, List<CustomItem>>> entrySet = itemMap.entrySet();
-			for(Entry<CustomItemType, List<CustomItem>> entry : entrySet) {
+			for (Entry<CustomItemType, List<CustomItem>> entry : entrySet) {
 				List<CustomItem> list = entry.getValue();
-				if(list != null) {
+				if (list != null) {
 					// The items with low damage should come first
 					list.sort((CustomItem a, CustomItem b) -> {
-						if(a.getItemDamage() > b.getItemDamage()) return 1;
-						if(a.getItemDamage() < b.getItemDamage()) return -1;
-						if(a == b) return 0;
+						if (a.getItemDamage() > b.getItemDamage())
+							return 1;
+						if (a.getItemDamage() < b.getItemDamage())
+							return -1;
+						if (a == b)
+							return 0;
 						throw new IllegalArgumentException("a is " + a + " and b is " + b);
 					});
 					String name = entry.getKey().name().toLowerCase();
@@ -326,33 +451,98 @@ public class ItemSet {
 					ZipEntry zipEntry = new ZipEntry("assets/minecraft/models/item/" + name + ".json");
 					zipOutput.putNextEntry(zipEntry);
 					PrintWriter jsonWriter = new PrintWriter(zipOutput);
-					
-					// Begin of the json file
-					jsonWriter.println("{");
-					jsonWriter.println("    " + Q + "parent" + Q + ": " + Q + "item/handheld" + Q + ",");
-					jsonWriter.println("    " + Q + "textures" + Q + ": {");
-					jsonWriter.println("        " + Q + "layer0" + Q + ": " + Q + "items/" + textureName + Q);
-					jsonWriter.println("    },");
-					jsonWriter.println("    " + Q + "overrides" + Q + ": [");
-					
-					// Now the interesting part
-					for(CustomItem item : list) {
-						jsonWriter.println("        { " + Q + "predicate" + Q + ": {" + Q + "damaged" + Q + 
-								": 0, " + Q + "damage" + Q + ": " + 
-								(double) item.getItemDamage() / item.getItemType().getMaxDurability() + "}, " + Q 
-								+ "model" + Q + ": " + Q + "customitems/" + item.getName() + Q + "},");
+
+					if (entry.getKey() == CustomItemType.BOW) {
+						// Begin of the json file
+						jsonWriter.println("{");
+						jsonWriter.println("    " + Q + "parent" + Q + ": " + Q + "item/generated" + Q + ",");
+						jsonWriter.println("    " + Q + "textures" + Q + ": {");
+						jsonWriter.println("        " + Q + "layer0" + Q + ": " + Q + "items/bow_standby" + Q);
+						jsonWriter.println("    },");
+						// Display
+						jsonWriter.println("    " + Q + "display" + Q + ": {");
+						jsonWriter.println("        " + Q + "thirdperson_righthand" + Q + ": {");
+						jsonWriter.println("            " + Q + "rotation" + Q + ": [ -80, 260, -40 ],");
+						jsonWriter.println("            " + Q + "translation" + Q + ": [ -1, -2, 2.5 ],");
+						jsonWriter.println("            " + Q + "scale" + Q + ": [ 0.9, 0.9, 0.9 ]");
+						jsonWriter.println("        },");
+						jsonWriter.println("        " + Q + "thirdperson_lefthand" + Q + ": {");
+						jsonWriter.println("            " + Q + "rotation" + Q + ": [ -80, -280, -40 ],");
+						jsonWriter.println("            " + Q + "translation" + Q + ": [ -1, -2, 2.5 ],");
+						jsonWriter.println("            " + Q + "scale" + Q + ": [ 0.9, 0.9, 0.9 ]");
+						jsonWriter.println("        },");
+						jsonWriter.println("        " + Q + "firstperson_righthand" + Q + ": {");
+						jsonWriter.println("            " + Q + "rotation" + Q + ": [ 0, -90, 25 ],");
+						jsonWriter.println("            " + Q + "translation" + Q + ": [ 1.13, 3.2, 1.13 ],");
+						jsonWriter.println("            " + Q + "scale" + Q + ": [ 0.68, 0.68, 0.68 ]");
+						jsonWriter.println("        },");
+						jsonWriter.println("        " + Q + "firstperson_lefthand" + Q + ": {");
+						jsonWriter.println("            " + Q + "rotation" + Q + ": [ 0, 90, -25 ],");
+						jsonWriter.println("            " + Q + "translation" + Q + ": [ 1.13, 3.2, 1.13 ],");
+						jsonWriter.println("            " + Q + "scale" + Q + ": [ 0.68, 0.68, 0.68 ]");
+						jsonWriter.println("        }");
+						jsonWriter.println("    },");
+						// The interesting part...
+						jsonWriter.println("    " + Q + "overrides" + Q + ": [");
+
+						jsonWriter.println("        { " + Q + "predicate" + Q + ": { " + Q + "pulling" + Q + ": 1 }, "
+								+ Q + "model" + Q + ": " + Q + "item/bow_pulling_0" + Q + "},");
+						jsonWriter.println("        { " + Q + "predicate" + Q + ": { " + Q + "pulling" + Q + ": 1, " + Q
+								+ "pull" + Q + ": 0.65 }, " + Q + "model" + Q + ": " + Q + "item/bow_pulling_1" + Q
+								+ "},");
+						jsonWriter.println("        { " + Q + "predicate" + Q + ": { " + Q + "pulling" + Q + ": 1, " + Q
+								+ "pull" + Q + ": 0.9 }, " + Q + "model" + Q + ": " + Q + "item/bow_pulling_2" + Q
+								+ "},");
+
+						for (CustomItem item : list) {
+							jsonWriter.println("        { " + Q + "predicate" + Q + ": {" + Q + "damaged" + Q + ": 0, "
+									+ Q + "damage" + Q + ": "
+									+ (double) item.getItemDamage() / item.getItemType().getMaxDurability() + "}, " + Q
+									+ "model" + Q + ": " + Q + "customitems/" + item.getName() + Q + "},");
+							List<BowTextures.Entry> pullTextures = ((CustomBow) item).getTexture().getPullTextures();
+							int counter = 0;
+							for (BowTextures.Entry pullTexture : pullTextures) {
+								jsonWriter.println("        { " + Q + "predicate" + Q + ": {" + Q + "damaged" + Q
+										+ ": 0, " + Q + "damage" + Q + ": "
+										+ (double) item.getItemDamage() / item.getItemType().getMaxDurability() + ", "
+										+ Q + "pulling" + Q + ": 1, " + Q + "pull" + Q + ": " + pullTexture.getPull()
+										+ "}, " + Q + "model" + Q + ": " + Q + "customitems/" + item.getName()
+										+ "_pulling_" + counter++ + Q + "},");
+							}
+						}
+						// End of the json file
+						jsonWriter.println("        { " + Q + "predicate" + Q + ": {" + Q + "damaged" + Q + ": 1, " + Q
+								+ "damage" + Q + ": 0}, " + Q + "model" + Q + ": " + Q + "item/" + name + Q + "}");
+						jsonWriter.println("    ]");
+						jsonWriter.println("}");
+					} else {
+						// Begin of the json file
+						jsonWriter.println("{");
+						jsonWriter.println("    " + Q + "parent" + Q + ": " + Q + "item/handheld" + Q + ",");
+						jsonWriter.println("    " + Q + "textures" + Q + ": {");
+						jsonWriter.println("        " + Q + "layer0" + Q + ": " + Q + "items/" + textureName + Q);
+						jsonWriter.println("    },");
+						jsonWriter.println("    " + Q + "overrides" + Q + ": [");
+
+						// Now the interesting part
+						for (CustomItem item : list) {
+							jsonWriter.println("        { " + Q + "predicate" + Q + ": {" + Q + "damaged" + Q + ": 0, "
+									+ Q + "damage" + Q + ": "
+									+ (double) item.getItemDamage() / item.getItemType().getMaxDurability() + "}, " + Q
+									+ "model" + Q + ": " + Q + "customitems/" + item.getName() + Q + "},");
+						}
+
+						// End of the json file
+						jsonWriter.println("        { " + Q + "predicate" + Q + ": {" + Q + "damaged" + Q + ": 1, " + Q
+								+ "damage" + Q + ": 0}, " + Q + "model" + Q + ": " + Q + "item/" + name + Q + "}");
+						jsonWriter.println("    ]");
+						jsonWriter.println("}");
 					}
-					
-					// End of the json file
-					jsonWriter.println("        { " + Q + "predicate" + Q + ": {" + Q + "damaged" + Q + ": 1, " + Q + "damage" + Q + 
-							": 0}, " + Q + "model" + Q + ": " + Q + "item/" + name + Q + "}");
-					jsonWriter.println("    ]");
-					jsonWriter.println("}");
 					jsonWriter.flush();
 					zipOutput.closeEntry();
 				}
 			}
-			
+
 			// pack.mcmeta
 			ZipEntry mcMeta = new ZipEntry("pack.mcmeta");
 			zipOutput.putNextEntry(mcMeta);
@@ -365,59 +555,63 @@ public class ItemSet {
 			jsonWriter.println("}");
 			jsonWriter.flush();
 			zipOutput.closeEntry();
-			
+
 			zipOutput.close();
 			return null;
-		} catch(IOException ioex) {
+		} catch (IOException ioex) {
 			ioex.printStackTrace();
 			return ioex.getMessage();
 		}
 	}
-	
+
 	private void export1(BitOutput output) {
 		output.addByte(ENCODING_1);
-		
+
 		// Items
 		output.addInt(items.size());
-		for(CustomItem item : items)
+		for (CustomItem item : items)
 			item.export(output);
-		
+
 		// Recipes
 		output.addInt(recipes.size());
 		for (Recipe recipe : recipes)
 			recipe.save(output);
 	}
-	
+
 	public String save() {
 		try {
 			Editor.getFolder().mkdir();
 			Editor.getBackupFolder().mkdir();
-			File file = new File(Editor.getFolder() + "/" + fileName + ".cisb");// cisb stands for Custom Item Set Builder
+			File file = new File(Editor.getFolder() + "/" + fileName + ".cisb");// cisb stands for Custom Item Set
+																				// Builder
 			ByteArrayBitOutput output = new ByteArrayBitOutput();
-			save1(output);
+			save2(output);
 			output.terminate();
 			byte[] bytes = output.getBytes();
 			FileOutputStream mainOutput = new FileOutputStream(file);
 			mainOutput.write(bytes);
 			mainOutput.close();
-			FileOutputStream backupOutput = new FileOutputStream(new File(Editor.getBackupFolder() + "/" + fileName + " " + System.currentTimeMillis() + ".cisb"));
+			FileOutputStream backupOutput = new FileOutputStream(
+					new File(Editor.getBackupFolder() + "/" + fileName + " " + System.currentTimeMillis() + ".cisb"));
 			backupOutput.write(bytes);
 			backupOutput.close();
 			return null;
-		} catch(IOException ioex) {
+		} catch (IOException ioex) {
 			ioex.printStackTrace();
 			return ioex.getMessage();
 		}
 	}
-	
+
+	@SuppressWarnings("unused")
 	private void save1(BitOutput output) {
 		output.addByte(ENCODING_1);
 		output.addInt(textures.size());
-		for(NamedImage texture : textures)
+		for (NamedImage texture : textures)
 			texture.save(output);
 		output.addInt(items.size());
-		
-		// Save the normal items before the tools so that tools can use normal items as repair item
+
+		// Save the normal items before the tools so that tools can use normal items as
+		// repair item
 		List<CustomItem> sorted = new ArrayList<CustomItem>(items.size());
 		for (CustomItem item : items) {
 			if (!(item instanceof CustomTool)) {
@@ -429,232 +623,380 @@ public class ItemSet {
 				sorted.add(item);
 			}
 		}
-		for(CustomItem item : sorted)
+		for (CustomItem item : sorted)
 			item.save(output);
-		
+
 		output.addInt(recipes.size());
 		for (Recipe recipe : recipes)
 			recipe.save(output);
 	}
-	
+
+	private void save2(BitOutput output) {
+		output.addByte(ENCODING_2);
+		output.addInt(textures.size());
+		for (NamedImage texture : textures) {
+			if (texture instanceof BowTextures)
+				output.addByte(NamedImage.ENCODING_BOW);
+			else
+				output.addByte(NamedImage.ENCODING_SIMPLE);
+			texture.save(output);
+		}
+		output.addInt(items.size());
+
+		// Save the normal items before the tools so that tools can use normal items as
+		// repair item
+		List<CustomItem> sorted = new ArrayList<CustomItem>(items.size());
+		for (CustomItem item : items) {
+			if (!(item instanceof CustomTool)) {
+				sorted.add(item);
+			}
+		}
+		for (CustomItem item : items) {
+			if (item instanceof CustomTool) {
+				sorted.add(item);
+			}
+		}
+		for (CustomItem item : sorted)
+			item.save(output);
+
+		output.addInt(recipes.size());
+		for (Recipe recipe : recipes)
+			recipe.save(output);
+	}
+
 	/**
-	 * Attempts to add the specified texture to this item set.
-	 * If the texture can be added, it will be added.
-	 * If the texture can't be added, the reason is returned.
+	 * Attempts to add the specified texture to this item set. If the texture can be
+	 * added, it will be added. If the texture can't be added, the reason is
+	 * returned.
+	 * 
 	 * @param texture The texture that should be added to this item set
-	 * @return The reason the texture could not be added, or null if the texture was added successfully
+	 * @return The reason the texture could not be added, or null if the texture was
+	 *         added successfully
 	 */
-	public String addTexture(NamedImage texture) {
-		if(texture == null)
+	public String addTexture(NamedImage texture, boolean checkClass) {
+		if (texture == null)
 			return "Can't add null textures";
+		if (checkClass && texture.getClass() != NamedImage.class)
+			return "Use the right method for that class";
 		String nameError = checkName(texture.getName());
 		if (nameError != null)
 			return nameError;
-		for(NamedImage current : textures) 
-			if(current.getName().equals(texture.getName()))
+		for (NamedImage current : textures)
+			if (current.getName().equals(texture.getName()))
 				return "There is already a texture with that name";
 		textures.add(texture);
 		return null;
 	}
-	
+
 	/**
-	 * Attempts to change the specified texture in this item set.
-	 * If the texture can be changed, it will be changed.
-	 * if the texture can't be changed, the reason is returned.
-	 * @param texture The texture to change
-	 * @param newName The new name of the texture (possibly the old name)
+	 * Attempts to change the specified texture in this item set. If the texture can
+	 * be changed, it will be changed. if the texture can't be changed, the reason
+	 * is returned.
+	 * 
+	 * @param texture  The texture to change
+	 * @param newName  The new name of the texture (possibly the old name)
 	 * @param newImage The new image of the texture (possibly the old image)
-	 * @return The reason the texture could not be changed, or null if the texture changed successfully
+	 * @return The reason the texture could not be changed, or null if the texture
+	 *         changed successfully
 	 */
-	public String changeTexture(NamedImage texture, String newName, BufferedImage newImage) {
+	public String changeTexture(NamedImage texture, String newName, BufferedImage newImage, boolean checkClass) {
+		if (texture == null)
+			return "Can't change null textures";
 		String nameError = checkName(newName);
 		if (nameError != null)
 			return nameError;
+		if (newImage == null)
+			return "You need to select an image";
 		boolean has = false;
-		for(NamedImage current : textures) {
-			if(current == texture)
+		for (NamedImage current : textures) {
+			if (current == texture)
 				has = true;
-			else if(current.getName().equals(texture.getName()))
+			else if (current.getName().equals(texture.getName()))
 				return "Another texture has that name already";
 		}
-		if(!has) return "The previous texture is not in the list!";
+		if (!has)
+			return "The previous texture is not in the list!";
 		texture.setName(newName);
 		texture.setImage(newImage);
 		return null;
 	}
-	
+
 	/**
-	 * Attempts to remove the specified texture from this item set.
-	 * If the texture could not be removed, the reason is returned.
-	 * If the texture could be removed, it will be removed.
+	 * Attempts to remove the specified texture from this item set. If the texture
+	 * could not be removed, the reason is returned. If the texture could be
+	 * removed, it will be removed.
+	 * 
 	 * @param texture The texture that should be removed from this set
-	 * @return The reason the texture could not be removed, or null if the texture was removed successfully.
+	 * @return The reason the texture could not be removed, or null if the texture
+	 *         was removed successfully.
 	 */
 	public String removeTexture(NamedImage texture) {
 		boolean has = false;
-		for(NamedImage current : textures) {
-			if(current == texture) {
+		for (NamedImage current : textures) {
+			if (current == texture) {
 				has = true;
 				break;
 			}
 		}
-		if(!has) return "That texture is not in this item set.";
-		for(CustomItem item : items)
-			if(item.getTexture() == texture)
+		if (!has)
+			return "That texture is not in this item set.";
+		for (CustomItem item : items)
+			if (item.getTexture() == texture)
 				return "That texture is used by " + item.getName();
 		textures.remove(texture);
 		return null;
 	}
-	
+
 	/**
-	 * Attempts to add the specified tool to this item set.
-	 * If the tool can be added, it will be added.
-	 * If the tool can't be added, the reason is returned.
-	 * @param item The tool that should be added to this item set
-	 * @return The reason the tool could not be added, or null if the tool was added succesfully
+	 * Attempts to add the specified bow texture to this item set. If the texture
+	 * can be added, it will be added. If the texture can't be added, the reason is
+	 * returned.
+	 * 
+	 * @param texture    The texture that should be added to this item set
+	 * @param checkClass True if the class must be BowTextures.class, false if it
+	 *                   can be a subclass as well
+	 * @return The reason the texture could not be added, or null if it was added
+	 *         succesfully
 	 */
-	public String addTool(CustomTool item) {
-		if (item == null) return "Can't add null items";
-		if (item.getClass() != CustomTool.class) return "Use the appropriate method for that class";
-		for(CustomItem current : items) {
-			if(current.getName().equals(item.getName()))
-				return "There is already a custom item with that name";
-			if(current.getItemType() == item.getItemType() && current.getItemDamage() == item.getItemDamage())
-				return "There is already a custom item with the same item type and damage";
+	public String addBowTexture(BowTextures texture, boolean checkClass) {
+		if (texture == null)
+			return "Can't add null textures";
+		if (checkClass && texture.getClass() != BowTextures.class)
+			return "Use the right method for this class";
+		String nameError = checkName(texture.getName());
+		if (nameError != null)
+			return nameError;
+		for (NamedImage current : textures)
+			if (current.getName().equals(texture.getName()))
+				return "There is already a texture with that name";
+		List<BowTextures.Entry> pullEntries = texture.getPullTextures();
+		for (BowTextures.Entry pullEntry : pullEntries) {
+			if (pullEntry.getTexture() == null) {
+				return "Pull " + pullEntry.getPull() + " doesn't have a texture";
+			}
+			if (pullEntry.getPull() < 0 || pullEntry.getPull() > 1) {
+				return "All pulls must be between 0 and 1";
+			}
 		}
-		if (item.getRepairItem() instanceof CustomItemIngredient && !(((CustomItemIngredient) item.getRepairItem()).getItem().getClass() == CustomItem.class))
+		return addTexture(texture, false);
+	}
+
+	public String changeBowTexture(BowTextures current, String newName, BufferedImage newTexture,
+			List<BowTextures.Entry> newPullTextures, boolean checkClass) {
+		if (current == null)
+			return "Can't change null textures";
+		if (checkClass && current.getClass() != BowTextures.class)
+			return "Use the right method for that class";
+		for (BowTextures.Entry pullTexture : newPullTextures) {
+			if (pullTexture.getTexture() == null) {
+				return "There is no texture for pull " + pullTexture.getPull();
+			}
+			if (pullTexture.getPull() < 0 || pullTexture.getPull() > 1) {
+				return "All pulls must be between 0 and 1";
+			}
+		}
+		String error = changeTexture(current, newName, newTexture, false);
+		if (error == null) {
+			current.setEntries(newPullTextures);
+		}
+		return error;
+	}
+
+	/**
+	 * Attempts to add the specified bow to this item set. If the bow can be added,
+	 * it will be added. If the bow can't be added, the reason is returned.
+	 * 
+	 * @param item The bow that should be added to this item set
+	 * @return The reason the bow could not be added or null if it was added
+	 *         successfully
+	 */
+	public String addBow(CustomBow item, boolean checkClass) {
+		if (item == null)
+			return "Can't add null items";
+		if (checkClass && item.getClass() != CustomBow.class)
+			return "Use the appropriate method for that class";
+		if (item.getTexture() == null)
+			return "You need to select a texture";
+		List<BowTextures.Entry> pullTextures = item.getTexture().getPullTextures();
+		for (BowTextures.Entry pullTexture : pullTextures) {
+			if (pullTexture == null)
+				return "One of the pull textures is undefined";
+			if (pullTexture.getTexture() == null)
+				return "The texture for pull " + pullTexture.getPull() + " is undefined.";
+		}
+		return addTool(item, false);
+	}
+
+	public String changeBow(CustomBow bow, short newDamage, String newName, String newDisplayName, String[] newLore,
+			AttributeModifier[] newAttributes, double newDamageMultiplier, double newSpeedMultiplier,
+			int newKnockbackStrength, boolean useGravity, boolean allowEnchanting, boolean allowAnvil,
+			Ingredient repairItem, int newDurability, BowTextures newTextures, boolean checkClass) {
+		if (bow == null)
+			return "Can't change bows that do not exist";
+		if (checkClass && bow.getClass() != CustomBow.class)
+			return "Use the appropriate method for the class";
+		List<BowTextures.Entry> pullTextures = newTextures.getPullTextures();
+		for (BowTextures.Entry pullTexture : pullTextures) {
+			if (pullTexture == null)
+				return "One of the pull textures is undefined";
+			if (pullTexture.getTexture() == null)
+				return "The texture for pull " + pullTexture.getPull() + " is undefined.";
+		}
+		String error = changeTool(bow, CustomItemType.BOW, newDamage, newName, newDisplayName, newLore, newAttributes,
+				allowEnchanting, allowAnvil, repairItem, newDurability, newTextures, false);
+		if (error == null) {
+			bow.setDamageMultiplier(newDamageMultiplier);
+			bow.setSpeedMultiplier(newSpeedMultiplier);
+			bow.setKnockbackStrength(newKnockbackStrength);
+			bow.setGravity(useGravity);
+			return null;
+		} else {
+			return error;
+		}
+	}
+
+	/**
+	 * Attempts to add the specified tool to this item set. If the tool can be
+	 * added, it will be added. If the tool can't be added, the reason is returned.
+	 * 
+	 * @param item The tool that should be added to this item set
+	 * @return The reason the tool could not be added, or null if the tool was added
+	 *         succesfully
+	 */
+	public String addTool(CustomTool item, boolean checkClass) {
+		if (item == null)
+			return "Can't add null items";
+		if (checkClass && item.getClass() != CustomTool.class)
+			return "Use the appropriate method for that class";
+		if (item.getRepairItem() instanceof CustomItemIngredient
+				&& !(((CustomItemIngredient) item.getRepairItem()).getItem().getClass() == CustomItem.class))
 			return "Only vanilla items and simple custom items are allowed as repair item.";
 		if (item.allowAnvilActions() && item.getDisplayName().contains("§"))
 			return "Items with color codes in their display name can not allow anvil actions";
 		return addItem(item, false);
 	}
-	
+
 	/**
-	 * Attempts to change the specified tool in this item set.
-	 * If the tool can be changed, it will be changed.
-	 * If the tool can't be changed, the reason is returned.
-	 * @param item The tool that should be changed
-	 * @param newType The new item type of the tool
-	 * @param newDamage The new internal damage of the tool
-	 * @param newName The new name of the tool
-	 * @param newDisplayName The new display name of the tool
-	 * @param newLore The new lore of the tool
-	 * @param newAttributes The new attribute modifiers of the tool
+	 * Attempts to change the specified tool in this item set. If the tool can be
+	 * changed, it will be changed. If the tool can't be changed, the reason is
+	 * returned.
+	 * 
+	 * @param item            The tool that should be changed
+	 * @param newType         The new item type of the tool
+	 * @param newDamage       The new internal damage of the tool
+	 * @param newName         The new name of the tool
+	 * @param newDisplayName  The new display name of the tool
+	 * @param newLore         The new lore of the tool
+	 * @param newAttributes   The new attribute modifiers of the tool
 	 * @param allowEnchanting The new value of allowEnchanting of the tool
-	 * @param allowAnvil The new value of allowAnvil of the tool
-	 * @param newDurability The new maximum uses of the tool
-	 * @param newImage The new image of the tool
-	 * @return The reason the tool could not be changed, or null if the tool was changed successfully
+	 * @param allowAnvil      The new value of allowAnvil of the tool
+	 * @param newDurability   The new maximum uses of the tool
+	 * @param newImage        The new image of the tool
+	 * @return The reason the tool could not be changed, or null if the tool was
+	 *         changed successfully
 	 */
-	public String changeTool(CustomTool item, CustomItemType newType, short newDamage, String newName, 
+	public String changeTool(CustomTool item, CustomItemType newType, short newDamage, String newName,
 			String newDisplayName, String[] newLore, AttributeModifier[] newAttributes, boolean allowEnchanting,
-			boolean allowAnvil, Ingredient repairItem, int newDurability, NamedImage newImage) {
-		String nameError = checkName(newName);
-		if (nameError != null)
-			return nameError;
-		boolean has = false;
-		if (newImage == null) return "Every item needs a texture";
+			boolean allowAnvil, Ingredient repairItem, int newDurability, NamedImage newImage, boolean checkClass) {
+		if (checkClass && item.getClass() != CustomTool.class)
+			return "Use the appropriate method to change this class";
 		if (allowAnvil && newDisplayName.contains("§"))
 			return "Items with color codes in their display name can not allow anvil actions";
-		for(CustomItem current : items) {
-			if(current == item) {
-				has = true;
-				break;
-			}
-			else {
-				if(current.getItemType() == newType && current.getItemDamage() == newDamage) {
-					return "The item " + current.getName() + " has the same internal type and damage.";
-				}
-			}
-		}
-		if(!has) return "There is no previous item!";
-		has = false;
-		for(NamedImage texture : textures)
-			if(texture == newImage)
-				has = true;
-		if(!has) return "The specified texture is not in the texture list!";
-		if (repairItem instanceof CustomItemIngredient && !(((CustomItemIngredient) repairItem).getItem().getClass() == CustomItem.class))
+		if (repairItem instanceof CustomItemIngredient
+				&& !(((CustomItemIngredient) repairItem).getItem().getClass() == CustomItem.class))
 			return "Only vanilla items and simple custom items are allowed as repair item.";
-		item.setItemType(newType);
-		item.setItemDamage(newDamage);
-		item.setName(newName);
-		item.setDisplayName(newDisplayName);
-		item.setLore(newLore);
-		item.setAttributes(newAttributes);
-		item.setAllowEnchanting(allowEnchanting);
-		item.setAllowAnvilActions(allowAnvil);
-		item.setRepairItem(repairItem);
-		item.setDurability(newDurability);
-		item.setTexture(newImage);
-		return null;
+		String error = changeItem(item, newType, newDamage, newName, newDisplayName, newLore, newAttributes, newImage,
+				false);
+		if (error == null) {
+			item.setAllowEnchanting(allowEnchanting);
+			item.setAllowAnvilActions(allowAnvil);
+			item.setRepairItem(repairItem);
+			item.setDurability(newDurability);
+			return null;
+		} else {
+			return error;
+		}
 	}
-	
+
 	private String addItem(CustomItem item, boolean doClassCheck) {
-		if (item == null) return "Can't add null items";
+		if (item == null)
+			return "Can't add null items";
 		String nameError = checkName(item.getName());
 		if (nameError != null)
 			return nameError;
-		if (doClassCheck && item.getClass() != CustomItem.class) return "Use the appropriate method for that class";
-		if (item.getTexture() == null) return "Every item needs a texture";
-		for(CustomItem current : items) {
-			if(current.getName().equals(item.getName()))
+		if (doClassCheck && item.getClass() != CustomItem.class)
+			return "Use the appropriate method for that class";
+		if (item.getTexture() == null)
+			return "Every item needs a texture";
+		for (CustomItem current : items) {
+			if (current.getName().equals(item.getName()))
 				return "There is already a custom item with that name";
-			if(current.getItemType() == item.getItemType() && current.getItemDamage() == item.getItemDamage())
+			if (current.getItemType() == item.getItemType() && current.getItemDamage() == item.getItemDamage())
 				return "There is already a custom item with the same item type and damage";
 		}
 		items.add(item);
 		return null;
 	}
-	
+
 	/**
-	 * Attempts to add the specified item to this item set.
-	 * If the item can be added, it will be added.
-	 * If the item can't be added, the reason is returned.
+	 * Attempts to add the specified item to this item set. If the item can be
+	 * added, it will be added. If the item can't be added, the reason is returned.
+	 * 
 	 * @param item The item that should be added to this set
-	 * @return The reason the item could not be added, or null if the item was added successfully
+	 * @return The reason the item could not be added, or null if the item was added
+	 *         successfully
 	 */
 	public String addItem(CustomItem item) {
 		return addItem(item, true);
 	}
-	
+
 	/**
-	 * Attempts to change the specified item in this item set.
-	 * If the item can be changed, it will be changed.
-	 * If the item can't be changed, the reason is returned.
-	 * @param item The item that should be changed
-	 * @param newType The new type of the item
-	 * @param newDamage The new damage of the item
-	 * @param newName The new name of the item
+	 * Attempts to change the specified item in this item set. If the item can be
+	 * changed, it will be changed. If the item can't be changed, the reason is
+	 * returned.
+	 * 
+	 * @param item           The item that should be changed
+	 * @param newType        The new type of the item
+	 * @param newDamage      The new damage of the item
+	 * @param newName        The new name of the item
 	 * @param newDisplayName The new display name of the item
-	 * @param newLore The new lore of the item
-	 * @param newAttributes The new attribute modifiers of the item
-	 * @param newImage The new image of the item
-	 * @return null if the item was changed successfully or the reason the item could not be changed
+	 * @param newLore        The new lore of the item
+	 * @param newAttributes  The new attribute modifiers of the item
+	 * @param newImage       The new image of the item
+	 * @return null if the item was changed successfully or the reason the item
+	 *         could not be changed
 	 */
-	public String changeItem(CustomItem item, CustomItemType newType, short newDamage, String newName, 
-			String newDisplayName, String[] newLore, AttributeModifier[] newAttributes, NamedImage newImage) {
+	public String changeItem(CustomItem item, CustomItemType newType, short newDamage, String newName,
+			String newDisplayName, String[] newLore, AttributeModifier[] newAttributes, NamedImage newImage,
+			boolean checkClass) {
+		if (item == null)
+			return "Can't change null items";
+		if (checkClass && item.getClass() != CustomItem.class)
+			return "Use the appropriate method to change that class";
 		String nameError = checkName(newName);
 		if (nameError != null)
 			return nameError;
 		boolean has = false;
-		if (newImage == null) return "Every item needs a texture";
-		for(CustomItem current : items) {
-			if(current == item) {
+		if (newImage == null)
+			return "Every item needs a texture";
+		for (CustomItem current : items) {
+			if (current == item) {
 				has = true;
 				break;
-			}
-			else {
-				if(current.getItemType() == newType && current.getItemDamage() == newDamage) {
+			} else {
+				if (current.getItemType() == newType && current.getItemDamage() == newDamage) {
 					return "The item " + current.getName() + " has the same internal type and damage.";
 				}
 			}
 		}
-		if(!has) return "There is no previous item!";
+		if (!has)
+			return "There is no previous item!";
 		has = false;
-		for(NamedImage texture : textures)
-			if(texture == newImage)
+		for (NamedImage texture : textures)
+			if (texture == newImage)
 				has = true;
-		if(!has) return "The specified texture is not in the texture list!";
+		if (!has)
+			return "The specified texture is not in the texture list!";
 		item.setItemType(newType);
 		item.setItemDamage(newDamage);
 		item.setName(newName);
@@ -664,17 +1006,20 @@ public class ItemSet {
 		item.setTexture(newImage);
 		return null;
 	}
-	
+
 	/**
-	 * Attempts to remove the specified item from this set.
-	 * If the item could not be removed, the reason is returned.
-	 * If the item can be removed, it will be removed and null will be returned.
+	 * Attempts to remove the specified item from this set. If the item could not be
+	 * removed, the reason is returned. If the item can be removed, it will be
+	 * removed and null will be returned.
+	 * 
 	 * @param item The item that should be removed from this ItemSet
-	 * @return The reason the item could not be removed, or null if the item was removed successfully.
+	 * @return The reason the item could not be removed, or null if the item was
+	 *         removed successfully.
 	 */
 	public String removeItem(CustomItem item) {
 		for (Recipe recipe : recipes) {
-			if (recipe.getResult() instanceof CustomItemResult && ((CustomItemResult)recipe.getResult()).getItem() == item)
+			if (recipe.getResult() instanceof CustomItemResult
+					&& ((CustomItemResult) recipe.getResult()).getItem() == item)
 				return "At least one of your recipes has this item as result.";
 			if (recipe.requires(item))
 				return "At least one of your recipes has this item as an ingredient.";
@@ -682,32 +1027,36 @@ public class ItemSet {
 		items.remove(item);
 		return null;
 	}
-	
+
 	/**
-	 * Attempts to add a shaped recipe with the specified id, ingredients and result to this ItemSet.
-	 * If the recipe can be added, it will be added.
-	 * If the recipe can't be added, the reason is returned.
-	 * @param id The id of the recipe to add
+	 * Attempts to add a shaped recipe with the specified id, ingredients and result
+	 * to this ItemSet. If the recipe can be added, it will be added. If the recipe
+	 * can't be added, the reason is returned.
+	 * 
+	 * @param id          The id of the recipe to add
 	 * @param ingredients The ingredients of the recipe to add
-	 * @param result The result of the recipe to add
-	 * @return The reason why the recipe can't be added, or null if the recipe was added successfully
+	 * @param result      The result of the recipe to add
+	 * @return The reason why the recipe can't be added, or null if the recipe was
+	 *         added successfully
 	 */
 	public String addShapedRecipe(Ingredient[] ingredients, Result result) {
-		for (Recipe recipe : recipes) 
+		for (Recipe recipe : recipes)
 			if (recipe.hasConflictingShapedIngredients(ingredients))
 				return "The ingredients of another recipe conflict with these ingredients.";
 		recipes.add(new ShapedRecipe(ingredients, result));
 		return null;
 	}
-	
+
 	/**
 	 * Attempts to change the ingredients and result of the specified ShapedRecipe.
-	 * If the recipe can be changed, it will be changed.
-	 * If the recipe can't be changed, the reason is returned.
-	 * @param previous The recipe to change
+	 * If the recipe can be changed, it will be changed. If the recipe can't be
+	 * changed, the reason is returned.
+	 * 
+	 * @param previous    The recipe to change
 	 * @param ingredients The new ingredients for the recipe
-	 * @param result The new result for the recipe
-	 * @return The reason the recipe can't be changed, or null if the recipe changed succesfully.
+	 * @param result      The new result for the recipe
+	 * @return The reason the recipe can't be changed, or null if the recipe changed
+	 *         succesfully.
 	 */
 	public String changeShapedRecipe(ShapedRecipe previous, Ingredient[] ingredients, Result result) {
 		boolean has = false;
@@ -719,19 +1068,22 @@ public class ItemSet {
 				return "Another shaped recipe (" + recipe.getResult() + ") has conflicting ingredients";
 			}
 		}
-		if (!has) return "That recipe is not in this item set";
+		if (!has)
+			return "That recipe is not in this item set";
 		previous.setIngredients(ingredients);
 		previous.setResult(result);
 		return null;
 	}
-	
+
 	/**
-	 * Attempts to add a shapeless recipe with the specified ingredients and result to this set.
-	 * If the recipe can be added, it will be added.
-	 * If the recipe can't be added, the reason is returned.
+	 * Attempts to add a shapeless recipe with the specified ingredients and result
+	 * to this set. If the recipe can be added, it will be added. If the recipe
+	 * can't be added, the reason is returned.
+	 * 
 	 * @param ingredients The ingredients of the shapeless recipe
-	 * @param result The result of the shapeless recipe
-	 * @return The reason the recipe could not be added, or null if the recipe was added successfully
+	 * @param result      The result of the shapeless recipe
+	 * @return The reason the recipe could not be added, or null if the recipe was
+	 *         added successfully
 	 */
 	public String addShapelessRecipe(Ingredient[] ingredients, Result result) {
 		for (Recipe recipe : recipes)
@@ -740,15 +1092,17 @@ public class ItemSet {
 		recipes.add(new ShapelessRecipe(result, ingredients));
 		return null;
 	}
-	
+
 	/**
-	 * Attempts to change the ingredients and result of the specified shapeless recipe.
-	 * If the recipe can be changed, it will be changed.
-	 * If the recipe can't be changed, the reason is returned.
-	 * @param previous The shapeless recipe to change
+	 * Attempts to change the ingredients and result of the specified shapeless
+	 * recipe. If the recipe can be changed, it will be changed. If the recipe can't
+	 * be changed, the reason is returned.
+	 * 
+	 * @param previous       The shapeless recipe to change
 	 * @param newIngredients The new ingredients of the recipe
-	 * @param newResult The new result of the recipe
-	 * @return The reason the recipe could not be changed, or null if the recipe was changed successfully.
+	 * @param newResult      The new result of the recipe
+	 * @return The reason the recipe could not be changed, or null if the recipe was
+	 *         changed successfully.
 	 */
 	public String changeShapelessRecipe(ShapelessRecipe previous, Ingredient[] newIngredients, Result newResult) {
 		boolean has = false;
@@ -760,47 +1114,51 @@ public class ItemSet {
 				return "Another shapeless recipe (" + recipe.getResult() + ") has conflicting ingredients";
 			}
 		}
-		if (!has) return "That recipe is not in this item set";
+		if (!has)
+			return "That recipe is not in this item set";
 		previous.setIngredients(newIngredients);
 		previous.setResult(newResult);
 		return null;
 	}
-	
+
 	public void removeRecipe(Recipe recipe) {
 		recipes.remove(recipe);
 	}
-	
+
 	/**
 	 * Do not modify this collection directly!
+	 * 
 	 * @return The CustomItem collection of this ItemSet
 	 */
-	public Collection<CustomItem> getItems(){
+	public Collection<CustomItem> getItems() {
 		return items;
 	}
-	
+
 	/**
 	 * Do not modify this collection directly!
+	 * 
 	 * @return The NamedImage collection of this ItemSet
 	 */
-	public Collection<NamedImage> getTextures(){
+	public Collection<NamedImage> getTextures() {
 		return textures;
 	}
-	
+
 	/**
 	 * Do not modify this collection directly!
+	 * 
 	 * @return The Recipe collection of this ItemSet
 	 */
-	public Collection<Recipe> getRecipes(){
+	public Collection<Recipe> getRecipes() {
 		return recipes;
 	}
-	
+
 	public short nextAvailableDamage(CustomItemType type) {
 		boolean[] usedDamage = new boolean[type.getMaxDurability() - 1];
-		for(CustomItem item : items)
-			if(item.getItemType() == type)
+		for (CustomItem item : items)
+			if (item.getItemType() == type)
 				usedDamage[item.getItemDamage() - 1] = true;
-		for(short damage = 1; damage < type.getMaxDurability(); damage++)
-			if(!usedDamage[damage - 1])
+		for (short damage = 1; damage < type.getMaxDurability(); damage++)
+			if (!usedDamage[damage - 1])
 				return damage;
 		return -1;
 	}

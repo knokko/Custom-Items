@@ -80,7 +80,7 @@ public class EditMenu extends GuiMenu {
 		addComponent(errorComponent, 0.05f, 0.9f, 0.95f, 1f);
 		addComponent(new TextButton("Quit", Properties.createButton(new Color(200, 0, 0), new Color(50, 0, 0)), Properties.createButton(new Color(250, 0, 0), new Color(65, 0, 0)), () -> {
 			state.getWindow().setMainComponent(MainMenu.INSTANCE);
-		}), 0.1f, 0.7f, 0.3f, 0.8f);
+		}), 0.1f, 0.88f, 0.3f, 0.98f);
 		addComponent(new TextButton("Save", EditProps.SAVE_BASE, EditProps.SAVE_HOVER, () -> {
 			String error = set.save();
 			errorComponent.setText(error != null ? error : "");

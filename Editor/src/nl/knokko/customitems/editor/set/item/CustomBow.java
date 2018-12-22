@@ -23,53 +23,38 @@
  *******************************************************************************/
 package nl.knokko.customitems.editor.set.item;
 
+import nl.knokko.customitems.editor.set.item.texture.BowTextures;
 import nl.knokko.customitems.editor.set.recipe.ingredient.Ingredient;
 import nl.knokko.customitems.encoding.ItemEncoding;
 import nl.knokko.customitems.item.AttributeModifier;
 import nl.knokko.customitems.item.CustomItemType;
 import nl.knokko.util.bits.BitOutput;
 
-public class CustomTool extends CustomItem {
+public class CustomBow extends CustomTool {
 	
-	protected int durability;
-	
-	protected boolean allowEnchanting;
-	protected boolean allowAnvil;
-	
-	protected Ingredient repairItem;
+	private double damageMultiplier;
+	private double speedMultiplier;
+	private int knockbackStrength;
+	private boolean hasGravity;
 
-	public CustomTool(CustomItemType itemType, short itemDamage, String name, String displayName, String[] lore,
-			AttributeModifier[] attributes, int durability, boolean allowEnchanting, boolean allowAnvil, 
-			Ingredient repairItem, NamedImage texture) {
-		super(itemType, itemDamage, name, displayName, lore, attributes, texture);
-		this.durability = durability;
-		this.allowEnchanting = allowEnchanting;
-		this.allowAnvil = allowAnvil;
-		this.repairItem = repairItem;
+	public CustomBow(short itemDamage, String name, String displayName, String[] lore, AttributeModifier[] attributes,
+			int durability, double damageMultiplier, double speedMultiplier, int knockbackStrength, boolean hasGravity, boolean allowEnchanting, boolean allowAnvil, Ingredient repairItem, BowTextures texture) {
+		super(CustomItemType.BOW, itemDamage, name, displayName, lore, attributes, durability, allowEnchanting,
+				allowAnvil, repairItem, texture);
+		this.damageMultiplier = damageMultiplier;
+		this.speedMultiplier = speedMultiplier;
+		this.knockbackStrength = knockbackStrength;
+		this.hasGravity = hasGravity;
+	}
+
+	@Override
+	public BowTextures getTexture() {
+		return (BowTextures) super.getTexture();
 	}
 	
 	@Override
 	public void export(BitOutput output) {
 		/*
-		output.addByte(ItemEncoding.ENCODING_TOOL_2);
-		output.addJavaString(itemType.name());
-		output.addShort(itemDamage);
-		output.addJavaString(name);
-		output.addJavaString(displayName);
-		output.addByte((byte) lore.length);
-		for(String line : lore)
-			output.addJavaString(line);
-		output.addByte((byte) attributes.length);
-		for (AttributeModifier attribute : attributes) {
-			output.addJavaString(attribute.getAttribute().name());
-			output.addJavaString(attribute.getSlot().name());
-			output.addNumber(attribute.getOperation().ordinal(), (byte) 2, false);
-			output.addDouble(attribute.getValue());
-		}
-		output.addInt(durability);
-		output.addBoolean(allowEnchanting);
-		output.addBoolean(allowAnvil);
-		*/
 		output.addByte(ItemEncoding.ENCODING_TOOL_3);
 		output.addJavaString(itemType.name());
 		output.addShort(itemDamage);
@@ -89,37 +74,61 @@ public class CustomTool extends CustomItem {
 		output.addBoolean(allowEnchanting);
 		output.addBoolean(allowAnvil);
 		repairItem.save(output);
+		*/
+		
+		output.addByte(ItemEncoding.ENCODING_BOW_3);
+		output.addShort(itemDamage);
+		output.addJavaString(name);
+		output.addJavaString(displayName);
+		output.addByte((byte) lore.length);
+		for(String line : lore)
+			output.addJavaString(line);
+		output.addByte((byte) attributes.length);
+		for (AttributeModifier attribute : attributes) {
+			output.addJavaString(attribute.getAttribute().name());
+			output.addJavaString(attribute.getSlot().name());
+			output.addNumber(attribute.getOperation().ordinal(), (byte) 2, false);
+			output.addDouble(attribute.getValue());
+		}
+		output.addInt(durability);
+		output.addDouble(damageMultiplier);
+		output.addDouble(speedMultiplier);
+		output.addInt(knockbackStrength);
+		output.addBoolean(hasGravity);
+		output.addBoolean(allowEnchanting);
+		output.addBoolean(allowAnvil);
+		repairItem.save(output);
 	}
 	
-	public boolean allowEnchanting() {
-		return allowEnchanting;
+	public double getDamageMultiplier() {
+		return damageMultiplier;
 	}
 	
-	public boolean allowAnvilActions() {
-		return allowAnvil;
+	public void setDamageMultiplier(double newMultiplier) {
+		damageMultiplier = newMultiplier;
 	}
 	
-	public Ingredient getRepairItem() {
-		return repairItem;
+	public double getSpeedMultiplier() {
+		return speedMultiplier;
 	}
 	
-	public int getDurability() {
-		return durability;
+	public void setSpeedMultiplier(double newMultiplier) {
+		speedMultiplier = newMultiplier;
 	}
 	
-	public void setAllowEnchanting(boolean allow) {
-		allowEnchanting = allow;
+	public int getKnockbackStrength() {
+		return knockbackStrength;
 	}
 	
-	public void setAllowAnvilActions(boolean allow) {
-		allowAnvil = allow;
+	public void setKnockbackStrength(int newStrength) {
+		knockbackStrength = newStrength;
 	}
 	
-	public void setRepairItem(Ingredient item) {
-		repairItem = item;
+	public boolean hasGravity() {
+		return hasGravity;
 	}
 	
-	public void setDurability(int durability) {
-		this.durability = durability;
+	public void setGravity(boolean useGravity) {
+		hasGravity = useGravity;
 	}
 }

@@ -21,22 +21,37 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  *******************************************************************************/
-package nl.knokko.customitems.encoding;
+package nl.knokko.customitems.editor.menu.edit.texture;
 
-public class ItemEncoding {
+import nl.knokko.customitems.editor.menu.edit.EditMenu;
+import nl.knokko.customitems.editor.menu.edit.EditProps;
+import nl.knokko.gui.color.GuiColor;
+import nl.knokko.gui.component.menu.GuiMenu;
+import nl.knokko.gui.component.text.TextButton;
+
+public class TextureCreate extends GuiMenu {
 	
-	/**
-	 * The first item encoding
-	 */
-	public static final byte ENCODING_SIMPLE_1 = 0;
+	protected final EditMenu menu;
+
+	public TextureCreate(EditMenu menu) {
+		this.menu = menu;
+	}
+
+	@Override
+	protected void addComponents() {
+		addComponent(new TextButton("Back", EditProps.CANCEL_BASE, EditProps.CANCEL_HOVER, () -> {
+			state.getWindow().setMainComponent(menu.getTextureOverview());
+		}), 0.1f, 0.7f, 0.25f, 0.8f);
+		addComponent(new TextButton("Create simple texture", EditProps.BUTTON, EditProps.HOVER, () -> {
+			state.getWindow().setMainComponent(new TextureEdit(menu, null));
+		}), 0.5f, 0.6f, 0.75f, 0.7f);
+		addComponent(new TextButton("Create bow texture", EditProps.BUTTON, EditProps.HOVER, () -> {
+			state.getWindow().setMainComponent(new BowTextureEdit(menu, null));
+		}), 0.5f, 0.45f, 0.75f, 0.55f);
+	}
 	
-	// All encodings that end with a 2 or greater have support for attribute modifiers
-	public static final byte ENCODING_SIMPLE_2 = 1;
-	public static final byte ENCODING_TOOL_2 = 2;
-	
-	/**
-	 * Those tools can also have repair materials for anvil
-	 */
-	public static final byte ENCODING_TOOL_3 = 3;
-	public static final byte ENCODING_BOW_3 = 4;
+	@Override
+	public GuiColor getBackgroundColor() {
+		return EditProps.BACKGROUND;
+	}
 }

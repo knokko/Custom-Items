@@ -69,5 +69,8 @@ public class CreateItem extends GuiMenu {
 		addComponent(new TextButton("Shear", EditProps.CHOOSE_BASE, EditProps.CHOOSE_HOVER, () -> {
 			state.getWindow().setMainComponent(new EditItemTool(menu, null, Category.SHEAR));
 		}), 0.5f, 0.025f, 0.7f, 0.125f);
+		addComponent(new TextButton("Bow", EditProps.CHOOSE_BASE, EditProps.CHOOSE_HOVER, () -> {
+			state.getWindow().setMainComponent(new EditItemBow(menu, null));
+		}), 0.75f, 0.65f, 0.95f, 0.75f);
 	}
 }
