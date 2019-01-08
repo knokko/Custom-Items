@@ -442,13 +442,17 @@ public class ItemSet {
 							return 0;
 						throw new IllegalArgumentException("a is " + a + " and b is " + b);
 					});
-					String name = entry.getKey().name().toLowerCase();
+					String modelName = entry.getKey().name().toLowerCase();
+					
+					// Bukkit naming is not identical to minecraft naming, so this hack is required
 					if (entry.getKey() == CustomItemType.CARROT_STICK)
-						name = "carrot_on_a_stick";
-					String textureName = name;
-					if (name.startsWith("gold"))
-						name = name.replace("gold", "golden");
-					ZipEntry zipEntry = new ZipEntry("assets/minecraft/models/item/" + name + ".json");
+						modelName = "carrot_on_a_stick";
+					String textureName = modelName;
+					if (modelName.startsWith("gold"))
+						modelName = modelName.replace("gold", "golden");
+					if (modelName.startsWith("wood"))
+						modelName = modelName.replace("wood", "wooden");
+					ZipEntry zipEntry = new ZipEntry("assets/minecraft/models/item/" + modelName + ".json");
 					zipOutput.putNextEntry(zipEntry);
 					PrintWriter jsonWriter = new PrintWriter(zipOutput);
 
@@ -512,7 +516,7 @@ public class ItemSet {
 						}
 						// End of the json file
 						jsonWriter.println("        { " + Q + "predicate" + Q + ": {" + Q + "damaged" + Q + ": 1, " + Q
-								+ "damage" + Q + ": 0}, " + Q + "model" + Q + ": " + Q + "item/" + name + Q + "}");
+								+ "damage" + Q + ": 0}, " + Q + "model" + Q + ": " + Q + "item/" + modelName + Q + "}");
 						jsonWriter.println("    ]");
 						jsonWriter.println("}");
 					} else {
@@ -534,7 +538,7 @@ public class ItemSet {
 
 						// End of the json file
 						jsonWriter.println("        { " + Q + "predicate" + Q + ": {" + Q + "damaged" + Q + ": 1, " + Q
-								+ "damage" + Q + ": 0}, " + Q + "model" + Q + ": " + Q + "item/" + name + Q + "}");
+								+ "damage" + Q + ": 0}, " + Q + "model" + Q + ": " + Q + "item/" + modelName + Q + "}");
 						jsonWriter.println("    ]");
 						jsonWriter.println("}");
 					}
