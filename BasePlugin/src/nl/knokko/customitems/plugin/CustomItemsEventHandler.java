@@ -295,7 +295,7 @@ public class CustomItemsEventHandler implements Listener {
 		if (CustomItem.isCustom(item)) {
 			CustomItem custom = CustomItemsPlugin.getInstance().getSet().getItem(item);
 			if (custom != null) {
-				if (custom instanceof CustomTool) {
+				if (item.containsEnchantment(Enchantment.MENDING) && custom instanceof CustomTool) {
 					CustomTool tool = (CustomTool) custom;
 					int repaired = tool.increaseDurability(item, event.getAmount() * 2);
 					int newXP = event.getAmount() - repaired / 2;
