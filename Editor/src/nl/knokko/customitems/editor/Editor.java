@@ -37,6 +37,12 @@ public class Editor {
 	private static final File FOLDER = new File(FileSystemView.getFileSystemView().getDefaultDirectory() + "/Custom Item Sets");
 	private static final File LOGS_FOLDER = new File(FOLDER + "/logs");
 	private static final File BACKUPS_FOLDER = new File(FOLDER + "/backups");
+	
+	private static GuiWindow window;
+	
+	public static GuiWindow getWindow() {
+		return window;
+	}
 
 	public static void main(String[] args) {
 		FOLDER.mkdirs();
@@ -50,7 +56,7 @@ public class Editor {
 		}
 		System.out.println("test out");
 		System.err.println("test error");
-		GuiWindow window = new AWTGuiWindow();
+		window = new AWTGuiWindow();
 		window.setMainComponent(MainMenu.INSTANCE);
 		window.open("Custom Items Editor", true);
 		window.run(30);

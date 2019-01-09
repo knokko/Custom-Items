@@ -59,6 +59,8 @@ import nl.knokko.customitems.encoding.ItemEncoding;
 import nl.knokko.customitems.encoding.RecipeEncoding;
 import nl.knokko.customitems.item.AttributeModifier;
 import nl.knokko.customitems.item.CustomItemType;
+import nl.knokko.gui.keycode.KeyCode;
+import nl.knokko.gui.window.input.WindowInput;
 import nl.knokko.customitems.item.AttributeModifier.Attribute;
 import nl.knokko.customitems.item.AttributeModifier.Operation;
 import nl.knokko.customitems.item.AttributeModifier.Slot;
@@ -242,6 +244,11 @@ public class ItemSet {
 	private AttributeModifier loadAttribute2(BitInput input) {
 		return new AttributeModifier(Attribute.valueOf(input.readJavaString()), Slot.valueOf(input.readJavaString()),
 				Operation.values()[(int) input.readNumber((byte) 2, false)], input.readDouble());
+	}
+
+	private boolean bypassChecks() {
+		WindowInput input = Editor.getWindow().getInput();
+		return input.isKeyDown(KeyCode.KEY_CONTROL) && input.isKeyDown(KeyCode.KEY_SHIFT);
 	}
 
 	private final String fileName;
@@ -443,7 +450,7 @@ public class ItemSet {
 						throw new IllegalArgumentException("a is " + a + " and b is " + b);
 					});
 					String modelName = entry.getKey().name().toLowerCase();
-					
+
 					// Bukkit naming is not identical to minecraft naming, so this hack is required
 					if (entry.getKey() == CustomItemType.CARROT_STICK)
 						modelName = "carrot_on_a_stick";
@@ -678,16 +685,18 @@ public class ItemSet {
 	 *         added successfully
 	 */
 	public String addTexture(NamedImage texture, boolean checkClass) {
-		if (texture == null)
-			return "Can't add null textures";
-		if (checkClass && texture.getClass() != NamedImage.class)
-			return "Use the right method for that class";
-		String nameError = checkName(texture.getName());
-		if (nameError != null)
-			return nameError;
-		for (NamedImage current : textures)
-			if (current.getName().equals(texture.getName()))
-				return "There is already a texture with that name";
+		if (!bypassChecks()) {
+			if (texture == null)
+				return "Can't add null textures";
+			if (checkClass && texture.getClass() != NamedImage.class)
+				return "Use the right method for that class";
+			String nameError = checkName(texture.getName());
+			if (nameError != null)
+				return nameError;
+			for (NamedImage current : textures)
+				if (current.getName().equals(texture.getName()))
+					return "There is already a texture with that name";
+		}
 		textures.add(texture);
 		return null;
 	}
@@ -704,22 +713,24 @@ public class ItemSet {
 	 *         changed successfully
 	 */
 	public String changeTexture(NamedImage texture, String newName, BufferedImage newImage, boolean checkClass) {
-		if (texture == null)
-			return "Can't change null textures";
-		String nameError = checkName(newName);
-		if (nameError != null)
-			return nameError;
-		if (newImage == null)
-			return "You need to select an image";
-		boolean has = false;
-		for (NamedImage current : textures) {
-			if (current == texture)
-				has = true;
-			else if (current.getName().equals(texture.getName()))
-				return "Another texture has that name already";
+		if (!bypassChecks()) {
+			if (texture == null)
+				return "Can't change null textures";
+			String nameError = checkName(newName);
+			if (nameError != null)
+				return nameError;
+			if (newImage == null)
+				return "You need to select an image";
+			boolean has = false;
+			for (NamedImage current : textures) {
+				if (current == texture)
+					has = true;
+				else if (current.getName().equals(texture.getName()))
+					return "Another texture has that name already";
+			}
+			if (!has)
+				return "The previous texture is not in the list!";
 		}
-		if (!has)
-			return "The previous texture is not in the list!";
 		texture.setName(newName);
 		texture.setImage(newImage);
 		return null;
@@ -735,18 +746,20 @@ public class ItemSet {
 	 *         was removed successfully.
 	 */
 	public String removeTexture(NamedImage texture) {
-		boolean has = false;
-		for (NamedImage current : textures) {
-			if (current == texture) {
-				has = true;
-				break;
+		if (!bypassChecks()) {
+			boolean has = false;
+			for (NamedImage current : textures) {
+				if (current == texture) {
+					has = true;
+					break;
+				}
 			}
+			if (!has)
+				return "That texture is not in this item set.";
+			for (CustomItem item : items)
+				if (item.getTexture() == texture)
+					return "That texture is used by " + item.getName();
 		}
-		if (!has)
-			return "That texture is not in this item set.";
-		for (CustomItem item : items)
-			if (item.getTexture() == texture)
-				return "That texture is used by " + item.getName();
 		textures.remove(texture);
 		return null;
 	}
@@ -763,23 +776,25 @@ public class ItemSet {
 	 *         succesfully
 	 */
 	public String addBowTexture(BowTextures texture, boolean checkClass) {
-		if (texture == null)
-			return "Can't add null textures";
-		if (checkClass && texture.getClass() != BowTextures.class)
-			return "Use the right method for this class";
-		String nameError = checkName(texture.getName());
-		if (nameError != null)
-			return nameError;
-		for (NamedImage current : textures)
-			if (current.getName().equals(texture.getName()))
-				return "There is already a texture with that name";
-		List<BowTextures.Entry> pullEntries = texture.getPullTextures();
-		for (BowTextures.Entry pullEntry : pullEntries) {
-			if (pullEntry.getTexture() == null) {
-				return "Pull " + pullEntry.getPull() + " doesn't have a texture";
-			}
-			if (pullEntry.getPull() < 0 || pullEntry.getPull() > 1) {
-				return "All pulls must be between 0 and 1";
+		if (!bypassChecks()) {
+			if (texture == null)
+				return "Can't add null textures";
+			if (checkClass && texture.getClass() != BowTextures.class)
+				return "Use the right method for this class";
+			String nameError = checkName(texture.getName());
+			if (nameError != null)
+				return nameError;
+			for (NamedImage current : textures)
+				if (current.getName().equals(texture.getName()))
+					return "There is already a texture with that name";
+			List<BowTextures.Entry> pullEntries = texture.getPullTextures();
+			for (BowTextures.Entry pullEntry : pullEntries) {
+				if (pullEntry.getTexture() == null) {
+					return "Pull " + pullEntry.getPull() + " doesn't have a texture";
+				}
+				if (pullEntry.getPull() < 0 || pullEntry.getPull() > 1) {
+					return "All pulls must be between 0 and 1";
+				}
 			}
 		}
 		return addTexture(texture, false);
@@ -787,16 +802,18 @@ public class ItemSet {
 
 	public String changeBowTexture(BowTextures current, String newName, BufferedImage newTexture,
 			List<BowTextures.Entry> newPullTextures, boolean checkClass) {
-		if (current == null)
-			return "Can't change null textures";
-		if (checkClass && current.getClass() != BowTextures.class)
-			return "Use the right method for that class";
-		for (BowTextures.Entry pullTexture : newPullTextures) {
-			if (pullTexture.getTexture() == null) {
-				return "There is no texture for pull " + pullTexture.getPull();
-			}
-			if (pullTexture.getPull() < 0 || pullTexture.getPull() > 1) {
-				return "All pulls must be between 0 and 1";
+		if (!bypassChecks()) {
+			if (current == null)
+				return "Can't change null textures";
+			if (checkClass && current.getClass() != BowTextures.class)
+				return "Use the right method for that class";
+			for (BowTextures.Entry pullTexture : newPullTextures) {
+				if (pullTexture.getTexture() == null) {
+					return "There is no texture for pull " + pullTexture.getPull();
+				}
+				if (pullTexture.getPull() < 0 || pullTexture.getPull() > 1) {
+					return "All pulls must be between 0 and 1";
+				}
 			}
 		}
 		String error = changeTexture(current, newName, newTexture, false);
@@ -815,18 +832,20 @@ public class ItemSet {
 	 *         successfully
 	 */
 	public String addBow(CustomBow item, boolean checkClass) {
-		if (item == null)
-			return "Can't add null items";
-		if (checkClass && item.getClass() != CustomBow.class)
-			return "Use the appropriate method for that class";
-		if (item.getTexture() == null)
-			return "You need to select a texture";
-		List<BowTextures.Entry> pullTextures = item.getTexture().getPullTextures();
-		for (BowTextures.Entry pullTexture : pullTextures) {
-			if (pullTexture == null)
-				return "One of the pull textures is undefined";
-			if (pullTexture.getTexture() == null)
-				return "The texture for pull " + pullTexture.getPull() + " is undefined.";
+		if (!bypassChecks()) {
+			if (item == null)
+				return "Can't add null items";
+			if (checkClass && item.getClass() != CustomBow.class)
+				return "Use the appropriate method for that class";
+			if (item.getTexture() == null)
+				return "You need to select a texture";
+			List<BowTextures.Entry> pullTextures = item.getTexture().getPullTextures();
+			for (BowTextures.Entry pullTexture : pullTextures) {
+				if (pullTexture == null)
+					return "One of the pull textures is undefined";
+				if (pullTexture.getTexture() == null)
+					return "The texture for pull " + pullTexture.getPull() + " is undefined.";
+			}
 		}
 		return addTool(item, false);
 	}
@@ -835,16 +854,18 @@ public class ItemSet {
 			AttributeModifier[] newAttributes, double newDamageMultiplier, double newSpeedMultiplier,
 			int newKnockbackStrength, boolean useGravity, boolean allowEnchanting, boolean allowAnvil,
 			Ingredient repairItem, int newDurability, BowTextures newTextures, boolean checkClass) {
-		if (bow == null)
-			return "Can't change bows that do not exist";
-		if (checkClass && bow.getClass() != CustomBow.class)
-			return "Use the appropriate method for the class";
-		List<BowTextures.Entry> pullTextures = newTextures.getPullTextures();
-		for (BowTextures.Entry pullTexture : pullTextures) {
-			if (pullTexture == null)
-				return "One of the pull textures is undefined";
-			if (pullTexture.getTexture() == null)
-				return "The texture for pull " + pullTexture.getPull() + " is undefined.";
+		if (!bypassChecks()) {
+			if (bow == null)
+				return "Can't change bows that do not exist";
+			if (checkClass && bow.getClass() != CustomBow.class)
+				return "Use the appropriate method for the class";
+			List<BowTextures.Entry> pullTextures = newTextures.getPullTextures();
+			for (BowTextures.Entry pullTexture : pullTextures) {
+				if (pullTexture == null)
+					return "One of the pull textures is undefined";
+				if (pullTexture.getTexture() == null)
+					return "The texture for pull " + pullTexture.getPull() + " is undefined.";
+			}
 		}
 		String error = changeTool(bow, CustomItemType.BOW, newDamage, newName, newDisplayName, newLore, newAttributes,
 				allowEnchanting, allowAnvil, repairItem, newDurability, newTextures, false);
@@ -868,15 +889,17 @@ public class ItemSet {
 	 *         succesfully
 	 */
 	public String addTool(CustomTool item, boolean checkClass) {
-		if (item == null)
-			return "Can't add null items";
-		if (checkClass && item.getClass() != CustomTool.class)
-			return "Use the appropriate method for that class";
-		if (item.getRepairItem() instanceof CustomItemIngredient
-				&& !(((CustomItemIngredient) item.getRepairItem()).getItem().getClass() == CustomItem.class))
-			return "Only vanilla items and simple custom items are allowed as repair item.";
-		if (item.allowAnvilActions() && item.getDisplayName().contains("§"))
-			return "Items with color codes in their display name can not allow anvil actions";
+		if (!bypassChecks()) {
+			if (item == null)
+				return "Can't add null items";
+			if (checkClass && item.getClass() != CustomTool.class)
+				return "Use the appropriate method for that class";
+			if (item.getRepairItem() instanceof CustomItemIngredient
+					&& !(((CustomItemIngredient) item.getRepairItem()).getItem().getClass() == CustomItem.class))
+				return "Only vanilla items and simple custom items are allowed as repair item.";
+			if (item.allowAnvilActions() && item.getDisplayName().contains("§"))
+				return "Items with color codes in their display name can not allow anvil actions";
+		}
 		return addItem(item, false);
 	}
 
@@ -902,13 +925,15 @@ public class ItemSet {
 	public String changeTool(CustomTool item, CustomItemType newType, short newDamage, String newName,
 			String newDisplayName, String[] newLore, AttributeModifier[] newAttributes, boolean allowEnchanting,
 			boolean allowAnvil, Ingredient repairItem, int newDurability, NamedImage newImage, boolean checkClass) {
-		if (checkClass && item.getClass() != CustomTool.class)
-			return "Use the appropriate method to change this class";
-		if (allowAnvil && newDisplayName.contains("§"))
-			return "Items with color codes in their display name can not allow anvil actions";
-		if (repairItem instanceof CustomItemIngredient
-				&& !(((CustomItemIngredient) repairItem).getItem().getClass() == CustomItem.class))
-			return "Only vanilla items and simple custom items are allowed as repair item.";
+		if (!bypassChecks()) {
+			if (checkClass && item.getClass() != CustomTool.class)
+				return "Use the appropriate method to change this class";
+			if (allowAnvil && newDisplayName.contains("§"))
+				return "Items with color codes in their display name can not allow anvil actions";
+			if (repairItem instanceof CustomItemIngredient
+					&& !(((CustomItemIngredient) repairItem).getItem().getClass() == CustomItem.class))
+				return "Only vanilla items and simple custom items are allowed as repair item.";
+		}
 		String error = changeItem(item, newType, newDamage, newName, newDisplayName, newLore, newAttributes, newImage,
 				false);
 		if (error == null) {
@@ -923,20 +948,22 @@ public class ItemSet {
 	}
 
 	private String addItem(CustomItem item, boolean doClassCheck) {
-		if (item == null)
-			return "Can't add null items";
-		String nameError = checkName(item.getName());
-		if (nameError != null)
-			return nameError;
-		if (doClassCheck && item.getClass() != CustomItem.class)
-			return "Use the appropriate method for that class";
-		if (item.getTexture() == null)
-			return "Every item needs a texture";
-		for (CustomItem current : items) {
-			if (current.getName().equals(item.getName()))
-				return "There is already a custom item with that name";
-			if (current.getItemType() == item.getItemType() && current.getItemDamage() == item.getItemDamage())
-				return "There is already a custom item with the same item type and damage";
+		if (!bypassChecks()) {
+			if (item == null)
+				return "Can't add null items";
+			String nameError = checkName(item.getName());
+			if (nameError != null)
+				return nameError;
+			if (doClassCheck && item.getClass() != CustomItem.class)
+				return "Use the appropriate method for that class";
+			if (item.getTexture() == null)
+				return "Every item needs a texture";
+			for (CustomItem current : items) {
+				if (current.getName().equals(item.getName()))
+					return "There is already a custom item with that name";
+				if (current.getItemType() == item.getItemType() && current.getItemDamage() == item.getItemDamage())
+					return "There is already a custom item with the same item type and damage";
+			}
 		}
 		items.add(item);
 		return null;
@@ -973,34 +1000,36 @@ public class ItemSet {
 	public String changeItem(CustomItem item, CustomItemType newType, short newDamage, String newName,
 			String newDisplayName, String[] newLore, AttributeModifier[] newAttributes, NamedImage newImage,
 			boolean checkClass) {
-		if (item == null)
-			return "Can't change null items";
-		if (checkClass && item.getClass() != CustomItem.class)
-			return "Use the appropriate method to change that class";
-		String nameError = checkName(newName);
-		if (nameError != null)
-			return nameError;
-		boolean has = false;
-		if (newImage == null)
-			return "Every item needs a texture";
-		for (CustomItem current : items) {
-			if (current == item) {
-				has = true;
-				break;
-			} else {
-				if (current.getItemType() == newType && current.getItemDamage() == newDamage) {
-					return "The item " + current.getName() + " has the same internal type and damage.";
+		if (!bypassChecks()) {
+			if (item == null)
+				return "Can't change null items";
+			if (checkClass && item.getClass() != CustomItem.class)
+				return "Use the appropriate method to change that class";
+			String nameError = checkName(newName);
+			if (nameError != null)
+				return nameError;
+			boolean has = false;
+			if (newImage == null)
+				return "Every item needs a texture";
+			for (CustomItem current : items) {
+				if (current == item) {
+					has = true;
+					break;
+				} else {
+					if (current.getItemType() == newType && current.getItemDamage() == newDamage) {
+						return "The item " + current.getName() + " has the same internal type and damage.";
+					}
 				}
 			}
+			if (!has)
+				return "There is no previous item!";
+			has = false;
+			for (NamedImage texture : textures)
+				if (texture == newImage)
+					has = true;
+			if (!has)
+				return "The specified texture is not in the texture list!";
 		}
-		if (!has)
-			return "There is no previous item!";
-		has = false;
-		for (NamedImage texture : textures)
-			if (texture == newImage)
-				has = true;
-		if (!has)
-			return "The specified texture is not in the texture list!";
 		item.setItemType(newType);
 		item.setItemDamage(newDamage);
 		item.setName(newName);
@@ -1021,12 +1050,14 @@ public class ItemSet {
 	 *         removed successfully.
 	 */
 	public String removeItem(CustomItem item) {
-		for (Recipe recipe : recipes) {
-			if (recipe.getResult() instanceof CustomItemResult
-					&& ((CustomItemResult) recipe.getResult()).getItem() == item)
-				return "At least one of your recipes has this item as result.";
-			if (recipe.requires(item))
-				return "At least one of your recipes has this item as an ingredient.";
+		if (!bypassChecks()) {
+			for (Recipe recipe : recipes) {
+				if (recipe.getResult() instanceof CustomItemResult
+						&& ((CustomItemResult) recipe.getResult()).getItem() == item)
+					return "At least one of your recipes has this item as result.";
+				if (recipe.requires(item))
+					return "At least one of your recipes has this item as an ingredient.";
+			}
 		}
 		items.remove(item);
 		return null;
@@ -1044,9 +1075,11 @@ public class ItemSet {
 	 *         added successfully
 	 */
 	public String addShapedRecipe(Ingredient[] ingredients, Result result) {
-		for (Recipe recipe : recipes)
-			if (recipe.hasConflictingShapedIngredients(ingredients))
-				return "The ingredients of another recipe conflict with these ingredients.";
+		if (!bypassChecks()) {
+			for (Recipe recipe : recipes)
+				if (recipe.hasConflictingShapedIngredients(ingredients))
+					return "The ingredients of another recipe conflict with these ingredients.";
+		}
 		recipes.add(new ShapedRecipe(ingredients, result));
 		return null;
 	}
@@ -1063,17 +1096,19 @@ public class ItemSet {
 	 *         succesfully.
 	 */
 	public String changeShapedRecipe(ShapedRecipe previous, Ingredient[] ingredients, Result result) {
-		boolean has = false;
-		for (Recipe recipe : recipes) {
-			if (recipe == previous) {
-				has = true;
-				break;
-			} else if (recipe.hasConflictingShapedIngredients(ingredients)) {
-				return "Another shaped recipe (" + recipe.getResult() + ") has conflicting ingredients";
+		if (!bypassChecks()) {
+			boolean has = false;
+			for (Recipe recipe : recipes) {
+				if (recipe == previous) {
+					has = true;
+					break;
+				} else if (recipe.hasConflictingShapedIngredients(ingredients)) {
+					return "Another shaped recipe (" + recipe.getResult() + ") has conflicting ingredients";
+				}
 			}
+			if (!has)
+				return "That recipe is not in this item set";
 		}
-		if (!has)
-			return "That recipe is not in this item set";
 		previous.setIngredients(ingredients);
 		previous.setResult(result);
 		return null;
@@ -1090,9 +1125,11 @@ public class ItemSet {
 	 *         added successfully
 	 */
 	public String addShapelessRecipe(Ingredient[] ingredients, Result result) {
-		for (Recipe recipe : recipes)
-			if (recipe.hasConflictingShapelessIngredients(ingredients))
-				return "Another shapeless recipe (" + recipe.getResult() + ") has conflicting ingredients";
+		if (!bypassChecks()) {
+			for (Recipe recipe : recipes)
+				if (recipe.hasConflictingShapelessIngredients(ingredients))
+					return "Another shapeless recipe (" + recipe.getResult() + ") has conflicting ingredients";
+		}
 		recipes.add(new ShapelessRecipe(result, ingredients));
 		return null;
 	}
@@ -1109,17 +1146,19 @@ public class ItemSet {
 	 *         changed successfully.
 	 */
 	public String changeShapelessRecipe(ShapelessRecipe previous, Ingredient[] newIngredients, Result newResult) {
-		boolean has = false;
-		for (Recipe recipe : recipes) {
-			if (recipe == previous) {
-				has = true;
-				break;
-			} else if (recipe.hasConflictingShapelessIngredients(newIngredients)) {
-				return "Another shapeless recipe (" + recipe.getResult() + ") has conflicting ingredients";
+		if (!bypassChecks()) {
+			boolean has = false;
+			for (Recipe recipe : recipes) {
+				if (recipe == previous) {
+					has = true;
+					break;
+				} else if (recipe.hasConflictingShapelessIngredients(newIngredients)) {
+					return "Another shapeless recipe (" + recipe.getResult() + ") has conflicting ingredients";
+				}
 			}
+			if (!has)
+				return "That recipe is not in this item set";
 		}
-		if (!has)
-			return "That recipe is not in this item set";
 		previous.setIngredients(newIngredients);
 		previous.setResult(newResult);
 		return null;
