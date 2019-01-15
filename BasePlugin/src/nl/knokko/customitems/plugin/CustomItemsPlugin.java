@@ -41,6 +41,7 @@ public class CustomItemsPlugin extends JavaPlugin {
     private static CustomItemsPlugin instance;
     
     private ItemSet set;
+    private LanguageFile languageFile;
     
     public static CustomItemsPlugin getInstance(){
         return instance;
@@ -53,7 +54,8 @@ public class CustomItemsPlugin extends JavaPlugin {
         super.onEnable();
         instance = this;
         loadSet();
-        getCommand("customitems").setExecutor(new CommandCustomItems());
+        languageFile = new LanguageFile(new File(getDataFolder() + "/lang.yml"));
+        getCommand("customitems").setExecutor(new CommandCustomItems(languageFile));
         Bukkit.getPluginManager().registerEvents(new CustomItemsEventHandler(), this);
         CrazyEnchantmentsSupport.onEnable();
     }
@@ -107,5 +109,9 @@ public class CustomItemsPlugin extends JavaPlugin {
     
     public ItemSet getSet() {
     	return set;
+    }
+    
+    public LanguageFile getLanguageFile() {
+    	return languageFile;
     }
 }

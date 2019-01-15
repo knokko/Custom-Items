@@ -34,6 +34,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
 import nl.knokko.customitems.plugin.CustomItemsPlugin;
+import nl.knokko.customitems.plugin.LanguageFile;
 import nl.knokko.customitems.plugin.set.item.CustomItem;
 
 public class CommandCustomItems implements CommandExecutor {
@@ -46,18 +47,24 @@ public class CommandCustomItems implements CommandExecutor {
 		return null;
 	}
 	
-	private static void sendUseage(CommandSender sender) {
+	private void sendUseage(CommandSender sender) {
 		sendGiveUseage(sender);
 	}
 	
-	private static void sendGiveUseage(CommandSender sender) {
-		sender.sendMessage(ChatColor.YELLOW + "Use /customitems give <item name> [player name]");
+	private void sendGiveUseage(CommandSender sender) {
+		sender.sendMessage(lang.getCommandUseage());
+	}
+	
+	private LanguageFile lang;
+	
+	public CommandCustomItems(LanguageFile lang) {
+		this.lang = lang;
 	}
 
 	@Override
 	public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
 		if(!sender.isOp()) {
-			sender.sendMessage(ChatColor.DARK_RED + "Only operators can use this command.");
+			sender.sendMessage(lang.getCommandNoAccess());
 			return false;
 		}
 		if(args.length == 0) {
@@ -74,23 +81,22 @@ public class CommandCustomItems implements CommandExecutor {
 								receiver = (Player) sender;
 							}
 							else {
-								sender.sendMessage("Non-player operators need to specify a player name");
+								sender.sendMessage(lang.getCommandNoPlayerSpecified());
 							}
 						}
 						if(args.length == 3) {
 							receiver = getOnlinePlayer(args[2]);
 							if(receiver == null) {
-								sender.sendMessage(ChatColor.RED + "Can't find player " + args[2]);
-								sender.sendMessage(ChatColor.RED + "This can only be used on online players.");
+								sender.sendMessage(lang.getCommandPlayerNotFound(args[2]));
 							}
 						}
 						if(receiver != null) {
 							receiver.getInventory().addItem(item.create(1));
-							sender.sendMessage(ChatColor.GREEN + "Custom item has been given.");
+							sender.sendMessage(lang.getCommandItemGiven());
 						}
 					}
 					else {
-						sender.sendMessage(ChatColor.RED + "There is no custom item with name " + args[1]);
+						sender.sendMessage(lang.getCommandNoSuchItem(args[1]));
 					}
 				}
 				else {
@@ -102,14 +108,14 @@ public class CommandCustomItems implements CommandExecutor {
 					Player player = (Player) sender;
 					ItemStack item = player.getInventory().getItemInMainHand();
 					if(item != null) {
-						sender.sendMessage("Item durability is " + item.getDurability());
+						sender.sendMessage(lang.getCommandDamageItem(item.getDurability()));
 					}
 					else {
-						sender.sendMessage("Hold the item you want to check in your main hand");
+						sender.sendMessage(lang.getCommandDamageNotInHand());
 					}
 				}
 				else {
-					sender.sendMessage("Only players can view the damage of the item in their main hand");
+					sender.sendMessage(lang.getCommandDamageNoPlayer());
 				}
 			}
 			else {
