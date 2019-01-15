@@ -53,8 +53,10 @@ public class CustomItemsPlugin extends JavaPlugin {
     public void onEnable(){
         super.onEnable();
         instance = this;
-        loadSet();
         languageFile = new LanguageFile(new File(getDataFolder() + "/lang.yml"));
+        
+        // Load the set after creating language file instance because the set needs the durability prefix
+        loadSet();
         getCommand("customitems").setExecutor(new CommandCustomItems(languageFile));
         Bukkit.getPluginManager().registerEvents(new CustomItemsEventHandler(), this);
         CrazyEnchantmentsSupport.onEnable();

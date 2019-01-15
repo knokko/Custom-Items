@@ -297,8 +297,10 @@ public class CustomItemsEventHandler implements Listener {
 			if (custom != null) {
 				if (item.containsEnchantment(Enchantment.MENDING) && custom instanceof CustomTool) {
 					CustomTool tool = (CustomTool) custom;
-					int repaired = tool.increaseDurability(item, event.getAmount() * 2);
-					int newXP = event.getAmount() - repaired / 2;
+					long repaired = tool.increaseDurability(item, event.getAmount() * 2);
+					
+					// Let's assume the int range will not be exceeded with a single xp orb
+					int newXP = (int) (event.getAmount() - repaired / 2);
 					event.setAmount(newXP);
 				}
 			}
@@ -321,9 +323,9 @@ public class CustomItemsEventHandler implements Listener {
 					String renameText = event.getInventory().getRenameText();
 					String oldName = ItemHelper.getStackName(contents[0]);
 					if (custom1 == custom2) {
-						int durability1 = tool.getDurability(contents[0]);
-						int durability2 = tool.getDurability(contents[1]);
-						int resultDurability = Math.min(durability1 + durability2, tool.getMaxDurability());
+						long durability1 = tool.getDurability(contents[0]);
+						long durability2 = tool.getDurability(contents[1]);
+						long resultDurability = Math.min(durability1 + durability2, tool.getMaxDurability());
 						Map<Enchantment, Integer> enchantments1 = contents[0].getEnchantments();
 						Map<Enchantment, Integer> enchantments2 = contents[1].getEnchantments();
 						ItemStack result = tool.create(1, resultDurability);
@@ -425,13 +427,13 @@ public class CustomItemsEventHandler implements Listener {
 						 */
 					} else if (contents[1] != null && contents[1].getType() != Material.AIR
 							&& tool.getRepairItem().accept(contents[1])) {
-						int durability = tool.getDurability(contents[0]);
-						int maxDurability = tool.getMaxDurability();
-						int neededDurability = maxDurability - durability;
+						long durability = tool.getDurability(contents[0]);
+						long maxDurability = tool.getMaxDurability();
+						long neededDurability = maxDurability - durability;
 						if (neededDurability > 0) {
 							int neededAmount = (int) Math.ceil(neededDurability * 4.0 / maxDurability);
 							int usedAmount = Math.min(neededAmount, contents[1].getAmount());
-							int resultDurability = Math.min(durability + tool.getMaxDurability() * usedAmount / 4,
+							long resultDurability = Math.min(durability + tool.getMaxDurability() * usedAmount / 4,
 									tool.getMaxDurability());
 							ItemStack result = tool.create(1, resultDurability);
 							result.addUnsafeEnchantments(contents[0].getEnchantments());
@@ -649,9 +651,9 @@ public class CustomItemsEventHandler implements Listener {
 									&& contents[1].getType() != Material.AIR) {
 								CustomTool tool = (CustomTool) custom;
 								if (tool.getRepairItem().accept(contents[1])) {
-									int durability = tool.getDurability(contents[0]);
-									int maxDurability = tool.getMaxDurability();
-									int neededDurability = maxDurability - durability;
+									long durability = tool.getDurability(contents[0]);
+									long maxDurability = tool.getMaxDurability();
+									long neededDurability = maxDurability - durability;
 									int neededAmount = (int) Math.ceil(neededDurability * 4.0 / maxDurability);
 									int usedAmount = Math.min(neededAmount, contents[1].getAmount());
 									if (usedAmount < contents[1].getAmount())

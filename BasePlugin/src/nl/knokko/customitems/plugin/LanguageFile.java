@@ -10,7 +10,9 @@ import org.bukkit.configuration.file.YamlConfiguration;
 
 public class LanguageFile {
 	
-	private static final String DEFAULT_DURABILITY_FORMAT = "Durability CURRENT_DURABILITY / MAX_DURABILITY";
+	private static final String DEFAULT_DURABILITY_PREFIX = "Durability ";
+	private static final String DEFAULT_UNBREAKABLE = "Unbreakable";
+	
 	private static final String DEFAULT_COMMAND_USEAGE = ChatColor.YELLOW + "Use /customitems give <item name> [player name]";
 	private static final String DEFAULT_COMMAND_NO_ACCESS = ChatColor.DARK_RED + "Only operators can use this command.";
 	private static final String DEFAULT_COMMAND_NO_PLAYER_SPECIFIED = "Non-player operators need to specify a player name";
@@ -22,7 +24,9 @@ public class LanguageFile {
 	private static final String DEFAULT_COMMAND_DAMAGE_NOT_IN_HAND = "Hold the item you want to check in your main hand";
 	private static final String DEFAULT_COMMAND_DAMAGE_NO_PLAYER = "Only players can view the damage of the item in their main hand";
 	
-	private static final String KEY_DURABILITY_FORMAT = "durability-format";
+	private static final String KEY_DURABILITY_PREFIX = "durability-prefix";
+	private static final String KEY_UNBREAKABLE = "unbreakable";
+	
 	private static final String KEY_COMMAND_USEAGE = "command-useage";
 	private static final String KEY_COMMAND_NO_ACCESS = "command-no-access";
 	private static final String KEY_COMMAND_NO_PLAYER_SPECIFIED = "command-no-player-specified";
@@ -34,7 +38,8 @@ public class LanguageFile {
 	private static final String KEY_COMMAND_DAMAGE_NOT_IN_HAND = "command-damage-not-in-hand";
 	private static final String KEY_COMMAND_DAMAGE_NO_PLAYER = "command-damage-no-player";
 	
-	private String durabilityFormat;
+	private String durabilityPrefix;
+	private String unbreakable;
 	
 	private String commandUseage;
 	private String commandNoAccess;
@@ -64,8 +69,12 @@ public class LanguageFile {
 		}
 	}
 	
-	public String getDurability(long current, long max) {
-		return durabilityFormat.replaceAll("CURRENT_DURABILITY", current + "").replaceAll("MAX_DURABILITY", max + "");
+	public String getDurabilityPrefix() {
+		return durabilityPrefix;
+	}
+	
+	public String getUnbreakable() {
+		return unbreakable;
 	}
 	
 	public String getCommandUseage() {
@@ -105,7 +114,8 @@ public class LanguageFile {
 	}
 	
 	public void load(YamlConfiguration config) {
-		durabilityFormat = config.getString(KEY_DURABILITY_FORMAT, DEFAULT_DURABILITY_FORMAT);
+		durabilityPrefix = config.getString(KEY_DURABILITY_PREFIX, DEFAULT_DURABILITY_PREFIX);
+		unbreakable = config.getString(KEY_UNBREAKABLE, DEFAULT_UNBREAKABLE);
 		commandUseage = config.getString(KEY_COMMAND_USEAGE, DEFAULT_COMMAND_USEAGE);
 		commandNoAccess = config.getString(KEY_COMMAND_NO_ACCESS, DEFAULT_COMMAND_NO_ACCESS);
 		commandNoPlayerSpecified = config.getString(KEY_COMMAND_NO_PLAYER_SPECIFIED, DEFAULT_COMMAND_NO_PLAYER_SPECIFIED);
@@ -118,7 +128,8 @@ public class LanguageFile {
 	}
 	
 	public void setDefaults() {
-		durabilityFormat = DEFAULT_DURABILITY_FORMAT;
+		durabilityPrefix = DEFAULT_DURABILITY_PREFIX;
+		unbreakable = DEFAULT_UNBREAKABLE;
 		commandUseage = DEFAULT_COMMAND_USEAGE;
 		commandNoAccess = DEFAULT_COMMAND_NO_ACCESS;
 		commandNoPlayerSpecified = DEFAULT_COMMAND_NO_PLAYER_SPECIFIED;
@@ -131,7 +142,8 @@ public class LanguageFile {
 	}
 	
 	public void save(YamlConfiguration config) {
-		config.set(KEY_DURABILITY_FORMAT, durabilityFormat);
+		config.set(KEY_DURABILITY_PREFIX, durabilityPrefix);
+		config.set(KEY_UNBREAKABLE, unbreakable);
 		config.set(KEY_COMMAND_USEAGE, commandUseage);
 		config.set(KEY_COMMAND_NO_ACCESS, commandNoAccess);
 		config.set(KEY_COMMAND_NO_PLAYER_SPECIFIED, commandNoPlayerSpecified);
