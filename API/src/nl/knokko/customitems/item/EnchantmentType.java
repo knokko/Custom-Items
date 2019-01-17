@@ -1,0 +1,45 @@
+package nl.knokko.customitems.item;
+
+public enum EnchantmentType {
+	
+	PROTECTION_ENVIRONMENTAL,
+	PROTECTION_FIRE,
+	PROTECTION_FALL,
+	PROTECTION_EXPLOSIONS,
+	PROTECTION_PROJECTILE,
+	OXYGEN,
+	WATER_WORKER,
+	MENDING,
+	THORNS,
+	VANISHING_CURSE,
+	DEPTH_STRIDER,
+	FROST_WALKER,
+	BINDING_CURSE,
+	DAMAGE_ALL,
+	DAMAGE_UNDEAD,
+	DAMAGE_ARTHROPODS,
+	KNOCKBACK,
+	FIRE_ASPECT,
+	LOOT_BONUS_MOBS,
+	SWEEPING_EDGE,
+	DIG_SPEED,
+	SILK_TOUCH,
+	DURABILITY,
+	LOOT_BONUS_BLOCKS,
+	ARROW_DAMAGE,
+	ARROW_KNOCKBACK,
+	ARROW_FIRE,
+	ARROW_INFINITE,
+	LUCK,
+	LURE;
+	
+	private final String niceName;
+	
+	private EnchantmentType() {
+		niceName = name().toLowerCase().replace('_', ' ');
+	}
+	
+	public String getName() {
+		return niceName;
+	}
+}

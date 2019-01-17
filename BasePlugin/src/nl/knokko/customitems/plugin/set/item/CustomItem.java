@@ -39,6 +39,7 @@ import nl.knokko.core.plugin.item.attributes.ItemAttributes;
 import nl.knokko.core.plugin.item.attributes.ItemAttributes.Single;
 import nl.knokko.customitems.item.AttributeModifier;
 import nl.knokko.customitems.item.CustomItemType;
+import nl.knokko.customitems.item.Enchantment;
 
 public class CustomItem extends nl.knokko.customitems.item.CustomItem {
 	
@@ -50,8 +51,8 @@ public class CustomItem extends nl.knokko.customitems.item.CustomItem {
 	
 	protected final Single[] attributeModifiers;
     
-    public CustomItem(CustomItemType itemType, short itemDamage, String name, String displayName, String[] lore, AttributeModifier[] attributes){
-        super(itemType, itemDamage, name, displayName, lore, attributes);
+    public CustomItem(CustomItemType itemType, short itemDamage, String name, String displayName, String[] lore, AttributeModifier[] attributes, Enchantment[] defaultEnchantments){
+        super(itemType, itemDamage, name, displayName, lore, attributes, defaultEnchantments);
         // Why Bukkit?
         material = Material.getMaterial(itemType.name().replace("SHOVEL", "SPADE"));
         attributeModifiers = new Single[attributes.length];
@@ -70,6 +71,9 @@ public class CustomItem extends nl.knokko.customitems.item.CustomItem {
         meta.addItemFlags(ItemFlag.HIDE_UNBREAKABLE);
         item.setItemMeta(meta);
         item.setDurability(itemDamage);
+        for (Enchantment enchantment : defaultEnchantments) {
+        	item.addUnsafeEnchantment(org.bukkit.enchantments.Enchantment.getByName(enchantment.getType().name()), enchantment.getLevel());
+        }
         return ItemAttributes.setAttributes(ItemAttributes.clearAttributes(item), attributeModifiers);
     }
     

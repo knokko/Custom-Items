@@ -100,10 +100,10 @@ public class EditItemTool extends EditItemBase {
 			short damage = Short.parseShort(internalDamage.getText());
 			if(damage > 0 && damage < internalType.currentType.getMaxDurability()) {
 				try {
-					int maxUses = Integer.parseInt(durability.getText());
+					long maxUses = Long.parseLong(durability.getText());
 					if (maxUses > 0 || maxUses == CustomItem.UNBREAKABLE_TOOL_DURABILITY) {
 						error = menu.getSet().addTool(new CustomTool(internalType.currentType, damage, name.getText(), 
-								getDisplayName(), lore, attributes, maxUses, allowEnchanting.isChecked(), 
+								getDisplayName(), lore, attributes, enchantments, maxUses, allowEnchanting.isChecked(), 
 								allowAnvil.isChecked(), repairItem.getIngredient(), textureSelect.currentTexture), true);
 					} else
 						error = "The max uses must be greater than 0 or " + CustomItem.UNBREAKABLE_TOOL_DURABILITY + " to become unbreakable";
@@ -125,10 +125,10 @@ public class EditItemTool extends EditItemBase {
 			short damage = Short.parseShort(internalDamage.getText());
 			if(damage > 0 && damage < internalType.currentType.getMaxDurability()) {
 				try {
-					int maxUses = Integer.parseInt(durability.getText());
+					long maxUses = Long.parseLong(durability.getText());
 					if (maxUses > 0 || maxUses == CustomItem.UNBREAKABLE_TOOL_DURABILITY) {
 						error = menu.getSet().changeTool(previous, internalType.currentType, damage, name.getText(), 
-								getDisplayName(), lore, attributes, allowEnchanting.isChecked(), 
+								getDisplayName(), lore, attributes, enchantments, allowEnchanting.isChecked(), 
 								allowAnvil.isChecked(), repairItem.getIngredient(), maxUses, textureSelect.currentTexture, true);
 					} else
 						error = "The max uses must be greater than 0 or " + CustomItem.UNBREAKABLE_TOOL_DURABILITY + " to become unbreakable";

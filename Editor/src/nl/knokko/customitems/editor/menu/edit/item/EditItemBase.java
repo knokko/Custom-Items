@@ -26,10 +26,12 @@ package nl.knokko.customitems.editor.menu.edit.item;
 import nl.knokko.customitems.editor.menu.edit.EditMenu;
 import nl.knokko.customitems.editor.menu.edit.EditProps;
 import nl.knokko.customitems.editor.menu.edit.item.attribute.AttributesOverview;
+import nl.knokko.customitems.editor.menu.edit.item.enchantment.EnchantmentsOverview;
 import nl.knokko.customitems.editor.set.item.CustomItem;
 import nl.knokko.customitems.editor.set.item.NamedImage;
 import nl.knokko.customitems.item.AttributeModifier;
 import nl.knokko.customitems.item.CustomItemType;
+import nl.knokko.customitems.item.Enchantment;
 import nl.knokko.gui.color.GuiColor;
 import nl.knokko.gui.component.menu.GuiMenu;
 import nl.knokko.gui.component.menu.TextArrayEditMenu;
@@ -39,10 +41,11 @@ import nl.knokko.gui.component.text.TextEditField;
 
 public abstract class EditItemBase extends GuiMenu {
 	
-	private static final float LABEL_X = 0.2f;
-	private static final float BUTTON_X = 0.5f;
+	private static final float LABEL_X = 0.25f;
+	private static final float BUTTON_X = 0.4f;
 	
 	private static final AttributeModifier[] DEFAULT_ATTRIBUTES = {};
+	private static final Enchantment[] DEFAULT_ENCHANTMENTS = {};
 	
 	protected final EditMenu menu;
 	
@@ -52,6 +55,7 @@ public abstract class EditItemBase extends GuiMenu {
 	protected TextEditField displayName;
 	protected String[] lore;
 	protected AttributeModifier[] attributes;
+	protected Enchantment[] enchantments;
 	protected TextureSelect textureSelect;
 	protected TextComponent errorComponent;
 
@@ -65,6 +69,7 @@ public abstract class EditItemBase extends GuiMenu {
 			textureSelect = new TextureSelect(previous.getTexture());
 			lore = previous.getLore();
 			attributes = previous.getAttributes();
+			enchantments = previous.getDefaultEnchantments();
 		} else {
 			name = new TextEditField("", EditProps.EDIT_BASE, EditProps.EDIT_ACTIVE);
 			internalType = new ItemTypeSelect(CustomItemType.DIAMOND_HOE);
@@ -73,6 +78,7 @@ public abstract class EditItemBase extends GuiMenu {
 			textureSelect = new TextureSelect(null);
 			lore = new String[] {};
 			attributes = DEFAULT_ATTRIBUTES;
+			enchantments = DEFAULT_ENCHANTMENTS;
 		}
 	}
 	
@@ -87,13 +93,14 @@ public abstract class EditItemBase extends GuiMenu {
 		addComponent(new TextButton("Cancel", EditProps.CANCEL_BASE, EditProps.CANCEL_HOVER, () -> {
 			state.getWindow().setMainComponent(menu.getItemOverview());
 		}), 0.025f, 0.7f, 0.15f, 0.8f);
-		addComponent(new TextComponent("Name: ", EditProps.LABEL), LABEL_X, 0.8f, LABEL_X + 0.15f, 0.9f);
-		addComponent(new TextComponent("Internal item type: ", EditProps.LABEL), LABEL_X, 0.675f, LABEL_X + 0.25f, 0.775f);
-		addComponent(new TextComponent("Internal item damage: ", EditProps.LABEL), LABEL_X, 0.55f, LABEL_X + 0.25f, 0.65f);
-		addComponent(new TextComponent("Display name: ", EditProps.LABEL), LABEL_X, 0.425f, LABEL_X + 0.2f, 0.525f);
-		addComponent(new TextComponent("Lore: ", EditProps.LABEL), LABEL_X, 0.3f, LABEL_X + 0.1f, 0.4f);
-		addComponent(new TextComponent("Attribute modifiers: ", EditProps.LABEL), LABEL_X, 0.175f, LABEL_X + 0.25f, 0.275f);
-		addComponent(new TextComponent("Texture: ", EditProps.LABEL), LABEL_X, 0.05f, LABEL_X + 0.15f, 0.15f);
+		addComponent(new TextComponent("Name: ", EditProps.LABEL), LABEL_X, 0.8f, LABEL_X + 0.075f, 0.85f);
+		addComponent(new TextComponent("Internal item type: ", EditProps.LABEL), LABEL_X, 0.74f, LABEL_X + 0.125f, 0.79f);
+		addComponent(new TextComponent("Internal item damage: ", EditProps.LABEL), LABEL_X, 0.68f, LABEL_X + 0.125f, 0.73f);
+		addComponent(new TextComponent("Display name: ", EditProps.LABEL), LABEL_X, 0.62f, LABEL_X + 0.1f, 0.67f);
+		addComponent(new TextComponent("Lore: ", EditProps.LABEL), LABEL_X, 0.56f, LABEL_X + 0.075f, 0.61f);
+		addComponent(new TextComponent("Attribute modifiers: ", EditProps.LABEL), LABEL_X, 0.5f, LABEL_X + 0.125f, 0.55f);
+		addComponent(new TextComponent("Default enchantments: ", EditProps.LABEL), LABEL_X, 0.44f, LABEL_X + 0.13f, 0.49f);
+		addComponent(new TextComponent("Texture: ", EditProps.LABEL), LABEL_X, 0.38f, LABEL_X + 0.075f, 0.43f);
 		if(previous() != null) {
 			addComponent(new TextButton("Apply", EditProps.SAVE_BASE, EditProps.SAVE_HOVER, () -> {
 				String error = apply();
@@ -113,13 +120,14 @@ public abstract class EditItemBase extends GuiMenu {
 			}), 0.025f, 0.1f, 0.15f, 0.2f);
 		}
 		addComponent(errorComponent, 0.1f, 0.9f, 0.9f, 1f);
-		addComponent(name, BUTTON_X, 0.8f, BUTTON_X + 0.2f, 0.9f);
-		addComponent(internalType, BUTTON_X, 0.675f, BUTTON_X + 0.2f, 0.775f);
-		addComponent(internalDamage, BUTTON_X, 0.55f, BUTTON_X + 0.2f, 0.65f);
-		addComponent(displayName, BUTTON_X, 0.425f, BUTTON_X + 0.2f, 0.525f);
+		addComponent(name, BUTTON_X, 0.8f, BUTTON_X + 0.1f, 0.85f);
+		addComponent(internalType, BUTTON_X, 0.74f, BUTTON_X + 0.1f, 0.79f);
+		addComponent(internalDamage, BUTTON_X, 0.68f, BUTTON_X + 0.1f, 0.73f);
+		addComponent(displayName, BUTTON_X, 0.62f, BUTTON_X + 0.1f, 0.67f);
 		addLoreComponent();
 		addAttributesComponent();
-		addComponent(textureSelect, BUTTON_X, 0.05f, BUTTON_X + 0.2f, 0.15f);
+		addEnchantmentsComponent();
+		addComponent(textureSelect, BUTTON_X, 0.38f, BUTTON_X + 0.1f, 0.43f);
 	}
 	
 	protected abstract String create();
@@ -183,7 +191,7 @@ public abstract class EditItemBase extends GuiMenu {
 				for (int index = 0; index < lore.length; index++)
 					lore[index] = lore[index].replaceAll("&", "§");
 			}, EditProps.BACKGROUND, EditProps.CANCEL_BASE, EditProps.CANCEL_HOVER, EditProps.SAVE_BASE, EditProps.SAVE_HOVER, EditProps.EDIT_BASE, EditProps.EDIT_ACTIVE, lore));
-		}), BUTTON_X, 0.3f, BUTTON_X + 0.2f, 0.4f);
+		}), BUTTON_X, 0.56f, BUTTON_X + 0.1f, 0.61f);
 	}
 	
 	private void addAttributesComponent() {
@@ -191,7 +199,15 @@ public abstract class EditItemBase extends GuiMenu {
 			state.getWindow().setMainComponent(new AttributesOverview(attributes, EditItemBase.this, (AttributeModifier[] attributes) -> {
 				this.attributes = attributes;
 			}));
-		}), BUTTON_X, 0.175f, BUTTON_X + 0.2f, 0.275f);
+		}), BUTTON_X, 0.5f, BUTTON_X + 0.1f, 0.55f);
+	}
+	
+	private void addEnchantmentsComponent() {
+		addComponent(new TextButton("Change enchantments...", EditProps.BUTTON, EditProps.HOVER, () -> {
+			state.getWindow().setMainComponent(new EnchantmentsOverview(enchantments, EditItemBase.this, (Enchantment[] enchantments) -> {
+				this.enchantments = enchantments;
+			}));
+		}), BUTTON_X, 0.44f, BUTTON_X + 0.1f, 0.49f);
 	}
 	
 	protected abstract CustomItemType.Category getCategory();

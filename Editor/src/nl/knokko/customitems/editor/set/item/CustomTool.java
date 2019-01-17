@@ -27,11 +27,12 @@ import nl.knokko.customitems.editor.set.recipe.ingredient.Ingredient;
 import nl.knokko.customitems.encoding.ItemEncoding;
 import nl.knokko.customitems.item.AttributeModifier;
 import nl.knokko.customitems.item.CustomItemType;
+import nl.knokko.customitems.item.Enchantment;
 import nl.knokko.util.bits.BitOutput;
 
 public class CustomTool extends CustomItem {
 	
-	protected int durability;
+	protected long durability;
 	
 	protected boolean allowEnchanting;
 	protected boolean allowAnvil;
@@ -39,9 +40,9 @@ public class CustomTool extends CustomItem {
 	protected Ingredient repairItem;
 
 	public CustomTool(CustomItemType itemType, short itemDamage, String name, String displayName, String[] lore,
-			AttributeModifier[] attributes, int durability, boolean allowEnchanting, boolean allowAnvil, 
+			AttributeModifier[] attributes, Enchantment[] defaultEnchantments, long durability, boolean allowEnchanting, boolean allowAnvil, 
 			Ingredient repairItem, NamedImage texture) {
-		super(itemType, itemDamage, name, displayName, lore, attributes, texture);
+		super(itemType, itemDamage, name, displayName, lore, attributes, defaultEnchantments, texture);
 		this.durability = durability;
 		this.allowEnchanting = allowEnchanting;
 		this.allowAnvil = allowAnvil;
@@ -51,6 +52,7 @@ public class CustomTool extends CustomItem {
 	@Override
 	public void export(BitOutput output) {
 		/*
+		 * Very old encoding
 		output.addByte(ItemEncoding.ENCODING_TOOL_2);
 		output.addJavaString(itemType.name());
 		output.addShort(itemDamage);
@@ -70,6 +72,9 @@ public class CustomTool extends CustomItem {
 		output.addBoolean(allowEnchanting);
 		output.addBoolean(allowAnvil);
 		*/
+		
+		/*
+		 * Old encoding
 		output.addByte(ItemEncoding.ENCODING_TOOL_3);
 		output.addJavaString(itemType.name());
 		output.addShort(itemDamage);
@@ -89,6 +94,32 @@ public class CustomTool extends CustomItem {
 		output.addBoolean(allowEnchanting);
 		output.addBoolean(allowAnvil);
 		repairItem.save(output);
+		*/
+		
+		output.addByte(ItemEncoding.ENCODING_TOOL_4);
+		output.addJavaString(itemType.name());
+		output.addShort(itemDamage);
+		output.addJavaString(name);
+		output.addJavaString(displayName);
+		output.addByte((byte) lore.length);
+		for(String line : lore)
+			output.addJavaString(line);
+		output.addByte((byte) attributes.length);
+		for (AttributeModifier attribute : attributes) {
+			output.addJavaString(attribute.getAttribute().name());
+			output.addJavaString(attribute.getSlot().name());
+			output.addNumber(attribute.getOperation().ordinal(), (byte) 2, false);
+			output.addDouble(attribute.getValue());
+		}
+		output.addByte((byte) defaultEnchantments.length);
+		for (Enchantment enchantment : defaultEnchantments) {
+			output.addString(enchantment.getType().name());
+			output.addInt(enchantment.getLevel());
+		}
+		output.addLong(durability);
+		output.addBoolean(allowEnchanting);
+		output.addBoolean(allowAnvil);
+		repairItem.save(output);
 	}
 	
 	public boolean allowEnchanting() {
@@ -103,7 +134,7 @@ public class CustomTool extends CustomItem {
 		return repairItem;
 	}
 	
-	public int getDurability() {
+	public long getDurability() {
 		return durability;
 	}
 	
@@ -119,7 +150,7 @@ public class CustomTool extends CustomItem {
 		repairItem = item;
 	}
 	
-	public void setDurability(int durability) {
+	public void setDurability(long durability) {
 		this.durability = durability;
 	}
 }

@@ -92,7 +92,7 @@ public class EditItemBow extends EditItemTool {
 			short damage = Short.parseShort(internalDamage.getText());
 			if (damage > 0 && damage < internalType.currentType.getMaxDurability()) {
 				try {
-					int maxUses = Integer.parseInt(durability.getText());
+					long maxUses = Long.parseLong(durability.getText());
 					try {
 						double damageMultiplier = Double.parseDouble(this.damageMultiplier.getText());
 						try {
@@ -102,7 +102,7 @@ public class EditItemBow extends EditItemTool {
 								if (maxUses > 0 || maxUses == CustomItem.UNBREAKABLE_TOOL_DURABILITY) {
 									error = menu.getSet()
 											.addBow(new CustomBow(damage, name.getText(), getDisplayName(), lore,
-													attributes, maxUses, damageMultiplier, speedMultiplier,
+													attributes, enchantments, maxUses, damageMultiplier, speedMultiplier,
 													knockbackStrength, gravity.isChecked(), allowEnchanting.isChecked(),
 													allowAnvil.isChecked(), repairItem.getIngredient(),
 													(BowTextures) textureSelect.currentTexture), true);
@@ -137,7 +137,7 @@ public class EditItemBow extends EditItemTool {
 			short damage = Short.parseShort(internalDamage.getText());
 			if (damage > 0 && damage < internalType.currentType.getMaxDurability()) {
 				try {
-					int maxUses = Integer.parseInt(durability.getText());
+					long maxUses = Long.parseLong(durability.getText());
 					try {
 						double damageMultiplier = Double.parseDouble(this.damageMultiplier.getText());
 						try {
@@ -146,7 +146,7 @@ public class EditItemBow extends EditItemTool {
 								int knockbackStrength = Integer.parseInt(this.knockbackStrength.getText());
 								if (maxUses > 0 || maxUses == CustomItem.UNBREAKABLE_TOOL_DURABILITY) {
 									error = menu.getSet().changeBow(previous, damage, name.getText(), getDisplayName(),
-											lore, attributes, damageMultiplier, speedMultiplier, knockbackStrength,
+											lore, attributes, enchantments, damageMultiplier, speedMultiplier, knockbackStrength,
 											gravity.isChecked(), allowEnchanting.isChecked(), allowAnvil.isChecked(),
 											repairItem.getIngredient(), maxUses,
 											(BowTextures) textureSelect.currentTexture, true);

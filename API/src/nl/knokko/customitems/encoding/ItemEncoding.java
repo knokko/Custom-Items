@@ -39,4 +39,19 @@ public class ItemEncoding {
 	 */
 	public static final byte ENCODING_TOOL_3 = 3;
 	public static final byte ENCODING_BOW_3 = 4;
+	
+	/**
+	 * Adds support for default enchantments
+	 */
+	public static final byte ENCODING_SIMPLE_3 = 5;
+	
+	/**
+	 * Adds support for default enchantments and changes durability to long
+	 */
+	public static final byte ENCODING_TOOL_4 = 6;
+	
+	/**
+	 * Adds support for default enchantments and changes durability to long
+	 */
+	public static final byte ENCODING_BOW_4 = 7;
 }

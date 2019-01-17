@@ -28,7 +28,6 @@ import java.util.List;
 
 import org.bukkit.Bukkit;
 import org.bukkit.block.Block;
-import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
@@ -40,6 +39,7 @@ import nl.knokko.core.plugin.item.attributes.ItemAttributes;
 import nl.knokko.customitems.item.AttributeModifier;
 import nl.knokko.customitems.item.CustomItemType;
 import nl.knokko.customitems.item.CustomItemType.Category;
+import nl.knokko.customitems.item.Enchantment;
 import nl.knokko.customitems.plugin.CustomItemsPlugin;
 import nl.knokko.customitems.plugin.recipe.ingredient.Ingredient;
 
@@ -67,9 +67,9 @@ public class CustomTool extends CustomItem {
 	private final boolean isSword;
 
 	public CustomTool(CustomItemType itemType, short itemDamage, String name, String displayName, String[] lore, 
-			AttributeModifier[] attributes, long maxDurability, boolean allowEnchanting, boolean allowAnvil, 
+			AttributeModifier[] attributes, Enchantment[] defaultEnchantments, long maxDurability, boolean allowEnchanting, boolean allowAnvil, 
 			Ingredient repairItem) {
-		super(itemType, itemDamage, name, displayName, lore, attributes);
+		super(itemType, itemDamage, name, displayName, lore, attributes, defaultEnchantments);
 		this.maxDurability = maxDurability;
 		this.allowEnchanting = allowEnchanting;
 		this.allowAnvil = allowAnvil;
@@ -120,6 +120,9 @@ public class CustomTool extends CustomItem {
         meta.addItemFlags(ItemFlag.HIDE_UNBREAKABLE);
         item.setItemMeta(meta);
         item.setDurability(itemDamage);
+        for (Enchantment enchantment : defaultEnchantments) {
+        	item.addUnsafeEnchantment(org.bukkit.enchantments.Enchantment.getByName(enchantment.getType().name()), enchantment.getLevel());
+        }
         return ItemAttributes.setAttributes(ItemAttributes.clearAttributes(item), attributeModifiers);
 	}
 	
@@ -144,7 +147,7 @@ public class CustomTool extends CustomItem {
 	 * @return True if the stack breaks, false if it only loses durability
 	 */
 	public boolean decreaseDurability(ItemStack stack, int damage) {
-		if (Math.random() <= 1.0 / (1 + stack.getEnchantmentLevel(Enchantment.DURABILITY))) {
+		if (Math.random() <= 1.0 / (1 + stack.getEnchantmentLevel(org.bukkit.enchantments.Enchantment.DURABILITY))) {
 			ItemMeta meta = stack.getItemMeta();
 			List<String> lore = meta.getLore();
 			String oldFirstLine = lore.get(0);

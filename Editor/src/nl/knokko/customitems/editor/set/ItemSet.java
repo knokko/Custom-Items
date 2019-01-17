@@ -59,6 +59,8 @@ import nl.knokko.customitems.encoding.ItemEncoding;
 import nl.knokko.customitems.encoding.RecipeEncoding;
 import nl.knokko.customitems.item.AttributeModifier;
 import nl.knokko.customitems.item.CustomItemType;
+import nl.knokko.customitems.item.Enchantment;
+import nl.knokko.customitems.item.EnchantmentType;
 import nl.knokko.gui.keycode.KeyCode;
 import nl.knokko.gui.window.input.WindowInput;
 import nl.knokko.customitems.item.AttributeModifier.Attribute;
@@ -88,12 +90,18 @@ public class ItemSet {
 			return loadSimpleItem1(input);
 		else if (encoding == ItemEncoding.ENCODING_SIMPLE_2)
 			return loadSimpleItem2(input);
+		else if (encoding == ItemEncoding.ENCODING_SIMPLE_3)
+			return loadSimpleItem3(input);
 		else if (encoding == ItemEncoding.ENCODING_TOOL_2)
 			return loadTool2(input);
 		else if (encoding == ItemEncoding.ENCODING_TOOL_3)
 			return loadTool3(input);
+		else if (encoding == ItemEncoding.ENCODING_TOOL_4)
+			return loadTool4(input);
 		else if (encoding == ItemEncoding.ENCODING_BOW_3)
 			return loadBow3(input);
+		else if (encoding == ItemEncoding.ENCODING_BOW_4)
+			return loadBow4(input);
 		throw new IllegalArgumentException("Unknown encoding: " + encoding);
 	}
 
@@ -121,7 +129,7 @@ public class ItemSet {
 		}
 		if (texture == null)
 			throw new IllegalArgumentException("Can't find texture " + imageName);
-		return new CustomItem(itemType, damage, name, displayName, lore, attributes, texture);
+		return new CustomItem(itemType, damage, name, displayName, lore, attributes, new Enchantment[0], texture);
 	}
 
 	private CustomItem loadSimpleItem2(BitInput input) {
@@ -146,7 +154,35 @@ public class ItemSet {
 		}
 		if (texture == null)
 			throw new IllegalArgumentException("Can't find texture " + imageName);
-		return new CustomItem(itemType, damage, name, displayName, lore, attributes, texture);
+		return new CustomItem(itemType, damage, name, displayName, lore, attributes, new Enchantment[0], texture);
+	}
+	
+	private CustomItem loadSimpleItem3(BitInput input) {
+		CustomItemType itemType = CustomItemType.valueOf(input.readJavaString());
+		short damage = input.readShort();
+		String name = input.readJavaString();
+		String displayName = input.readJavaString();
+		String[] lore = new String[input.readByte() & 0xFF];
+		for (int index = 0; index < lore.length; index++) {
+			lore[index] = input.readJavaString();
+		}
+		AttributeModifier[] attributes = new AttributeModifier[input.readByte() & 0xFF];
+		for (int index = 0; index < attributes.length; index++)
+			attributes[index] = loadAttribute2(input);
+		Enchantment[] defaultEnchantments = new Enchantment[input.readByte() & 0xFF];
+		for (int index = 0; index < defaultEnchantments.length; index++)
+			defaultEnchantments[index] = new Enchantment(EnchantmentType.valueOf(input.readString()), input.readInt());
+		String imageName = input.readJavaString();
+		NamedImage texture = null;
+		for (NamedImage current : textures) {
+			if (current.getName().equals(imageName)) {
+				texture = current;
+				break;
+			}
+		}
+		if (texture == null)
+			throw new IllegalArgumentException("Can't find texture " + imageName);
+		return new CustomItem(itemType, damage, name, displayName, lore, attributes, new Enchantment[0], texture);
 	}
 
 	private CustomItem loadTool2(BitInput input) {
@@ -174,7 +210,7 @@ public class ItemSet {
 		}
 		if (texture == null)
 			throw new IllegalArgumentException("Can't find texture " + imageName);
-		return new CustomTool(itemType, damage, name, displayName, lore, attributes, durability, allowEnchanting,
+		return new CustomTool(itemType, damage, name, displayName, lore, attributes, new Enchantment[0], durability, allowEnchanting,
 				allowAnvil, new NoIngredient(), texture);
 	}
 
@@ -204,7 +240,40 @@ public class ItemSet {
 		}
 		if (texture == null)
 			throw new IllegalArgumentException("Can't find texture " + imageName);
-		return new CustomTool(itemType, damage, name, displayName, lore, attributes, durability, allowEnchanting,
+		return new CustomTool(itemType, damage, name, displayName, lore, attributes, new Enchantment[0], durability, allowEnchanting,
+				allowAnvil, repairItem, texture);
+	}
+	
+	private CustomItem loadTool4(BitInput input) {
+		CustomItemType itemType = CustomItemType.valueOf(input.readJavaString());
+		short damage = input.readShort();
+		String name = input.readJavaString();
+		String displayName = input.readJavaString();
+		String[] lore = new String[input.readByte() & 0xFF];
+		for (int index = 0; index < lore.length; index++) {
+			lore[index] = input.readJavaString();
+		}
+		AttributeModifier[] attributes = new AttributeModifier[input.readByte() & 0xFF];
+		for (int index = 0; index < attributes.length; index++)
+			attributes[index] = loadAttribute2(input);
+		Enchantment[] defaultEnchantments = new Enchantment[input.readByte() & 0xFF];
+		for (int index = 0; index < defaultEnchantments.length; index++)
+			defaultEnchantments[index] = new Enchantment(EnchantmentType.valueOf(input.readString()), input.readInt());
+		long durability = input.readLong();
+		boolean allowEnchanting = input.readBoolean();
+		boolean allowAnvil = input.readBoolean();
+		Ingredient repairItem = Recipe.loadIngredient(input, this);
+		String imageName = input.readJavaString();
+		NamedImage texture = null;
+		for (NamedImage current : textures) {
+			if (current.getName().equals(imageName)) {
+				texture = current;
+				break;
+			}
+		}
+		if (texture == null)
+			throw new IllegalArgumentException("Can't find texture " + imageName);
+		return new CustomTool(itemType, damage, name, displayName, lore, attributes, defaultEnchantments, durability, allowEnchanting,
 				allowAnvil, repairItem, texture);
 	}
 
@@ -237,7 +306,43 @@ public class ItemSet {
 		}
 		if (texture == null)
 			throw new IllegalArgumentException("Can't find texture " + imageName);
-		return new CustomBow(damage, name, displayName, lore, attributes, durability, damageMultiplier, speedMultiplier,
+		return new CustomBow(damage, name, displayName, lore, attributes, new Enchantment[0], durability, damageMultiplier, speedMultiplier,
+				knockbackStrength, gravity, allowEnchanting, allowAnvil, repairItem, (BowTextures) texture);
+	}
+	
+	private CustomBow loadBow4(BitInput input) {
+		short damage = input.readShort();
+		String name = input.readJavaString();
+		String displayName = input.readJavaString();
+		String[] lore = new String[input.readByte() & 0xFF];
+		for (int index = 0; index < lore.length; index++) {
+			lore[index] = input.readJavaString();
+		}
+		AttributeModifier[] attributes = new AttributeModifier[input.readByte() & 0xFF];
+		for (int index = 0; index < attributes.length; index++)
+			attributes[index] = loadAttribute2(input);
+		Enchantment[] defaultEnchantments = new Enchantment[input.readByte() & 0xFF];
+		for (int index = 0; index < defaultEnchantments.length; index++)
+			defaultEnchantments[index] = new Enchantment(EnchantmentType.valueOf(input.readString()), input.readInt());
+		long durability = input.readLong();
+		double damageMultiplier = input.readDouble();
+		double speedMultiplier = input.readDouble();
+		int knockbackStrength = input.readInt();
+		boolean gravity = input.readBoolean();
+		boolean allowEnchanting = input.readBoolean();
+		boolean allowAnvil = input.readBoolean();
+		Ingredient repairItem = Recipe.loadIngredient(input, this);
+		String imageName = input.readJavaString();
+		NamedImage texture = null;
+		for (NamedImage current : textures) {
+			if (current.getName().equals(imageName)) {
+				texture = current;
+				break;
+			}
+		}
+		if (texture == null)
+			throw new IllegalArgumentException("Can't find texture " + imageName);
+		return new CustomBow(damage, name, displayName, lore, attributes, defaultEnchantments, durability, damageMultiplier, speedMultiplier,
 				knockbackStrength, gravity, allowEnchanting, allowAnvil, repairItem, (BowTextures) texture);
 	}
 
@@ -851,9 +956,9 @@ public class ItemSet {
 	}
 
 	public String changeBow(CustomBow bow, short newDamage, String newName, String newDisplayName, String[] newLore,
-			AttributeModifier[] newAttributes, double newDamageMultiplier, double newSpeedMultiplier,
+			AttributeModifier[] newAttributes, Enchantment[] newEnchantments, double newDamageMultiplier, double newSpeedMultiplier,
 			int newKnockbackStrength, boolean useGravity, boolean allowEnchanting, boolean allowAnvil,
-			Ingredient repairItem, int newDurability, BowTextures newTextures, boolean checkClass) {
+			Ingredient repairItem, long newDurability, BowTextures newTextures, boolean checkClass) {
 		if (!bypassChecks()) {
 			if (bow == null)
 				return "Can't change bows that do not exist";
@@ -867,7 +972,7 @@ public class ItemSet {
 					return "The texture for pull " + pullTexture.getPull() + " is undefined.";
 			}
 		}
-		String error = changeTool(bow, CustomItemType.BOW, newDamage, newName, newDisplayName, newLore, newAttributes,
+		String error = changeTool(bow, CustomItemType.BOW, newDamage, newName, newDisplayName, newLore, newAttributes, newEnchantments,
 				allowEnchanting, allowAnvil, repairItem, newDurability, newTextures, false);
 		if (error == null) {
 			bow.setDamageMultiplier(newDamageMultiplier);
@@ -899,6 +1004,8 @@ public class ItemSet {
 				return "Only vanilla items and simple custom items are allowed as repair item.";
 			if (item.allowAnvilActions() && item.getDisplayName().contains("§"))
 				return "Items with color codes in their display name can not allow anvil actions";
+			if (item.allowEnchanting() && item.getDefaultEnchantments().length > 0)
+				return "You can't allow enchanting on items that have default enchantments";
 		}
 		return addItem(item, false);
 	}
@@ -923,8 +1030,8 @@ public class ItemSet {
 	 *         changed successfully
 	 */
 	public String changeTool(CustomTool item, CustomItemType newType, short newDamage, String newName,
-			String newDisplayName, String[] newLore, AttributeModifier[] newAttributes, boolean allowEnchanting,
-			boolean allowAnvil, Ingredient repairItem, int newDurability, NamedImage newImage, boolean checkClass) {
+			String newDisplayName, String[] newLore, AttributeModifier[] newAttributes, Enchantment[] newEnchantments, boolean allowEnchanting,
+			boolean allowAnvil, Ingredient repairItem, long newDurability, NamedImage newImage, boolean checkClass) {
 		if (!bypassChecks()) {
 			if (checkClass && item.getClass() != CustomTool.class)
 				return "Use the appropriate method to change this class";
@@ -933,8 +1040,10 @@ public class ItemSet {
 			if (repairItem instanceof CustomItemIngredient
 					&& !(((CustomItemIngredient) repairItem).getItem().getClass() == CustomItem.class))
 				return "Only vanilla items and simple custom items are allowed as repair item.";
+			if (allowEnchanting && newEnchantments.length > 0)
+				return "You can't allow enchanting on items that have default enchantments";
 		}
-		String error = changeItem(item, newType, newDamage, newName, newDisplayName, newLore, newAttributes, newImage,
+		String error = changeItem(item, newType, newDamage, newName, newDisplayName, newLore, newAttributes, newEnchantments, newImage,
 				false);
 		if (error == null) {
 			item.setAllowEnchanting(allowEnchanting);
@@ -958,6 +1067,30 @@ public class ItemSet {
 				return "Use the appropriate method for that class";
 			if (item.getTexture() == null)
 				return "Every item needs a texture";
+			if (item.getAttributes() == null)
+				return "Attributes are null";
+			if (item.getAttributes().length > Byte.MAX_VALUE)
+				return "Too many attribute modifiers";
+			for (AttributeModifier att : item.getAttributes()) {
+				if (att.getAttribute() == null) {
+					return "An attribute modifier has no attribute";
+				}
+				if (att.getOperation() == null) {
+					return "An attribute modifier has no operation";
+				}
+				if (att.getSlot() == null) {
+					return "An attribute modifier has no slot";
+				}
+			}
+			if (item.getDefaultEnchantments() == null)
+				return "Default enchantments are null";
+			if (item.getDefaultEnchantments().length > Byte.MAX_VALUE)
+				return "Too many default enchantments";
+			for (Enchantment enchantment : item.getDefaultEnchantments()) {
+				if (enchantment.getType() == null) {
+					return "An enchantment has no type";
+				}
+			}
 			for (CustomItem current : items) {
 				if (current.getName().equals(item.getName()))
 					return "There is already a custom item with that name";
@@ -998,7 +1131,7 @@ public class ItemSet {
 	 *         could not be changed
 	 */
 	public String changeItem(CustomItem item, CustomItemType newType, short newDamage, String newName,
-			String newDisplayName, String[] newLore, AttributeModifier[] newAttributes, NamedImage newImage,
+			String newDisplayName, String[] newLore, AttributeModifier[] newAttributes, Enchantment[] newEnchantments, NamedImage newImage,
 			boolean checkClass) {
 		if (!bypassChecks()) {
 			if (item == null)
@@ -1011,6 +1144,30 @@ public class ItemSet {
 			boolean has = false;
 			if (newImage == null)
 				return "Every item needs a texture";
+			if (newAttributes == null)
+				return "Attributes are null";
+			if (newAttributes.length > Byte.MAX_VALUE)
+				return "Too many attribute modifiers";
+			for (AttributeModifier att : newAttributes) {
+				if (att.getAttribute() == null) {
+					return "An attribute modifier has no attribute";
+				}
+				if (att.getOperation() == null) {
+					return "An attribute modifier has no operation";
+				}
+				if (att.getSlot() == null) {
+					return "An attribute modifier has no slot";
+				}
+			}
+			if (newEnchantments == null)
+				return "Default enchantments are null";
+			if (newEnchantments.length > Byte.MAX_VALUE)
+				return "Too many default enchantments";
+			for (Enchantment enchantment : newEnchantments) {
+				if (enchantment.getType() == null) {
+					return "An enchantment has no type";
+				}
+			}
 			for (CustomItem current : items) {
 				if (current == item) {
 					has = true;
@@ -1036,6 +1193,7 @@ public class ItemSet {
 		item.setDisplayName(newDisplayName);
 		item.setLore(newLore);
 		item.setAttributes(newAttributes);
+		item.setDefaultEnchantments(newEnchantments);
 		item.setTexture(newImage);
 		return null;
 	}

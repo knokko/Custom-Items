@@ -25,6 +25,7 @@ package nl.knokko.customitems.plugin.set.item;
 
 import nl.knokko.customitems.item.AttributeModifier;
 import nl.knokko.customitems.item.CustomItemType;
+import nl.knokko.customitems.item.Enchantment;
 import nl.knokko.customitems.plugin.recipe.ingredient.Ingredient;
 
 public class CustomBow extends CustomTool {
@@ -35,9 +36,9 @@ public class CustomBow extends CustomTool {
 	private final boolean hasGravity;
 
 	public CustomBow(short itemDamage, String name, String displayName, String[] lore, AttributeModifier[] attributes,
-			long maxDurability, double damageMultiplier, double speedMultiplier, int knockbackStrength,
+			Enchantment[] defaultEnchantments, long maxDurability, double damageMultiplier, double speedMultiplier, int knockbackStrength,
 			boolean hasGravity, boolean allowEnchanting, boolean allowAnvil, Ingredient repairItem) {
-		super(CustomItemType.BOW, itemDamage, name, displayName, lore, attributes, maxDurability, allowEnchanting,
+		super(CustomItemType.BOW, itemDamage, name, displayName, lore, attributes, defaultEnchantments, maxDurability, allowEnchanting,
 				allowAnvil, repairItem);
 		this.damageMultiplier = damageMultiplier;
 		this.speedMultiplier = speedMultiplier;
