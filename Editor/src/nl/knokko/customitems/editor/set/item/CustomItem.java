@@ -38,6 +38,11 @@ public class CustomItem extends nl.knokko.customitems.item.CustomItem {
 		this.texture = texture;
 	}
 	
+	@Override
+	public String toString() {
+		return "CustomItem(Name: " + name + ", Type: " + itemType + ", Damage: " + itemDamage + ")";
+	}
+	
 	public NamedImage getTexture() {
 		return texture;
 	}
