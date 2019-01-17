@@ -26,6 +26,7 @@ package nl.knokko.customitems.plugin.command;
 import java.util.Collection;
 
 import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
@@ -71,10 +72,11 @@ public class CommandCustomItems implements CommandExecutor {
 		}
 		else {
 			if(args[0].equals("give")) {
-				if(args.length == 2 || args.length == 3) {
+				if(args.length == 2 || args.length == 3 || args.length == 4) {
 					CustomItem item = CustomItemsPlugin.getInstance().getSet().getItem(args[1]);
 					if(item != null) {
 						Player receiver = null;
+						int amount = 1;
 						if(args.length == 2) {
 							if(sender instanceof Player) {
 								receiver = (Player) sender;
@@ -83,14 +85,22 @@ public class CommandCustomItems implements CommandExecutor {
 								sender.sendMessage(lang.getCommandNoPlayerSpecified());
 							}
 						}
-						if(args.length == 3) {
+						if(args.length >= 3) {
 							receiver = getOnlinePlayer(args[2]);
 							if(receiver == null) {
 								sender.sendMessage(lang.getCommandPlayerNotFound(args[2]));
 							}
 						}
+						if (args.length == 4) {
+							try {
+								amount = Integer.parseInt(args[3]);
+							} catch (NumberFormatException ex) {
+								sender.sendMessage(ChatColor.RED + "The amount (" + args[3] + ") should be an integer.");
+								return true;
+							}
+						}
 						if(receiver != null) {
-							receiver.getInventory().addItem(item.create(1));
+							receiver.getInventory().addItem(item.create(amount));
 							sender.sendMessage(lang.getCommandItemGiven());
 						}
 					}
