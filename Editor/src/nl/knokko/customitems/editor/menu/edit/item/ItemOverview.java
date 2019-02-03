@@ -1,7 +1,7 @@
 /*******************************************************************************
  * The MIT License
  *
- * Copyright (c) 2018 knokko
+ * Copyright (c) 2019 knokko
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  *  of this software and associated documentation files (the "Software"), to deal
@@ -27,9 +27,11 @@ import java.util.Collection;
 
 import nl.knokko.customitems.editor.menu.edit.EditMenu;
 import nl.knokko.customitems.editor.menu.edit.EditProps;
+import nl.knokko.customitems.editor.set.item.CustomArmor;
 import nl.knokko.customitems.editor.set.item.CustomBow;
 import nl.knokko.customitems.editor.set.item.CustomItem;
 import nl.knokko.customitems.editor.set.item.CustomTool;
+import nl.knokko.customitems.editor.set.item.SimpleCustomItem;
 import nl.knokko.gui.color.GuiColor;
 import nl.knokko.gui.component.menu.GuiMenu;
 import nl.knokko.gui.component.text.TextButton;
@@ -94,10 +96,12 @@ public class ItemOverview extends GuiMenu {
 				addComponent(new TextButton("Edit", EditProps.BUTTON, EditProps.HOVER, () -> {
 					if (item instanceof CustomBow)
 						state.getWindow().setMainComponent(new EditItemBow(menu, (CustomBow) item));
+					else if (item instanceof CustomArmor)
+						state.getWindow().setMainComponent(new EditItemArmor(menu, (CustomArmor) item, item.getItemType().getMainCategory()));
 					else if (item instanceof CustomTool)
 						state.getWindow().setMainComponent(new EditItemTool(menu, (CustomTool) item, item.getItemType().getMainCategory()));
 					else
-						state.getWindow().setMainComponent(new EditItemSimple(menu, item));
+						state.getWindow().setMainComponent(new EditItemSimple(menu, (SimpleCustomItem) item));
 				}), 0.6f, minY, 0.7f, maxY);
 				addComponent(new TextButton("Delete", EditProps.QUIT_BASE, EditProps.QUIT_HOVER, () -> {
 					String error = menu.getSet().removeItem(item);

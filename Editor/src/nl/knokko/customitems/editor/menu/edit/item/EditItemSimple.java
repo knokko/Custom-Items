@@ -1,7 +1,7 @@
 /*******************************************************************************
  * The MIT License
  *
- * Copyright (c) 2018 knokko
+ * Copyright (c) 2019 knokko
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  *  of this software and associated documentation files (the "Software"), to deal
@@ -24,27 +24,44 @@
 package nl.knokko.customitems.editor.menu.edit.item;
 
 import nl.knokko.customitems.editor.menu.edit.EditMenu;
+import nl.knokko.customitems.editor.menu.edit.EditProps;
 import nl.knokko.customitems.editor.set.item.CustomItem;
+import nl.knokko.customitems.editor.set.item.SimpleCustomItem;
 import nl.knokko.customitems.item.CustomItemType.Category;
+import nl.knokko.gui.component.text.IntEditField;
+import nl.knokko.gui.component.text.TextComponent;
 
 public class EditItemSimple extends EditItemBase {
 	
-	private final CustomItem previous;
+	private final SimpleCustomItem previous;
+	
+	private final IntEditField maxStacksize;
 
-	public EditItemSimple(EditMenu menu, CustomItem previous) {
+	public EditItemSimple(EditMenu menu, SimpleCustomItem previous) {
 		super(menu, previous);
 		this.previous = previous;
-		
+		if (previous == null) {
+			maxStacksize = new IntEditField(64, EditProps.EDIT_BASE, EditProps.EDIT_ACTIVE, 1, 64);
+		} else {
+			maxStacksize = new IntEditField(previous.getMaxStacksize(), EditProps.EDIT_BASE, EditProps.EDIT_ACTIVE, 1, 64);
+		}
+	}
+	
+	@Override
+	protected void addComponents() {
+		super.addComponents();
+		addComponent(new TextComponent("Max stacksize:", EditProps.LABEL), 0.71f, 0.35f, 0.895f, 0.45f);
+		addComponent(maxStacksize, 0.9f, 0.35f, 0.975f, 0.45f);
 	}
 
 	@Override
 	protected String create(short damage) {
-		return menu.getSet().addItem(new CustomItem(internalType.currentType, damage, name.getText(), getDisplayName(), lore, attributes, enchantments, textureSelect.currentTexture));
+		return menu.getSet().addSimpleItem(new SimpleCustomItem(internalType.currentType, damage, name.getText(), getDisplayName(), lore, attributes, enchantments, maxStacksize.getInt(), textureSelect.currentTexture));
 	}
 
 	@Override
 	protected String apply(short damage) {
-		return menu.getSet().changeItem(previous, internalType.currentType, damage, name.getText(), getDisplayName(), lore, attributes, enchantments, textureSelect.currentTexture, true);
+		return menu.getSet().changeSimpleItem(previous, internalType.currentType, damage, name.getText(), getDisplayName(), lore, attributes, enchantments, textureSelect.currentTexture, maxStacksize.getInt(), true);
 	}
 
 	@Override

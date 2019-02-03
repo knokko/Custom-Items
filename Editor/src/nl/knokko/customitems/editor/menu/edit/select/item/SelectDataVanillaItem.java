@@ -1,7 +1,7 @@
 /*******************************************************************************
  * The MIT License
  *
- * Copyright (c) 2018 knokko
+ * Copyright (c) 2019 knokko
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  *  of this software and associated documentation files (the "Software"), to deal
@@ -23,6 +23,7 @@
  *******************************************************************************/
 package nl.knokko.customitems.editor.menu.edit.select.item;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 
 import nl.knokko.customitems.editor.menu.edit.EditProps;
@@ -35,12 +36,14 @@ import nl.knokko.gui.component.text.TextButton;
 import nl.knokko.gui.component.text.TextComponent;
 import nl.knokko.gui.component.text.TextEditField;
 import nl.knokko.gui.component.text.dynamic.DynamicActivatableTextButton;
+import nl.knokko.gui.component.text.dynamic.DynamicTextButton;
 
 public class SelectDataVanillaItem extends GuiMenu {
 	
 	private final GuiComponent returnMenu;
 	private final Receiver receiver;
 	private final TextEditField dataField;
+	private final TextEditField filterField;
 	private final TextComponent errorComponent;
 	private final List list;
 	
@@ -50,6 +53,7 @@ public class SelectDataVanillaItem extends GuiMenu {
 		this.returnMenu = returnMenu;
 		this.receiver = receiver;
 		this.dataField = new TextEditField("0", EditProps.EDIT_BASE, EditProps.EDIT_ACTIVE);
+		this.filterField = new TextEditField("", EditProps.EDIT_BASE, EditProps.EDIT_ACTIVE);
 		this.errorComponent = new TextComponent("", EditProps.ERROR);
 		this.list = new List();
 	}
@@ -58,10 +62,12 @@ public class SelectDataVanillaItem extends GuiMenu {
 	protected void addComponents() {
 		addComponent(new TextButton("Cancel", EditProps.CANCEL_BASE, EditProps.CANCEL_HOVER, () -> {
 			state.getWindow().setMainComponent(returnMenu);
-		}), 0.1f, 0.7f, 0.25f, 0.8f);
-		addComponent(new TextComponent("Data value: ", EditProps.LABEL), 0.1f, 0.45f, 0.25f, 0.55f);
-		addComponent(dataField, 0.1f, 0.3f, 0.25f, 0.4f);
-		addComponent(errorComponent, 0.05f, 0.85f, 0.95f, 0.95f);
+		}), 0.1f, 0.75f, 0.25f, 0.85f);
+		addComponent(new TextComponent("Data value: ", EditProps.LABEL), 0.1f, 0.55f, 0.25f, 0.65f);
+		addComponent(dataField, 0.1f, 0.425f, 0.25f, 0.525f);
+		addComponent(new TextComponent("Search:", EditProps.LABEL), 0.1f, 0.325f, 0.25f, 0.4f);
+		addComponent(filterField, 0.1f, 0.2f, 0.25f, 0.3f);
+		addComponent(errorComponent, 0.05f, 0.89f, 0.95f, 0.99f);
 		addComponent(new ConditionalTextButton("OK", EditProps.BUTTON, EditProps.HOVER, () -> {
 			try {
 				int data = Integer.parseInt(dataField.getText());
@@ -76,7 +82,7 @@ public class SelectDataVanillaItem extends GuiMenu {
 			}
 		}, () -> {
 			return selected != null;
-		}), 0.1f, 0.1f, 0.2f, 0.2f);
+		}), 0.1f, 0.05f, 0.2f, 0.15f);
 		addComponent(list, 0.35f, 0f, 1f, 1f);
 	}
 	
@@ -85,24 +91,64 @@ public class SelectDataVanillaItem extends GuiMenu {
 		return EditProps.BACKGROUND;
 	}
 	
+	@Override
+	public void keyPressed(int key) {
+		String prev = filterField.getText();
+		super.keyPressed(key);
+		String next = filterField.getText();
+		if (!prev.equals(next)) {
+			list.refreshMaterials();
+		}
+	}
+	
+	@Override
+	public void keyPressed(char key) {
+		String prev = filterField.getText();
+		super.keyPressed(key);
+		String next = filterField.getText();
+		if (!prev.equals(next)) {
+			list.refreshMaterials();
+		}
+	}
+	
 	private class List extends GuiMenu {
-
-		@Override
-		protected void addComponents() {
-			setScrollSpeed(13f);
-			int index = 0;
+		
+		private ArrayList<DynamicTextButton> buttons;
+		
+		private List() {
 			Material[] materials = Material.values();
 			Arrays.sort(materials, (Material a, Material b) -> {
 				return a.name().compareTo(b.name());
 			});
+			buttons = new ArrayList<DynamicTextButton>(materials.length);
 			for (Material material : materials) {
-				addComponent(new DynamicActivatableTextButton(material.name(), EditProps.SELECT_BASE, EditProps.SELECT_HOVER, EditProps.SELECT_ACTIVE, () -> {
+				buttons.add(new DynamicActivatableTextButton(material.name(), EditProps.SELECT_BASE, EditProps.SELECT_HOVER, EditProps.SELECT_ACTIVE, () -> {
 					selected = material;
 				}, () -> {
 					return selected == material;
-				}), 0f, 0.9f - index * 0.1f, 1f, 1f - index * 0.1f);
-				index++;
+				}));
 			}
+		}
+		
+		private void addMaterials() {
+			int index = 0;
+			for (DynamicTextButton button : buttons) {
+				if (button.getText().contains(filterField.getText().toUpperCase())) {
+					addComponent(button, 0f, 0.9f - index * 0.1f, 1f, 1f - index * 0.1f);
+					index++;
+				}
+			}
+		}
+		
+		private void refreshMaterials() {
+			clearComponents();
+			addMaterials();
+		}
+
+		@Override
+		protected void addComponents() {
+			setScrollSpeed(13f);
+			addMaterials();
 		}
 		
 		@Override

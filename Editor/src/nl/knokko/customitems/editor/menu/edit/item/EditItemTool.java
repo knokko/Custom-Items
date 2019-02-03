@@ -1,7 +1,7 @@
 /*******************************************************************************
  * The MIT License
  *
- * Copyright (c) 2018 knokko
+ * Copyright (c) 2019 knokko
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  *  of this software and associated documentation files (the "Software"), to deal
@@ -73,6 +73,14 @@ public class EditItemTool extends EditItemBase {
 				internalType.currentType = CustomItemType.SHEARS;
 			else if (toolCategory == Category.BOW)
 				internalType.currentType = CustomItemType.BOW;
+			else if (toolCategory == Category.HELMET)
+				internalType.currentType = CustomItemType.IRON_HELMET;
+			else if (toolCategory == Category.CHESTPLATE)
+				internalType.currentType = CustomItemType.IRON_CHESTPLATE;
+			else if (toolCategory == Category.LEGGINGS)
+				internalType.currentType = CustomItemType.IRON_LEGGINGS;
+			else if (toolCategory == Category.BOOTS)
+				internalType.currentType = CustomItemType.IRON_BOOTS;
 			else
 				throw new Error("Unsupported category for EditItemTool: " + toolCategory);
 			internalDamage.setDirectText(Short.toString(menu.getSet().nextAvailableDamage(internalType.currentType)));

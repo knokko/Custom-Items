@@ -1,7 +1,7 @@
 /*******************************************************************************
  * The MIT License
  *
- * Copyright (c) 2018 knokko
+ * Copyright (c) 2019 knokko
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  *  of this software and associated documentation files (the "Software"), to deal
@@ -76,7 +76,7 @@ public class BowTextures extends NamedImage {
 		output.addInt(entries.size());
 		for (Entry entry : entries) {
 			output.addDouble(entry.pull);
-			output.ensureExtraCapacityCapacity(32 * (2 + entry.texture.getWidth() * entry.getTexture().getHeight()));
+			output.ensureExtraCapacity(32 * (2 + entry.texture.getWidth() * entry.getTexture().getHeight()));
 			output.addDirectInt(entry.texture.getWidth());
 			output.addDirectInt(entry.texture.getHeight());
 			for (int x = 0; x < entry.texture.getWidth(); x++) {

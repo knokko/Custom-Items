@@ -1,7 +1,7 @@
 /*******************************************************************************
  * The MIT License
  *
- * Copyright (c) 2018 knokko
+ * Copyright (c) 2019 knokko
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  *  of this software and associated documentation files (the "Software"), to deal
@@ -74,7 +74,7 @@ public class NamedImage {
 	
 	public void save(BitOutput output) {
 		output.addJavaString(name);
-		output.ensureExtraCapacityCapacity(32 * (2 + image.getWidth() * image.getHeight()));
+		output.ensureExtraCapacity(32 * (2 + image.getWidth() * image.getHeight()));
 		output.addDirectInt(image.getWidth());
 		output.addDirectInt(image.getHeight());
 		for(int x = 0; x < image.getWidth(); x++)

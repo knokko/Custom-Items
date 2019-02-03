@@ -1,7 +1,7 @@
 /*******************************************************************************
  * The MIT License
  *
- * Copyright (c) 2018 knokko
+ * Copyright (c) 2019 knokko
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  *  of this software and associated documentation files (the "Software"), to deal
@@ -23,6 +23,7 @@
  *******************************************************************************/
 package nl.knokko.customitems.editor.menu.edit.select.item;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 
 import nl.knokko.customitems.editor.menu.edit.EditProps;
@@ -31,6 +32,8 @@ import nl.knokko.gui.color.GuiColor;
 import nl.knokko.gui.component.GuiComponent;
 import nl.knokko.gui.component.menu.GuiMenu;
 import nl.knokko.gui.component.text.TextButton;
+import nl.knokko.gui.component.text.TextComponent;
+import nl.knokko.gui.component.text.TextEditField;
 import nl.knokko.gui.component.text.dynamic.DynamicTextButton;
 
 public class SelectSimpleVanillaItem extends GuiMenu {
@@ -39,6 +42,8 @@ public class SelectSimpleVanillaItem extends GuiMenu {
 	private final Receiver receiver;
 	private final List list;
 	
+	private final TextEditField filterField;
+	
 	private final boolean addNoneButton;
 
 	public SelectSimpleVanillaItem(GuiComponent returnMenu, Receiver receiver, boolean addNoneButton) {
@@ -46,6 +51,8 @@ public class SelectSimpleVanillaItem extends GuiMenu {
 		this.receiver = receiver;
 		this.addNoneButton = addNoneButton;
 		this.list = new List();
+		
+		filterField = new TextEditField("", EditProps.EDIT_BASE, EditProps.EDIT_ACTIVE);
 	}
 
 	@Override
@@ -53,6 +60,8 @@ public class SelectSimpleVanillaItem extends GuiMenu {
 		addComponent(new TextButton("Cancel", EditProps.CANCEL_BASE, EditProps.CANCEL_HOVER, () -> {
 			state.getWindow().setMainComponent(returnMenu);
 		}), 0.1f, 0.7f, 0.25f, 0.8f);
+		addComponent(new TextComponent("Search:", EditProps.LABEL), 0.1f, 0.525f, 0.25f, 0.625f);
+		addComponent(filterField, 0.1f, 0.4f, 0.25f, 0.5f);
 		addComponent(list, 0.35f, 0f, 1f, 1f);
 	}
 	
@@ -61,30 +70,80 @@ public class SelectSimpleVanillaItem extends GuiMenu {
 		return EditProps.BACKGROUND;
 	}
 	
+	@Override
+	public void keyPressed(int key) {
+		String prev = filterField.getText();
+		super.keyPressed(key);
+		String next = filterField.getText();
+		if (!prev.equals(next)) {
+			list.refreshMaterials();
+		}
+	}
+	
+	@Override
+	public void keyPressed(char key) {
+		String prev = filterField.getText();
+		super.keyPressed(key);
+		String next = filterField.getText();
+		if (!prev.equals(next)) {
+			list.refreshMaterials();
+		}
+	}
+	
 	private class List extends GuiMenu {
-
-		@Override
-		protected void addComponents() {
-			setScrollSpeed(13f);
-			int index = 0;
+		
+		private ArrayList<DynamicTextButton> buttons;
+		private DynamicTextButton none;
+		
+		private List() {
 			Material[] materials = Material.values();
 			Arrays.sort(materials, (Material a, Material b) -> {
 				return a.name().compareTo(b.name());
 			});
-			if (addNoneButton) {
-				addComponent(new DynamicTextButton("None", EditProps.SELECT_BASE, EditProps.SELECT_HOVER, () -> {
-					receiver.onSelect(null);
-					state.getWindow().setMainComponent(returnMenu);
-				}), 0f, 0.9f - index * 0.1f, 1f, 1f - index * 0.1f);
-				index++;
-			}
+			buttons = new ArrayList<DynamicTextButton>(materials.length);
 			for (Material material : materials) {
-				addComponent(new DynamicTextButton(material.name(), EditProps.SELECT_BASE, EditProps.SELECT_HOVER, () -> {
+				buttons.add(new DynamicTextButton(material.name(), EditProps.SELECT_BASE, EditProps.SELECT_HOVER, () -> {
 					receiver.onSelect(material);
 					state.getWindow().setMainComponent(returnMenu);
-				}), 0f, 0.9f - index * 0.1f, 1f, 1f - index * 0.1f);
-				index++;
+				}));
 			}
+			if (addNoneButton) {
+				none = new DynamicTextButton("None", EditProps.SELECT_BASE, EditProps.SELECT_HOVER, () -> {
+					receiver.onSelect(null);
+					state.getWindow().setMainComponent(returnMenu);
+				});
+			} else {
+				none = null;
+			}
+		}
+		
+		private void addNoneButton() {
+			if (addNoneButton) {
+				addComponent(none, 0f, 0.9f, 1f, 1f);
+			}
+		}
+		
+		private void addMaterials() {
+			int index = addNoneButton ? 1 : 0;
+			for (DynamicTextButton button : buttons) {
+				if (button.getText().contains(filterField.getText().toUpperCase())) {
+					addComponent(button, 0f, 0.9f - index * 0.1f, 1f, 1f - index * 0.1f);
+					index++;
+				}
+			}
+		}
+		
+		private void refreshMaterials() {
+			clearComponents();
+			addNoneButton();
+			addMaterials();
+		}
+
+		@Override
+		protected void addComponents() {
+			setScrollSpeed(13f);
+			addNoneButton();
+			addMaterials();
 		}
 		
 		@Override
