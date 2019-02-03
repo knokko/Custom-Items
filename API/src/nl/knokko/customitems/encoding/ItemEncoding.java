@@ -1,7 +1,7 @@
 /*******************************************************************************
  * The MIT License
  *
- * Copyright (c) 2018 knokko
+ * Copyright (c) 2019 knokko
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  *  of this software and associated documentation files (the "Software"), to deal
@@ -54,4 +54,11 @@ public class ItemEncoding {
 	 * Adds support for default enchantments and changes durability to long
 	 */
 	public static final byte ENCODING_BOW_4 = 7;
+	
+	public static final byte ENCODING_ARMOR_4 = 8;
+	
+	/**
+	 * Add maxStackSize
+	 */
+	public static final byte ENCODING_SIMPLE_4 = 9;
 }
