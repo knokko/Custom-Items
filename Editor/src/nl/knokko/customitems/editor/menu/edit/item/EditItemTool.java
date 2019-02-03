@@ -36,10 +36,10 @@ import nl.knokko.gui.component.text.TextComponent;
 import nl.knokko.gui.component.text.TextEditField;
 
 public class EditItemTool extends EditItemBase {
-	
+
 	private final CustomTool previous;
 	private final Category category;
-	
+
 	protected final CheckboxComponent allowEnchanting;
 	protected final CheckboxComponent allowAnvil;
 	protected final TextEditField durability;
@@ -78,7 +78,7 @@ public class EditItemTool extends EditItemBase {
 			internalDamage.setDirectText(Short.toString(menu.getSet().nextAvailableDamage(internalType.currentType)));
 		}
 	}
-	
+
 	@Override
 	protected void addComponents() {
 		super.addComponents();
@@ -92,53 +92,51 @@ public class EditItemTool extends EditItemBase {
 		addComponent(new TextComponent("Repair item: ", EditProps.LABEL), 0.71f, 0.5f, 0.84f, 0.6f);
 		addComponent(repairItem, 0.85f, 0.5f, 0.99f, 0.6f);
 	}
-
-	@Override
-	protected String create() {
-		String error = null;
-		try {
-			short damage = Short.parseShort(internalDamage.getText());
-			if(damage > 0 && damage < internalType.currentType.getMaxDurability()) {
-				try {
-					long maxUses = Long.parseLong(durability.getText());
-					if (maxUses > 0 || maxUses == CustomItem.UNBREAKABLE_TOOL_DURABILITY) {
-						error = menu.getSet().addTool(new CustomTool(internalType.currentType, damage, name.getText(), 
-								getDisplayName(), lore, attributes, enchantments, maxUses, allowEnchanting.isChecked(), 
-								allowAnvil.isChecked(), repairItem.getIngredient(), textureSelect.currentTexture), true);
-					} else
-						error = "The max uses must be greater than 0 or " + CustomItem.UNBREAKABLE_TOOL_DURABILITY + " to become unbreakable";
-				} catch (NumberFormatException nfe) {
-					error = "The max uses must be an integer";
-				}
-			} else
-				error = "The internal item damage must be larger than 0 and smaller than " + internalType.currentType.getMaxDurability();
-		} catch (NumberFormatException nfe) {
-			error = "The internal item damage must be an integer.";
-		}
-		return error;
+	
+	protected String create(short damage, long maxUses) {
+		return menu.getSet().addTool(
+				new CustomTool(internalType.currentType, damage, name.getText(), getDisplayName(),
+						lore, attributes, enchantments, maxUses, allowEnchanting.isChecked(),
+						allowAnvil.isChecked(), repairItem.getIngredient(), textureSelect.currentTexture),
+						true);
 	}
 
 	@Override
-	protected String apply() {
+	protected String create(short damage) {
 		String error = null;
 		try {
-			short damage = Short.parseShort(internalDamage.getText());
-			if(damage > 0 && damage < internalType.currentType.getMaxDurability()) {
-				try {
-					long maxUses = Long.parseLong(durability.getText());
-					if (maxUses > 0 || maxUses == CustomItem.UNBREAKABLE_TOOL_DURABILITY) {
-						error = menu.getSet().changeTool(previous, internalType.currentType, damage, name.getText(), 
-								getDisplayName(), lore, attributes, enchantments, allowEnchanting.isChecked(), 
-								allowAnvil.isChecked(), repairItem.getIngredient(), maxUses, textureSelect.currentTexture, true);
-					} else
-						error = "The max uses must be greater than 0 or " + CustomItem.UNBREAKABLE_TOOL_DURABILITY + " to become unbreakable";
-				} catch (NumberFormatException nfe) {
-					error = "The max uses must be an integer";
-				}
-			} else
-				error = "The internal item damage must be larger than 0 and smaller than " + internalType.currentType.getMaxDurability();
+			long maxUses = Long.parseLong(durability.getText());
+			if (maxUses > 0 || maxUses == CustomItem.UNBREAKABLE_TOOL_DURABILITY) {
+				error = create(damage, maxUses);
+			} else {
+				error = "The max uses must be greater than 0 or " + CustomItem.UNBREAKABLE_TOOL_DURABILITY
+						+ " to become unbreakable";
+			}
 		} catch (NumberFormatException nfe) {
-			error = "The internal item damage must be an integer.";
+			error = "The max uses must be an integer";
+		}
+		return error;
+	}
+	
+	protected String apply(short damage, long maxUses) {
+		return menu.getSet().changeTool(previous, internalType.currentType, damage, name.getText(),
+				getDisplayName(), lore, attributes, enchantments, allowEnchanting.isChecked(),
+				allowAnvil.isChecked(), repairItem.getIngredient(), maxUses, textureSelect.currentTexture,
+				true);
+	}
+
+	@Override
+	protected String apply(short damage) {
+		String error = null;
+		try {
+			long maxUses = Long.parseLong(durability.getText());
+			if (maxUses > 0 || maxUses == CustomItem.UNBREAKABLE_TOOL_DURABILITY) {
+				error = apply(damage, maxUses);
+			} else
+				error = "The max uses must be greater than 0 or " + CustomItem.UNBREAKABLE_TOOL_DURABILITY
+						+ " to become unbreakable";
+		} catch (NumberFormatException nfe) {
+			error = "The max uses must be an integer";
 		}
 		return error;
 	}

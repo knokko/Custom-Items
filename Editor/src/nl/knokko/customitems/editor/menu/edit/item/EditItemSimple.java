@@ -38,33 +38,13 @@ public class EditItemSimple extends EditItemBase {
 	}
 
 	@Override
-	protected String create() {
-		String error = null;
-		try {
-			short damage = Short.parseShort(internalDamage.getText());
-			if(damage > 0 && damage < internalType.currentType.getMaxDurability())
-				error = menu.getSet().addItem(new CustomItem(internalType.currentType, damage, name.getText(), getDisplayName(), lore, attributes, enchantments, textureSelect.currentTexture));
-			else
-				error = "The internal item damage must be larger than 0 and smaller than " + internalType.currentType.getMaxDurability();
-		} catch (NumberFormatException nfe) {
-			error = "The internal item damage must be an integer.";
-		}
-		return error;
+	protected String create(short damage) {
+		return menu.getSet().addItem(new CustomItem(internalType.currentType, damage, name.getText(), getDisplayName(), lore, attributes, enchantments, textureSelect.currentTexture));
 	}
 
 	@Override
-	protected String apply() {
-		String error = null;
-		try {
-			short damage = Short.parseShort(internalDamage.getText());
-			if(damage > 0 && damage < internalType.currentType.getMaxDurability())
-				error = menu.getSet().changeItem(previous, internalType.currentType, damage, name.getText(), getDisplayName(), lore, attributes, enchantments, textureSelect.currentTexture, true);
-			else
-				error = "The internal item damage must be larger than 0 and smaller than " + internalType.currentType.getMaxDurability();
-		} catch (NumberFormatException nfe) {
-			error = "The internal item damage must be an integer.";
-		}
-		return error;
+	protected String apply(short damage) {
+		return menu.getSet().changeItem(previous, internalType.currentType, damage, name.getText(), getDisplayName(), lore, attributes, enchantments, textureSelect.currentTexture, true);
 	}
 
 	@Override

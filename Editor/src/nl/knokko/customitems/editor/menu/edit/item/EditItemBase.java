@@ -130,9 +130,37 @@ public abstract class EditItemBase extends GuiMenu {
 		addComponent(textureSelect, BUTTON_X, 0.38f, BUTTON_X + 0.1f, 0.43f);
 	}
 	
-	protected abstract String create();
+	protected abstract String create(short internalItemDamage);
 	
-	protected abstract String apply();
+	protected abstract String apply(short internalItemDamage);
+	
+	protected String create() {
+		String error = null;
+		try {
+			short damage = Short.parseShort(internalDamage.getText());
+			if(damage > 0 && damage < internalType.currentType.getMaxDurability())
+				return create(damage);
+			else
+				error = "The internal item damage must be larger than 0 and smaller than " + internalType.currentType.getMaxDurability();
+		} catch (NumberFormatException nfe) {
+			error = "The internal item damage must be an integer.";
+		}
+		return error;
+	}
+
+	protected String apply() {
+		String error = null;
+		try {
+			short damage = Short.parseShort(internalDamage.getText());
+			if(damage > 0 && damage < internalType.currentType.getMaxDurability())
+				return apply(damage);
+			else
+				error = "The internal item damage must be larger than 0 and smaller than " + internalType.currentType.getMaxDurability();
+		} catch (NumberFormatException nfe) {
+			error = "The internal item damage must be an integer.";
+		}
+		return error;
+	}
 	
 	protected abstract CustomItem previous();
 	

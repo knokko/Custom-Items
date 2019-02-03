@@ -86,90 +86,60 @@ public class EditItemBow extends EditItemTool {
 	}
 
 	@Override
-	protected String create() {
+	protected String create(short damage, long maxUses) {
 		String error = null;
 		try {
-			short damage = Short.parseShort(internalDamage.getText());
-			if (damage > 0 && damage < internalType.currentType.getMaxDurability()) {
+			double damageMultiplier = Double.parseDouble(this.damageMultiplier.getText());
+			try {
+				double speedMultiplier = Double.parseDouble(this.speedMultiplier.getText());
 				try {
-					long maxUses = Long.parseLong(durability.getText());
-					try {
-						double damageMultiplier = Double.parseDouble(this.damageMultiplier.getText());
-						try {
-							double speedMultiplier = Double.parseDouble(this.speedMultiplier.getText());
-							try {
-								int knockbackStrength = Integer.parseInt(this.knockbackStrength.getText());
-								if (maxUses > 0 || maxUses == CustomItem.UNBREAKABLE_TOOL_DURABILITY) {
-									error = menu.getSet()
-											.addBow(new CustomBow(damage, name.getText(), getDisplayName(), lore,
-													attributes, enchantments, maxUses, damageMultiplier, speedMultiplier,
-													knockbackStrength, gravity.isChecked(), allowEnchanting.isChecked(),
-													allowAnvil.isChecked(), repairItem.getIngredient(),
-													(BowTextures) textureSelect.currentTexture), true);
-								} else
-									error = "The max uses must be greater than 0 or "
-											+ CustomItem.UNBREAKABLE_TOOL_DURABILITY + " to become unbreakable";
-							} catch (NumberFormatException nfe) {
-								error = "The knockback strength must be an integer";
-							}
-						} catch (NumberFormatException nfe) {
-							error = "The speed multiplier must be a number";
-						}
-					} catch (NumberFormatException nfe) {
-						error = "The damage multiplier must be a number";
-					}
+					int knockbackStrength = Integer.parseInt(this.knockbackStrength.getText());
+					if (maxUses > 0 || maxUses == CustomItem.UNBREAKABLE_TOOL_DURABILITY) {
+						error = menu.getSet()
+								.addBow(new CustomBow(damage, name.getText(), getDisplayName(), lore, attributes,
+										enchantments, maxUses, damageMultiplier, speedMultiplier, knockbackStrength,
+										gravity.isChecked(), allowEnchanting.isChecked(), allowAnvil.isChecked(),
+										repairItem.getIngredient(), (BowTextures) textureSelect.currentTexture), true);
+					} else
+						error = "The max uses must be greater than 0 or " + CustomItem.UNBREAKABLE_TOOL_DURABILITY
+								+ " to become unbreakable";
 				} catch (NumberFormatException nfe) {
-					error = "The max uses must be an integer";
+					error = "The knockback strength must be an integer";
 				}
-			} else
-				error = "The internal item damage must be larger than 0 and smaller than "
-						+ internalType.currentType.getMaxDurability();
+			} catch (NumberFormatException nfe) {
+				error = "The speed multiplier must be a number";
+			}
 		} catch (NumberFormatException nfe) {
-			error = "The internal item damage must be an integer.";
+			error = "The damage multiplier must be a number";
 		}
 		return error;
 	}
 
 	@Override
-	protected String apply() {
+	protected String apply(short damage, long maxUses) {
 		String error = null;
 		try {
-			short damage = Short.parseShort(internalDamage.getText());
-			if (damage > 0 && damage < internalType.currentType.getMaxDurability()) {
+			double damageMultiplier = Double.parseDouble(this.damageMultiplier.getText());
+			try {
+				double speedMultiplier = Double.parseDouble(this.speedMultiplier.getText());
 				try {
-					long maxUses = Long.parseLong(durability.getText());
-					try {
-						double damageMultiplier = Double.parseDouble(this.damageMultiplier.getText());
-						try {
-							double speedMultiplier = Double.parseDouble(this.speedMultiplier.getText());
-							try {
-								int knockbackStrength = Integer.parseInt(this.knockbackStrength.getText());
-								if (maxUses > 0 || maxUses == CustomItem.UNBREAKABLE_TOOL_DURABILITY) {
-									error = menu.getSet().changeBow(previous, damage, name.getText(), getDisplayName(),
-											lore, attributes, enchantments, damageMultiplier, speedMultiplier, knockbackStrength,
-											gravity.isChecked(), allowEnchanting.isChecked(), allowAnvil.isChecked(),
-											repairItem.getIngredient(), maxUses,
-											(BowTextures) textureSelect.currentTexture, true);
-								} else
-									error = "The max uses must be greater than 0 or "
-											+ CustomItem.UNBREAKABLE_TOOL_DURABILITY + " to become unbreakable";
-							} catch (NumberFormatException nfe) {
-								error = "The knockback strength must be an integer";
-							}
-						} catch (NumberFormatException nfe) {
-							error = "The speed multiplier must be a number";
-						}
-					} catch (NumberFormatException nfe) {
-						error = "The damage multiplier must be a number";
-					}
+					int knockbackStrength = Integer.parseInt(this.knockbackStrength.getText());
+					if (maxUses > 0 || maxUses == CustomItem.UNBREAKABLE_TOOL_DURABILITY) {
+						error = menu.getSet().changeBow(previous, damage, name.getText(), getDisplayName(), lore,
+								attributes, enchantments, damageMultiplier, speedMultiplier, knockbackStrength,
+								gravity.isChecked(), allowEnchanting.isChecked(), allowAnvil.isChecked(),
+								repairItem.getIngredient(), maxUses, (BowTextures) textureSelect.currentTexture, true);
+					} else
+						error = "The max uses must be greater than 0 or " + CustomItem.UNBREAKABLE_TOOL_DURABILITY
+								+ " to become unbreakable";
 				} catch (NumberFormatException nfe) {
-					error = "The max uses must be an integer";
+					error = "The knockback strength must be an integer";
 				}
-			} else
-				error = "The internal item damage must be larger than 0 and smaller than "
-						+ internalType.currentType.getMaxDurability();
+			} catch (NumberFormatException nfe) {
+				error = "The speed multiplier must be a number";
+			}
 		} catch (NumberFormatException nfe) {
-			error = "The internal item damage must be an integer.";
+			error = "The damage multiplier must be a number";
 		}
 		return error;
 	}
