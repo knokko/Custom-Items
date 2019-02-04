@@ -52,6 +52,8 @@ public class EditItemArmor extends EditItemTool {
 			green = new ColorEditField(previous.getGreen());
 			blue = new ColorEditField(previous.getBlue());
 		}
+		
+		// TODO place the red, green and blue on a better place
 	}
 	
 	@Override
@@ -74,12 +76,12 @@ public class EditItemArmor extends EditItemTool {
 	@Override
 	protected void addComponents() {
 		super.addComponents();
-		addComponent(new ConditionalTextComponent("red", EditProps.LABEL, () -> {return showColors();}), 0.5f, 0.6f, 0.55f, 0.65f);
-		addComponent(new ConditionalTextComponent("green", EditProps.LABEL, () -> {return showColors();}), 0.5f, 0.54f, 0.55f, 0.59f);
-		addComponent(new ConditionalTextComponent("blue", EditProps.LABEL, () -> {return showColors();}), 0.5f, 0.48f, 0.55f, 0.53f);
-		addComponent(red, 0.57f, 0.6f, 0.62f, 0.65f);
-		addComponent(green, 0.57f, 0.54f, 0.62f, 0.59f);
-		addComponent(blue, 0.57f, 0.48f, 0.62f, 0.53f);
+		addComponent(new ConditionalTextComponent("Red: ", EditProps.LABEL, () -> {return showColors();}), 0.78f, 0.35f, 0.84f, 0.45f);
+		addComponent(new ConditionalTextComponent("Green: ", EditProps.LABEL, () -> {return showColors();}), 0.75f, 0.24f, 0.84f, 0.34f);
+		addComponent(new ConditionalTextComponent("Blue: ", EditProps.LABEL, () -> {return showColors();}), 0.77f, 0.13f, 0.84f, 0.23f);
+		addComponent(red, 0.85f, 0.35f, 0.9f, 0.45f);
+		addComponent(green, 0.85f, 0.24f, 0.9f, 0.34f);
+		addComponent(blue, 0.85f, 0.13f, 0.9f, 0.23f);
 	}
 	
 	private boolean showColors() {
