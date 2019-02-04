@@ -122,7 +122,7 @@ public class SelectDataVanillaItem extends GuiMenu {
 			});
 			buttons = new ArrayList<DynamicTextButton>(materials.length);
 			for (Material material : materials) {
-				buttons.add(new DynamicActivatableTextButton(material.name(), EditProps.SELECT_BASE, EditProps.SELECT_HOVER, EditProps.SELECT_ACTIVE, () -> {
+				buttons.add(new DynamicActivatableTextButton(material.name().toLowerCase().replace('_', ' '), EditProps.SELECT_BASE, EditProps.SELECT_HOVER, EditProps.SELECT_ACTIVE, () -> {
 					selected = material;
 				}, () -> {
 					return selected == material;
@@ -133,7 +133,7 @@ public class SelectDataVanillaItem extends GuiMenu {
 		private void addMaterials() {
 			int index = 0;
 			for (DynamicTextButton button : buttons) {
-				if (button.getText().contains(filterField.getText().toUpperCase())) {
+				if (button.getText().contains(filterField.getText().toLowerCase())) {
 					addComponent(button, 0f, 0.9f - index * 0.1f, 1f, 1f - index * 0.1f);
 					index++;
 				}

@@ -102,7 +102,7 @@ public class SelectSimpleVanillaItem extends GuiMenu {
 			});
 			buttons = new ArrayList<DynamicTextButton>(materials.length);
 			for (Material material : materials) {
-				buttons.add(new DynamicTextButton(material.name(), EditProps.SELECT_BASE, EditProps.SELECT_HOVER, () -> {
+				buttons.add(new DynamicTextButton(material.name().toLowerCase().replace('_', ' '), EditProps.SELECT_BASE, EditProps.SELECT_HOVER, () -> {
 					receiver.onSelect(material);
 					state.getWindow().setMainComponent(returnMenu);
 				}));
@@ -126,7 +126,7 @@ public class SelectSimpleVanillaItem extends GuiMenu {
 		private void addMaterials() {
 			int index = addNoneButton ? 1 : 0;
 			for (DynamicTextButton button : buttons) {
-				if (button.getText().contains(filterField.getText().toUpperCase())) {
+				if (button.getText().contains(filterField.getText().toLowerCase())) {
 					addComponent(button, 0f, 0.9f - index * 0.1f, 1f, 1f - index * 0.1f);
 					index++;
 				}
