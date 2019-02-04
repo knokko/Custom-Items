@@ -47,6 +47,8 @@ import org.bukkit.event.block.Action;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.enchantment.PrepareItemEnchantEvent;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
+import org.bukkit.event.entity.EntityDamageEvent;
+import org.bukkit.event.entity.EntityDamageEvent.DamageModifier;
 import org.bukkit.event.entity.EntityShootBowEvent;
 import org.bukkit.event.inventory.InventoryAction;
 import org.bukkit.event.inventory.InventoryClickEvent;
@@ -59,6 +61,7 @@ import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerShearEntityEvent;
 import org.bukkit.inventory.AnvilInventory;
 import org.bukkit.inventory.CraftingInventory;
+import org.bukkit.inventory.EntityEquipment;
 import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
@@ -72,12 +75,14 @@ import nl.knokko.customitems.plugin.recipe.CustomRecipe;
 import nl.knokko.customitems.plugin.recipe.ShapedCustomRecipe;
 import nl.knokko.customitems.plugin.recipe.ShapelessCustomRecipe;
 import nl.knokko.customitems.plugin.set.ItemSet;
+import nl.knokko.customitems.plugin.set.item.CustomArmor;
 import nl.knokko.customitems.plugin.set.item.CustomBow;
 import nl.knokko.customitems.plugin.set.item.CustomItem;
 import nl.knokko.customitems.plugin.set.item.CustomTool;
 
 import static org.bukkit.enchantments.Enchantment.*;
 
+@SuppressWarnings("deprecation")
 public class CustomItemsEventHandler implements Listener {
 
 	private Map<UUID, Boolean> shouldInterfere = new HashMap<UUID, Boolean>();
@@ -256,6 +261,41 @@ public class CustomItemsEventHandler implements Listener {
 					Bukkit.getLogger().warning("Interesting item: " + weapon);
 				}
 			}
+		}
+	}
+	
+	@EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
+	public void onEntityDamage(EntityDamageEvent event) {
+		if (event.getEntity() instanceof Player) {
+			double original = event.getOriginalDamage(DamageModifier.BASE);
+			int armorDamage = Math.max(1, (int) (original / 4));
+			EntityEquipment e = ((Player) event.getEntity()).getEquipment();
+			if (decreaseCustomArmorDurability(e.getHelmet(), armorDamage)) {
+				e.setHelmet(null);
+			}
+			if (decreaseCustomArmorDurability(e.getChestplate(), armorDamage)) {
+				e.setChestplate(null);
+			}
+			if (decreaseCustomArmorDurability(e.getLeggings(), armorDamage)) {
+				e.setLeggings(null);
+			}
+			if (decreaseCustomArmorDurability(e.getBoots(), armorDamage)) {
+				e.setBoots(null);
+			}
+		}
+	}
+	
+	private boolean decreaseCustomArmorDurability(ItemStack piece, int damage) {
+		if (CustomItem.isCustom(piece)) {
+			CustomItem custom = CustomItemsPlugin.getInstance().getSet().getItem(piece);
+			if (custom instanceof CustomArmor) {
+				return ((CustomArmor) custom).decreaseDurability(piece, damage);
+			} else {
+				Bukkit.getLogger().warning("Strange item " + piece);
+				return false;
+			}
+		} else {
+			return false;
 		}
 	}
 
@@ -569,10 +609,11 @@ public class CustomItemsEventHandler implements Listener {
 								event.getWhoClicked().getInventory().addItem(result);
 							}
 						} else {
-							for (int counter = 0; counter < amountToGive; counter += 64) {
+							int maxStacksize = customResult == null ? 64 : customResult.getMaxStacksize();
+							for (int counter = 0; counter < amountToGive; counter += maxStacksize) {
 								int left = amountToGive - counter;
-								if (left > 64) {
-									result.setAmount(64);
+								if (left > maxStacksize) {
+									result.setAmount(maxStacksize);
 									event.getWhoClicked().getInventory().addItem(result);
 								} else {
 									result.setAmount(left);
@@ -590,7 +631,7 @@ public class CustomItemsEventHandler implements Listener {
 								&& cursor.getType() == current.getType()
 								&& cursor.getDurability() == current.getDurability()) {
 							CustomItem custom = CustomItemsPlugin.getInstance().getSet().getItem(current);
-							if (custom != null && custom.canStack()) {
+							if (custom != null && custom.canStack() && cursor.getAmount() + current.getAmount() <= custom.getMaxStacksize()) {
 								Bukkit.getScheduler().scheduleSyncDelayedTask(CustomItemsPlugin.getInstance(), () -> {
 									ItemStack[] contents = event.getInventory().getContents();
 									for (int index = 1; index < contents.length; index++) {
@@ -686,16 +727,16 @@ public class CustomItemsEventHandler implements Listener {
 					event.setResult(Result.DENY);
 					if (event.isLeftClick()) {
 						int amount = current.getAmount() + cursor.getAmount();
-						if (amount <= 64) {
+						if (amount <= customCursor.getMaxStacksize()) {
 							current.setAmount(amount);
 							cursor.setAmount(0);
 						} else {
-							current.setAmount(64);
-							cursor.setAmount(amount - 64);
+							current.setAmount(customCursor.getMaxStacksize());
+							cursor.setAmount(amount - customCursor.getMaxStacksize());
 						}
 					} else {
 						int newAmount = current.getAmount() + 1;
-						if (newAmount <= 64) {
+						if (newAmount <= customCurrent.getMaxStacksize()) {
 							cursor.setAmount(cursor.getAmount() - 1);
 							current.setAmount(newAmount);
 						}

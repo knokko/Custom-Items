@@ -41,7 +41,7 @@ import nl.knokko.customitems.item.AttributeModifier;
 import nl.knokko.customitems.item.CustomItemType;
 import nl.knokko.customitems.item.Enchantment;
 
-public class CustomItem extends nl.knokko.customitems.item.CustomItem {
+public abstract class CustomItem extends nl.knokko.customitems.item.CustomItem {
 	
 	public static boolean isCustom(ItemStack item) {
 		return item != null && item.hasItemMeta() && item.getItemMeta().isUnbreakable() && item.getDurability() > 0;
@@ -101,8 +101,10 @@ public class CustomItem extends nl.knokko.customitems.item.CustomItem {
     }
     
     public boolean canStack() {
-    	return true;
+    	return getMaxStacksize() > 1;
     }
+    
+    public abstract int getMaxStacksize();
     
     public boolean allowVanillaEnchanting() {
     	return false;

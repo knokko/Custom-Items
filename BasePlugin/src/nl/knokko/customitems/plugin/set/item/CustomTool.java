@@ -47,7 +47,7 @@ public class CustomTool extends CustomItem {
 	
 	private static final String DURABILITY_SPLIT = " / ";
 	
-	private static String createDurabilityLine(long current, long max) {
+	protected static String createDurabilityLine(long current, long max) {
 		return CustomItemsPlugin.getInstance().getLanguageFile().getDurabilityPrefix() + " " + current + DURABILITY_SPLIT + max;
 	}
 	
@@ -57,14 +57,15 @@ public class CustomTool extends CustomItem {
 		return Long.parseLong(line.substring(indexStart, indexBound));
 	}
 	
-	private final long maxDurability;
+	protected final long maxDurability;
 	
 	private final boolean allowEnchanting;
 	private final boolean allowAnvil;
 	
 	private final Ingredient repairItem;
 	
-	private final boolean isSword;
+	private final int entityHitDurabilityLoss;
+	private final int blockBreakDurabilityLoss;
 
 	public CustomTool(CustomItemType itemType, short itemDamage, String name, String displayName, String[] lore, 
 			AttributeModifier[] attributes, Enchantment[] defaultEnchantments, long maxDurability, boolean allowEnchanting, boolean allowAnvil, 
@@ -74,12 +75,25 @@ public class CustomTool extends CustomItem {
 		this.allowEnchanting = allowEnchanting;
 		this.allowAnvil = allowAnvil;
 		this.repairItem = repairItem;
-		isSword = itemType.getMainCategory() == Category.SWORD;
+		Category c = itemType.getMainCategory();
+		if (c == Category.HOE || c == Category.BOW || c == Category.HELMET || c == Category.CHESTPLATE
+				|| c == Category.LEGGINGS || c == Category.BOOTS || c == Category.SHEAR) {
+			entityHitDurabilityLoss = 0;
+			blockBreakDurabilityLoss = 0;
+		} else if (c == Category.SWORD) {
+			entityHitDurabilityLoss = 1;
+			blockBreakDurabilityLoss = 2;
+		} else if (c == Category.AXE || c == Category.PICKAXE || c == Category.SHOVEL) {
+			entityHitDurabilityLoss = 2;
+			blockBreakDurabilityLoss = 1;
+		} else {
+			throw new IllegalArgumentException("Wrong category: " + c);
+		}
 	}
 	
 	@Override
-	public boolean canStack() {
-		return false;
+	public int getMaxStacksize() {
+		return 1;
 	}
 	
 	@Override
@@ -128,13 +142,13 @@ public class CustomTool extends CustomItem {
 	
 	@Override
 	public void onBlockBreak(Player player, ItemStack tool, Block block) {
-		if (itemType.getMainCategory() != Category.HOE && itemType.getMainCategory() != Category.BOW && decreaseDurability(tool, isSword ? 2 : 1))
+		if (blockBreakDurabilityLoss != 0 && decreaseDurability(tool, blockBreakDurabilityLoss))
 			player.getInventory().setItemInMainHand(null);
 	}
 	
 	@Override
 	public void onEntityHit(LivingEntity attacker, ItemStack tool, Entity target) {
-		if (itemType.getMainCategory() != Category.HOE && itemType.getMainCategory() != Category.BOW && decreaseDurability(tool, isSword ? 1 : 2))
+		if (entityHitDurabilityLoss != 0 && decreaseDurability(tool, entityHitDurabilityLoss))
 			attacker.getEquipment().setItemInMainHand(null);
 	}
 	
