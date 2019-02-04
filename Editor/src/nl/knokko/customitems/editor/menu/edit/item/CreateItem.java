@@ -72,5 +72,17 @@ public class CreateItem extends GuiMenu {
 		addComponent(new TextButton("Bow", EditProps.CHOOSE_BASE, EditProps.CHOOSE_HOVER, () -> {
 			state.getWindow().setMainComponent(new EditItemBow(menu, null));
 		}), 0.75f, 0.65f, 0.95f, 0.75f);
+		addComponent(new TextButton("Helmet", EditProps.CHOOSE_BASE, EditProps.CHOOSE_HOVER, () -> {
+			state.getWindow().setMainComponent(new EditItemArmor(menu, null, Category.HELMET));
+		}), 0.75f, 0.525f, 0.95f, 0.625f);
+		addComponent(new TextButton("Chestplate", EditProps.CHOOSE_BASE, EditProps.CHOOSE_HOVER, () -> {
+			state.getWindow().setMainComponent(new EditItemArmor(menu, null, Category.CHESTPLATE));
+		}), 0.75f, 0.4f, 0.95f, 0.5f);
+		addComponent(new TextButton("Leggings", EditProps.CHOOSE_BASE, EditProps.CHOOSE_HOVER, () -> {
+			state.getWindow().setMainComponent(new EditItemArmor(menu, null, Category.LEGGINGS));
+		}), 0.75f, 0.275f, 0.95f, 0.375f);
+		addComponent(new TextButton("Boots", EditProps.CHOOSE_BASE, EditProps.CHOOSE_HOVER, () -> {
+			state.getWindow().setMainComponent(new EditItemArmor(menu, null, Category.BOOTS));
+		}), 0.75f, 0.15f, 0.95f, 0.25f);
 	}
 }
