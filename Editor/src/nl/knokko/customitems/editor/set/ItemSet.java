@@ -135,7 +135,7 @@ public class ItemSet {
 		}
 		if (texture == null)
 			throw new IllegalArgumentException("Can't find texture " + imageName);
-		return new SimpleCustomItem(itemType, damage, name, displayName, lore, attributes, new Enchantment[0], 1, texture);
+		return new SimpleCustomItem(itemType, damage, name, displayName, lore, attributes, new Enchantment[0], 64, texture);
 	}
 
 	private CustomItem loadSimpleItem2(BitInput input) {
@@ -160,7 +160,7 @@ public class ItemSet {
 		}
 		if (texture == null)
 			throw new IllegalArgumentException("Can't find texture " + imageName);
-		return new SimpleCustomItem(itemType, damage, name, displayName, lore, attributes, new Enchantment[0], 1, texture);
+		return new SimpleCustomItem(itemType, damage, name, displayName, lore, attributes, new Enchantment[0], 64, texture);
 	}
 	
 	private CustomItem loadSimpleItem3(BitInput input) {
@@ -188,7 +188,7 @@ public class ItemSet {
 		}
 		if (texture == null)
 			throw new IllegalArgumentException("Can't find texture " + imageName);
-		return new SimpleCustomItem(itemType, damage, name, displayName, lore, attributes, new Enchantment[0], 1, texture);
+		return new SimpleCustomItem(itemType, damage, name, displayName, lore, attributes, new Enchantment[0], 64, texture);
 	}
 	
 	private CustomItem loadSimpleItem4(BitInput input) {
