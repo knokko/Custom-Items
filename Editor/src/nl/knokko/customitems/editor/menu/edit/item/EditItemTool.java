@@ -29,6 +29,10 @@ import nl.knokko.customitems.editor.menu.edit.recipe.ingredient.IngredientCompon
 import nl.knokko.customitems.editor.set.item.CustomItem;
 import nl.knokko.customitems.editor.set.item.CustomTool;
 import nl.knokko.customitems.editor.set.recipe.ingredient.NoIngredient;
+import nl.knokko.customitems.item.AttributeModifier;
+import nl.knokko.customitems.item.AttributeModifier.Attribute;
+import nl.knokko.customitems.item.AttributeModifier.Operation;
+import nl.knokko.customitems.item.AttributeModifier.Slot;
 import nl.knokko.customitems.item.CustomItemType;
 import nl.knokko.customitems.item.CustomItemType.Category;
 import nl.knokko.gui.component.image.CheckboxComponent;
@@ -85,6 +89,38 @@ public class EditItemTool extends EditItemBase {
 				throw new Error("Unsupported category for EditItemTool: " + toolCategory);
 			internalDamage.setDirectText(Short.toString(menu.getSet().nextAvailableDamage(internalType.currentType)));
 		}
+	}
+	
+	@Override
+	protected AttributeModifier getExampleAttributeModifier() {
+		CustomItemType i = internalType.currentType;
+		double attackDamage;
+		if  (i == CustomItemType.DIAMOND_AXE || i == CustomItemType.IRON_AXE || i == CustomItemType.STONE_AXE){
+			attackDamage = 9;
+		} else if (i == CustomItemType.DIAMOND_SWORD || i == CustomItemType.WOOD_AXE || i == CustomItemType.GOLD_AXE) {
+			attackDamage = 7;
+		} else if (i == CustomItemType.IRON_SWORD) {
+			attackDamage = 6;
+		} else if (i == CustomItemType.DIAMOND_SHOVEL) {
+			attackDamage = 5.5;
+		} else if (i == CustomItemType.DIAMOND_PICKAXE || i == CustomItemType.STONE_SWORD) {
+			attackDamage = 5;
+		} else if (i == CustomItemType.IRON_SHOVEL) {
+			attackDamage = 4.5;
+		} else if (i == CustomItemType.WOOD_SWORD || i == CustomItemType.GOLD_SWORD  || i == CustomItemType.IRON_PICKAXE) {
+			attackDamage = 4;
+		} else if (i == CustomItemType.STONE_SHOVEL) {
+			attackDamage = 3.5;
+		} else if (i == CustomItemType.STONE_PICKAXE) {
+			attackDamage = 3;
+		} else if (i == CustomItemType.WOOD_SHOVEL || i == CustomItemType.GOLD_SHOVEL) {
+			attackDamage = 2.5;
+		} else if (i == CustomItemType.WOOD_PICKAXE || i == CustomItemType.GOLD_PICKAXE) {
+			attackDamage = 2;
+		} else {
+			attackDamage = 1;
+		}
+		return new AttributeModifier(Attribute.ATTACK_DAMAGE, Slot.MAINHAND, Operation.ADD, attackDamage);
 	}
 
 	@Override

@@ -225,9 +225,11 @@ public abstract class EditItemBase extends GuiMenu {
 		}), BUTTON_X, 0.56f, BUTTON_X + 0.1f, 0.61f);
 	}
 	
+	protected abstract AttributeModifier getExampleAttributeModifier();
+	
 	private void addAttributesComponent() {
 		addComponent(new TextButton("Change attributes...", EditProps.BUTTON, EditProps.HOVER, () -> {
-			state.getWindow().setMainComponent(new AttributesOverview(attributes, EditItemBase.this, (AttributeModifier[] attributes) -> {
+			state.getWindow().setMainComponent(new AttributesOverview(getExampleAttributeModifier(), attributes, EditItemBase.this, (AttributeModifier[] attributes) -> {
 				this.attributes = attributes;
 			}));
 		}), BUTTON_X, 0.5f, BUTTON_X + 0.1f, 0.55f);

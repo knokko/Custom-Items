@@ -27,11 +27,17 @@ import nl.knokko.customitems.editor.menu.edit.EditMenu;
 import nl.knokko.customitems.editor.menu.edit.EditProps;
 import nl.knokko.customitems.editor.set.item.CustomItem;
 import nl.knokko.customitems.editor.set.item.SimpleCustomItem;
+import nl.knokko.customitems.item.AttributeModifier;
+import nl.knokko.customitems.item.AttributeModifier.Attribute;
+import nl.knokko.customitems.item.AttributeModifier.Operation;
+import nl.knokko.customitems.item.AttributeModifier.Slot;
 import nl.knokko.customitems.item.CustomItemType.Category;
 import nl.knokko.gui.component.text.IntEditField;
 import nl.knokko.gui.component.text.TextComponent;
 
 public class EditItemSimple extends EditItemBase {
+	
+	private static final AttributeModifier EXAMPLE_MODIFIER = new AttributeModifier(Attribute.ATTACK_DAMAGE, Slot.MAINHAND, Operation.ADD, 5.0);
 	
 	private final SimpleCustomItem previous;
 	
@@ -45,6 +51,11 @@ public class EditItemSimple extends EditItemBase {
 		} else {
 			maxStacksize = new IntEditField(previous.getMaxStacksize(), EditProps.EDIT_BASE, EditProps.EDIT_ACTIVE, 1, 64);
 		}
+	}
+	
+	@Override
+	protected AttributeModifier getExampleAttributeModifier() {
+		return EXAMPLE_MODIFIER;
 	}
 	
 	@Override

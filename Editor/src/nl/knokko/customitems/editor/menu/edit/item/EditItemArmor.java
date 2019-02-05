@@ -26,7 +26,11 @@ package nl.knokko.customitems.editor.menu.edit.item;
 import nl.knokko.customitems.editor.menu.edit.EditMenu;
 import nl.knokko.customitems.editor.menu.edit.EditProps;
 import nl.knokko.customitems.editor.set.item.CustomArmor;
+import nl.knokko.customitems.item.AttributeModifier;
 import nl.knokko.customitems.item.CustomItemType;
+import nl.knokko.customitems.item.AttributeModifier.Attribute;
+import nl.knokko.customitems.item.AttributeModifier.Operation;
+import nl.knokko.customitems.item.AttributeModifier.Slot;
 import nl.knokko.customitems.item.CustomItemType.Category;
 import nl.knokko.gui.component.WrapperComponent;
 import nl.knokko.gui.component.text.ConditionalTextComponent;
@@ -52,6 +56,79 @@ public class EditItemArmor extends EditItemTool {
 			green = new ColorEditField(previous.getGreen());
 			blue = new ColorEditField(previous.getBlue());
 		}
+	}
+	
+	@Override
+	protected AttributeModifier getExampleAttributeModifier() {
+		double armor;
+		Slot slot;
+		CustomItemType i = internalType.currentType;
+		if (i == CustomItemType.DIAMOND_HELMET) {
+			armor = 3;
+			slot = Slot.HEAD;
+		}
+		else if (i == CustomItemType.DIAMOND_CHESTPLATE) {
+			armor = 8;
+			slot = Slot.CHEST;
+		} else if (i == CustomItemType.DIAMOND_LEGGINGS) {
+			armor = 6;
+			slot = Slot.LEGS;
+		} else if (i == CustomItemType.DIAMOND_BOOTS) {
+			armor = 3;
+			slot = Slot.FEET;
+		} else if (i == CustomItemType.IRON_HELMET) {
+			armor = 2;
+			slot = Slot.HEAD;
+		} else if (i == CustomItemType.IRON_CHESTPLATE) {
+			armor = 6;
+			slot = Slot.CHEST;
+		} else if (i == CustomItemType.IRON_LEGGINGS) {
+			armor = 5;
+			slot = Slot.LEGS;
+		} else if (i == CustomItemType.IRON_BOOTS) {
+			armor = 2;
+			slot = Slot.FEET;
+		} else if (i == CustomItemType.CHAINMAIL_HELMET) {
+			armor = 2;
+			slot = Slot.HEAD;
+		} else if (i == CustomItemType.CHAINMAIL_CHESTPLATE) {
+			armor = 5;
+			slot = Slot.CHEST;
+		} else if (i == CustomItemType.CHAINMAIL_LEGGINGS) {
+			armor = 4;
+			slot = Slot.LEGS;
+		} else if (i == CustomItemType.CHAINMAIL_BOOTS) {
+			armor = 1;
+			slot = Slot.FEET;
+		} else if (i == CustomItemType.GOLD_HELMET) {
+			armor = 2;
+			slot = Slot.HEAD;
+		} else if (i == CustomItemType.GOLD_CHESTPLATE) {
+			armor = 5;
+			slot = Slot.CHEST;
+		} else if (i == CustomItemType.GOLD_LEGGINGS) {
+			armor = 3;
+			slot = Slot.LEGS;
+		} else if (i == CustomItemType.GOLD_BOOTS) {
+			armor = 1;
+			slot = Slot.FEET;
+		} else if (i == CustomItemType.LEATHER_HELMET) {
+			armor = 1;
+			slot = Slot.HEAD;
+		} else if (i == CustomItemType.LEATHER_CHESTPLATE) {
+			armor = 3;
+			slot = Slot.CHEST;
+		} else if (i == CustomItemType.LEATHER_LEGGINGS) {
+			armor = 2;
+			slot = Slot.LEGS;
+		} else if (i == CustomItemType.LEATHER_BOOTS) {
+			armor = 1;
+			slot = Slot.FEET;
+		} else {
+			throw new IllegalArgumentException("Unknown item type: " + i.name());
+		}
+		
+		return new AttributeModifier(Attribute.ARMOR, slot, Operation.ADD, armor);
 	}
 	
 	@Override

@@ -29,12 +29,18 @@ import nl.knokko.customitems.editor.set.item.CustomBow;
 import nl.knokko.customitems.editor.set.item.CustomItem;
 import nl.knokko.customitems.editor.set.item.NamedImage;
 import nl.knokko.customitems.editor.set.item.texture.BowTextures;
+import nl.knokko.customitems.item.AttributeModifier;
+import nl.knokko.customitems.item.AttributeModifier.Attribute;
+import nl.knokko.customitems.item.AttributeModifier.Operation;
+import nl.knokko.customitems.item.AttributeModifier.Slot;
 import nl.knokko.customitems.item.CustomItemType.Category;
 import nl.knokko.gui.component.image.CheckboxComponent;
 import nl.knokko.gui.component.text.TextComponent;
 import nl.knokko.gui.component.text.TextEditField;
 
 public class EditItemBow extends EditItemTool {
+	
+	private static final AttributeModifier EXAMPLE_ATTRIBUTE_MODIFIER = new AttributeModifier(Attribute.MOVEMENT_SPEED, Slot.OFFHAND, Operation.MULTIPLY, 1.5);
 
 	private final CustomBow previous;
 
@@ -60,6 +66,11 @@ public class EditItemBow extends EditItemTool {
 			knockbackStrength = new TextEditField("0", EditProps.EDIT_BASE, EditProps.EDIT_ACTIVE);
 			gravity = new CheckboxComponent(true);
 		}
+	}
+	
+	@Override
+	protected AttributeModifier getExampleAttributeModifier() {
+		return EXAMPLE_ATTRIBUTE_MODIFIER;
 	}
 
 	@Override

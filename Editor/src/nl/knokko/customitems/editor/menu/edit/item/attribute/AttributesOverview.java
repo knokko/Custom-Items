@@ -42,21 +42,22 @@ import nl.knokko.gui.texture.loader.GuiTextureLoader;
 
 public class AttributesOverview extends GuiMenu {
 	
-	private static final AttributeModifier EXAMPLE_MODIFIER = new AttributeModifier(Attribute.ATTACK_DAMAGE, Slot.MAINHAND, Operation.ADD, 7);
-	
 	private final AttributeModifier[] current;
 	private final Receiver receiver;
 	private final GuiComponent returnMenu;
+	
+	private final AttributeModifier exampleModifier;
 	
 	private final TextComponent errorComponent;
 	
 	private GuiTexture deleteBase;
 	private GuiTexture deleteHover;
 
-	public AttributesOverview(AttributeModifier[] currentAttributes, GuiComponent returnMenu, Receiver receiver) {
+	public AttributesOverview(AttributeModifier exampleModifier, AttributeModifier[] currentAttributes, GuiComponent returnMenu, Receiver receiver) {
 		this.current = currentAttributes;
 		this.receiver = receiver;
 		this.returnMenu = returnMenu;
+		this.exampleModifier = exampleModifier;
 		this.errorComponent = new TextComponent("", EditProps.ERROR);
 	}
 	
@@ -75,7 +76,7 @@ public class AttributesOverview extends GuiMenu {
 		}), 0.05f, 0.8f, 0.2f, 0.9f);
 		addComponent(new TextButton("New Attribute", EditProps.BUTTON, EditProps.HOVER, () -> {
 			float y = 0.8f - (getComponents().size() - 4) * 0.125f;
-			addComponent(new Entry(EXAMPLE_MODIFIER), 0.4f, y, 1f, y + 0.1f);
+			addComponent(new Entry(exampleModifier), 0.4f, y, 1f, y + 0.1f);
 		}), 0.05f, 0.5f, 0.3f, 0.6f);
 		addComponent(new TextButton("Apply", EditProps.SAVE_BASE, EditProps.SAVE_HOVER, () -> {
 			List<SubComponent> components = getComponents();
