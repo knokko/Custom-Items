@@ -27,7 +27,9 @@ import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.OutputStream;
 import java.io.PrintWriter;
+import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.EnumMap;
@@ -70,7 +72,6 @@ import nl.knokko.customitems.item.AttributeModifier.Operation;
 import nl.knokko.customitems.item.AttributeModifier.Slot;
 import nl.knokko.util.bits.BitInput;
 import nl.knokko.util.bits.BitOutput;
-import nl.knokko.util.bits.BitOutputStream;
 import nl.knokko.util.bits.ByteArrayBitOutput;
 
 import static nl.knokko.customitems.encoding.SetEncoding.*;
@@ -534,9 +535,13 @@ public class ItemSet {
 	public String export() {
 		try {
 			File file = new File(Editor.getFolder() + "/" + fileName + ".cis");// cis stands for Custom Item Set
-			BitOutput output = new BitOutputStream(new FileOutputStream(file));
+			OutputStream fileOutput = Files.newOutputStream(file.toPath());
+			ByteArrayBitOutput output = new ByteArrayBitOutput();
 			export1(output);
 			output.terminate();
+			fileOutput.write(output.getBytes());
+			fileOutput.flush();
+			fileOutput.close();
 			ZipOutputStream zipOutput = new ZipOutputStream(
 					new FileOutputStream(new File(Editor.getFolder() + "/" + fileName + ".zip")));
 
@@ -785,12 +790,14 @@ public class ItemSet {
 			save2(output);
 			output.terminate();
 			byte[] bytes = output.getBytes();
-			FileOutputStream mainOutput = new FileOutputStream(file);
+			OutputStream mainOutput = Files.newOutputStream(file.toPath());
 			mainOutput.write(bytes);
+			mainOutput.flush();
 			mainOutput.close();
-			FileOutputStream backupOutput = new FileOutputStream(
-					new File(Editor.getBackupFolder() + "/" + fileName + " " + System.currentTimeMillis() + ".cisb"));
+			OutputStream backupOutput = Files.newOutputStream(
+					new File(Editor.getBackupFolder() + "/" + fileName + " " + System.currentTimeMillis() + ".cisb").toPath());
 			backupOutput.write(bytes);
+			mainOutput.flush();
 			backupOutput.close();
 			return null;
 		} catch (IOException ioex) {

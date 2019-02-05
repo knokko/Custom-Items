@@ -52,8 +52,6 @@ public class EditItemArmor extends EditItemTool {
 			green = new ColorEditField(previous.getGreen());
 			blue = new ColorEditField(previous.getBlue());
 		}
-		
-		// TODO place the red, green and blue on a better place
 	}
 	
 	@Override
@@ -82,6 +80,8 @@ public class EditItemArmor extends EditItemTool {
 		addComponent(red, 0.85f, 0.35f, 0.9f, 0.45f);
 		addComponent(green, 0.85f, 0.24f, 0.9f, 0.34f);
 		addComponent(blue, 0.85f, 0.13f, 0.9f, 0.23f);
+		errorComponent.setProperties(EditProps.LABEL);
+		errorComponent.setText("Hint: Use attribute modifiers to set the armor (toughness) of this piece.");
 	}
 	
 	private boolean showColors() {

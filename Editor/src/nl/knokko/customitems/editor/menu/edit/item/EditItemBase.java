@@ -104,17 +104,20 @@ public abstract class EditItemBase extends GuiMenu {
 		if(previous() != null) {
 			addComponent(new TextButton("Apply", EditProps.SAVE_BASE, EditProps.SAVE_HOVER, () -> {
 				String error = apply();
-				if(error != null)
+				if(error != null) {
 					errorComponent.setText(error);
-				else
+					errorComponent.setProperties(EditProps.ERROR);
+				} else
 					state.getWindow().setMainComponent(menu.getItemOverview());
 			}), 0.025f, 0.1f, 0.15f, 0.2f);
 		}
 		else {
 			addComponent(new TextButton("Create", EditProps.SAVE_BASE, EditProps.SAVE_HOVER, () -> {
 				String error = create();
-				if(error != null)
+				if(error != null) {
+					errorComponent.setProperties(EditProps.ERROR);
 					errorComponent.setText(error);
+				}
 				else
 					state.getWindow().setMainComponent(menu.getItemOverview());
 			}), 0.025f, 0.1f, 0.15f, 0.2f);

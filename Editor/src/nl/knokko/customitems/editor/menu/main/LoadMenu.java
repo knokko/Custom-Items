@@ -25,7 +25,6 @@ package nl.knokko.customitems.editor.menu.main;
 
 import java.awt.Color;
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.FilenameFilter;
 import java.io.IOException;
 import java.util.Calendar;
@@ -39,7 +38,7 @@ import nl.knokko.gui.component.menu.GuiMenu;
 import nl.knokko.gui.component.text.TextButton;
 import nl.knokko.gui.util.TextBuilder.Properties;
 import nl.knokko.util.bits.BitInput;
-import nl.knokko.util.bits.BitInputStream;
+import nl.knokko.util.bits.ByteArrayBitInput;
 
 public class LoadMenu extends GuiMenu {
 	
@@ -141,7 +140,7 @@ public class LoadMenu extends GuiMenu {
 					String finalSetName = setName;
 					addComponent(new TextButton(displayName, BUTTON_PROPERTIES, HOVER_PROPERTIES, () -> {
 						try {
-							BitInput input = new BitInputStream(new FileInputStream(file));
+							BitInput input = ByteArrayBitInput.fromFile(file);
 							ItemSet set = new ItemSet(finalSetName, input);
 							input.terminate();
 							state.getWindow().setMainComponent(new EditMenu(set));
@@ -184,7 +183,7 @@ public class LoadMenu extends GuiMenu {
 					final File file = files[index];
 					addComponent(new TextButton(file.getName().substring(0, file.getName().length() - 5), BUTTON_PROPERTIES, HOVER_PROPERTIES, () -> {
 						try {
-							BitInput input = new BitInputStream(new FileInputStream(file));
+							BitInput input = ByteArrayBitInput.fromFile(file);
 							ItemSet set = new ItemSet(file.getName().substring(0, file.getName().length() - 5), input);
 							input.terminate();
 							state.getWindow().setMainComponent(new EditMenu(set));

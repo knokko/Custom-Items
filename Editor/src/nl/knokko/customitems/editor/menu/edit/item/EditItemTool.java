@@ -99,6 +99,10 @@ public class EditItemTool extends EditItemBase {
 		addComponent(new TextComponent("Max uses: ", EditProps.LABEL), 0.71f, 0.6f, 0.84f, 0.7f);
 		addComponent(new TextComponent("Repair item: ", EditProps.LABEL), 0.71f, 0.5f, 0.84f, 0.6f);
 		addComponent(repairItem, 0.85f, 0.5f, 0.99f, 0.6f);
+		if (category == Category.SWORD) {
+			errorComponent.setProperties(EditProps.LABEL);
+			errorComponent.setText("Hint: Use attribute modifiers to set the damage this sword will deal.");
+		}
 	}
 	
 	protected String create(short damage, long maxUses) {
