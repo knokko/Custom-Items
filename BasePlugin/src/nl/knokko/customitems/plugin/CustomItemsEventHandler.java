@@ -48,6 +48,7 @@ import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.enchantment.PrepareItemEnchantEvent;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
+import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
 import org.bukkit.event.entity.EntityDamageEvent.DamageModifier;
 import org.bukkit.event.entity.EntityShootBowEvent;
 import org.bukkit.event.inventory.InventoryAction;
@@ -111,7 +112,7 @@ public class CustomItemsEventHandler implements Listener {
 			}
 		}
 	}
-	
+
 	@EventHandler(ignoreCancelled = true)
 	public void processCustomBowDamage(EntityDamageByEntityEvent event) {
 		if (event.getDamager() instanceof Arrow) {
@@ -121,7 +122,7 @@ public class CustomItemsEventHandler implements Listener {
 			}
 		}
 	}
-	
+
 	@EventHandler(ignoreCancelled = true)
 	public void onBowShoot(EntityShootBowEvent event) {
 		if (CustomItem.isCustom(event.getBow())) {
@@ -132,7 +133,8 @@ public class CustomItemsEventHandler implements Listener {
 				if (projectile instanceof Arrow) {
 					if (event.getEntity() instanceof Player && bow.decreaseDurability(event.getBow(), 1)) {
 						Player player = (Player) event.getEntity();
-						if (player.getInventory().getItemInMainHand() != null && player.getInventory().getItemInMainHand().getType() == Material.BOW) {
+						if (player.getInventory().getItemInMainHand() != null
+								&& player.getInventory().getItemInMainHand().getType() == Material.BOW) {
 							player.getInventory().setItemInMainHand(null);
 						} else {
 							player.getInventory().setItemInOffHand(null);
@@ -195,7 +197,8 @@ public class CustomItemsEventHandler implements Listener {
 						}
 
 						@Override
-						public void invalidate() {}
+						public void invalidate() {
+						}
 					});
 				} else {
 					Bukkit.getLogger().warning("A bow was shot, but it didn't shoot an arrow");
@@ -263,28 +266,40 @@ public class CustomItemsEventHandler implements Listener {
 			}
 		}
 	}
-	
+
 	@EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
 	public void onEntityDamage(EntityDamageEvent event) {
 		if (event.getEntity() instanceof Player) {
 			double original = event.getOriginalDamage(DamageModifier.BASE);
-			int armorDamage = Math.max(1, (int) (original / 4));
-			EntityEquipment e = ((Player) event.getEntity()).getEquipment();
-			if (decreaseCustomArmorDurability(e.getHelmet(), armorDamage)) {
-				e.setHelmet(null);
-			}
-			if (decreaseCustomArmorDurability(e.getChestplate(), armorDamage)) {
-				e.setChestplate(null);
-			}
-			if (decreaseCustomArmorDurability(e.getLeggings(), armorDamage)) {
-				e.setLeggings(null);
-			}
-			if (decreaseCustomArmorDurability(e.getBoots(), armorDamage)) {
-				e.setBoots(null);
+			
+			// Only act if armor reduced the damage
+			if (isReducedByArmor(event.getCause())) {
+				int armorDamage = Math.max(1, (int) (original / 4));
+				EntityEquipment e = ((Player) event.getEntity()).getEquipment();
+				if (decreaseCustomArmorDurability(e.getHelmet(), armorDamage)) {
+					e.setHelmet(null);
+				}
+				if (decreaseCustomArmorDurability(e.getChestplate(), armorDamage)) {
+					e.setChestplate(null);
+				}
+				if (decreaseCustomArmorDurability(e.getLeggings(), armorDamage)) {
+					e.setLeggings(null);
+				}
+				if (decreaseCustomArmorDurability(e.getBoots(), armorDamage)) {
+					e.setBoots(null);
+				}
 			}
 		}
 	}
 	
+	private boolean isReducedByArmor(DamageCause c) {
+		return c == DamageCause.BLOCK_EXPLOSION || c == DamageCause.CONTACT
+				|| c == DamageCause.ENTITY_ATTACK || c == DamageCause.ENTITY_EXPLOSION
+				|| c == DamageCause.ENTITY_SWEEP_ATTACK || c == DamageCause.FALLING_BLOCK
+				|| c == DamageCause.FLY_INTO_WALL || c == DamageCause.HOT_FLOOR
+				|| c == DamageCause.LAVA || c == DamageCause.PROJECTILE;
+	}
+
 	private boolean decreaseCustomArmorDurability(ItemStack piece, int damage) {
 		if (CustomItem.isCustom(piece)) {
 			CustomItem custom = CustomItemsPlugin.getInstance().getSet().getItem(piece);
@@ -338,7 +353,7 @@ public class CustomItemsEventHandler implements Listener {
 				if (item.containsEnchantment(Enchantment.MENDING) && custom instanceof CustomTool) {
 					CustomTool tool = (CustomTool) custom;
 					long repaired = tool.increaseDurability(item, event.getAmount() * 2);
-					
+
 					// Let's assume the int range will not be exceeded with a single xp orb
 					int newXP = (int) (event.getAmount() - repaired / 2);
 					event.setAmount(newXP);
@@ -631,7 +646,8 @@ public class CustomItemsEventHandler implements Listener {
 								&& cursor.getType() == current.getType()
 								&& cursor.getDurability() == current.getDurability()) {
 							CustomItem custom = CustomItemsPlugin.getInstance().getSet().getItem(current);
-							if (custom != null && custom.canStack() && cursor.getAmount() + current.getAmount() <= custom.getMaxStacksize()) {
+							if (custom != null && custom.canStack()
+									&& cursor.getAmount() + current.getAmount() <= custom.getMaxStacksize()) {
 								Bukkit.getScheduler().scheduleSyncDelayedTask(CustomItemsPlugin.getInstance(), () -> {
 									ItemStack[] contents = event.getInventory().getContents();
 									for (int index = 1; index < contents.length; index++) {
@@ -667,8 +683,7 @@ public class CustomItemsEventHandler implements Listener {
 							player.closeInventory();
 						}
 					});
-				}
-				else if ((cursor == null || cursor.getType() == Material.AIR) && CustomItem.isCustom(current)) {
+				} else if ((cursor == null || cursor.getType() == Material.AIR) && CustomItem.isCustom(current)) {
 					AnvilInventory ai = (AnvilInventory) event.getInventory();
 					CustomItem custom = CustomItemsPlugin.getInstance().getSet().getItem(current);
 					ItemStack first = event.getInventory().getItem(0);
