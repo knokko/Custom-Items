@@ -42,10 +42,10 @@ public class TextureCreate extends GuiMenu {
 		addComponent(new TextButton("Back", EditProps.CANCEL_BASE, EditProps.CANCEL_HOVER, () -> {
 			state.getWindow().setMainComponent(menu.getTextureOverview());
 		}), 0.1f, 0.7f, 0.25f, 0.8f);
-		addComponent(new TextButton("Create simple texture", EditProps.BUTTON, EditProps.HOVER, () -> {
+		addComponent(new TextButton("Load simple texture", EditProps.BUTTON, EditProps.HOVER, () -> {
 			state.getWindow().setMainComponent(new TextureEdit(menu, null));
 		}), 0.5f, 0.6f, 0.75f, 0.7f);
-		addComponent(new TextButton("Create bow texture", EditProps.BUTTON, EditProps.HOVER, () -> {
+		addComponent(new TextButton("Load bow texture", EditProps.BUTTON, EditProps.HOVER, () -> {
 			state.getWindow().setMainComponent(new BowTextureEdit(menu, null));
 		}), 0.5f, 0.45f, 0.75f, 0.55f);
 	}
