@@ -722,7 +722,17 @@ public class ItemSet {
 						jsonWriter.println("{");
 						jsonWriter.println("    " + Q + "parent" + Q + ": " + Q + "item/handheld" + Q + ",");
 						jsonWriter.println("    " + Q + "textures" + Q + ": {");
-						jsonWriter.println("        " + Q + "layer0" + Q + ": " + Q + "items/" + textureName + Q);
+						jsonWriter.print("        " + Q + "layer0" + Q + ": " + Q + "items/" + textureName + Q);
+						boolean isLeatherArmor = entry.getKey() == CustomItemType.LEATHER_BOOTS ||
+								entry.getKey() == CustomItemType.LEATHER_LEGGINGS || entry.getKey() == CustomItemType.LEATHER_CHESTPLATE
+								|| entry.getKey() == CustomItemType.LEATHER_HELMET;
+						if (isLeatherArmor) {
+							jsonWriter.print(",");
+						}
+						jsonWriter.println();
+						if (isLeatherArmor) {
+							jsonWriter.print("        " + Q + "layer1" + Q + ": " + Q + "items/" + textureName + "_overlay" + Q);
+						}
 						jsonWriter.println("    },");
 						jsonWriter.println("    " + Q + "overrides" + Q + ": [");
 
