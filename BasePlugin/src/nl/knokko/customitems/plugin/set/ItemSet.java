@@ -262,7 +262,7 @@ public class ItemSet {
 		Ingredient repairItem = loadIngredient(input);
 		Color color;
 		if (itemType == CustomItemType.LEATHER_BOOTS || itemType == CustomItemType.LEATHER_LEGGINGS
-				|| itemType == CustomItemType.LEATHER_CHESTPLATE || itemType == CustomItemType.LEATHER_CHESTPLATE) {
+				|| itemType == CustomItemType.LEATHER_CHESTPLATE || itemType == CustomItemType.LEATHER_HELMET) {
 			color = Color.fromRGB(input.readByte() & 0xFF, input.readByte() & 0xFF, input.readByte() & 0xFF);
 		} else {
 			color = null;
