@@ -1268,7 +1268,7 @@ public class ItemSet {
 			if (item.getMaxStacksize() < 1 || item.getMaxStacksize() > 64)
 				return "The maximum stacksize (" + item.getMaxStacksize() + ") is out of range";
 		}
-		return addItem(item, true);
+		return addItem(item, false);
 	}
 	
 	public String changeSimpleItem(SimpleCustomItem item, CustomItemType newType, short newDamage, String newName,
