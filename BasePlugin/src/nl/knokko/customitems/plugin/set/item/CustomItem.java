@@ -63,7 +63,7 @@ public abstract class CustomItem extends nl.knokko.customitems.item.CustomItem {
     }
     
     public ItemStack create(int amount){
-        ItemStack item = new ItemStack(material, amount);
+        ItemStack item = ItemAttributes.setAttributes(ItemAttributes.clearAttributes(new ItemStack(material, amount)), attributeModifiers);
         ItemMeta meta = Bukkit.getItemFactory().getItemMeta(material);
         meta.setDisplayName(displayName);
         meta.setLore(Lists.newArrayList(lore));
@@ -74,7 +74,7 @@ public abstract class CustomItem extends nl.knokko.customitems.item.CustomItem {
         for (Enchantment enchantment : defaultEnchantments) {
         	item.addUnsafeEnchantment(org.bukkit.enchantments.Enchantment.getByName(enchantment.getType().name()), enchantment.getLevel());
         }
-        return ItemAttributes.setAttributes(ItemAttributes.clearAttributes(item), attributeModifiers);
+        return item;
     }
     
     public static short getDamage(ItemStack item) {

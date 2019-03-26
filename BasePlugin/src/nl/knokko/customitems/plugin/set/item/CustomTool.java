@@ -117,7 +117,7 @@ public class CustomTool extends CustomItem {
 	
 	public ItemStack create(int amount, long durability) {
 		if (amount != 1) throw new IllegalArgumentException("Amount must be 1, but is " + amount);
-		ItemStack item = new ItemStack(material, amount);
+		ItemStack item = ItemAttributes.setAttributes(ItemAttributes.clearAttributes(new ItemStack(material, amount)), attributeModifiers);
         ItemMeta meta = Bukkit.getItemFactory().getItemMeta(material);
         meta.setDisplayName(displayName);
         List<String> itemLore = new ArrayList<String>(lore.length + 2);
@@ -137,7 +137,7 @@ public class CustomTool extends CustomItem {
         for (Enchantment enchantment : defaultEnchantments) {
         	item.addUnsafeEnchantment(org.bukkit.enchantments.Enchantment.getByName(enchantment.getType().name()), enchantment.getLevel());
         }
-        return ItemAttributes.setAttributes(ItemAttributes.clearAttributes(item), attributeModifiers);
+        return item;
 	}
 	
 	@Override
