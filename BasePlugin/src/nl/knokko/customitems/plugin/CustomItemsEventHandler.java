@@ -65,6 +65,8 @@ import org.bukkit.inventory.CraftingInventory;
 import org.bukkit.inventory.EntityEquipment;
 import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.MerchantInventory;
+import org.bukkit.inventory.MerchantRecipe;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.inventory.meta.Repairable;
 import org.bukkit.metadata.MetadataValue;
@@ -271,7 +273,7 @@ public class CustomItemsEventHandler implements Listener {
 	public void onEntityDamage(EntityDamageEvent event) {
 		if (event.getEntity() instanceof Player) {
 			double original = event.getOriginalDamage(DamageModifier.BASE);
-			
+
 			// Only act if armor reduced the damage
 			if (isReducedByArmor(event.getCause())) {
 				int armorDamage = Math.max(1, (int) (original / 4));
@@ -291,12 +293,11 @@ public class CustomItemsEventHandler implements Listener {
 			}
 		}
 	}
-	
+
 	private boolean isReducedByArmor(DamageCause c) {
-		return c == DamageCause.BLOCK_EXPLOSION || c == DamageCause.CONTACT
-				|| c == DamageCause.ENTITY_ATTACK || c == DamageCause.ENTITY_EXPLOSION
-				|| c == DamageCause.ENTITY_SWEEP_ATTACK || c == DamageCause.FALLING_BLOCK
-				|| c == DamageCause.FLY_INTO_WALL || c == DamageCause.HOT_FLOOR
+		return c == DamageCause.BLOCK_EXPLOSION || c == DamageCause.CONTACT || c == DamageCause.ENTITY_ATTACK
+				|| c == DamageCause.ENTITY_EXPLOSION || c == DamageCause.ENTITY_SWEEP_ATTACK
+				|| c == DamageCause.FALLING_BLOCK || c == DamageCause.FLY_INTO_WALL || c == DamageCause.HOT_FLOOR
 				|| c == DamageCause.LAVA || c == DamageCause.PROJECTILE;
 	}
 
@@ -589,6 +590,109 @@ public class CustomItemsEventHandler implements Listener {
 		SlotType type = event.getSlotType();
 		InventoryAction action = event.getAction();
 		if (type == SlotType.RESULT) {
+			if (event.getInventory() instanceof MerchantInventory) {
+				MerchantInventory inv = (MerchantInventory) event.getInventory();
+				MerchantRecipe recipe = null;
+				try {
+					recipe = inv.getSelectedRecipe();
+				} catch (NullPointerException npe) {
+					// When the player hasn't inserted enough items, above method will
+					// throw a NullPointerException. If that happens, recipe will stay
+					// null and thus the next if block won't be executed.
+				}
+				if (recipe != null) {
+					if (event.getAction() != InventoryAction.NOTHING) {
+						ItemStack[] contents = inv.getContents();
+						List<ItemStack> ingredients = recipe.getIngredients();
+						int recipeAmount0 = ingredients.get(0).getAmount();
+						boolean hasSecondIngredient = ingredients.size() > 1 && ingredients.get(1) != null;
+						int recipeAmount1 = hasSecondIngredient ? ingredients.get(1).getAmount() : 0;
+						boolean overrule0 = CustomItem.isCustom(contents[0]) && contents[0].getAmount() > recipeAmount0;
+						boolean overrule1 = CustomItem.isCustom(contents[1]) && contents[1].getAmount() > recipeAmount1;
+						if (overrule0 || overrule1) {
+							
+							event.setCancelled(true);
+							if (event.isLeftClick()) {
+								// The default way of trading
+								if (event.getAction() == InventoryAction.PICKUP_ALL) {
+
+									// We will have to do this manually...
+									if (event.getCursor() == null || event.getCursor().getType() == Material.AIR) {
+										event.setCursor(recipe.getResult());
+									} else {
+										event.getCursor().setAmount(
+												event.getCursor().getAmount() + recipe.getResult().getAmount());
+									}
+									if (contents[0] != null && contents[0].getType() != Material.AIR) {
+										int newAmount = contents[0].getAmount() - recipeAmount0;
+										if (newAmount > 0) {
+											contents[0].setAmount(newAmount);
+										} else {
+											contents[0] = null;
+										}
+									}
+									if (contents[1] != null && contents[1].getType() != Material.AIR
+											&& ingredients.size() > 1 && ingredients.get(1) != null) {
+										int newAmount = contents[1].getAmount() - recipeAmount1;
+										if (newAmount > 0) {
+											contents[1].setAmount(newAmount);
+										} else {
+											contents[1] = null;
+										}
+									}
+									inv.setContents(contents);
+								}
+
+								// Using shift-click for trading
+								else if (event.getAction() == InventoryAction.MOVE_TO_OTHER_INVENTORY) {
+									
+									int trades = contents[0].getAmount() / recipeAmount0;
+									if (hasSecondIngredient) {
+										int trades2 = contents[1].getAmount() / recipeAmount1;
+										if (trades2 < trades) {
+											trades = trades2;
+										}
+									}
+									
+									{
+										int newAmount = contents[0].getAmount() - trades * recipeAmount0;
+										if (newAmount > 0) {
+											contents[0].setAmount(newAmount);
+										} else {
+											contents[0] = null;
+										}
+									}
+									if (hasSecondIngredient) {
+										int newAmount = contents[1].getAmount() - trades * recipeAmount1;
+										if (newAmount > 0) {
+											contents[1].setAmount(newAmount);
+										} else {
+											contents[1] = null;
+										}
+									}
+									
+									ItemStack result = recipe.getResult();
+									for (int counter = 0; counter < trades; counter++) {
+										event.getWhoClicked().getInventory().addItem(result);
+									}
+									
+									inv.setContents(contents);
+								}
+
+								// If I forgot a case, it will go in here. Cancel it to prevent dangerous
+								// glitches
+								else {
+									event.setCancelled(true);
+								}
+							} else {
+
+								// I will only allow left click trading
+								event.setCancelled(true);
+							}
+						}
+					}
+				}
+			}
 			if (event.getInventory() instanceof CraftingInventory) {
 				if (shouldInterfere.getOrDefault(event.getWhoClicked().getUniqueId(), false)) {
 					if (action == InventoryAction.PICKUP_ALL) {
