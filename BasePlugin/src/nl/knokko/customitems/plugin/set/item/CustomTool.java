@@ -26,7 +26,6 @@ package nl.knokko.customitems.plugin.set.item;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.bukkit.Bukkit;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
@@ -117,8 +116,8 @@ public class CustomTool extends CustomItem {
 	
 	public ItemStack create(int amount, long durability) {
 		if (amount != 1) throw new IllegalArgumentException("Amount must be 1, but is " + amount);
-		ItemStack item = ItemAttributes.setAttributes(ItemAttributes.clearAttributes(new ItemStack(material, amount)), attributeModifiers);
-        ItemMeta meta = Bukkit.getItemFactory().getItemMeta(material);
+		ItemStack item = ItemAttributes.createWithAttributes(material, amount, attributeModifiers);
+        ItemMeta meta = item.getItemMeta();
         meta.setDisplayName(displayName);
         List<String> itemLore = new ArrayList<String>(lore.length + 2);
         if (maxDurability == nl.knokko.customitems.item.CustomItem.UNBREAKABLE_TOOL_DURABILITY) {

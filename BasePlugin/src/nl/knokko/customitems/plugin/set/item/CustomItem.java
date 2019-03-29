@@ -31,7 +31,6 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
-import org.bukkit.Bukkit;
 
 import com.google.common.collect.Lists;
 
@@ -63,8 +62,8 @@ public abstract class CustomItem extends nl.knokko.customitems.item.CustomItem {
     }
     
     public ItemStack create(int amount){
-        ItemStack item = ItemAttributes.setAttributes(ItemAttributes.clearAttributes(new ItemStack(material, amount)), attributeModifiers);
-        ItemMeta meta = Bukkit.getItemFactory().getItemMeta(material);
+    	ItemStack item = ItemAttributes.createWithAttributes(material, amount, attributeModifiers);
+        ItemMeta meta = item.getItemMeta();
         meta.setDisplayName(displayName);
         meta.setLore(Lists.newArrayList(lore));
         meta.setUnbreakable(true);
