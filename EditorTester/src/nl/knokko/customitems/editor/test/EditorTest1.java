@@ -13,7 +13,8 @@ public class EditorTest1 implements GuiTestProgram {
 
 	@Override
 	public void test(GuiTestHelper test) {
-		new MainMenuTest().test(test);
+		new ExploreMainMenuTest().test(test);
 		new CreateItemSetTest("automatic_test").test(test);
+		new ExploreEditMenuTest().test(test);
 	}
 }
