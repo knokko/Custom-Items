@@ -36,6 +36,7 @@ import nl.knokko.gui.color.GuiColor;
 import nl.knokko.gui.color.SimpleGuiColor;
 import nl.knokko.gui.component.menu.GuiMenu;
 import nl.knokko.gui.component.text.TextButton;
+import nl.knokko.gui.component.text.dynamic.DynamicTextButton;
 import nl.knokko.gui.util.TextBuilder.Properties;
 import nl.knokko.util.bits.BitInput;
 import nl.knokko.util.bits.ByteArrayBitInput;
@@ -138,7 +139,7 @@ public class LoadMenu extends GuiMenu {
 						}
 					}
 					String finalSetName = setName;
-					addComponent(new TextButton(displayName, BUTTON_PROPERTIES, HOVER_PROPERTIES, () -> {
+					addComponent(new DynamicTextButton(displayName, BUTTON_PROPERTIES, HOVER_PROPERTIES, () -> {
 						try {
 							BitInput input = ByteArrayBitInput.fromFile(file);
 							ItemSet set = new ItemSet(finalSetName, input);
