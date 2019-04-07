@@ -43,6 +43,14 @@ public class Editor {
 	public static GuiWindow getWindow() {
 		return window;
 	}
+	
+	/**
+	 * This method is made for the Editor tester
+	 * @param window The testing window instance
+	 */
+	public static void setWindow(GuiWindow window) {
+		Editor.window = window;
+	}
 
 	public static void main(String[] args) {
 		FOLDER.mkdirs();
