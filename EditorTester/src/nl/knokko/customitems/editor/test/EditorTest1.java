@@ -16,5 +16,6 @@ public class EditorTest1 implements GuiTestProgram {
 		new ExploreMainMenuTest().test(test);
 		new CreateItemSetTest("automatic_test").test(test);
 		new ExploreEditMenuTest().test(test);
+		new CreateBowTextureTest1().test(test);
 	}
 }
