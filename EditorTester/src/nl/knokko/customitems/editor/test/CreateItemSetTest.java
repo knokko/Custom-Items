@@ -39,23 +39,18 @@ public class CreateItemSetTest implements GuiTestProgram {
 		}
 		
 		test.click("New item set");
-		
+		test.clickNearest("", test.getComponentWithText("Create"), 0, 2);
 		test.setDelayTime(20);
-		test.clickNearest("", test.getComponentWithText("Create"), 0);
 		
 		test.type(name + "full");
+		test.setDelayTime(50);
 		test.click("Create");
 		
-		// Give the error message some time to appear
-		test.delay(100);
 		test.click(name + "full");
 		test.pressAndRelease(KeyEvent.VK_BACK_SPACE, 4);
 		
-		// Give the app some time to let the text appear
-		test.delay(100);
 		test.assertComponentWithText(name);
 		test.click("Create");
-		test.delay(100);
 		test.assertComponentWithText("Save and quit");
 	}
 }

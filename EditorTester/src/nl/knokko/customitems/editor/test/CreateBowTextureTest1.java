@@ -67,9 +67,7 @@ public class CreateBowTextureTest1 implements GuiTestProgram {
 			throw new TestException("Couldn't write necessary images for bow texture test 1:", ioex);
 		}
 		
-		// The next operations are a little slower
-		test.setDelayTime(200);
-		test.clickNearest("Edit...", test.getComponentWithText("Base texture: "), 0);
+		test.clickNearest("Edit...", test.getComponentWithText("Base texture: "), 0, 4);
 		//test.click("Go up");
 		
 		test.click("autotest0.png");
@@ -77,7 +75,7 @@ public class CreateBowTextureTest1 implements GuiTestProgram {
 		test.assertComponentWithText("The width (16) of this image should be equal to the height (15)");
 		test.click("Create");
 		test.assertComponentWithText("You need to give this bow a base texture.");
-		test.clickNearest("Edit...", test.getComponentWithText("Base texture: "), 0);
+		test.clickNearest("Edit...", test.getComponentWithText("Base texture: "), 0, 4);
 		test.click("autotest1.png");
 		test.click("Select");
 		test.click("Create");
@@ -85,13 +83,24 @@ public class CreateBowTextureTest1 implements GuiTestProgram {
 		test.click("");
 		test.setDelayTime(20);
 		test.type("test_bow1");
-		test.setDelayTime(100);
+		test.setDelayTime(50);
 		test.click("Create");
 		test.assertComponentWithText("The _ character is the only special character that is allowed in names.");
+		test.click("test_bow1");
 		test.pressAndRelease(KeyEvent.VK_BACK_SPACE);
 		test.setDelayTime(20);
 		test.type("_first");
-		test.setDelayTime(100);
+		test.setDelayTime(50);
 		test.click("Create");
+		test.assertComponentWithText("Pull 0.0 doesn't have a texture");
+		test.clickNearest("Edit...", test.getComponentWithText("0.0"), 0, 4);
+		test.click("autotest0.png");
+		test.click("Select");
+		test.assertComponentWithText("The width (16) of this image should be equal to the height (15)");
+		test.clickNearest("Edit...", test.getComponentWithText("0.0"), 0, 4);
+		test.click("autotest1.png");
+		test.click("Select");
+		test.click("Create");
+		test.assertComponentWithText("Pull 0.65 doesn't have a texture");
 	}
 }

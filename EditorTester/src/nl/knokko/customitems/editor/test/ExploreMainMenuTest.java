@@ -17,20 +17,14 @@ public class ExploreMainMenuTest implements GuiTestProgram {
 		test.assertComponentsWithTexts("Edit item set", "Exit editor");
 		test.click("New item set");
 		
-		// This is the first time we open this menu, so a small delay is allowed
-		test.delay(50);
 		test.assertComponentsWithTexts("", "Create");
 		test.click("Cancel");
 		test.assertComponentsWithTexts("New item set", "Exit editor");
 		test.click("Edit item set");
 		
-		// Sometimes, this takes a little longer for some reason
-		test.delay(100);
 		test.assertComponentWithText("Refresh");
 		test.click("Load back-up");
 		
-		// This can have some delay as well
-		test.delay(100);
 		test.assertComponentWithText("Refresh");
 		test.click("Back");
 		test.assertComponentWithText("Refresh");

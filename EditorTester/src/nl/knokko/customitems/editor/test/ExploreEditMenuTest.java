@@ -14,7 +14,7 @@ public class ExploreEditMenuTest implements GuiTestProgram {
 
 	@Override
 	public void test(GuiTestHelper test) {
-		test.setDelayTime(100);
+		test.setDelayTime(50);
 
 		// Edit menu buttons
 		test.assertComponentsWithTexts("Quit", "Save", "Save and quit", "Export", "Textures", "Items", "Recipes");
