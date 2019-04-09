@@ -22,6 +22,7 @@ import nl.knokko.gui.testing.TestException;
 public class CreateBowTextureTest1 implements GuiTestProgram {
 	
 	private static final BufferedImage BAD_SIZED_IMAGE = new BufferedImage(16, 15, BufferedImage.TYPE_INT_ARGB);
+	private static final BufferedImage BAD_SIZED_IMAGE2 = new BufferedImage(30, 30, BufferedImage.TYPE_INT_ARGB);
 	private static final BufferedImage IMAGE1 = new BufferedImage(32, 32, BufferedImage.TYPE_INT_ARGB);
 	private static final BufferedImage IMAGE2 = new BufferedImage(16, 16, BufferedImage.TYPE_INT_ARGB);
 	private static final BufferedImage IMAGE3 = new BufferedImage(64, 64, BufferedImage.TYPE_INT_ARGB);
@@ -59,6 +60,7 @@ public class CreateBowTextureTest1 implements GuiTestProgram {
 		try {
 			File folder = new File(".").getAbsoluteFile().getParentFile();
 			ImageIO.write(BAD_SIZED_IMAGE, "PNG", new File(folder + "/autotest0.png"));
+			ImageIO.write(BAD_SIZED_IMAGE2, "PNG", new File(folder + "/autotest00.png"));
 			ImageIO.write(IMAGE1, "PNG", new File(folder + "/autotest1.png"));
 			ImageIO.write(IMAGE2, "PNG", new File(folder + "/autotest2.png"));
 			ImageIO.write(IMAGE3, "PNG", new File(folder + "/autotest3.png"));
@@ -68,14 +70,12 @@ public class CreateBowTextureTest1 implements GuiTestProgram {
 		}
 		
 		test.clickNearest("Edit...", test.getComponentWithText("Base texture: "), 0, 4);
-		//test.click("Go up");
-		
 		test.click("autotest0.png");
 		test.click("Select");
 		test.assertComponentWithText("The width (16) of this image should be equal to the height (15)");
 		test.click("Create");
 		test.assertComponentWithText("You need to give this bow a base texture.");
-		test.clickNearest("Edit...", test.getComponentWithText("Base texture: "), 0, 4);
+		test.clickNearest("Edit...", "Base texture: ", 4);
 		test.click("autotest1.png");
 		test.click("Select");
 		test.click("Create");
@@ -93,14 +93,39 @@ public class CreateBowTextureTest1 implements GuiTestProgram {
 		test.setDelayTime(50);
 		test.click("Create");
 		test.assertComponentWithText("Pull 0.0 doesn't have a texture");
-		test.clickNearest("Edit...", test.getComponentWithText("0.0"), 0, 4);
+		test.clickNearest("Edit...", "0.0", 4);
 		test.click("autotest0.png");
 		test.click("Select");
 		test.assertComponentWithText("The width (16) of this image should be equal to the height (15)");
-		test.clickNearest("Edit...", test.getComponentWithText("0.0"), 0, 4);
+		test.clickNearest("Edit...", "0.0", 4);
 		test.click("autotest1.png");
 		test.click("Select");
 		test.click("Create");
 		test.assertComponentWithText("Pull 0.65 doesn't have a texture");
+		test.clickNearest("Edit...", "0.65", 4);
+		test.click("autotest00.png");
+		test.click("Select");
+		test.assertComponentWithText("The width and height (30) should be a power of 2");
+		test.clickNearest("Edit...", "0.65", 4);
+		test.click("autotest2.png");
+		test.click("Select");
+		test.click("0.65");
+		test.pressAndRelease(KeyEvent.VK_BACK_SPACE, 2);
+		test.type("45");
+		test.click("0.9");
+		test.pressAndRelease(KeyEvent.VK_BACK_SPACE);
+		test.type('6');
+		test.clickNearest("Edit...", "0.6", 4);
+		test.click("autotest3.png");
+		test.click("Select");
+		test.click("Add pull");
+		test.click("0.3");
+		test.pressAndRelease(KeyEvent.VK_BACK_SPACE);
+		test.type("95");
+		test.clickNearest("Edit...", "0.95", 5);
+		test.click("autotest4.png");
+		test.click("Select");
+		test.click("Create");
+		test.assertComponentWithText("Ehm...");
 	}
 }
