@@ -13,9 +13,11 @@ public class EditorTest1 implements GuiTestProgram {
 
 	@Override
 	public void test(GuiTestHelper test) {
+		test.setDelayTime(12);
 		new ExploreMainMenuTest().test(test);
 		new CreateItemSetTest("automatic_test").test(test);
 		new ExploreEditMenuTest().test(test);
 		new CreateBowTextureTest1().test(test);
+		new CreateSimpleTextureTest1().test(test);
 	}
 }

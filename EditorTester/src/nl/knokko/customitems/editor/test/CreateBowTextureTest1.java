@@ -8,7 +8,8 @@ import nl.knokko.gui.testing.GuiTestProgram;
 
 /**
  * The first test for creating bows. Another less advanced test will be run after the item set has been
- * saved and load once. This test should be run from the edit menu.
+ * saved and load once. This test should be run from the edit menu. This test will stop at the texture
+ * overview.
  * @author knokko
  *
  */
@@ -16,8 +17,6 @@ public class CreateBowTextureTest1 implements GuiTestProgram {
 
 	@Override
 	public void test(GuiTestHelper test) {
-		test.setDelayTime(50);
-		
 		test.click("Textures");
 		test.click("Load texture");
 		test.click("Load bow texture");
@@ -44,16 +43,12 @@ public class CreateBowTextureTest1 implements GuiTestProgram {
 		test.click("Create");
 		test.assertComponentWithText("You can't leave the name empty.");
 		test.click("");
-		test.setDelayTime(20);
 		test.type("test_bow1");
-		test.setDelayTime(50);
 		test.click("Create");
 		test.assertComponentWithText("The _ character is the only special character that is allowed in names.");
 		test.click("test_bow1");
 		test.pressAndRelease(KeyEvent.VK_BACK_SPACE);
-		test.setDelayTime(20);
 		test.type("_first");
-		test.setDelayTime(50);
 		test.click("Create");
 		test.assertComponentWithText("Pull 0.0 doesn't have a texture");
 		test.clickNearest("Edit...", "0.0", 4);
@@ -93,6 +88,22 @@ public class CreateBowTextureTest1 implements GuiTestProgram {
 		test.click("Select");
 		test.assertNearestImage("0.95", image4, 9);
 		test.click("Create");
-		test.assertComponentWithText("Ehm...");
+		test.assertComponentsWithTexts("Back", "Load texture", "test_bow_first", "Edit", "Delete");
+		test.click("Edit");
+		test.assertComponentsWithTexts("Cancel", "Apply", "Add pull", "Name: ", "Base texture: ", "Edit...",
+				"test_bow_first", "0.0", "0.45", "0.6", "0.95");
+		test.assertNearestImage("Base texture: ", image1, 9);
+		test.assertNearestImage("0.0", image1, 9);
+		test.assertNearestImage("0.45", image2, 9);
+		test.assertNearestImage("0.6", image3, 9);
+		test.assertNearestImage("0.95", image4, 9);
+		test.click("0.45");
+		test.pressAndRelease(KeyEvent.VK_BACK_SPACE, 2);
+		test.type("35");
+		test.assertComponentWithText("0.35");
+		test.click("Apply");
+		test.click("Edit");
+		test.assertComponentWithText("0.35");
+		test.click("Cancel");
 	}
 }

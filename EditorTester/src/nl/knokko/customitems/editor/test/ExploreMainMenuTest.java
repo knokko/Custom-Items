@@ -13,7 +13,6 @@ public class ExploreMainMenuTest implements GuiTestProgram {
 
 	@Override
 	public void test(GuiTestHelper test) {
-		test.setDelayTime(50);
 		test.assertComponentsWithTexts("Edit item set", "Exit editor");
 		test.click("New item set");
 		

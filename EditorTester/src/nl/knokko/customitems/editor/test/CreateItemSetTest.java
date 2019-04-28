@@ -25,7 +25,6 @@ public class CreateItemSetTest implements GuiTestProgram {
 
 	@Override
 	public void test(GuiTestHelper test) {
-		test.setDelayTime(50);
 		
 		// If the file already exists, delete it!
 		File maybe = new File(Editor.getFolder() + "/" + name + ".cisb");
@@ -40,10 +39,8 @@ public class CreateItemSetTest implements GuiTestProgram {
 		
 		test.click("New item set");
 		test.clickNearest("", test.getComponentWithText("Create"), 0, 2);
-		test.setDelayTime(20);
 		
 		test.type(name + "full");
-		test.setDelayTime(50);
 		test.click("Create");
 		
 		test.click(name + "full");
