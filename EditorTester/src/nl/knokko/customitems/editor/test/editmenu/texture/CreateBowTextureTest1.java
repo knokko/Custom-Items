@@ -1,4 +1,4 @@
-package nl.knokko.customitems.editor.test;
+package nl.knokko.customitems.editor.test.editmenu.texture;
 
 import java.awt.event.KeyEvent;
 import java.awt.image.BufferedImage;

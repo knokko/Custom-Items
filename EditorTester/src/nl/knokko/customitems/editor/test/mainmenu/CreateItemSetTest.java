@@ -1,4 +1,4 @@
-package nl.knokko.customitems.editor.test;
+package nl.knokko.customitems.editor.test.mainmenu;
 
 import java.awt.event.KeyEvent;
 import java.io.File;

@@ -1,4 +1,4 @@
-package nl.knokko.customitems.editor.test;
+package nl.knokko.customitems.editor.test.editmenu;
 
 import nl.knokko.gui.testing.GuiTestHelper;
 import nl.knokko.gui.testing.GuiTestProgram;

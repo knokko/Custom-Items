@@ -327,7 +327,8 @@ public class ItemSet {
 		items[index] = item;
 		Short2ObjectMap<CustomItem> map = customItemMap.get(item.getMaterial());
 		if (map == null) {
-			map = new org.bukkit.craftbukkit.libs.it.unimi.dsi.fastutil.shorts.Short2ObjectAVLTreeMap<>();
+			//map = new org.bukkit.craftbukkit.libs.it.unimi.dsi.fastutil.shorts.Short2ObjectAVLTreeMap<>();
+			map = new org.bukkit.craftbukkit.libs.it.unimi.dsi.fastutil.shorts.Short2ObjectOpenHashMap<>();
 			customItemMap.put(item.getMaterial(), map);
 		}
 		map.put(item.getItemDamage(), item);
