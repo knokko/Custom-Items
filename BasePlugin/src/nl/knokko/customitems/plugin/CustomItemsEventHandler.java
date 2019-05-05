@@ -445,95 +445,100 @@ public class CustomItemsEventHandler implements Listener {
 						} else {
 							event.setResult(null);
 						}
-					} else if (contents[1] != null && contents[1].getType() == Material.ENCHANTED_BOOK) {
-						/*
-						 * Ehm... yes... I kinda forgot this works fine automatically before writing
-						 * this...
-						 * 
-						 * ItemMeta meta2 = contents[1].getItemMeta(); ItemStack result =
-						 * contents[0].clone(); if (meta2 instanceof EnchantmentStorageMeta) {
-						 * EnchantmentStorageMeta esm = (EnchantmentStorageMeta) meta2; int levelCost =
-						 * 2; Set<Entry<Enchantment,Integer>> entrySet =
-						 * esm.getStoredEnchants().entrySet(); for (Entry<Enchantment,Integer> entry :
-						 * entrySet) { if (entry.getKey().canEnchantItem(result)) { try {
-						 * result.addEnchantment(entry.getKey(), entry.getValue()); levelCost +=
-						 * entry.getValue() * getBookEnchantFactor(entry.getKey()); } catch
-						 * (IllegalArgumentException illegal) { // The rules from the wiki levelCost++;
-						 * } // Only add enchantments that can be added } } int repairCount1 = 0; int
-						 * repairCount2 = 0; ItemMeta meta1 = contents[0].getItemMeta(); if (meta1
-						 * instanceof Repairable) { Repairable repairable = (Repairable) meta1;
-						 * System.out.println("repairable1: " + repairable.getRepairCost());
-						 * repairCount1 = repairable.getRepairCost(); levelCost += Math.pow(2,
-						 * repairCount1) - 1; } if (meta2 instanceof Repairable) { Repairable repairable
-						 * = (Repairable) meta2; System.out.println("repairable2: " +
-						 * repairable.getRepairCost()); repairCount2 = repairable.getRepairCost();
-						 * levelCost += Math.pow(2, repairCount2) - 1; } if
-						 * (!event.getInventory().getRenameText().isEmpty()) { ItemMeta meta =
-						 * result.getItemMeta();
-						 * meta.setDisplayName(event.getInventory().getRenameText());
-						 * result.setItemMeta(meta); levelCost++; } ItemMeta resultMeta =
-						 * result.getItemMeta(); ((Repairable)
-						 * resultMeta).setRepairCost(Math.max(repairCount1, repairCount2) + 1);
-						 * result.setItemMeta(resultMeta); event.setResult(result); int finalLevelCost =
-						 * levelCost;
-						 * Bukkit.getScheduler().scheduleSyncDelayedTask(CustomItemsPlugin.getInstance()
-						 * , () -> { // Apparently, settings the repair cost during the event has no
-						 * effect event.getInventory().setRepairCost(finalLevelCost); }); } else {
-						 * event.setResult(null); }
-						 */
-					} else if (contents[1] != null && contents[1].getType() != Material.AIR
-							&& tool.getRepairItem().accept(contents[1])) {
-						long durability = tool.getDurability(contents[0]);
-						long maxDurability = tool.getMaxDurability();
-						long neededDurability = maxDurability - durability;
-						if (neededDurability > 0) {
-							int neededAmount = (int) Math.ceil(neededDurability * 4.0 / maxDurability);
-							int usedAmount = Math.min(neededAmount, contents[1].getAmount());
-							long resultDurability = Math.min(durability + tool.getMaxDurability() * usedAmount / 4,
-									tool.getMaxDurability());
-							ItemStack result = tool.create(1, resultDurability);
-							result.addUnsafeEnchantments(contents[0].getEnchantments());
-							int levelCost = usedAmount;
-							if (!renameText.isEmpty() && !renameText.equals(oldName)) {
-								levelCost++;
-								ItemMeta meta = result.getItemMeta();
-								meta.setDisplayName(event.getInventory().getRenameText());
-								result.setItemMeta(meta);
+					} else if (contents[1] != null && contents[1].getType() != Material.AIR) {
+						if (contents[1].getType() == Material.ENCHANTED_BOOK) {
+							/*
+							 * Ehm... yes... I kinda forgot this works fine automatically before writing
+							 * this...
+							 * 
+							 * ItemMeta meta2 = contents[1].getItemMeta(); ItemStack result =
+							 * contents[0].clone(); if (meta2 instanceof EnchantmentStorageMeta) {
+							 * EnchantmentStorageMeta esm = (EnchantmentStorageMeta) meta2; int levelCost =
+							 * 2; Set<Entry<Enchantment,Integer>> entrySet =
+							 * esm.getStoredEnchants().entrySet(); for (Entry<Enchantment,Integer> entry :
+							 * entrySet) { if (entry.getKey().canEnchantItem(result)) { try {
+							 * result.addEnchantment(entry.getKey(), entry.getValue()); levelCost +=
+							 * entry.getValue() * getBookEnchantFactor(entry.getKey()); } catch
+							 * (IllegalArgumentException illegal) { // The rules from the wiki levelCost++;
+							 * } // Only add enchantments that can be added } } int repairCount1 = 0; int
+							 * repairCount2 = 0; ItemMeta meta1 = contents[0].getItemMeta(); if (meta1
+							 * instanceof Repairable) { Repairable repairable = (Repairable) meta1;
+							 * System.out.println("repairable1: " + repairable.getRepairCost());
+							 * repairCount1 = repairable.getRepairCost(); levelCost += Math.pow(2,
+							 * repairCount1) - 1; } if (meta2 instanceof Repairable) { Repairable repairable
+							 * = (Repairable) meta2; System.out.println("repairable2: " +
+							 * repairable.getRepairCost()); repairCount2 = repairable.getRepairCost();
+							 * levelCost += Math.pow(2, repairCount2) - 1; } if
+							 * (!event.getInventory().getRenameText().isEmpty()) { ItemMeta meta =
+							 * result.getItemMeta();
+							 * meta.setDisplayName(event.getInventory().getRenameText());
+							 * result.setItemMeta(meta); levelCost++; } ItemMeta resultMeta =
+							 * result.getItemMeta(); ((Repairable)
+							 * resultMeta).setRepairCost(Math.max(repairCount1, repairCount2) + 1);
+							 * result.setItemMeta(resultMeta); event.setResult(result); int finalLevelCost =
+							 * levelCost;
+							 * Bukkit.getScheduler().scheduleSyncDelayedTask(CustomItemsPlugin.getInstance()
+							 * , () -> { // Apparently, settings the repair cost during the event has no
+							 * effect event.getInventory().setRepairCost(finalLevelCost); }); } else {
+							 * event.setResult(null); }
+							 */
+						} else if (tool.getRepairItem().accept(contents[1])) {
+							long durability = tool.getDurability(contents[0]);
+							long maxDurability = tool.getMaxDurability();
+							long neededDurability = maxDurability - durability;
+							if (neededDurability > 0) {
+								int neededAmount = (int) Math.ceil(neededDurability * 4.0 / maxDurability);
+								int usedAmount = Math.min(neededAmount, contents[1].getAmount());
+								long resultDurability = Math.min(durability + tool.getMaxDurability() * usedAmount / 4,
+										tool.getMaxDurability());
+								ItemStack result = tool.create(1, resultDurability);
+								result.addUnsafeEnchantments(contents[0].getEnchantments());
+								int levelCost = usedAmount;
+								if (!renameText.isEmpty() && !renameText.equals(oldName)) {
+									levelCost++;
+									ItemMeta meta = result.getItemMeta();
+									meta.setDisplayName(event.getInventory().getRenameText());
+									result.setItemMeta(meta);
+								} else {
+									ItemMeta meta = result.getItemMeta();
+									meta.setDisplayName(oldName);
+									result.setItemMeta(meta);
+								}
+								int repairCost = 0;
+								ItemMeta meta1 = contents[0].getItemMeta();
+								if (meta1 instanceof Repairable) {
+									Repairable repairable = (Repairable) meta1;
+									repairCost = repairable.getRepairCost();
+									levelCost += repairCost;
+								}
+								ItemMeta resultMeta = result.getItemMeta();
+								int repairCount = (int) Math.round(Math.log(repairCost + 1) / Math.log(2));
+								// TODO repair cost becomes invisible after no change?
+								((Repairable) resultMeta).setRepairCost((int) Math.round(Math.pow(2, repairCount + 1) - 1));
+								result.setItemMeta(resultMeta);
+								event.setResult(result);
+								int finalLevelCost = levelCost;
+								Bukkit.getScheduler().scheduleSyncDelayedTask(CustomItemsPlugin.getInstance(), () -> {
+									// Apparently, settings the repair cost during the event has no effect
+									event.getInventory().setRepairCost(finalLevelCost);
+									/*
+									 * if (finalLevelCost == event.getInventory().getRepairCost()) {
+									 * System.out.println("Force level cost update");
+									 * Bukkit.getScheduler().scheduleSyncDelayedTask(CustomItemsPlugin.getInstance()
+									 * , () -> { event.getInventory().setItem(0, event.getInventory().getItem(0));
+									 * }); }
+									 */
+								});
 							} else {
-								ItemMeta meta = result.getItemMeta();
-								meta.setDisplayName(oldName);
-								result.setItemMeta(meta);
+								event.setResult(null);
 							}
-							int repairCost = 0;
-							ItemMeta meta1 = contents[0].getItemMeta();
-							if (meta1 instanceof Repairable) {
-								Repairable repairable = (Repairable) meta1;
-								repairCost = repairable.getRepairCost();
-								levelCost += repairCost;
-							}
-							ItemMeta resultMeta = result.getItemMeta();
-							int repairCount = (int) Math.round(Math.log(repairCost + 1) / Math.log(2));
-							// TODO repair cost becomes invisible after no change?
-							((Repairable) resultMeta).setRepairCost((int) Math.round(Math.pow(2, repairCount + 1) - 1));
-							result.setItemMeta(resultMeta);
-							event.setResult(result);
-							int finalLevelCost = levelCost;
-							Bukkit.getScheduler().scheduleSyncDelayedTask(CustomItemsPlugin.getInstance(), () -> {
-								// Apparently, settings the repair cost during the event has no effect
-								event.getInventory().setRepairCost(finalLevelCost);
-								/*
-								 * if (finalLevelCost == event.getInventory().getRepairCost()) {
-								 * System.out.println("Force level cost update");
-								 * Bukkit.getScheduler().scheduleSyncDelayedTask(CustomItemsPlugin.getInstance()
-								 * , () -> { event.getInventory().setItem(0, event.getInventory().getItem(0));
-								 * }); }
-								 */
-							});
 						} else {
 							event.setResult(null);
 						}
 					} else {
-						event.setResult(null);
+						// This else block is for the case where the first slot is a custom item and the
+						// second slot is empty, so eventually for renaming.
+						// This else block is empty because minecraft itself takes care of it.
 					}
 				} else {
 					event.setResult(null);
