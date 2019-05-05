@@ -91,7 +91,7 @@ public class EditMenu extends GuiMenu {
 				errorComponent.setText(error);
 			else
 				state.getWindow().setMainComponent(MainMenu.INSTANCE);
-		}), 0.1f, 0.25f, 0.35f, 0.35f);
+		}), 0.1f, 0.28f, 0.35f, 0.38f);
 		addComponent(new TextButton("Export", EditProps.SAVE_BASE, EditProps.SAVE_HOVER, () -> {
 			String error = set.save();
 			if(error != null)
@@ -103,7 +103,19 @@ public class EditMenu extends GuiMenu {
 				else
 					state.getWindow().setMainComponent(MainMenu.INSTANCE);
 			}
-		}), 0.1f, 0.05f, 0.25f, 0.15f);
+		}), 0.1f, 0.15f, 0.25f, 0.25f);
+		addComponent(new TextButton("Export for 1.14", EditProps.SAVE_BASE, EditProps.SAVE_HOVER, () -> {
+			String error = set.save();
+			if(error != null)
+				errorComponent.setText(error);
+			else {
+				error = set.export1_14();
+				if(error != null)
+					errorComponent.setText(error);
+				else
+					state.getWindow().setMainComponent(MainMenu.INSTANCE);
+			}
+		}), 0.1f, 0.02f, 0.35f, 0.12f);
 		addComponent(new TextButton("Textures", EditProps.BUTTON, EditProps.HOVER, () -> {
 			state.getWindow().setMainComponent(textureOverview);
 		}), 0.6f, 0.75f, 0.8f, 0.85f);

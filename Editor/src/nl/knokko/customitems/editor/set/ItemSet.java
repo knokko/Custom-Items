@@ -531,6 +531,258 @@ public class ItemSet {
 	 * it's annoying to get that character inside a String
 	 */
 	private static final String Q = "" + '"';
+	
+	/**
+	 * Experimental feature to export the resourcepack for minecraft 1.14 instead of minecraft 1.12
+	 * @return
+	 */
+	public String export1_14() {
+		try {
+			File file = new File(Editor.getFolder() + "/" + fileName + ".cis");// cis stands for Custom Item Set
+			OutputStream fileOutput = Files.newOutputStream(file.toPath());
+			ByteArrayBitOutput output = new ByteArrayBitOutput();
+			export1(output);
+			output.terminate();
+			fileOutput.write(output.getBytes());
+			fileOutput.flush();
+			fileOutput.close();
+			ZipOutputStream zipOutput = new ZipOutputStream(
+					new FileOutputStream(new File(Editor.getFolder() + "/" + fileName + ".zip")));
+
+			// Custom textures
+			for (NamedImage texture : textures) {
+				String textureName = texture.getName();
+				if (texture instanceof BowTextures) {
+					textureName += "_standby";
+					BowTextures bt = (BowTextures) texture;
+					List<BowTextures.Entry> pullTextures = bt.getPullTextures();
+					int index = 0;
+					for (BowTextures.Entry pullTexture : pullTextures) {
+						ZipEntry entry = new ZipEntry("assets/minecraft/textures/customitems/" + bt.getName()
+								+ "_pulling_" + index++ + ".png");
+						zipOutput.putNextEntry(entry);
+						ImageIO.write(pullTexture.getTexture(), "PNG", new MemoryCacheImageOutputStream(zipOutput));
+						zipOutput.closeEntry();
+					}
+				}
+				ZipEntry entry = new ZipEntry("assets/minecraft/textures/customitems/" + textureName + ".png");
+				zipOutput.putNextEntry(entry);
+				ImageIO.write(texture.getImage(), "PNG", new MemoryCacheImageOutputStream(zipOutput));
+				zipOutput.closeEntry();
+			}
+
+			// Custom item models
+			for (CustomItem item : items) {
+				ZipEntry entry = new ZipEntry("assets/minecraft/models/customitems/" + item.getName() + ".json");
+				zipOutput.putNextEntry(entry);
+				PrintWriter jsonWriter = new PrintWriter(zipOutput);
+				if (item instanceof CustomBow) {
+					jsonWriter.println("{");
+					jsonWriter.println("    " + Q + "parent" + Q + ": " + Q + "item/bow" + Q + ",");
+					jsonWriter.println("    " + Q + "textures" + Q + ": {");
+					jsonWriter.println("        " + Q + "layer0" + Q + ": " + Q + "customitems/"
+							+ item.getTexture().getName() + "_standby" + Q);
+					jsonWriter.println("    }");
+					jsonWriter.println("}");
+				} else {
+					jsonWriter.println("{");
+					jsonWriter.println("    " + Q + "parent" + Q + ": " + Q + "item/handheld" + Q + ",");
+					jsonWriter.println("    " + Q + "textures" + Q + ": {");
+					jsonWriter.println("        " + Q + "layer0" + Q + ": " + Q + "customitems/"
+							+ item.getTexture().getName() + Q);
+					jsonWriter.println("    }");
+					jsonWriter.println("}");
+				}
+				jsonWriter.flush();
+				zipOutput.closeEntry();
+				if (item instanceof CustomBow) {
+					CustomBow bow = (CustomBow) item;
+					List<BowTextures.Entry> pullTextures = bow.getTexture().getPullTextures();
+					String textureName = item.getTexture().getName() + "_pulling_";
+					for (int index = 0; index < pullTextures.size(); index++) {
+						entry = new ZipEntry("assets/minecraft/models/customitems/" + item.getName() + "_pulling_"
+								+ index + ".json");
+						zipOutput.putNextEntry(entry);
+						jsonWriter = new PrintWriter(zipOutput);
+						jsonWriter.println("{");
+						jsonWriter.println("    " + Q + "parent" + Q + ": " + Q + "item/bow" + Q + ",");
+						jsonWriter.println("    " + Q + "textures" + Q + ": {");
+						jsonWriter.println(
+								"        " + Q + "layer0" + Q + ": " + Q + "customitems/" + textureName + index + Q);
+						jsonWriter.println("    }");
+						jsonWriter.println("}");
+						jsonWriter.flush();
+						zipOutput.closeEntry();
+					}
+				}
+			}
+
+			// Map all custom items by their item type
+			Map<CustomItemType, List<CustomItem>> itemMap = new EnumMap<CustomItemType, List<CustomItem>>(
+					CustomItemType.class);
+			for (CustomItem item : items) {
+				List<CustomItem> list = itemMap.get(item.getItemType());
+				if (list == null) {
+					list = new ArrayList<CustomItem>();
+					itemMap.put(item.getItemType(), list);
+				}
+				list.add(item);
+			}
+
+			// Now create the item model files for those models
+			Set<Entry<CustomItemType, List<CustomItem>>> entrySet = itemMap.entrySet();
+			for (Entry<CustomItemType, List<CustomItem>> entry : entrySet) {
+				List<CustomItem> list = entry.getValue();
+				if (list != null) {
+					// The items with low damage should come first
+					list.sort((CustomItem a, CustomItem b) -> {
+						if (a.getItemDamage() > b.getItemDamage())
+							return 1;
+						if (a.getItemDamage() < b.getItemDamage())
+							return -1;
+						if (a == b)
+							return 0;
+						throw new IllegalArgumentException("a is " + a + " and b is " + b);
+					});
+					String modelName = entry.getKey().name().toLowerCase();
+
+					// Bukkit naming is not identical to minecraft naming, so this hack is required
+					if (entry.getKey() == CustomItemType.CARROT_STICK)
+						modelName = "carrot_on_a_stick";
+					if (modelName.startsWith("gold"))
+						modelName = modelName.replace("gold", "golden");
+					if (modelName.startsWith("wood"))
+						modelName = modelName.replace("wood", "wooden");
+					
+					// Notice that the line below has been moved down because the naming
+					// of minecraft resourcepacks changed
+					String textureName = modelName;
+					
+					ZipEntry zipEntry = new ZipEntry("assets/minecraft/models/item/" + modelName + ".json");
+					zipOutput.putNextEntry(zipEntry);
+					PrintWriter jsonWriter = new PrintWriter(zipOutput);
+
+					if (entry.getKey() == CustomItemType.BOW) {
+						// Begin of the json file
+						jsonWriter.println("{");
+						jsonWriter.println("    " + Q + "parent" + Q + ": " + Q + "item/generated" + Q + ",");
+						jsonWriter.println("    " + Q + "textures" + Q + ": {");
+						jsonWriter.println("        " + Q + "layer0" + Q + ": " + Q + "item/bow" + Q);
+						jsonWriter.println("    },");
+						// Display
+						jsonWriter.println("    " + Q + "display" + Q + ": {");
+						jsonWriter.println("        " + Q + "thirdperson_righthand" + Q + ": {");
+						jsonWriter.println("            " + Q + "rotation" + Q + ": [ -80, 260, -40 ],");
+						jsonWriter.println("            " + Q + "translation" + Q + ": [ -1, -2, 2.5 ],");
+						jsonWriter.println("            " + Q + "scale" + Q + ": [ 0.9, 0.9, 0.9 ]");
+						jsonWriter.println("        },");
+						jsonWriter.println("        " + Q + "thirdperson_lefthand" + Q + ": {");
+						jsonWriter.println("            " + Q + "rotation" + Q + ": [ -80, -280, 40 ],");
+						jsonWriter.println("            " + Q + "translation" + Q + ": [ -1, -2, 2.5 ],");
+						jsonWriter.println("            " + Q + "scale" + Q + ": [ 0.9, 0.9, 0.9 ]");
+						jsonWriter.println("        },");
+						jsonWriter.println("        " + Q + "firstperson_righthand" + Q + ": {");
+						jsonWriter.println("            " + Q + "rotation" + Q + ": [ 0, -90, 25 ],");
+						jsonWriter.println("            " + Q + "translation" + Q + ": [ 1.13, 3.2, 1.13 ],");
+						jsonWriter.println("            " + Q + "scale" + Q + ": [ 0.68, 0.68, 0.68 ]");
+						jsonWriter.println("        },");
+						jsonWriter.println("        " + Q + "firstperson_lefthand" + Q + ": {");
+						jsonWriter.println("            " + Q + "rotation" + Q + ": [ 0, 90, -25 ],");
+						jsonWriter.println("            " + Q + "translation" + Q + ": [ 1.13, 3.2, 1.13 ],");
+						jsonWriter.println("            " + Q + "scale" + Q + ": [ 0.68, 0.68, 0.68 ]");
+						jsonWriter.println("        }");
+						jsonWriter.println("    },");
+						// The interesting part...
+						jsonWriter.println("    " + Q + "overrides" + Q + ": [");
+
+						jsonWriter.println("        { " + Q + "predicate" + Q + ": { " + Q + "pulling" + Q + ": 1 }, "
+								+ Q + "model" + Q + ": " + Q + "item/bow_pulling_0" + Q + "},");
+						jsonWriter.println("        { " + Q + "predicate" + Q + ": { " + Q + "pulling" + Q + ": 1, " + Q
+								+ "pull" + Q + ": 0.65 }, " + Q + "model" + Q + ": " + Q + "item/bow_pulling_1" + Q
+								+ "},");
+						jsonWriter.println("        { " + Q + "predicate" + Q + ": { " + Q + "pulling" + Q + ": 1, " + Q
+								+ "pull" + Q + ": 0.9 }, " + Q + "model" + Q + ": " + Q + "item/bow_pulling_2" + Q
+								+ "},");
+
+						for (CustomItem item : list) {
+							jsonWriter.println("        { " + Q + "predicate" + Q + ": {" + Q + "damaged" + Q + ": 0, "
+									+ Q + "damage" + Q + ": "
+									+ (double) item.getItemDamage() / item.getItemType().getMaxDurability() + "}, " + Q
+									+ "model" + Q + ": " + Q + "customitems/" + item.getName() + Q + "},");
+							List<BowTextures.Entry> pullTextures = ((CustomBow) item).getTexture().getPullTextures();
+							int counter = 0;
+							for (BowTextures.Entry pullTexture : pullTextures) {
+								jsonWriter.println("        { " + Q + "predicate" + Q + ": {" + Q + "damaged" + Q
+										+ ": 0, " + Q + "damage" + Q + ": "
+										+ (double) item.getItemDamage() / item.getItemType().getMaxDurability() + ", "
+										+ Q + "pulling" + Q + ": 1, " + Q + "pull" + Q + ": " + pullTexture.getPull()
+										+ "}, " + Q + "model" + Q + ": " + Q + "customitems/" + item.getName()
+										+ "_pulling_" + counter++ + Q + "},");
+							}
+						}
+						// End of the json file
+						jsonWriter.println("        { " + Q + "predicate" + Q + ": {" + Q + "damaged" + Q + ": 1, " + Q
+								+ "damage" + Q + ": 0}, " + Q + "model" + Q + ": " + Q + "item/" + modelName + Q + "}");
+						jsonWriter.println("    ]");
+						jsonWriter.println("}");
+					} else {
+						// Begin of the json file
+						jsonWriter.println("{");
+						jsonWriter.println("    " + Q + "parent" + Q + ": " + Q + "item/handheld" + Q + ",");
+						jsonWriter.println("    " + Q + "textures" + Q + ": {");
+						jsonWriter.print("        " + Q + "layer0" + Q + ": " + Q + "item/" + textureName + Q);
+						boolean isLeatherArmor = entry.getKey() == CustomItemType.LEATHER_BOOTS ||
+								entry.getKey() == CustomItemType.LEATHER_LEGGINGS || entry.getKey() == CustomItemType.LEATHER_CHESTPLATE
+								|| entry.getKey() == CustomItemType.LEATHER_HELMET;
+						if (isLeatherArmor) {
+							jsonWriter.print(",");
+						}
+						jsonWriter.println();
+						if (isLeatherArmor) {
+							jsonWriter.print("        " + Q + "layer1" + Q + ": " + Q + "item/" + textureName + "_overlay" + Q);
+						}
+						jsonWriter.println("    },");
+						jsonWriter.println("    " + Q + "overrides" + Q + ": [");
+
+						// Now the interesting part
+						for (CustomItem item : list) {
+							jsonWriter.println("        { " + Q + "predicate" + Q + ": {" + Q + "damaged" + Q + ": 0, "
+									+ Q + "damage" + Q + ": "
+									+ (double) item.getItemDamage() / item.getItemType().getMaxDurability() + "}, " + Q
+									+ "model" + Q + ": " + Q + "customitems/" + item.getName() + Q + "},");
+						}
+
+						// End of the json file
+						jsonWriter.println("        { " + Q + "predicate" + Q + ": {" + Q + "damaged" + Q + ": 1, " + Q
+								+ "damage" + Q + ": 0}, " + Q + "model" + Q + ": " + Q + "item/" + modelName + Q + "}");
+						jsonWriter.println("    ]");
+						jsonWriter.println("}");
+					}
+					jsonWriter.flush();
+					zipOutput.closeEntry();
+				}
+			}
+
+			// pack.mcmeta
+			ZipEntry mcMeta = new ZipEntry("pack.mcmeta");
+			zipOutput.putNextEntry(mcMeta);
+			PrintWriter jsonWriter = new PrintWriter(zipOutput);
+			jsonWriter.println("{");
+			jsonWriter.println("    " + Q + "pack" + Q + ": {");
+			jsonWriter.println("        " + Q + "pack_format" + Q + ": 4,");
+			jsonWriter.println("        " + Q + "description" + Q + ": " + Q + "CustomItemSet" + Q);
+			jsonWriter.println("    }");
+			jsonWriter.println("}");
+			jsonWriter.flush();
+			zipOutput.closeEntry();
+
+			zipOutput.close();
+			return null;
+		} catch (IOException ioex) {
+			ioex.printStackTrace();
+			return ioex.getMessage();
+		}
+	}
 
 	public String export() {
 		try {
@@ -574,7 +826,7 @@ public class ItemSet {
 				PrintWriter jsonWriter = new PrintWriter(zipOutput);
 				if (item instanceof CustomBow) {
 					jsonWriter.println("{");
-					jsonWriter.println("    " + Q + "parent" + Q + ": " + Q + "item/generated" + Q + ",");
+					jsonWriter.println("    " + Q + "parent" + Q + ": " + Q + "item/bow" + Q + ",");
 					jsonWriter.println("    " + Q + "textures" + Q + ": {");
 					jsonWriter.println("        " + Q + "layer0" + Q + ": " + Q + "customitems/"
 							+ item.getTexture().getName() + "_standby" + Q);
