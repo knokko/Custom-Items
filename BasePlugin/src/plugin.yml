@@ -1,7 +1,8 @@
 name: CustomItems
 main: nl.knokko.customitems.plugin.CustomItemsPlugin
-version: 4.5
+version: 4.6
 depend: [KnokkoCore]
+loadbefore: [UltraChest]
 commands:
   customitems:
     description: give a custom item to a player
