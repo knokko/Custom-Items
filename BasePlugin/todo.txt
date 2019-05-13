@@ -1,0 +1,9 @@
+Long term:
+-Work on automated testing
+-Replace minecrafts enchanting and anvil system
+
+Short term:
+-Look into sentinel
+-Add possibility to manage item flags (and look at the custom unbreakable 'flag')
+-Add an option to choose how much damage items will take from hitting enemies and breaking blocks
+-Allow using multiple item sets at the same time (enables easy reusing of item sets)
