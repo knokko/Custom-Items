@@ -23,6 +23,8 @@
  *******************************************************************************/
 package nl.knokko.customitems.plugin.set.item;
 
+import java.util.List;
+
 import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Entity;
@@ -50,8 +52,10 @@ public abstract class CustomItem extends nl.knokko.customitems.item.CustomItem {
 	
 	protected final Single[] attributeModifiers;
     
-    public CustomItem(CustomItemType itemType, short itemDamage, String name, String displayName, String[] lore, AttributeModifier[] attributes, Enchantment[] defaultEnchantments){
-        super(itemType, itemDamage, name, displayName, lore, attributes, defaultEnchantments);
+    public CustomItem(CustomItemType itemType, short itemDamage, String name, String displayName, 
+    		String[] lore, AttributeModifier[] attributes, Enchantment[] defaultEnchantments, boolean[] itemFlags){
+        super(itemType, itemDamage, name, displayName, lore, attributes, defaultEnchantments, itemFlags);
+        
         // Why Bukkit?
         material = Material.getMaterial(itemType.name().replace("SHOVEL", "SPADE"));
         attributeModifiers = new Single[attributes.length];
@@ -61,19 +65,36 @@ public abstract class CustomItem extends nl.knokko.customitems.item.CustomItem {
         }
     }
     
-    public ItemStack create(int amount){
-    	ItemStack item = ItemAttributes.createWithAttributes(material, amount, attributeModifiers);
-        ItemMeta meta = item.getItemMeta();
+    protected List<String> createLore(){
+    	return Lists.newArrayList(lore);
+    }
+    
+    protected ItemMeta createItemMeta(ItemStack item, List<String> lore) {
+    	ItemMeta meta = item.getItemMeta();
         meta.setDisplayName(displayName);
-        meta.setLore(Lists.newArrayList(lore));
+        meta.setLore(lore);
         meta.setUnbreakable(true);
-        meta.addItemFlags(ItemFlag.HIDE_UNBREAKABLE);
-        item.setItemMeta(meta);
+        ItemFlag[] allFlags = ItemFlag.values();
+        for (int index = 0; index < allFlags.length; index++) {
+        	if (itemFlags[index]) {
+        		meta.addItemFlags(allFlags[index]);
+        	}
+        }
+        return meta;
+    }
+    
+    public ItemStack create(int amount, List<String> lore){
+    	ItemStack item = ItemAttributes.createWithAttributes(material, amount, attributeModifiers);
+        item.setItemMeta(createItemMeta(item, lore));
         item.setDurability(itemDamage);
         for (Enchantment enchantment : defaultEnchantments) {
         	item.addUnsafeEnchantment(org.bukkit.enchantments.Enchantment.getByName(enchantment.getType().name()), enchantment.getLevel());
         }
         return item;
+    }
+    
+    public ItemStack create(int amount) {
+    	return create(amount, createLore());
     }
     
     public static short getDamage(ItemStack item) {

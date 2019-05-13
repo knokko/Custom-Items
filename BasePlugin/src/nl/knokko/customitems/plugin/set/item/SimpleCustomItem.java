@@ -32,8 +32,8 @@ public class SimpleCustomItem extends CustomItem {
 	private int stackSize;
 
 	public SimpleCustomItem(CustomItemType itemType, short itemDamage, String name, String displayName, String[] lore,
-			AttributeModifier[] attributes, Enchantment[] defaultEnchantments, int stackSize) {
-		super(itemType, itemDamage, name, displayName, lore, attributes, defaultEnchantments);
+			AttributeModifier[] attributes, Enchantment[] defaultEnchantments, int stackSize, boolean[] itemFlags) {
+		super(itemType, itemDamage, name, displayName, lore, attributes, defaultEnchantments, itemFlags);
 		this.stackSize = stackSize;
 	}
 	

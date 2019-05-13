@@ -110,7 +110,7 @@ public class EditItemBow extends EditItemTool {
 								.addBow(new CustomBow(damage, name.getText(), getDisplayName(), lore, attributes,
 										enchantments, maxUses, damageMultiplier, speedMultiplier, knockbackStrength,
 										gravity.isChecked(), allowEnchanting.isChecked(), allowAnvil.isChecked(),
-										repairItem.getIngredient(), (BowTextures) textureSelect.currentTexture), true);
+										repairItem.getIngredient(), (BowTextures) textureSelect.currentTexture, itemFlags), true);
 					} else
 						error = "The max uses must be greater than 0 or " + CustomItem.UNBREAKABLE_TOOL_DURABILITY
 								+ " to become unbreakable";

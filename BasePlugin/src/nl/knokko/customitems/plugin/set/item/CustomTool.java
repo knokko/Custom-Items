@@ -30,11 +30,9 @@ import org.bukkit.block.Block;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
-import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
-import nl.knokko.core.plugin.item.attributes.ItemAttributes;
 import nl.knokko.customitems.item.AttributeModifier;
 import nl.knokko.customitems.item.CustomItemType;
 import nl.knokko.customitems.item.CustomItemType.Category;
@@ -68,8 +66,8 @@ public class CustomTool extends CustomItem {
 
 	public CustomTool(CustomItemType itemType, short itemDamage, String name, String displayName, String[] lore, 
 			AttributeModifier[] attributes, Enchantment[] defaultEnchantments, long maxDurability, boolean allowEnchanting, boolean allowAnvil, 
-			Ingredient repairItem) {
-		super(itemType, itemDamage, name, displayName, lore, attributes, defaultEnchantments);
+			Ingredient repairItem, boolean[] itemFlags) {
+		super(itemType, itemDamage, name, displayName, lore, attributes, defaultEnchantments, itemFlags);
 		this.maxDurability = maxDurability;
 		this.allowEnchanting = allowEnchanting;
 		this.allowAnvil = allowAnvil;
@@ -110,33 +108,24 @@ public class CustomTool extends CustomItem {
 	}
 	
 	@Override
-	public ItemStack create(int amount) {
-		return create(amount, maxDurability);
+	protected List<String> createLore(){
+		return createLore(maxDurability);
+	}
+	
+	protected List<String> createLore(long currentDurability){
+		List<String> itemLore = new ArrayList<String>(lore.length + 2);
+        if (!isUnbreakable()) {
+        	itemLore.add(createDurabilityLine(currentDurability, maxDurability));
+        	itemLore.add("");
+        }
+        for (String s : lore)
+    		itemLore.add(s);
+        return itemLore;
 	}
 	
 	public ItemStack create(int amount, long durability) {
 		if (amount != 1) throw new IllegalArgumentException("Amount must be 1, but is " + amount);
-		ItemStack item = ItemAttributes.createWithAttributes(material, amount, attributeModifiers);
-        ItemMeta meta = item.getItemMeta();
-        meta.setDisplayName(displayName);
-        List<String> itemLore = new ArrayList<String>(lore.length + 2);
-        if (maxDurability == nl.knokko.customitems.item.CustomItem.UNBREAKABLE_TOOL_DURABILITY) {
-        	itemLore.add(CustomItemsPlugin.getInstance().getLanguageFile().getUnbreakable());
-        } else {
-        	itemLore.add(createDurabilityLine(maxDurability, maxDurability));
-        }
-        itemLore.add("");
-        for (String s : lore)
-    		itemLore.add(s);
-    	meta.setLore(itemLore);
-        meta.setUnbreakable(true);
-        meta.addItemFlags(ItemFlag.HIDE_UNBREAKABLE);
-        item.setItemMeta(meta);
-        item.setDurability(itemDamage);
-        for (Enchantment enchantment : defaultEnchantments) {
-        	item.addUnsafeEnchantment(org.bukkit.enchantments.Enchantment.getByName(enchantment.getType().name()), enchantment.getLevel());
-        }
-        return item;
+		return super.create(amount, createLore(durability));
 	}
 	
 	@Override
@@ -160,10 +149,12 @@ public class CustomTool extends CustomItem {
 	 * @return True if the stack breaks, false if it only loses durability
 	 */
 	public boolean decreaseDurability(ItemStack stack, int damage) {
+		if (isUnbreakable() || !stack.hasItemMeta()) {
+			return false;
+		}
 		if (Math.random() <= 1.0 / (1 + stack.getEnchantmentLevel(org.bukkit.enchantments.Enchantment.DURABILITY))) {
 			ItemMeta meta = stack.getItemMeta();
 			List<String> lore = meta.getLore();
-			String oldFirstLine = lore.get(0);
 			String durabilityString = getDurabilityString(lore);
 			// Check whether or not the tool is unbreakable
 			if (durabilityString != null) {
@@ -178,11 +169,8 @@ public class CustomTool extends CustomItem {
 					return true;
 				}
 			} else {
-				// Dirty hack to replace old unbreakable string by new unbreakable string under circumstances
-				if (!oldFirstLine.equals(lore.get(0))) {
-					meta.setLore(lore);
-					stack.setItemMeta(meta);
-				}
+				
+				// The durability/lore must have been corrupted, so we can't determine the durability
 				return false;
 			}
 		} else {
@@ -191,6 +179,9 @@ public class CustomTool extends CustomItem {
 	}
 	
 	public long increaseDurability(ItemStack stack, int amount) {
+		if (isUnbreakable() || !stack.hasItemMeta()) {
+			return 0;
+		}
 		ItemMeta meta = stack.getItemMeta();
 		List<String> lore = meta.getLore();
 		String durabilityString = getDurabilityString(lore);
@@ -210,10 +201,18 @@ public class CustomTool extends CustomItem {
 		}
 	}
 	
+	protected boolean isUnbreakable() {
+		return maxDurability == nl.knokko.customitems.item.CustomItem.UNBREAKABLE_TOOL_DURABILITY;
+	}
+	
 	public long getDurability(ItemStack stack) {
+		if (isUnbreakable()) {
+			return CustomItem.UNBREAKABLE_TOOL_DURABILITY;
+		}
 		ItemMeta meta = stack.getItemMeta();
 		List<String> lore = meta.getLore();
 		String durabilityString = getDurabilityString(lore);
+		
 		// Check whether or not the tool is unbreakable
 		if (durabilityString != null) {
 			return parseDurability(durabilityString);
@@ -223,6 +222,10 @@ public class CustomTool extends CustomItem {
 	}
 	
 	private String getDurabilityString(List<String> lore) {
+		if (lore.isEmpty()) {
+			return null;
+		}
+		
 		String durabilityPrefix = CustomItemsPlugin.getInstance().getLanguageFile().getDurabilityPrefix();
 		
 		// If the config has not been changed and the item is not unbreakable, it should be found here
@@ -242,14 +245,6 @@ public class CustomTool extends CustomItem {
 						// This means that the item has lore that looks like the durability format
 					}
 				}
-			}
-		}
-		
-		// Maybe, the item is unbreakable
-		String unbreakableString = CustomItemsPlugin.getInstance().getLanguageFile().getUnbreakable();
-		for (String line : lore) {
-			if (line.equals(unbreakableString)) {
-				return null;
 			}
 		}
 		
@@ -274,13 +269,11 @@ public class CustomTool extends CustomItem {
 		
 		if (potentialMatches == 0) {
 			
-			// The unbreakable string must have changed, the first line should be the previous one, but it
-			// is not entirely safe unfortunately...
-			lore.set(0, unbreakableString);
+			// It looks like the lore of this custom item has been manipulated somehow
 			return null;
 		} else if (potentialMatches == 1) {
 			
-			// Let's hope the item was not unbreakable...
+			// Then the language config changed and this should be the old durability
 			for (String line : lore) {
 				int indexSplit = line.lastIndexOf(DURABILITY_SPLIT);
 				if (indexSplit != -1) {

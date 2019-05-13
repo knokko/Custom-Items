@@ -32,6 +32,7 @@ import nl.knokko.customitems.editor.set.item.NamedImage;
 import nl.knokko.customitems.item.AttributeModifier;
 import nl.knokko.customitems.item.CustomItemType;
 import nl.knokko.customitems.item.Enchantment;
+import nl.knokko.customitems.item.ItemFlag;
 import nl.knokko.gui.color.GuiColor;
 import nl.knokko.gui.component.menu.GuiMenu;
 import nl.knokko.gui.component.menu.TextArrayEditMenu;
@@ -58,6 +59,7 @@ public abstract class EditItemBase extends GuiMenu {
 	protected Enchantment[] enchantments;
 	protected TextureSelect textureSelect;
 	protected TextComponent errorComponent;
+	protected boolean[] itemFlags;
 
 	public EditItemBase(EditMenu menu, CustomItem previous) {
 		this.menu = menu;
@@ -70,6 +72,7 @@ public abstract class EditItemBase extends GuiMenu {
 			lore = previous.getLore();
 			attributes = previous.getAttributes();
 			enchantments = previous.getDefaultEnchantments();
+			itemFlags = previous.getItemFlags();
 		} else {
 			name = new TextEditField("", EditProps.EDIT_BASE, EditProps.EDIT_ACTIVE);
 			internalType = new ItemTypeSelect(CustomItemType.DIAMOND_HOE);
@@ -79,6 +82,7 @@ public abstract class EditItemBase extends GuiMenu {
 			lore = new String[] {};
 			attributes = DEFAULT_ATTRIBUTES;
 			enchantments = DEFAULT_ENCHANTMENTS;
+			itemFlags = ItemFlag.getDefaultValues();
 		}
 	}
 	
@@ -100,7 +104,8 @@ public abstract class EditItemBase extends GuiMenu {
 		addComponent(new TextComponent("Lore: ", EditProps.LABEL), LABEL_X, 0.56f, LABEL_X + 0.075f, 0.61f);
 		addComponent(new TextComponent("Attribute modifiers: ", EditProps.LABEL), LABEL_X, 0.5f, LABEL_X + 0.125f, 0.55f);
 		addComponent(new TextComponent("Default enchantments: ", EditProps.LABEL), LABEL_X, 0.44f, LABEL_X + 0.13f, 0.49f);
-		addComponent(new TextComponent("Texture: ", EditProps.LABEL), LABEL_X, 0.38f, LABEL_X + 0.075f, 0.43f);
+		addComponent(new TextComponent("Item flags: ", EditProps.LABEL), LABEL_X, 0.38f, LABEL_X + 0.085f, 0.43f);
+		addComponent(new TextComponent("Texture: ", EditProps.LABEL), LABEL_X, 0.32f, LABEL_X + 0.075f, 0.37f);
 		if(previous() != null) {
 			addComponent(new TextButton("Apply", EditProps.SAVE_BASE, EditProps.SAVE_HOVER, () -> {
 				String error = apply();
@@ -130,7 +135,14 @@ public abstract class EditItemBase extends GuiMenu {
 		addLoreComponent();
 		addAttributesComponent();
 		addEnchantmentsComponent();
-		addComponent(textureSelect, BUTTON_X, 0.38f, BUTTON_X + 0.1f, 0.43f);
+		addComponent(new TextButton("Change flags...", EditProps.BUTTON, EditProps.HOVER, () -> {
+			state.getWindow().setMainComponent(new ItemFlagMenu(this, itemFlags));
+		}), BUTTON_X, 0.38f, BUTTON_X + 0.1f, 0.43f);
+		addComponent(textureSelect, BUTTON_X, 0.32f, BUTTON_X + 0.1f, 0.37f);
+	}
+	
+	void setItemFlags(boolean[] newFlags) {
+		this.itemFlags = newFlags;
 	}
 	
 	protected abstract String create(short internalItemDamage);

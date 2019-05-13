@@ -65,6 +65,7 @@ import nl.knokko.customitems.item.AttributeModifier;
 import nl.knokko.customitems.item.CustomItemType;
 import nl.knokko.customitems.item.Enchantment;
 import nl.knokko.customitems.item.EnchantmentType;
+import nl.knokko.customitems.item.ItemFlag;
 import nl.knokko.gui.keycode.KeyCode;
 import nl.knokko.gui.window.input.WindowInput;
 import nl.knokko.customitems.item.AttributeModifier.Attribute;
@@ -136,7 +137,7 @@ public class ItemSet {
 		}
 		if (texture == null)
 			throw new IllegalArgumentException("Can't find texture " + imageName);
-		return new SimpleCustomItem(itemType, damage, name, displayName, lore, attributes, new Enchantment[0], 64, texture);
+		return new SimpleCustomItem(itemType, damage, name, displayName, lore, attributes, new Enchantment[0], 64, texture, ItemFlag.getDefaultValues());
 	}
 
 	private CustomItem loadSimpleItem2(BitInput input) {
@@ -161,7 +162,7 @@ public class ItemSet {
 		}
 		if (texture == null)
 			throw new IllegalArgumentException("Can't find texture " + imageName);
-		return new SimpleCustomItem(itemType, damage, name, displayName, lore, attributes, new Enchantment[0], 64, texture);
+		return new SimpleCustomItem(itemType, damage, name, displayName, lore, attributes, new Enchantment[0], 64, texture, ItemFlag.getDefaultValues());
 	}
 	
 	private CustomItem loadSimpleItem3(BitInput input) {
@@ -189,7 +190,7 @@ public class ItemSet {
 		}
 		if (texture == null)
 			throw new IllegalArgumentException("Can't find texture " + imageName);
-		return new SimpleCustomItem(itemType, damage, name, displayName, lore, attributes, new Enchantment[0], 64, texture);
+		return new SimpleCustomItem(itemType, damage, name, displayName, lore, attributes, new Enchantment[0], 64, texture, ItemFlag.getDefaultValues());
 	}
 	
 	private CustomItem loadSimpleItem4(BitInput input) {
@@ -218,7 +219,7 @@ public class ItemSet {
 		}
 		if (texture == null)
 			throw new IllegalArgumentException("Can't find texture " + imageName);
-		return new SimpleCustomItem(itemType, damage, name, displayName, lore, attributes, new Enchantment[0], maxStacksize, texture);
+		return new SimpleCustomItem(itemType, damage, name, displayName, lore, attributes, new Enchantment[0], maxStacksize, texture, ItemFlag.getDefaultValues());
 	}
 
 	private CustomItem loadTool2(BitInput input) {
@@ -247,7 +248,7 @@ public class ItemSet {
 		if (texture == null)
 			throw new IllegalArgumentException("Can't find texture " + imageName);
 		return new CustomTool(itemType, damage, name, displayName, lore, attributes, new Enchantment[0], durability, allowEnchanting,
-				allowAnvil, new NoIngredient(), texture);
+				allowAnvil, new NoIngredient(), texture, ItemFlag.getDefaultValues());
 	}
 
 	private CustomItem loadTool3(BitInput input) {
@@ -277,7 +278,7 @@ public class ItemSet {
 		if (texture == null)
 			throw new IllegalArgumentException("Can't find texture " + imageName);
 		return new CustomTool(itemType, damage, name, displayName, lore, attributes, new Enchantment[0], durability, allowEnchanting,
-				allowAnvil, repairItem, texture);
+				allowAnvil, repairItem, texture, ItemFlag.getDefaultValues());
 	}
 	
 	private CustomItem loadTool4(BitInput input) {
@@ -310,7 +311,7 @@ public class ItemSet {
 		if (texture == null)
 			throw new IllegalArgumentException("Can't find texture " + imageName);
 		return new CustomTool(itemType, damage, name, displayName, lore, attributes, defaultEnchantments, durability, allowEnchanting,
-				allowAnvil, repairItem, texture);
+				allowAnvil, repairItem, texture, ItemFlag.getDefaultValues());
 	}
 
 	private CustomBow loadBow3(BitInput input) {
@@ -343,7 +344,7 @@ public class ItemSet {
 		if (texture == null)
 			throw new IllegalArgumentException("Can't find texture " + imageName);
 		return new CustomBow(damage, name, displayName, lore, attributes, new Enchantment[0], durability, damageMultiplier, speedMultiplier,
-				knockbackStrength, gravity, allowEnchanting, allowAnvil, repairItem, (BowTextures) texture);
+				knockbackStrength, gravity, allowEnchanting, allowAnvil, repairItem, (BowTextures) texture, ItemFlag.getDefaultValues());
 	}
 	
 	private CustomBow loadBow4(BitInput input) {
@@ -379,7 +380,7 @@ public class ItemSet {
 		if (texture == null)
 			throw new IllegalArgumentException("Can't find texture " + imageName);
 		return new CustomBow(damage, name, displayName, lore, attributes, defaultEnchantments, durability, damageMultiplier, speedMultiplier,
-				knockbackStrength, gravity, allowEnchanting, allowAnvil, repairItem, (BowTextures) texture);
+				knockbackStrength, gravity, allowEnchanting, allowAnvil, repairItem, (BowTextures) texture, ItemFlag.getDefaultValues());
 	}
 	
 	private CustomItem loadArmor4(BitInput input) {
@@ -425,7 +426,7 @@ public class ItemSet {
 		if (texture == null)
 			throw new IllegalArgumentException("Can't find texture " + imageName);
 		return new CustomArmor(itemType, damage, name, displayName, lore, attributes, defaultEnchantments, durability, allowEnchanting,
-				allowAnvil, repairItem, texture, red, green, blue);
+				allowAnvil, repairItem, texture, red, green, blue, ItemFlag.getDefaultValues());
 	}
 
 	private AttributeModifier loadAttribute2(BitInput input) {

@@ -67,7 +67,8 @@ public class EditItemSimple extends EditItemBase {
 
 	@Override
 	protected String create(short damage) {
-		return menu.getSet().addSimpleItem(new SimpleCustomItem(internalType.currentType, damage, name.getText(), getDisplayName(), lore, attributes, enchantments, maxStacksize.getInt(), textureSelect.currentTexture));
+		return menu.getSet().addSimpleItem(new SimpleCustomItem(internalType.currentType, damage, name.getText(), 
+				getDisplayName(), lore, attributes, enchantments, maxStacksize.getInt(), textureSelect.currentTexture, itemFlags));
 	}
 
 	@Override

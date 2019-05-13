@@ -33,8 +33,8 @@ public abstract class CustomItem extends nl.knokko.customitems.item.CustomItem {
 	protected NamedImage texture;
 
 	public CustomItem(CustomItemType itemType, short itemDamage, String name, String displayName, String[] lore, 
-			AttributeModifier[] attributes, Enchantment[] defaultEnchantments, NamedImage texture) {
-		super(itemType, itemDamage, name, displayName, lore, attributes, defaultEnchantments);
+			AttributeModifier[] attributes, Enchantment[] defaultEnchantments, NamedImage texture, boolean[] itemFlags) {
+		super(itemType, itemDamage, name, displayName, lore, attributes, defaultEnchantments, itemFlags);
 		this.texture = texture;
 	}
 	
@@ -77,6 +77,10 @@ public abstract class CustomItem extends nl.knokko.customitems.item.CustomItem {
 	
 	public void setTexture(NamedImage texture) {
 		this.texture = texture;
+	}
+	
+	public void setItemFlags(boolean[] itemFlags) {
+		this.itemFlags = itemFlags;
 	}
 	
 	public void save(BitOutput output) {

@@ -138,6 +138,9 @@ public class EditItemTool extends EditItemBase {
 		if (category == Category.SWORD) {
 			errorComponent.setProperties(EditProps.LABEL);
 			errorComponent.setText("Hint: Use attribute modifiers to set the damage this sword will deal.");
+		} else {
+			errorComponent.setProperties(EditProps.LABEL);
+			errorComponent.setText("Hint: Set the 'Max uses' to -1 to make it unbreakable.");
 		}
 	}
 	
@@ -145,7 +148,7 @@ public class EditItemTool extends EditItemBase {
 		return menu.getSet().addTool(
 				new CustomTool(internalType.currentType, damage, name.getText(), getDisplayName(),
 						lore, attributes, enchantments, maxUses, allowEnchanting.isChecked(),
-						allowAnvil.isChecked(), repairItem.getIngredient(), textureSelect.currentTexture),
+						allowAnvil.isChecked(), repairItem.getIngredient(), textureSelect.currentTexture, itemFlags),
 						true);
 	}
 

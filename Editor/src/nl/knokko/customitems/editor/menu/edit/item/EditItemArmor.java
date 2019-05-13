@@ -137,7 +137,8 @@ public class EditItemArmor extends EditItemTool {
 				new CustomArmor(internalType.currentType, damage, name.getText(), getDisplayName(),
 						lore, attributes, enchantments, maxUses, allowEnchanting.isChecked(),
 						allowAnvil.isChecked(), repairItem.getIngredient(), textureSelect.currentTexture,
-						red.getComponent().getInt(), green.getComponent().getInt(), blue.getComponent().getInt()),
+						red.getComponent().getInt(), green.getComponent().getInt(), blue.getComponent().getInt(),
+						itemFlags),
 						true);
 	}
 	

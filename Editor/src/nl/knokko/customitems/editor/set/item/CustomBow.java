@@ -39,9 +39,11 @@ public class CustomBow extends CustomTool {
 	private boolean hasGravity;
 
 	public CustomBow(short itemDamage, String name, String displayName, String[] lore, AttributeModifier[] attributes, Enchantment[] enchantments,
-			long durability, double damageMultiplier, double speedMultiplier, int knockbackStrength, boolean hasGravity, boolean allowEnchanting, boolean allowAnvil, Ingredient repairItem, BowTextures texture) {
+			long durability, double damageMultiplier, double speedMultiplier, int knockbackStrength, 
+			boolean hasGravity, boolean allowEnchanting, boolean allowAnvil, Ingredient repairItem, 
+			BowTextures texture, boolean[] itemFlags) {
 		super(CustomItemType.BOW, itemDamage, name, displayName, lore, attributes, enchantments, durability, allowEnchanting,
-				allowAnvil, repairItem, texture);
+				allowAnvil, repairItem, texture, itemFlags);
 		this.damageMultiplier = damageMultiplier;
 		this.speedMultiplier = speedMultiplier;
 		this.knockbackStrength = knockbackStrength;

@@ -45,6 +45,7 @@ import nl.knokko.customitems.item.AttributeModifier.Slot;
 import nl.knokko.customitems.item.CustomItemType;
 import nl.knokko.customitems.item.Enchantment;
 import nl.knokko.customitems.item.EnchantmentType;
+import nl.knokko.customitems.item.ItemFlag;
 import nl.knokko.customitems.plugin.recipe.CustomRecipe;
 import nl.knokko.customitems.plugin.recipe.ShapedCustomRecipe;
 import nl.knokko.customitems.plugin.recipe.ShapelessCustomRecipe;
@@ -131,7 +132,7 @@ public class ItemSet {
 		for (int index = 0; index < lore.length; index++)
 			lore[index] = input.readJavaString();
 		AttributeModifier[] attributes = new AttributeModifier[0];
-		return new SimpleCustomItem(itemType, damage, name, displayName, lore, attributes, new Enchantment[0], 64);
+		return new SimpleCustomItem(itemType, damage, name, displayName, lore, attributes, new Enchantment[0], 64, ItemFlag.getDefaultValues());
 	}
 
 	private CustomItem loadSimpleItem2(BitInput input) {
@@ -145,7 +146,7 @@ public class ItemSet {
 		AttributeModifier[] attributes = new AttributeModifier[input.readByte() & 0xFF];
 		for (int index = 0; index < attributes.length; index++)
 			attributes[index] = loadAttribute2(input);
-		return new SimpleCustomItem(itemType, damage, name, displayName, lore, attributes, new Enchantment[0], 64);
+		return new SimpleCustomItem(itemType, damage, name, displayName, lore, attributes, new Enchantment[0], 64, ItemFlag.getDefaultValues());
 	}
 	
 	private CustomItem loadSimpleItem3(BitInput input) {
@@ -162,7 +163,7 @@ public class ItemSet {
 		Enchantment[] defaultEnchantments = new Enchantment[input.readByte() & 0xFF];
 		for (int index = 0; index < defaultEnchantments.length; index++)
 			defaultEnchantments[index] = new Enchantment(EnchantmentType.valueOf(input.readString()), input.readInt());
-		return new SimpleCustomItem(itemType, damage, name, displayName, lore, attributes, defaultEnchantments, 64);
+		return new SimpleCustomItem(itemType, damage, name, displayName, lore, attributes, defaultEnchantments, 64, ItemFlag.getDefaultValues());
 	}
 	
 	private CustomItem loadSimpleItem4(BitInput input) {
@@ -180,7 +181,7 @@ public class ItemSet {
 		for (int index = 0; index < defaultEnchantments.length; index++)
 			defaultEnchantments[index] = new Enchantment(EnchantmentType.valueOf(input.readString()), input.readInt());
 		int stackSize = input.readByte();
-		return new SimpleCustomItem(itemType, damage, name, displayName, lore, attributes, defaultEnchantments, stackSize);
+		return new SimpleCustomItem(itemType, damage, name, displayName, lore, attributes, defaultEnchantments, stackSize, ItemFlag.getDefaultValues());
 	}
 
 	private CustomItem loadTool2(BitInput input) {
@@ -198,7 +199,7 @@ public class ItemSet {
 		boolean allowEnchanting = input.readBoolean();
 		boolean allowAnvil = input.readBoolean();
 		return new CustomTool(itemType, damage, name, displayName, lore, attributes, new Enchantment[0], durability, allowEnchanting,
-				allowAnvil, new NoIngredient());
+				allowAnvil, new NoIngredient(), ItemFlag.getDefaultValues());
 	}
 
 	private CustomItem loadTool3(BitInput input) {
@@ -217,7 +218,7 @@ public class ItemSet {
 		boolean allowAnvil = input.readBoolean();
 		Ingredient repairItem = loadIngredient(input);
 		return new CustomTool(itemType, damage, name, displayName, lore, attributes, new Enchantment[0], durability, allowEnchanting,
-				allowAnvil, repairItem);
+				allowAnvil, repairItem, ItemFlag.getDefaultValues());
 	}
 	
 	private CustomItem loadTool4(BitInput input) {
@@ -239,7 +240,7 @@ public class ItemSet {
 		boolean allowAnvil = input.readBoolean();
 		Ingredient repairItem = loadIngredient(input);
 		return new CustomTool(itemType, damage, name, displayName, lore, attributes, defaultEnchantments, durability, allowEnchanting,
-				allowAnvil, repairItem);
+				allowAnvil, repairItem, ItemFlag.getDefaultValues());
 	}
 	
 	private CustomItem loadArmor4(BitInput input) {
@@ -268,7 +269,7 @@ public class ItemSet {
 			color = null;
 		}
 		return new CustomArmor(itemType, damage, name, displayName, lore, attributes, defaultEnchantments, durability, allowEnchanting,
-				allowAnvil, repairItem, color);
+				allowAnvil, repairItem, color, ItemFlag.getDefaultValues());
 	}
 
 	private CustomBow loadBow3(BitInput input) {
@@ -290,7 +291,7 @@ public class ItemSet {
 		boolean allowAnvil = input.readBoolean();
 		Ingredient repairItem = loadIngredient(input);
 		return new CustomBow(damage, name, displayName, lore, attributes, new Enchantment[0], durability, damageMultiplier, speedMultiplier,
-				knockbackStrength, gravity, allowEnchanting, allowAnvil, repairItem);
+				knockbackStrength, gravity, allowEnchanting, allowAnvil, repairItem, ItemFlag.getDefaultValues());
 	}
 	
 	private CustomBow loadBow4(BitInput input) {
@@ -315,7 +316,7 @@ public class ItemSet {
 		boolean allowAnvil = input.readBoolean();
 		Ingredient repairItem = loadIngredient(input);
 		return new CustomBow(damage, name, displayName, lore, attributes, defaultEnchantments, durability, damageMultiplier, speedMultiplier,
-				knockbackStrength, gravity, allowEnchanting, allowAnvil, repairItem);
+				knockbackStrength, gravity, allowEnchanting, allowAnvil, repairItem, ItemFlag.getDefaultValues());
 	}
 
 	private AttributeModifier loadAttribute2(BitInput input) {

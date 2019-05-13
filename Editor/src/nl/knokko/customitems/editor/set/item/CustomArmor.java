@@ -38,9 +38,9 @@ public class CustomArmor extends CustomTool {
 	
 	public CustomArmor(CustomItemType itemType, short itemDamage, String name, String displayName, String[] lore,
 			AttributeModifier[] attributes, Enchantment[] defaultEnchantments, long durability, boolean allowEnchanting,
-			boolean allowAnvil, Ingredient repairItem, NamedImage texture, int red, int green, int blue) {
+			boolean allowAnvil, Ingredient repairItem, NamedImage texture, int red, int green, int blue, boolean[] itemFlags) {
 		super(itemType, itemDamage, name, displayName, lore, attributes, defaultEnchantments, durability,
-				allowEnchanting, allowAnvil, repairItem, texture);
+				allowEnchanting, allowAnvil, repairItem, texture, itemFlags);
 		this.red = red;
 		this.green = green;
 		this.blue = blue;

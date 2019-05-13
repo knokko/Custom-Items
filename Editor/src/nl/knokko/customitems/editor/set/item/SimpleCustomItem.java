@@ -34,8 +34,9 @@ public class SimpleCustomItem extends CustomItem {
 	private int maxStacksize;
 
 	public SimpleCustomItem(CustomItemType itemType, short itemDamage, String name, String displayName, String[] lore,
-			AttributeModifier[] attributes, Enchantment[] defaultEnchantments, int maxStacksize, NamedImage texture) {
-		super(itemType, itemDamage, name, displayName, lore, attributes, defaultEnchantments, texture);
+			AttributeModifier[] attributes, Enchantment[] defaultEnchantments, int maxStacksize, 
+			NamedImage texture, boolean[] itemFlags) {
+		super(itemType, itemDamage, name, displayName, lore, attributes, defaultEnchantments, texture, itemFlags);
 		this.maxStacksize = maxStacksize;
 	}
 	

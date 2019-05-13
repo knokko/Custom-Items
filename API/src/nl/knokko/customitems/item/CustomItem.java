@@ -36,8 +36,10 @@ public class CustomItem {
     
     protected AttributeModifier[] attributes;
     protected Enchantment[] defaultEnchantments;
+    protected boolean[] itemFlags;
     
-    public CustomItem(CustomItemType itemType, short itemDamage, String name, String displayName, String[] lore, AttributeModifier[] attributes, Enchantment[] defaultEnchantments){
+    public CustomItem(CustomItemType itemType, short itemDamage, String name, String displayName, 
+    		String[] lore, AttributeModifier[] attributes, Enchantment[] defaultEnchantments, boolean[] itemFlags){
         this.itemType = itemType;
         this.itemDamage = itemDamage;
         this.name = name;
@@ -45,6 +47,7 @@ public class CustomItem {
         this.lore = lore;
         this.attributes = attributes;
         this.defaultEnchantments = defaultEnchantments;
+        this.itemFlags = itemFlags;
     }
     
     public String getName(){
@@ -73,5 +76,9 @@ public class CustomItem {
     
     public Enchantment[] getDefaultEnchantments() {
     	return defaultEnchantments;
+    }
+    
+    public boolean[] getItemFlags() {
+    	return itemFlags;
     }
 }
