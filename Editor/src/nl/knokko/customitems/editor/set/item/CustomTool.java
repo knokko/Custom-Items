@@ -28,9 +28,26 @@ import nl.knokko.customitems.encoding.ItemEncoding;
 import nl.knokko.customitems.item.AttributeModifier;
 import nl.knokko.customitems.item.CustomItemType;
 import nl.knokko.customitems.item.Enchantment;
+import nl.knokko.customitems.item.CustomItemType.Category;
 import nl.knokko.util.bits.BitOutput;
 
 public class CustomTool extends CustomItem {
+	
+	public static int defaultEntityHitDurabilityLoss(CustomItemType itemType) {
+		Category toolCategory = itemType.getMainCategory();
+		if (toolCategory == Category.SWORD) return 1;
+		else if (toolCategory == Category.PICKAXE || toolCategory == Category.AXE
+				|| toolCategory == Category.SHOVEL) return 2;
+		return 0;
+	}
+	
+	public static int defaultBlockBreakDurabilityLoss(CustomItemType itemType) {
+		Category toolCategory = itemType.getMainCategory();
+		if (toolCategory == Category.SWORD) return 2;
+		else if (toolCategory == Category.PICKAXE || toolCategory == Category.AXE
+				|| toolCategory == Category.SHOVEL) return 1;
+		return 0;
+	}
 	
 	protected long durability;
 	
@@ -38,21 +55,27 @@ public class CustomTool extends CustomItem {
 	protected boolean allowAnvil;
 	
 	protected Ingredient repairItem;
+	
+	protected int entityHitDurabilityLoss;
+	protected int blockBreakDurabilityLoss;
 
 	public CustomTool(CustomItemType itemType, short itemDamage, String name, String displayName, String[] lore,
 			AttributeModifier[] attributes, Enchantment[] defaultEnchantments, long durability, boolean allowEnchanting, boolean allowAnvil, 
-			Ingredient repairItem, NamedImage texture, boolean[] itemFlags) {
+			Ingredient repairItem, NamedImage texture, boolean[] itemFlags, int entityHitDurabilityLoss,
+			int blockBreakDurabilityLoss) {
 		super(itemType, itemDamage, name, displayName, lore, attributes, defaultEnchantments, texture, itemFlags);
 		this.durability = durability;
 		this.allowEnchanting = allowEnchanting;
 		this.allowAnvil = allowAnvil;
 		this.repairItem = repairItem;
+		this.entityHitDurabilityLoss = entityHitDurabilityLoss;
+		this.blockBreakDurabilityLoss = blockBreakDurabilityLoss;
 	}
 	
 	@Override
 	public void export(BitOutput output) {
 		/*
-		 * Very old encoding
+		 * First encoding
 		output.addByte(ItemEncoding.ENCODING_TOOL_2);
 		output.addJavaString(itemType.name());
 		output.addShort(itemDamage);
@@ -74,7 +97,7 @@ public class CustomTool extends CustomItem {
 		*/
 		
 		/*
-		 * Old encoding
+		 * Second encoding
 		output.addByte(ItemEncoding.ENCODING_TOOL_3);
 		output.addJavaString(itemType.name());
 		output.addShort(itemDamage);
@@ -96,6 +119,7 @@ public class CustomTool extends CustomItem {
 		repairItem.save(output);
 		*/
 		
+		/* Previous encoding
 		output.addByte(ItemEncoding.ENCODING_TOOL_4);
 		output.addJavaString(itemType.name());
 		output.addShort(itemDamage);
@@ -119,7 +143,34 @@ public class CustomTool extends CustomItem {
 		output.addLong(durability);
 		output.addBoolean(allowEnchanting);
 		output.addBoolean(allowAnvil);
+		repairItem.save(output);*/
+		
+		output.addByte(ItemEncoding.ENCODING_TOOL_5);
+		output.addJavaString(itemType.name());
+		output.addShort(itemDamage);
+		output.addJavaString(name);
+		output.addJavaString(displayName);
+		output.addByte((byte) lore.length);
+		for(String line : lore)
+			output.addJavaString(line);
+		output.addByte((byte) attributes.length);
+		for (AttributeModifier attribute : attributes) {
+			output.addJavaString(attribute.getAttribute().name());
+			output.addJavaString(attribute.getSlot().name());
+			output.addNumber(attribute.getOperation().ordinal(), (byte) 2, false);
+			output.addDouble(attribute.getValue());
+		}
+		output.addByte((byte) defaultEnchantments.length);
+		for (Enchantment enchantment : defaultEnchantments) {
+			output.addString(enchantment.getType().name());
+			output.addInt(enchantment.getLevel());
+		}
+		output.addLong(durability);
+		output.addBoolean(allowEnchanting);
+		output.addBoolean(allowAnvil);
 		repairItem.save(output);
+		output.addBooleans(itemFlags);
+		output.addInts(entityHitDurabilityLoss, blockBreakDurabilityLoss);
 	}
 	
 	public boolean allowEnchanting() {
@@ -138,6 +189,14 @@ public class CustomTool extends CustomItem {
 		return durability;
 	}
 	
+	public int getEntityHitDurabilityLoss() {
+		return entityHitDurabilityLoss;
+	}
+	
+	public int getBlockBreakDurabilityLoss() {
+		return blockBreakDurabilityLoss;
+	}
+	
 	public void setAllowEnchanting(boolean allow) {
 		allowEnchanting = allow;
 	}
@@ -152,5 +211,13 @@ public class CustomTool extends CustomItem {
 	
 	public void setDurability(long durability) {
 		this.durability = durability;
+	}
+	
+	public void setEntityHitDurabilityLoss(int durabilityLoss) {
+		this.entityHitDurabilityLoss = durabilityLoss;
+	}
+	
+	public void setBlockBreakDurabilityLoss(int durabilityLoss) {
+		this.blockBreakDurabilityLoss = durabilityLoss;
 	}
 }

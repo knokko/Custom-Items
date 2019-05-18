@@ -61,4 +61,24 @@ public class ItemEncoding {
 	 * Add maxStackSize
 	 */
 	public static final byte ENCODING_SIMPLE_4 = 9;
+	
+	/**
+	 * Add support for item flags
+	 */
+	public static final byte ENCODING_SIMPLE_5 = 10;
+	
+	/**
+	 * Add support for item flags, entity hit durability loss and block break durability loss
+	 */
+	public static final byte ENCODING_TOOL_5 = 11;
+	
+	/**
+	 * Add support for item flags and durability loss for entity attacking, block breaking and shooting
+	 */
+	public static final byte ENCODING_BOW_5 = 12;
+	
+	/**
+	 * Add support for item flags and durability loss for entity attacking, block breaking and getting attacked
+	 */
+	public static final byte ENCODING_ARMOR_5 = 13;
 }

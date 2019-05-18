@@ -98,18 +98,26 @@ public class ItemSet {
 			return loadSimpleItem3(input);
 		else if (encoding == ItemEncoding.ENCODING_SIMPLE_4)
 			return loadSimpleItem4(input);
+		else if (encoding == ItemEncoding.ENCODING_SIMPLE_5)
+			return loadSimpleItem5(input);
 		else if (encoding == ItemEncoding.ENCODING_TOOL_2)
 			return loadTool2(input);
 		else if (encoding == ItemEncoding.ENCODING_TOOL_3)
 			return loadTool3(input);
 		else if (encoding == ItemEncoding.ENCODING_TOOL_4)
 			return loadTool4(input);
+		else if (encoding == ItemEncoding.ENCODING_TOOL_5)
+			return loadTool5(input);
 		else if (encoding == ItemEncoding.ENCODING_BOW_3)
 			return loadBow3(input);
 		else if (encoding == ItemEncoding.ENCODING_BOW_4)
 			return loadBow4(input);
+		else if (encoding == ItemEncoding.ENCODING_BOW_5)
+			return loadBow5(input);
 		else if (encoding == ItemEncoding.ENCODING_ARMOR_4)
 			return loadArmor4(input);
+		else if (encoding == ItemEncoding.ENCODING_ARMOR_5)
+			return loadArmor5(input);
 		throw new IllegalArgumentException("Unknown encoding: " + encoding);
 	}
 
@@ -221,6 +229,40 @@ public class ItemSet {
 			throw new IllegalArgumentException("Can't find texture " + imageName);
 		return new SimpleCustomItem(itemType, damage, name, displayName, lore, attributes, new Enchantment[0], maxStacksize, texture, ItemFlag.getDefaultValues());
 	}
+	
+	private CustomItem loadSimpleItem5(BitInput input) {
+		CustomItemType itemType = CustomItemType.valueOf(input.readJavaString());
+		short damage = input.readShort();
+		String name = input.readJavaString();
+		String displayName = input.readJavaString();
+		String[] lore = new String[input.readByte() & 0xFF];
+		for (int index = 0; index < lore.length; index++) {
+			lore[index] = input.readJavaString();
+		}
+		AttributeModifier[] attributes = new AttributeModifier[input.readByte() & 0xFF];
+		for (int index = 0; index < attributes.length; index++)
+			attributes[index] = loadAttribute2(input);
+		Enchantment[] defaultEnchantments = new Enchantment[input.readByte() & 0xFF];
+		for (int index = 0; index < defaultEnchantments.length; index++)
+			defaultEnchantments[index] = new Enchantment(EnchantmentType.valueOf(input.readString()), input.readInt());
+		byte maxStacksize = input.readByte();
+		
+		// Use hardcoded 6 instead of variable because only 6 item flags existed in this encoding
+		boolean[] itemFlags = input.readBooleans(6);
+		
+		String imageName = input.readJavaString();
+		NamedImage texture = null;
+		for (NamedImage current : textures) {
+			if (current.getName().equals(imageName)) {
+				texture = current;
+				break;
+			}
+		}
+		if (texture == null)
+			throw new IllegalArgumentException("Can't find texture " + imageName);
+		return new SimpleCustomItem(itemType, damage, name, displayName, lore, attributes, new Enchantment[0],
+				maxStacksize, texture, itemFlags);
+	}
 
 	private CustomItem loadTool2(BitInput input) {
 		CustomItemType itemType = CustomItemType.valueOf(input.readJavaString());
@@ -248,7 +290,8 @@ public class ItemSet {
 		if (texture == null)
 			throw new IllegalArgumentException("Can't find texture " + imageName);
 		return new CustomTool(itemType, damage, name, displayName, lore, attributes, new Enchantment[0], durability, allowEnchanting,
-				allowAnvil, new NoIngredient(), texture, ItemFlag.getDefaultValues());
+				allowAnvil, new NoIngredient(), texture, ItemFlag.getDefaultValues(),
+				CustomTool.defaultEntityHitDurabilityLoss(itemType), CustomTool.defaultBlockBreakDurabilityLoss(itemType));
 	}
 
 	private CustomItem loadTool3(BitInput input) {
@@ -278,7 +321,8 @@ public class ItemSet {
 		if (texture == null)
 			throw new IllegalArgumentException("Can't find texture " + imageName);
 		return new CustomTool(itemType, damage, name, displayName, lore, attributes, new Enchantment[0], durability, allowEnchanting,
-				allowAnvil, repairItem, texture, ItemFlag.getDefaultValues());
+				allowAnvil, repairItem, texture, ItemFlag.getDefaultValues(), 
+				CustomTool.defaultEntityHitDurabilityLoss(itemType), CustomTool.defaultBlockBreakDurabilityLoss(itemType));
 	}
 	
 	private CustomItem loadTool4(BitInput input) {
@@ -311,7 +355,48 @@ public class ItemSet {
 		if (texture == null)
 			throw new IllegalArgumentException("Can't find texture " + imageName);
 		return new CustomTool(itemType, damage, name, displayName, lore, attributes, defaultEnchantments, durability, allowEnchanting,
-				allowAnvil, repairItem, texture, ItemFlag.getDefaultValues());
+				allowAnvil, repairItem, texture, ItemFlag.getDefaultValues(),
+				CustomTool.defaultEntityHitDurabilityLoss(itemType), CustomTool.defaultBlockBreakDurabilityLoss(itemType));
+	}
+	
+	private CustomItem loadTool5(BitInput input) {
+		CustomItemType itemType = CustomItemType.valueOf(input.readJavaString());
+		short damage = input.readShort();
+		String name = input.readJavaString();
+		String displayName = input.readJavaString();
+		String[] lore = new String[input.readByte() & 0xFF];
+		for (int index = 0; index < lore.length; index++) {
+			lore[index] = input.readJavaString();
+		}
+		AttributeModifier[] attributes = new AttributeModifier[input.readByte() & 0xFF];
+		for (int index = 0; index < attributes.length; index++)
+			attributes[index] = loadAttribute2(input);
+		Enchantment[] defaultEnchantments = new Enchantment[input.readByte() & 0xFF];
+		for (int index = 0; index < defaultEnchantments.length; index++)
+			defaultEnchantments[index] = new Enchantment(EnchantmentType.valueOf(input.readString()), input.readInt());
+		long durability = input.readLong();
+		boolean allowEnchanting = input.readBoolean();
+		boolean allowAnvil = input.readBoolean();
+		Ingredient repairItem = Recipe.loadIngredient(input, this);
+		
+		// Use hardcoded 6 instead of variable because only 6 item flags existed in this encoding
+		boolean[] itemFlags = input.readBooleans(6);
+		int entityHitDurabilityLoss = input.readInt();
+		int blockBreakDurabilityLoss = input.readInt();
+		
+		String imageName = input.readJavaString();
+		NamedImage texture = null;
+		for (NamedImage current : textures) {
+			if (current.getName().equals(imageName)) {
+				texture = current;
+				break;
+			}
+		}
+		if (texture == null)
+			throw new IllegalArgumentException("Can't find texture " + imageName);
+		
+		return new CustomTool(itemType, damage, name, displayName, lore, attributes, defaultEnchantments, durability, allowEnchanting,
+				allowAnvil, repairItem, texture, itemFlags, entityHitDurabilityLoss, blockBreakDurabilityLoss);
 	}
 
 	private CustomBow loadBow3(BitInput input) {
@@ -343,8 +428,9 @@ public class ItemSet {
 		}
 		if (texture == null)
 			throw new IllegalArgumentException("Can't find texture " + imageName);
-		return new CustomBow(damage, name, displayName, lore, attributes, new Enchantment[0], durability, damageMultiplier, speedMultiplier,
-				knockbackStrength, gravity, allowEnchanting, allowAnvil, repairItem, (BowTextures) texture, ItemFlag.getDefaultValues());
+		return new CustomBow(damage, name, displayName, lore, attributes, new Enchantment[0], durability, 
+				damageMultiplier, speedMultiplier, knockbackStrength, gravity, allowEnchanting, allowAnvil, 
+				repairItem, (BowTextures) texture, ItemFlag.getDefaultValues(), 0, 0, 1);
 	}
 	
 	private CustomBow loadBow4(BitInput input) {
@@ -379,8 +465,55 @@ public class ItemSet {
 		}
 		if (texture == null)
 			throw new IllegalArgumentException("Can't find texture " + imageName);
-		return new CustomBow(damage, name, displayName, lore, attributes, defaultEnchantments, durability, damageMultiplier, speedMultiplier,
-				knockbackStrength, gravity, allowEnchanting, allowAnvil, repairItem, (BowTextures) texture, ItemFlag.getDefaultValues());
+		return new CustomBow(damage, name, displayName, lore, attributes, defaultEnchantments, durability, 
+				damageMultiplier, speedMultiplier, knockbackStrength, gravity, allowEnchanting, allowAnvil, 
+				repairItem, (BowTextures) texture, ItemFlag.getDefaultValues(), 0, 0, 1);
+	}
+	
+	private CustomBow loadBow5(BitInput input) {
+		short damage = input.readShort();
+		String name = input.readJavaString();
+		String displayName = input.readJavaString();
+		String[] lore = new String[input.readByte() & 0xFF];
+		for (int index = 0; index < lore.length; index++) {
+			lore[index] = input.readJavaString();
+		}
+		AttributeModifier[] attributes = new AttributeModifier[input.readByte() & 0xFF];
+		for (int index = 0; index < attributes.length; index++)
+			attributes[index] = loadAttribute2(input);
+		Enchantment[] defaultEnchantments = new Enchantment[input.readByte() & 0xFF];
+		for (int index = 0; index < defaultEnchantments.length; index++)
+			defaultEnchantments[index] = new Enchantment(EnchantmentType.valueOf(input.readString()), input.readInt());
+		long durability = input.readLong();
+		double damageMultiplier = input.readDouble();
+		double speedMultiplier = input.readDouble();
+		int knockbackStrength = input.readInt();
+		boolean gravity = input.readBoolean();
+		boolean allowEnchanting = input.readBoolean();
+		boolean allowAnvil = input.readBoolean();
+		Ingredient repairItem = Recipe.loadIngredient(input, this);
+		
+		// Use hardcoded 6 instead of variable because only 6 item flags existed in this encoding
+		boolean[] itemFlags = input.readBooleans(6);
+		int entityHitDurabilityLoss = input.readInt();
+		int blockBreakDurabilityLoss = input.readInt();
+		int shootDurabilityLoss = input.readInt();
+		
+		String imageName = input.readJavaString();
+		NamedImage texture = null;
+		for (NamedImage current : textures) {
+			if (current.getName().equals(imageName)) {
+				texture = current;
+				break;
+			}
+		}
+		if (texture == null)
+			throw new IllegalArgumentException("Can't find texture " + imageName);
+		
+		return new CustomBow(damage, name, displayName, lore, attributes, defaultEnchantments, durability, 
+				damageMultiplier, speedMultiplier, knockbackStrength, gravity, allowEnchanting, allowAnvil, 
+				repairItem, (BowTextures) texture, itemFlags, entityHitDurabilityLoss, 
+				blockBreakDurabilityLoss, shootDurabilityLoss);
 	}
 	
 	private CustomItem loadArmor4(BitInput input) {
@@ -426,7 +559,62 @@ public class ItemSet {
 		if (texture == null)
 			throw new IllegalArgumentException("Can't find texture " + imageName);
 		return new CustomArmor(itemType, damage, name, displayName, lore, attributes, defaultEnchantments, durability, allowEnchanting,
-				allowAnvil, repairItem, texture, red, green, blue, ItemFlag.getDefaultValues());
+				allowAnvil, repairItem, texture, red, green, blue, ItemFlag.getDefaultValues(), 0, 0, 1);
+	}
+	
+	private CustomItem loadArmor5(BitInput input) {
+		CustomItemType itemType = CustomItemType.valueOf(input.readJavaString());
+		short damage = input.readShort();
+		String name = input.readJavaString();
+		String displayName = input.readJavaString();
+		String[] lore = new String[input.readByte() & 0xFF];
+		for (int index = 0; index < lore.length; index++) {
+			lore[index] = input.readJavaString();
+		}
+		AttributeModifier[] attributes = new AttributeModifier[input.readByte() & 0xFF];
+		for (int index = 0; index < attributes.length; index++)
+			attributes[index] = loadAttribute2(input);
+		Enchantment[] defaultEnchantments = new Enchantment[input.readByte() & 0xFF];
+		for (int index = 0; index < defaultEnchantments.length; index++)
+			defaultEnchantments[index] = new Enchantment(EnchantmentType.valueOf(input.readString()), input.readInt());
+		long durability = input.readLong();
+		boolean allowEnchanting = input.readBoolean();
+		boolean allowAnvil = input.readBoolean();
+		Ingredient repairItem = Recipe.loadIngredient(input, this);
+		int red;
+		int green;
+		int blue;
+		if (itemType == CustomItemType.LEATHER_BOOTS || itemType == CustomItemType.LEATHER_LEGGINGS
+				|| itemType == CustomItemType.LEATHER_CHESTPLATE || itemType == CustomItemType.LEATHER_HELMET) {
+			red = input.readByte() & 0xFF;
+			green = input.readByte() & 0xFF;
+			blue = input.readByte() & 0xFF;
+		} else {
+			red = 160;
+			green = 101;
+			blue = 64;
+		}
+		
+		// Don't use ItemFlag.values().length because it only had 6 flags during the version it was saved
+		boolean[] itemFlags = input.readBooleans(6);
+		int entityHitDurabilityLoss = input.readInt();
+		int blockBreakDurabilityLoss = input.readInt();
+		int attackedDurabilityLoss = input.readInt();
+		
+		String imageName = input.readJavaString();
+		NamedImage texture = null;
+		for (NamedImage current : textures) {
+			if (current.getName().equals(imageName)) {
+				texture = current;
+				break;
+			}
+		}
+		if (texture == null)
+			throw new IllegalArgumentException("Can't find texture " + imageName);
+		
+		return new CustomArmor(itemType, damage, name, displayName, lore, attributes, defaultEnchantments, durability, allowEnchanting,
+				allowAnvil, repairItem, texture, red, green, blue, itemFlags, entityHitDurabilityLoss, 
+				blockBreakDurabilityLoss, attackedDurabilityLoss);
 	}
 
 	private AttributeModifier loadAttribute2(BitInput input) {
@@ -1307,7 +1495,8 @@ public class ItemSet {
 			String newDisplayName, String[] newLore, AttributeModifier[] newAttributes, 
 			Enchantment[] newEnchantments, boolean allowEnchanting, boolean allowAnvil, 
 			Ingredient repairItem, long newDurability, NamedImage newTexture, int newRed, int newGreen, 
-			int newBlue, boolean checkClass) {
+			int newBlue, boolean[] itemFlags, int entityHitDurabilityLoss, int blockBreakDurabilityLoss, 
+			int attackedDurabilityLoss, boolean checkClass) {
 		if (!bypassChecks()) {
 			if (armor == null)
 				return "Can't change bows that do not exist";
@@ -1319,13 +1508,17 @@ public class ItemSet {
 				return "Green (" + armor.getGreen() + ") is out of range";
 			if (armor.getBlue() < 0 || armor.getBlue() > 255)
 				return "Blue (" + armor.getBlue() + ") is out of range";
+			if (attackedDurabilityLoss < 0)
+				return "The attacked durability loss can't be negative";
 		}
 		String error = changeTool(armor, newType, newDamage, newName, newDisplayName, newLore, newAttributes, newEnchantments,
-				allowEnchanting, allowAnvil, repairItem, newDurability, newTexture, false);
+				allowEnchanting, allowAnvil, repairItem, newDurability, newTexture, itemFlags,
+				entityHitDurabilityLoss, blockBreakDurabilityLoss, false);
 		if (error == null) {
 			armor.setRed(newRed);
 			armor.setGreen(newGreen);
 			armor.setBlue(newBlue);
+			armor.setOnAttackedDurabilityLoss(attackedDurabilityLoss);
 			return null;
 		} else {
 			return error;
@@ -1362,7 +1555,9 @@ public class ItemSet {
 	public String changeBow(CustomBow bow, short newDamage, String newName, String newDisplayName, String[] newLore,
 			AttributeModifier[] newAttributes, Enchantment[] newEnchantments, double newDamageMultiplier, double newSpeedMultiplier,
 			int newKnockbackStrength, boolean useGravity, boolean allowEnchanting, boolean allowAnvil,
-			Ingredient repairItem, long newDurability, BowTextures newTextures, boolean checkClass) {
+			Ingredient repairItem, long newDurability, BowTextures newTextures, boolean[] itemFlags,
+			int entityHitDurabilityLoss, int blockBreakDurabilityLoss, int shootDurabilityLoss,
+			boolean checkClass) {
 		if (!bypassChecks()) {
 			if (bow == null)
 				return "Can't change bows that do not exist";
@@ -1375,14 +1570,18 @@ public class ItemSet {
 				if (pullTexture.getTexture() == null)
 					return "The texture for pull " + pullTexture.getPull() + " is undefined.";
 			}
+			if (shootDurabilityLoss < 0)
+				return "The shoot durability loss can't be negative";
 		}
 		String error = changeTool(bow, CustomItemType.BOW, newDamage, newName, newDisplayName, newLore, newAttributes, newEnchantments,
-				allowEnchanting, allowAnvil, repairItem, newDurability, newTextures, false);
+				allowEnchanting, allowAnvil, repairItem, newDurability, newTextures, itemFlags,
+				entityHitDurabilityLoss, blockBreakDurabilityLoss, false);
 		if (error == null) {
 			bow.setDamageMultiplier(newDamageMultiplier);
 			bow.setSpeedMultiplier(newSpeedMultiplier);
 			bow.setKnockbackStrength(newKnockbackStrength);
 			bow.setGravity(useGravity);
+			bow.setShootDurabilityLoss(shootDurabilityLoss);
 			return null;
 		} else {
 			return error;
@@ -1435,7 +1634,10 @@ public class ItemSet {
 	 */
 	public String changeTool(CustomTool item, CustomItemType newType, short newDamage, String newName,
 			String newDisplayName, String[] newLore, AttributeModifier[] newAttributes, Enchantment[] newEnchantments, boolean allowEnchanting,
-			boolean allowAnvil, Ingredient repairItem, long newDurability, NamedImage newImage, boolean checkClass) {
+			boolean allowAnvil, Ingredient repairItem, long newDurability, NamedImage newImage, 
+			boolean[] itemFlags, int entityHitDurabilityLoss, int blockBreakDurabilityLoss,
+			boolean checkClass) {
+		// TODO Change and check entityHitDurabilityLoss and blockBreakDurabilityLoss!!
 		if (!bypassChecks()) {
 			if (checkClass && item.getClass() != CustomTool.class)
 				return "Use the appropriate method to change this class";
@@ -1446,14 +1648,21 @@ public class ItemSet {
 				return "Only vanilla items and simple custom items are allowed as repair item.";
 			if (allowEnchanting && newEnchantments.length > 0)
 				return "You can't allow enchanting on items that have default enchantments";
+			if (entityHitDurabilityLoss < 0)
+				return "The entity hit durability loss can't be negative";
+			if (blockBreakDurabilityLoss < 0)
+				return "The block break durability loss can't be negative";
 		}
-		String error = changeItem(item, newType, newDamage, newName, newDisplayName, newLore, newAttributes, newEnchantments, newImage,
+		String error = changeItem(item, newType, newDamage, newName, newDisplayName, newLore, newAttributes, 
+				newEnchantments, newImage, itemFlags,
 				false);
 		if (error == null) {
 			item.setAllowEnchanting(allowEnchanting);
 			item.setAllowAnvilActions(allowAnvil);
 			item.setRepairItem(repairItem);
 			item.setDurability(newDurability);
+			item.setEntityHitDurabilityLoss(entityHitDurabilityLoss);
+			item.setBlockBreakDurabilityLoss(blockBreakDurabilityLoss);
 			return null;
 		} else {
 			return error;
@@ -1525,8 +1734,9 @@ public class ItemSet {
 	}
 	
 	public String changeSimpleItem(SimpleCustomItem item, CustomItemType newType, short newDamage, String newName,
-			String newDisplayName, String[] newLore, AttributeModifier[] newAttributes, Enchantment[] newEnchantments, NamedImage newImage,
-			int newStacksize, boolean checkClass) {
+			String newDisplayName, String[] newLore, AttributeModifier[] newAttributes, 
+			Enchantment[] newEnchantments, NamedImage newImage, int newStacksize, boolean[] newItemFlags,
+			boolean checkClass) {
 		if (!bypassChecks()) {
 			if (checkClass && item.getClass() != SimpleCustomItem.class)
 				return "Use the right method for the class";
@@ -1534,7 +1744,7 @@ public class ItemSet {
 				return "The maximum stacksize (" + newStacksize + ") is out of range";
 		}
 		String error = changeItem(item, newType, newDamage, newName, newDisplayName, newLore, newAttributes,
-				newEnchantments, newImage, false);
+				newEnchantments, newImage, newItemFlags, false);
 		if (error == null) {
 			item.setMaxStacksize(newStacksize);
 		}
@@ -1558,7 +1768,8 @@ public class ItemSet {
 	 *         could not be changed
 	 */
 	public String changeItem(CustomItem item, CustomItemType newType, short newDamage, String newName,
-			String newDisplayName, String[] newLore, AttributeModifier[] newAttributes, Enchantment[] newEnchantments, NamedImage newImage,
+			String newDisplayName, String[] newLore, AttributeModifier[] newAttributes, 
+			Enchantment[] newEnchantments, NamedImage newImage, boolean[] itemFlags,
 			boolean checkClass) {
 		if (!bypassChecks()) {
 			if (item == null)
@@ -1573,6 +1784,10 @@ public class ItemSet {
 				return "Every item needs a texture";
 			if (newAttributes == null)
 				return "Attributes are null";
+			if (itemFlags == null)
+				return "The item flags are null";
+			if (itemFlags.length != ItemFlag.values().length)
+				return "The length of the item flags is incorrect";
 			if (newAttributes.length > Byte.MAX_VALUE)
 				return "Too many attribute modifiers";
 			for (AttributeModifier att : newAttributes) {
@@ -1622,6 +1837,7 @@ public class ItemSet {
 		item.setAttributes(newAttributes);
 		item.setDefaultEnchantments(newEnchantments);
 		item.setTexture(newImage);
+		item.setItemFlags(itemFlags);
 		return null;
 	}
 

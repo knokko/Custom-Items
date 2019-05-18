@@ -36,18 +36,24 @@ public class CustomArmor extends CustomTool {
 	private int green;
 	private int blue;
 	
+	private int onAttackedDurabilityLoss;
+	
 	public CustomArmor(CustomItemType itemType, short itemDamage, String name, String displayName, String[] lore,
 			AttributeModifier[] attributes, Enchantment[] defaultEnchantments, long durability, boolean allowEnchanting,
-			boolean allowAnvil, Ingredient repairItem, NamedImage texture, int red, int green, int blue, boolean[] itemFlags) {
+			boolean allowAnvil, Ingredient repairItem, NamedImage texture, int red, int green, int blue, 
+			boolean[] itemFlags, int entityHitDurabilityLoss, int blockBreakDurabilityLoss, int onAttackedDurabilityLoss) {
 		super(itemType, itemDamage, name, displayName, lore, attributes, defaultEnchantments, durability,
-				allowEnchanting, allowAnvil, repairItem, texture, itemFlags);
+				allowEnchanting, allowAnvil, repairItem, texture, itemFlags, entityHitDurabilityLoss, blockBreakDurabilityLoss);
 		this.red = red;
 		this.green = green;
 		this.blue = blue;
+		this.onAttackedDurabilityLoss = onAttackedDurabilityLoss;
 	}
 	
 	@Override
 	public void export(BitOutput output) {
+		
+		/* Previous encoding:
 		output.addByte(ItemEncoding.ENCODING_ARMOR_4);
 		output.addJavaString(itemType.name());
 		output.addShort(itemDamage);
@@ -74,7 +80,37 @@ public class CustomArmor extends CustomTool {
 		repairItem.save(output);
 		if (isLeather()) {
 			output.addBytes((byte) red, (byte) green, (byte) blue);
+		}*/
+		
+		output.addByte(ItemEncoding.ENCODING_ARMOR_5);
+		output.addJavaString(itemType.name());
+		output.addShort(itemDamage);
+		output.addJavaString(name);
+		output.addJavaString(displayName);
+		output.addByte((byte) lore.length);
+		for(String line : lore)
+			output.addJavaString(line);
+		output.addByte((byte) attributes.length);
+		for (AttributeModifier attribute : attributes) {
+			output.addJavaString(attribute.getAttribute().name());
+			output.addJavaString(attribute.getSlot().name());
+			output.addNumber(attribute.getOperation().ordinal(), (byte) 2, false);
+			output.addDouble(attribute.getValue());
 		}
+		output.addByte((byte) defaultEnchantments.length);
+		for (Enchantment enchantment : defaultEnchantments) {
+			output.addString(enchantment.getType().name());
+			output.addInt(enchantment.getLevel());
+		}
+		output.addLong(durability);
+		output.addBoolean(allowEnchanting);
+		output.addBoolean(allowAnvil);
+		repairItem.save(output);
+		if (isLeather()) {
+			output.addBytes((byte) red, (byte) green, (byte) blue);
+		}
+		output.addBooleans(itemFlags);
+		output.addInts(entityHitDurabilityLoss, blockBreakDurabilityLoss, onAttackedDurabilityLoss);
 	}
 	
 	private boolean isLeather() {
@@ -94,6 +130,10 @@ public class CustomArmor extends CustomTool {
 		return blue;
 	}
 	
+	public int getOnAttackedDurabilityLoss() {
+		return onAttackedDurabilityLoss;
+	}
+	
 	public void setRed(int newRed) {
 		red = newRed;
 	}
@@ -104,5 +144,9 @@ public class CustomArmor extends CustomTool {
 	
 	public void setBlue(int newBlue) {
 		blue = newBlue;
+	}
+	
+	public void setOnAttackedDurabilityLoss(int newDurabilityLoss) {
+		onAttackedDurabilityLoss = newDurabilityLoss;
 	}
 }

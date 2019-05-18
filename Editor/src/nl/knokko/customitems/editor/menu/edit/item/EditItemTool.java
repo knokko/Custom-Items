@@ -36,8 +36,9 @@ import nl.knokko.customitems.item.AttributeModifier.Slot;
 import nl.knokko.customitems.item.CustomItemType;
 import nl.knokko.customitems.item.CustomItemType.Category;
 import nl.knokko.gui.component.image.CheckboxComponent;
+import nl.knokko.gui.component.text.IntEditField;
 import nl.knokko.gui.component.text.TextComponent;
-import nl.knokko.gui.component.text.TextEditField;
+import nl.knokko.gui.util.Option;
 
 public class EditItemTool extends EditItemBase {
 
@@ -46,8 +47,10 @@ public class EditItemTool extends EditItemBase {
 
 	protected final CheckboxComponent allowEnchanting;
 	protected final CheckboxComponent allowAnvil;
-	protected final TextEditField durability;
+	protected final IntEditField durability;
 	protected final IngredientComponent repairItem;
+	protected final IntEditField entityHitDurabilityLoss;
+	protected final IntEditField blockBreakDurabilityLoss;
 
 	public EditItemTool(EditMenu menu, CustomTool previous, Category toolCategory) {
 		super(menu, previous);
@@ -57,12 +60,14 @@ public class EditItemTool extends EditItemBase {
 			allowEnchanting = new CheckboxComponent(previous.allowEnchanting());
 			allowAnvil = new CheckboxComponent(previous.allowAnvilActions());
 			repairItem = new IngredientComponent("None", previous.getRepairItem(), this, menu.getSet());
-			durability = new TextEditField(previous.getDurability() + "", EditProps.EDIT_BASE, EditProps.EDIT_ACTIVE);
+			durability = new IntEditField(previous.getDurability(), CustomTool.UNBREAKABLE_TOOL_DURABILITY, EditProps.EDIT_BASE, EditProps.EDIT_ACTIVE);
+			entityHitDurabilityLoss = new IntEditField(previous.getEntityHitDurabilityLoss(), 0, EditProps.EDIT_BASE, EditProps.EDIT_ACTIVE);
+			blockBreakDurabilityLoss = new IntEditField(previous.getBlockBreakDurabilityLoss(), 0, EditProps.EDIT_BASE, EditProps.EDIT_ACTIVE);
 		} else {
 			allowEnchanting = new CheckboxComponent(true);
 			allowAnvil = new CheckboxComponent(true);
 			repairItem = new IngredientComponent("None", new NoIngredient(), this, menu.getSet());
-			durability = new TextEditField("500", EditProps.EDIT_BASE, EditProps.EDIT_ACTIVE);
+			durability = new IntEditField(500, CustomTool.UNBREAKABLE_TOOL_DURABILITY, EditProps.EDIT_BASE, EditProps.EDIT_ACTIVE);
 			if (toolCategory == Category.SWORD)
 				internalType.currentType = CustomItemType.IRON_SWORD;
 			else if (toolCategory == Category.PICKAXE)
@@ -88,6 +93,12 @@ public class EditItemTool extends EditItemBase {
 			else
 				throw new Error("Unsupported category for EditItemTool: " + toolCategory);
 			internalDamage.setDirectText(Short.toString(menu.getSet().nextAvailableDamage(internalType.currentType)));
+			entityHitDurabilityLoss = new IntEditField(
+					CustomTool.defaultEntityHitDurabilityLoss(internalType.currentType), 0, 
+					EditProps.EDIT_BASE, EditProps.EDIT_ACTIVE);
+			blockBreakDurabilityLoss = new IntEditField(
+					CustomTool.defaultBlockBreakDurabilityLoss(internalType.currentType), 0, 
+					EditProps.EDIT_BASE, EditProps.EDIT_ACTIVE);
 		}
 	}
 	
@@ -128,13 +139,17 @@ public class EditItemTool extends EditItemBase {
 		super.addComponents();
 		internalType.setText(internalType.currentType.toString());
 		addComponent(allowEnchanting, 0.75f, 0.8f, 0.775f, 0.825f);
-		addComponent(new TextComponent("Allow enchanting", EditProps.LABEL), 0.8f, 0.8f, 0.95f, 0.9f);
-		addComponent(allowAnvil, 0.75f, 0.7f, 0.775f, 0.725f);
-		addComponent(new TextComponent("Allow anvil actions", EditProps.LABEL), 0.8f, 0.7f, 0.95f, 0.8f);
-		addComponent(durability, 0.85f, 0.6f, 0.9f, 0.7f);
-		addComponent(new TextComponent("Max uses: ", EditProps.LABEL), 0.71f, 0.6f, 0.84f, 0.7f);
-		addComponent(new TextComponent("Repair item: ", EditProps.LABEL), 0.71f, 0.5f, 0.84f, 0.6f);
-		addComponent(repairItem, 0.85f, 0.5f, 0.99f, 0.6f);
+		addComponent(new TextComponent("Allow enchanting", EditProps.LABEL), 0.8f, 0.8f, 0.95f, 0.875f);
+		addComponent(allowAnvil, 0.75f, 0.725f, 0.775f, 0.75f);
+		addComponent(new TextComponent("Allow anvil actions", EditProps.LABEL), 0.8f, 0.725f, 0.95f, 0.8f);
+		addComponent(durability, 0.85f, 0.65f, 0.925f, 0.725f);
+		addComponent(new TextComponent("Max uses: ", EditProps.LABEL), 0.71f, 0.65f, 0.84f, 0.725f);
+		addComponent(new TextComponent("Repair item: ", EditProps.LABEL), 0.71f, 0.575f, 0.84f, 0.65f);
+		addComponent(repairItem, 0.85f, 0.575f, 0.99f, 0.65f);
+		addComponent(new TextComponent("Durability loss on attack:", EditProps.LABEL), 0.6f, 0.5f, 0.84f, 0.575f);
+		addComponent(entityHitDurabilityLoss, 0.85f, 0.5f, 0.9f, 0.575f);
+		addComponent(new TextComponent("Durability loss on block break:", EditProps.LABEL), 0.6f, 0.425f, 0.84f, 0.5f);
+		addComponent(blockBreakDurabilityLoss, 0.85f, 0.425f, 0.9f, 0.5f);
 		if (category == Category.SWORD) {
 			errorComponent.setProperties(EditProps.LABEL);
 			errorComponent.setText("Hint: Use attribute modifiers to set the damage this sword will deal.");
@@ -144,52 +159,49 @@ public class EditItemTool extends EditItemBase {
 		}
 	}
 	
-	protected String create(short damage, long maxUses) {
+	protected String create(short damage, long maxUses, int entityHitDurabilityLoss, int blockBreakDurabilityLoss) {
 		return menu.getSet().addTool(
 				new CustomTool(internalType.currentType, damage, name.getText(), getDisplayName(),
 						lore, attributes, enchantments, maxUses, allowEnchanting.isChecked(),
-						allowAnvil.isChecked(), repairItem.getIngredient(), textureSelect.currentTexture, itemFlags),
+						allowAnvil.isChecked(), repairItem.getIngredient(), textureSelect.currentTexture, itemFlags,
+						entityHitDurabilityLoss, blockBreakDurabilityLoss),
 						true);
 	}
 
 	@Override
 	protected String create(short damage) {
-		String error = null;
-		try {
-			long maxUses = Long.parseLong(durability.getText());
-			if (maxUses > 0 || maxUses == CustomItem.UNBREAKABLE_TOOL_DURABILITY) {
-				error = create(damage, maxUses);
-			} else {
-				error = "The max uses must be greater than 0 or " + CustomItem.UNBREAKABLE_TOOL_DURABILITY
-						+ " to become unbreakable";
-			}
-		} catch (NumberFormatException nfe) {
-			error = "The max uses must be an integer";
-		}
-		return error;
+		Option.Long maybeDurability = this.durability.getLong();
+		if (!maybeDurability.hasValue()) return "The durability must be an integer";
+		long durability = maybeDurability.getValue();
+		if (durability <= 0 && durability != CustomTool.UNBREAKABLE_TOOL_DURABILITY)
+			return "The durability should be a positive integer or " + CustomTool.UNBREAKABLE_TOOL_DURABILITY + " to make it unbreakable";
+		Option.Int entityHit = entityHitDurabilityLoss.getInt();
+		if (!entityHit.hasValue()) return "The entity hit durability loss should be a positive integer";
+		Option.Int blockBreak = blockBreakDurabilityLoss.getInt();
+		if (!blockBreak.hasValue()) return "The block break durability loss should be a positive integer";
+		return create(damage, durability, entityHit.getValue(), blockBreak.getValue());
 	}
 	
-	protected String apply(short damage, long maxUses) {
+	protected String apply(short damage, long maxUses, int entityHitDurabilityLoss, int blockBreakDurabilityLoss) {
 		return menu.getSet().changeTool(previous, internalType.currentType, damage, name.getText(),
 				getDisplayName(), lore, attributes, enchantments, allowEnchanting.isChecked(),
 				allowAnvil.isChecked(), repairItem.getIngredient(), maxUses, textureSelect.currentTexture,
+				itemFlags, entityHitDurabilityLoss, blockBreakDurabilityLoss,
 				true);
 	}
 
 	@Override
 	protected String apply(short damage) {
-		String error = null;
-		try {
-			long maxUses = Long.parseLong(durability.getText());
-			if (maxUses > 0 || maxUses == CustomItem.UNBREAKABLE_TOOL_DURABILITY) {
-				error = apply(damage, maxUses);
-			} else
-				error = "The max uses must be greater than 0 or " + CustomItem.UNBREAKABLE_TOOL_DURABILITY
-						+ " to become unbreakable";
-		} catch (NumberFormatException nfe) {
-			error = "The max uses must be an integer";
-		}
-		return error;
+		Option.Long maybeDurability = this.durability.getLong();
+		if (!maybeDurability.hasValue()) return "The durability must be an integer";
+		long durability = maybeDurability.getValue();
+		if (durability <= 0 && durability != CustomTool.UNBREAKABLE_TOOL_DURABILITY)
+			return "The durability should be a positive integer or " + CustomTool.UNBREAKABLE_TOOL_DURABILITY + " to make it unbreakable";
+		Option.Int entityHit = entityHitDurabilityLoss.getInt();
+		if (!entityHit.hasValue()) return "The entity hit durability loss should be a positive integer";
+		Option.Int blockBreak = blockBreakDurabilityLoss.getInt();
+		if (!blockBreak.hasValue()) return "The block break durability loss should be a positive integer";
+		return apply(damage, durability, entityHit.getValue(), blockBreak.getValue());
 	}
 
 	@Override

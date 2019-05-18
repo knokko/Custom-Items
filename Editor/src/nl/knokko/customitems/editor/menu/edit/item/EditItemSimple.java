@@ -34,6 +34,7 @@ import nl.knokko.customitems.item.AttributeModifier.Slot;
 import nl.knokko.customitems.item.CustomItemType.Category;
 import nl.knokko.gui.component.text.IntEditField;
 import nl.knokko.gui.component.text.TextComponent;
+import nl.knokko.gui.util.Option;
 
 public class EditItemSimple extends EditItemBase {
 	
@@ -47,9 +48,9 @@ public class EditItemSimple extends EditItemBase {
 		super(menu, previous);
 		this.previous = previous;
 		if (previous == null) {
-			maxStacksize = new IntEditField(64, EditProps.EDIT_BASE, EditProps.EDIT_ACTIVE, 1, 64);
+			maxStacksize = new IntEditField(64, 1, 64, EditProps.EDIT_BASE, EditProps.EDIT_ACTIVE);
 		} else {
-			maxStacksize = new IntEditField(previous.getMaxStacksize(), EditProps.EDIT_BASE, EditProps.EDIT_ACTIVE, 1, 64);
+			maxStacksize = new IntEditField(previous.getMaxStacksize(), 1, 64, EditProps.EDIT_BASE, EditProps.EDIT_ACTIVE);
 		}
 	}
 	
@@ -67,13 +68,20 @@ public class EditItemSimple extends EditItemBase {
 
 	@Override
 	protected String create(short damage) {
+		Option.Int stackSize = maxStacksize.getInt();
+		if (!stackSize.hasValue()) return "The max stacksize should be an integer at least 1 and at most 64";
 		return menu.getSet().addSimpleItem(new SimpleCustomItem(internalType.currentType, damage, name.getText(), 
-				getDisplayName(), lore, attributes, enchantments, maxStacksize.getInt(), textureSelect.currentTexture, itemFlags));
+				getDisplayName(), lore, attributes, enchantments, stackSize.getValue(), 
+				textureSelect.currentTexture, itemFlags));
 	}
 
 	@Override
 	protected String apply(short damage) {
-		return menu.getSet().changeSimpleItem(previous, internalType.currentType, damage, name.getText(), getDisplayName(), lore, attributes, enchantments, textureSelect.currentTexture, maxStacksize.getInt(), true);
+		Option.Int stackSize = maxStacksize.getInt();
+		if (!stackSize.hasValue()) return "The max stacksize should be an integer at least 1 and at most 64";
+		return menu.getSet().changeSimpleItem(previous, internalType.currentType, damage, name.getText(), 
+				getDisplayName(), lore, attributes, enchantments, textureSelect.currentTexture, 
+				stackSize.getValue(), itemFlags, true);
 	}
 
 	@Override

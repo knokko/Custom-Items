@@ -42,7 +42,7 @@ import nl.knokko.gui.component.text.TextEditField;
 
 public abstract class EditItemBase extends GuiMenu {
 	
-	private static final float LABEL_X = 0.25f;
+	private static final float LABEL_X = 0.2f;
 	private static final float BUTTON_X = 0.4f;
 	
 	private static final AttributeModifier[] DEFAULT_ATTRIBUTES = {};
@@ -97,15 +97,15 @@ public abstract class EditItemBase extends GuiMenu {
 		addComponent(new TextButton("Cancel", EditProps.CANCEL_BASE, EditProps.CANCEL_HOVER, () -> {
 			state.getWindow().setMainComponent(menu.getItemOverview());
 		}), 0.025f, 0.7f, 0.15f, 0.8f);
-		addComponent(new TextComponent("Name: ", EditProps.LABEL), LABEL_X, 0.8f, LABEL_X + 0.075f, 0.85f);
-		addComponent(new TextComponent("Internal item type: ", EditProps.LABEL), LABEL_X, 0.74f, LABEL_X + 0.125f, 0.79f);
-		addComponent(new TextComponent("Internal item damage: ", EditProps.LABEL), LABEL_X, 0.68f, LABEL_X + 0.125f, 0.73f);
-		addComponent(new TextComponent("Display name: ", EditProps.LABEL), LABEL_X, 0.62f, LABEL_X + 0.1f, 0.67f);
-		addComponent(new TextComponent("Lore: ", EditProps.LABEL), LABEL_X, 0.56f, LABEL_X + 0.075f, 0.61f);
-		addComponent(new TextComponent("Attribute modifiers: ", EditProps.LABEL), LABEL_X, 0.5f, LABEL_X + 0.125f, 0.55f);
-		addComponent(new TextComponent("Default enchantments: ", EditProps.LABEL), LABEL_X, 0.44f, LABEL_X + 0.13f, 0.49f);
-		addComponent(new TextComponent("Item flags: ", EditProps.LABEL), LABEL_X, 0.38f, LABEL_X + 0.085f, 0.43f);
-		addComponent(new TextComponent("Texture: ", EditProps.LABEL), LABEL_X, 0.32f, LABEL_X + 0.075f, 0.37f);
+		addComponent(new TextComponent("Name: ", EditProps.LABEL), LABEL_X, 0.8f, LABEL_X + 0.1f, 0.85f);
+		addComponent(new TextComponent("Internal item type: ", EditProps.LABEL), LABEL_X, 0.74f, LABEL_X + 0.2f, 0.79f);
+		addComponent(new TextComponent("Internal item damage: ", EditProps.LABEL), LABEL_X, 0.68f, LABEL_X + 0.2f, 0.73f);
+		addComponent(new TextComponent("Display name: ", EditProps.LABEL), LABEL_X, 0.62f, LABEL_X + 0.18f, 0.67f);
+		addComponent(new TextComponent("Lore: ", EditProps.LABEL), LABEL_X, 0.56f, LABEL_X + 0.1f, 0.61f);
+		addComponent(new TextComponent("Attribute modifiers: ", EditProps.LABEL), LABEL_X, 0.5f, LABEL_X + 0.2f, 0.55f);
+		addComponent(new TextComponent("Default enchantments: ", EditProps.LABEL), LABEL_X, 0.44f, LABEL_X + 0.2f, 0.49f);
+		addComponent(new TextComponent("Item flags: ", EditProps.LABEL), LABEL_X, 0.38f, LABEL_X + 0.135f, 0.43f);
+		addComponent(new TextComponent("Texture: ", EditProps.LABEL), LABEL_X, 0.32f, LABEL_X + 0.125f, 0.37f);
 		if(previous() != null) {
 			addComponent(new TextButton("Apply", EditProps.SAVE_BASE, EditProps.SAVE_HOVER, () -> {
 				String error = apply();

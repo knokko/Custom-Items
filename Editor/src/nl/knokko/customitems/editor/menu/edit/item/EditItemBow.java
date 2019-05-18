@@ -26,7 +26,6 @@ package nl.knokko.customitems.editor.menu.edit.item;
 import nl.knokko.customitems.editor.menu.edit.EditMenu;
 import nl.knokko.customitems.editor.menu.edit.EditProps;
 import nl.knokko.customitems.editor.set.item.CustomBow;
-import nl.knokko.customitems.editor.set.item.CustomItem;
 import nl.knokko.customitems.editor.set.item.NamedImage;
 import nl.knokko.customitems.editor.set.item.texture.BowTextures;
 import nl.knokko.customitems.item.AttributeModifier;
@@ -35,8 +34,10 @@ import nl.knokko.customitems.item.AttributeModifier.Operation;
 import nl.knokko.customitems.item.AttributeModifier.Slot;
 import nl.knokko.customitems.item.CustomItemType.Category;
 import nl.knokko.gui.component.image.CheckboxComponent;
+import nl.knokko.gui.component.text.FloatEditField;
+import nl.knokko.gui.component.text.IntEditField;
 import nl.knokko.gui.component.text.TextComponent;
-import nl.knokko.gui.component.text.TextEditField;
+import nl.knokko.gui.util.Option;
 
 public class EditItemBow extends EditItemTool {
 	
@@ -44,26 +45,31 @@ public class EditItemBow extends EditItemTool {
 
 	private final CustomBow previous;
 
-	private final TextEditField damageMultiplier;
-	private final TextEditField speedMultiplier;
-	private final TextEditField knockbackStrength;
+	private final FloatEditField damageMultiplier;
+	private final FloatEditField speedMultiplier;
+	private final IntEditField knockbackStrength;
 	private final CheckboxComponent gravity;
+	
+	private final IntEditField shootDurabilityLoss;
 
 	public EditItemBow(EditMenu menu, CustomBow previous) {
 		super(menu, previous, Category.BOW);
 		this.previous = previous;
 		if (previous != null) {
-			damageMultiplier = new TextEditField(previous.getDamageMultiplier() + "", EditProps.EDIT_BASE,
+			damageMultiplier = new FloatEditField(previous.getDamageMultiplier(), 0, EditProps.EDIT_BASE,
 					EditProps.EDIT_ACTIVE);
-			speedMultiplier = new TextEditField(previous.getSpeedMultiplier() + "", EditProps.EDIT_BASE,
+			speedMultiplier = new FloatEditField(previous.getSpeedMultiplier(), 0, EditProps.EDIT_BASE,
 					EditProps.EDIT_ACTIVE);
-			knockbackStrength = new TextEditField(previous.getKnockbackStrength() + "", EditProps.EDIT_BASE,
+			knockbackStrength = new IntEditField(previous.getKnockbackStrength(), 0, EditProps.EDIT_BASE,
+					EditProps.EDIT_ACTIVE);
+			shootDurabilityLoss = new IntEditField(previous.getShootDurabilityLoss(), 0, EditProps.EDIT_BASE,
 					EditProps.EDIT_ACTIVE);
 			gravity = new CheckboxComponent(previous.hasGravity());
 		} else {
-			damageMultiplier = new TextEditField("1.0", EditProps.EDIT_BASE, EditProps.EDIT_ACTIVE);
-			speedMultiplier = new TextEditField("1.0", EditProps.EDIT_BASE, EditProps.EDIT_ACTIVE);
-			knockbackStrength = new TextEditField("0", EditProps.EDIT_BASE, EditProps.EDIT_ACTIVE);
+			damageMultiplier = new FloatEditField(1, 0, EditProps.EDIT_BASE, EditProps.EDIT_ACTIVE);
+			speedMultiplier = new FloatEditField(1, 0, EditProps.EDIT_BASE, EditProps.EDIT_ACTIVE);
+			knockbackStrength = new IntEditField(0, 0, EditProps.EDIT_BASE, EditProps.EDIT_ACTIVE);
+			shootDurabilityLoss = new IntEditField(1, 0, EditProps.EDIT_BASE, EditProps.EDIT_ACTIVE);
 			gravity = new CheckboxComponent(true);
 		}
 	}
@@ -76,13 +82,15 @@ public class EditItemBow extends EditItemTool {
 	@Override
 	protected void addComponents() {
 		super.addComponents();
-		addComponent(new TextComponent("Damage multiplier: ", EditProps.LABEL), 0.71f, 0.35f, 0.895f, 0.45f);
-		addComponent(damageMultiplier, 0.895f, 0.35f, 0.965f, 0.45f);
-		addComponent(new TextComponent("Speed multiplier: ", EditProps.LABEL), 0.71f, 0.24f, 0.88f, 0.34f);
-		addComponent(speedMultiplier, 0.895f, 0.24f, 0.965f, 0.34f);
-		addComponent(new TextComponent("knockback strength: ", EditProps.LABEL), 0.71f, 0.13f, 0.9f, 0.23f);
-		addComponent(knockbackStrength, 0.9f, 0.13f, 0.95f, 0.23f);
-		addComponent(new TextComponent("Arrow gravity", EditProps.LABEL), 0.8f, 0.02f, 0.95f, 0.12f);
+		addComponent(new TextComponent("Durability loss on shooting:", EditProps.LABEL), 0.6f, 0.35f, 0.84f, 0.425f);
+		addComponent(shootDurabilityLoss, 0.85f, 0.35f, 0.9f, 0.425f);
+		addComponent(new TextComponent("Damage multiplier: ", EditProps.LABEL), 0.71f, 0.245f, 0.895f, 0.32f);
+		addComponent(damageMultiplier, 0.895f, 0.245f, 0.965f, 0.32f);
+		addComponent(new TextComponent("Speed multiplier: ", EditProps.LABEL), 0.71f, 0.17f, 0.88f, 0.245f);
+		addComponent(speedMultiplier, 0.895f, 0.17f, 0.965f, 0.245f);
+		addComponent(new TextComponent("knockback strength: ", EditProps.LABEL), 0.71f, 0.095f, 0.9f, 0.17f);
+		addComponent(knockbackStrength, 0.9f, 0.095f, 0.95f, 0.17f);
+		addComponent(new TextComponent("Arrow gravity", EditProps.LABEL), 0.8f, 0.02f, 0.95f, 0.095f);
 		addComponent(gravity, 0.75f, 0.02f, 0.775f, 0.045f);
 	}
 
@@ -97,61 +105,38 @@ public class EditItemBow extends EditItemTool {
 	}
 
 	@Override
-	protected String create(short damage, long maxUses) {
-		String error = null;
-		try {
-			double damageMultiplier = Double.parseDouble(this.damageMultiplier.getText());
-			try {
-				double speedMultiplier = Double.parseDouble(this.speedMultiplier.getText());
-				try {
-					int knockbackStrength = Integer.parseInt(this.knockbackStrength.getText());
-					if (maxUses > 0 || maxUses == CustomItem.UNBREAKABLE_TOOL_DURABILITY) {
-						error = menu.getSet()
-								.addBow(new CustomBow(damage, name.getText(), getDisplayName(), lore, attributes,
-										enchantments, maxUses, damageMultiplier, speedMultiplier, knockbackStrength,
-										gravity.isChecked(), allowEnchanting.isChecked(), allowAnvil.isChecked(),
-										repairItem.getIngredient(), (BowTextures) textureSelect.currentTexture, itemFlags), true);
-					} else
-						error = "The max uses must be greater than 0 or " + CustomItem.UNBREAKABLE_TOOL_DURABILITY
-								+ " to become unbreakable";
-				} catch (NumberFormatException nfe) {
-					error = "The knockback strength must be an integer";
-				}
-			} catch (NumberFormatException nfe) {
-				error = "The speed multiplier must be a number";
-			}
-		} catch (NumberFormatException nfe) {
-			error = "The damage multiplier must be a number";
-		}
-		return error;
+	protected String create(short damage, long maxUses, int entityHitDurabilityLoss, int blockBreakDurabilityLoss) {
+		Option.Double damageMultiplier = this.damageMultiplier.getDouble();
+		if (!damageMultiplier.hasValue()) return "The damage multiplier must be a positive number";
+		Option.Double speedMultiplier = this.speedMultiplier.getDouble();
+		if (!speedMultiplier.hasValue()) return "The speed multiplier must be a positive number";
+		Option.Int knockbackStrength = this.knockbackStrength.getInt();
+		if (!knockbackStrength.hasValue()) return "The knockback strength must be a positive integer";
+		Option.Int shootDurabilityLoss = this.shootDurabilityLoss.getInt();
+		if (!shootDurabilityLoss.hasValue()) return "The shoot durability loss must be a positive integer";
+		return menu.getSet().addBow(new CustomBow(damage, name.getText(), getDisplayName(), lore, attributes, 
+				enchantments, maxUses, damageMultiplier.getValue(), speedMultiplier.getValue(), 
+				knockbackStrength.getValue(), gravity.isChecked(), allowEnchanting.isChecked(), 
+				allowAnvil.isChecked(), repairItem.getIngredient(),
+				(BowTextures) textureSelect.currentTexture, itemFlags, entityHitDurabilityLoss,
+				blockBreakDurabilityLoss, shootDurabilityLoss.getValue()), true);
 	}
 
 	@Override
-	protected String apply(short damage, long maxUses) {
-		String error = null;
-		try {
-			double damageMultiplier = Double.parseDouble(this.damageMultiplier.getText());
-			try {
-				double speedMultiplier = Double.parseDouble(this.speedMultiplier.getText());
-				try {
-					int knockbackStrength = Integer.parseInt(this.knockbackStrength.getText());
-					if (maxUses > 0 || maxUses == CustomItem.UNBREAKABLE_TOOL_DURABILITY) {
-						error = menu.getSet().changeBow(previous, damage, name.getText(), getDisplayName(), lore,
-								attributes, enchantments, damageMultiplier, speedMultiplier, knockbackStrength,
-								gravity.isChecked(), allowEnchanting.isChecked(), allowAnvil.isChecked(),
-								repairItem.getIngredient(), maxUses, (BowTextures) textureSelect.currentTexture, true);
-					} else
-						error = "The max uses must be greater than 0 or " + CustomItem.UNBREAKABLE_TOOL_DURABILITY
-								+ " to become unbreakable";
-				} catch (NumberFormatException nfe) {
-					error = "The knockback strength must be an integer";
-				}
-			} catch (NumberFormatException nfe) {
-				error = "The speed multiplier must be a number";
-			}
-		} catch (NumberFormatException nfe) {
-			error = "The damage multiplier must be a number";
-		}
-		return error;
+	protected String apply(short damage, long maxUses, int entityHitDurabilityLoss, int blockBreakDurabilityLoss) {
+		Option.Double damageMultiplier = this.damageMultiplier.getDouble();
+		if (!damageMultiplier.hasValue()) return "The damage multiplier must be a positive number";
+		Option.Double speedMultiplier = this.speedMultiplier.getDouble();
+		if (!speedMultiplier.hasValue()) return "The speed multiplier must be a positive number";
+		Option.Int knockbackStrength = this.knockbackStrength.getInt();
+		if (!knockbackStrength.hasValue()) return "The knockback strength must be a positive integer";
+		Option.Int shootDurabilityLoss = this.shootDurabilityLoss.getInt();
+		if (!shootDurabilityLoss.hasValue()) return "The shoot durability loss must be a positive integer";
+		return menu.getSet().changeBow(previous, damage, name.getText(), getDisplayName(), lore, attributes, 
+				enchantments, damageMultiplier.getValue(), speedMultiplier.getValue(), 
+				knockbackStrength.getValue(), gravity.isChecked(), allowEnchanting.isChecked(), 
+				allowAnvil.isChecked(), repairItem.getIngredient(), maxUses, 
+				(BowTextures) textureSelect.currentTexture, itemFlags, entityHitDurabilityLoss,
+				blockBreakDurabilityLoss, shootDurabilityLoss.getValue(), true);
 	}
 }

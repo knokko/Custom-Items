@@ -43,8 +43,7 @@ public class SimpleCustomItem extends CustomItem {
 	@Override
 	public void export(BitOutput output) {
 		
-		/*
-		 * This is for ENCODING_SIMPLE_1
+		/* First encoding
 		output.addByte(ItemEncoding.ENCODING_SIMPLE_1);
 		output.addJavaString(itemType.name());
 		output.addShort(itemDamage);
@@ -55,8 +54,7 @@ public class SimpleCustomItem extends CustomItem {
 			output.addJavaString(line);
 		*/
 		
-		/*
-		 * This is for ENCODING_SIMPLE_2
+		/* Second encoding
 		output.addByte(ItemEncoding.ENCODING_SIMPLE_2);
 		output.addJavaString(itemType.name());
 		output.addShort(itemDamage);
@@ -74,7 +72,7 @@ public class SimpleCustomItem extends CustomItem {
 		}
 		*/
 		
-		/*
+		/* Third encoding
 		output.addByte(ItemEncoding.ENCODING_SIMPLE_3);
 		output.addJavaString(itemType.name());
 		output.addShort(itemDamage);
@@ -97,6 +95,7 @@ public class SimpleCustomItem extends CustomItem {
 		}
 		*/
 		
+		/* Previous encoding
 		output.addByte(ItemEncoding.ENCODING_SIMPLE_4);
 		output.addJavaString(itemType.name());
 		output.addShort(itemDamage);
@@ -117,7 +116,30 @@ public class SimpleCustomItem extends CustomItem {
 			output.addString(enchantment.getType().name());
 			output.addInt(enchantment.getLevel());
 		}
+		output.addByte((byte) maxStacksize);*/
+		
+		output.addByte(ItemEncoding.ENCODING_SIMPLE_5);
+		output.addJavaString(itemType.name());
+		output.addShort(itemDamage);
+		output.addJavaString(name);
+		output.addJavaString(displayName);
+		output.addByte((byte) lore.length);
+		for(String line : lore)
+			output.addJavaString(line);
+		output.addByte((byte) attributes.length);
+		for (AttributeModifier attribute : attributes) {
+			output.addJavaString(attribute.getAttribute().name());
+			output.addJavaString(attribute.getSlot().name());
+			output.addNumber(attribute.getOperation().ordinal(), (byte) 2, false);
+			output.addDouble(attribute.getValue());
+		}
+		output.addByte((byte) defaultEnchantments.length);
+		for (Enchantment enchantment : defaultEnchantments) {
+			output.addString(enchantment.getType().name());
+			output.addInt(enchantment.getLevel());
+		}
 		output.addByte((byte) maxStacksize);
+		output.addBooleans(itemFlags);
 	}
 	
 	public int getMaxStacksize() {

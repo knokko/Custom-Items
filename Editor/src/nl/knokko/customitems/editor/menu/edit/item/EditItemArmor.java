@@ -35,26 +35,37 @@ import nl.knokko.customitems.item.CustomItemType.Category;
 import nl.knokko.gui.component.WrapperComponent;
 import nl.knokko.gui.component.text.ConditionalTextComponent;
 import nl.knokko.gui.component.text.IntEditField;
+import nl.knokko.gui.component.text.TextComponent;
+import nl.knokko.gui.util.Option;
 
 public class EditItemArmor extends EditItemTool {
+	
+	private static final int DEFAULT_RED = 160;
+	private static final int DEFAULT_GREEN = 101;
+	private static final int DEFAULT_BLUE = 64;
 	
 	private final CustomArmor previous;
 	
 	private final ColorEditField red;
 	private final ColorEditField green;
 	private final ColorEditField blue;
+	
+	private final IntEditField onAttackedDurabilityLoss;
 
 	public EditItemArmor(EditMenu menu, CustomArmor previous, Category toolCategory) {
 		super(menu, previous, toolCategory);
 		this.previous = previous;
 		if (previous == null) {
-			red = new ColorEditField(160);
-			green = new ColorEditField(101);
-			blue = new ColorEditField(64);
+			red = new ColorEditField(DEFAULT_RED);
+			green = new ColorEditField(DEFAULT_GREEN);
+			blue = new ColorEditField(DEFAULT_BLUE);
+			onAttackedDurabilityLoss = new IntEditField(1, 0, EditProps.EDIT_BASE, EditProps.EDIT_ACTIVE);
 		} else {
 			red = new ColorEditField(previous.getRed());
 			green = new ColorEditField(previous.getGreen());
 			blue = new ColorEditField(previous.getBlue());
+			onAttackedDurabilityLoss = new IntEditField(previous.getOnAttackedDurabilityLoss(), 0, 
+					EditProps.EDIT_BASE, EditProps.EDIT_ACTIVE);
 		}
 	}
 	
@@ -131,27 +142,60 @@ public class EditItemArmor extends EditItemTool {
 		return new AttributeModifier(Attribute.ARMOR, slot, Operation.ADD, armor);
 	}
 	
+	private int getColorValue(ColorEditField field, int defaultValue) {
+		if (field.isActive()) {
+			Option.Int value = field.getComponent().getInt();
+			if (value.hasValue()) {
+				return value.getValue();
+			} else {
+				return -1;
+			}
+		} else {
+			return defaultValue;
+		}
+	}
+	
 	@Override
-	protected String create(short damage, long maxUses) {
+	protected String create(short damage, long maxUses, int entityHitDurabilityLoss, int blockBreakDurabilityLoss) {
+		Option.Int durabilityLoss = onAttackedDurabilityLoss.getInt();
+		if (!durabilityLoss.hasValue()) return "The on attacked durability loss must be a positive integer";
+		int redValue = getColorValue(red, DEFAULT_RED);
+		if (redValue == -1) return "The red must be an integer at least 0 and at most 255";
+		int greenValue = getColorValue(green, DEFAULT_GREEN);
+		if (greenValue == -1) return "The green must be an integer at least 0 and at most 255";
+		int blueValue = getColorValue(blue, DEFAULT_BLUE);
+		if (blueValue == -1) return "The blue must be an integer at least 0 and at most 255";
 		return menu.getSet().addArmor(
 				new CustomArmor(internalType.currentType, damage, name.getText(), getDisplayName(),
 						lore, attributes, enchantments, maxUses, allowEnchanting.isChecked(),
 						allowAnvil.isChecked(), repairItem.getIngredient(), textureSelect.currentTexture,
-						red.getComponent().getInt(), green.getComponent().getInt(), blue.getComponent().getInt(),
-						itemFlags),
+						redValue, greenValue, blueValue, itemFlags, entityHitDurabilityLoss, 
+						blockBreakDurabilityLoss, durabilityLoss.getValue()),
 						true);
 	}
 	
-	protected String apply(short damage, long maxUses) {
+	@Override
+	protected String apply(short damage, long maxUses, int entityHit, int blockBreak) {
+		Option.Int durabilityLoss = onAttackedDurabilityLoss.getInt();
+		if (!durabilityLoss.hasValue()) return "The on attacked durability loss must be a positive integer";
+		int redValue = getColorValue(red, DEFAULT_RED);
+		if (redValue == -1) return "The red must be an integer at least 0 and at most 255";
+		int greenValue = getColorValue(green, DEFAULT_GREEN);
+		if (greenValue == -1) return "The green must be an integer at least 0 and at most 255";
+		int blueValue = getColorValue(blue, DEFAULT_BLUE);
+		if (blueValue == -1) return "The blue must be an integer at least 0 and at most 255";
 		return menu.getSet().changeArmor(previous, internalType.currentType, damage, name.getText(),
 				getDisplayName(), lore, attributes, enchantments, allowEnchanting.isChecked(),
 				allowAnvil.isChecked(), repairItem.getIngredient(), maxUses, textureSelect.currentTexture,
-				red.getComponent().getInt(), green.getComponent().getInt(), blue.getComponent().getInt(), true);
+				redValue, greenValue, blueValue, itemFlags, entityHit, blockBreak, durabilityLoss.getValue(),
+				true);
 	}
 	
 	@Override
 	protected void addComponents() {
 		super.addComponents();
+		addComponent(new TextComponent("Durability loss on taking damage:", EditProps.LABEL), 0.6f, 0.35f, 0.84f, 0.425f);
+		addComponent(onAttackedDurabilityLoss, 0.85f, 0.35f, 0.9f, 0.425f);
 		addComponent(new ConditionalTextComponent("Red: ", EditProps.LABEL, () -> {return showColors();}), 0.78f, 0.35f, 0.84f, 0.45f);
 		addComponent(new ConditionalTextComponent("Green: ", EditProps.LABEL, () -> {return showColors();}), 0.75f, 0.24f, 0.84f, 0.34f);
 		addComponent(new ConditionalTextComponent("Blue: ", EditProps.LABEL, () -> {return showColors();}), 0.77f, 0.13f, 0.84f, 0.23f);
@@ -171,7 +215,7 @@ public class EditItemArmor extends EditItemTool {
 	private class ColorEditField extends WrapperComponent<IntEditField> {
 
 		public ColorEditField(int initial) {
-			super(new IntEditField(initial, EditProps.EDIT_BASE, EditProps.EDIT_ACTIVE, 0, 255));
+			super(new IntEditField(initial, 0, 255, EditProps.EDIT_BASE, EditProps.EDIT_ACTIVE));
 		}
 		
 		@Override
