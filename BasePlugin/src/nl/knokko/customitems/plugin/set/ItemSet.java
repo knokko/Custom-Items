@@ -43,6 +43,7 @@ import nl.knokko.customitems.item.AttributeModifier.Attribute;
 import nl.knokko.customitems.item.AttributeModifier.Operation;
 import nl.knokko.customitems.item.AttributeModifier.Slot;
 import nl.knokko.customitems.item.CustomItemType;
+import nl.knokko.customitems.item.CustomToolDurability;
 import nl.knokko.customitems.item.Enchantment;
 import nl.knokko.customitems.item.EnchantmentType;
 import nl.knokko.customitems.item.ItemFlag;
@@ -108,18 +109,26 @@ public class ItemSet {
 			return loadSimpleItem3(input);
 		else if (encoding == ItemEncoding.ENCODING_SIMPLE_4)
 			return loadSimpleItem4(input);
+		else if (encoding == ItemEncoding.ENCODING_SIMPLE_5)
+			return loadSimpleItem5(input);
 		else if (encoding == ItemEncoding.ENCODING_TOOL_2)
 			return loadTool2(input);
 		else if (encoding == ItemEncoding.ENCODING_TOOL_3)
 			return loadTool3(input);
 		else if (encoding == ItemEncoding.ENCODING_TOOL_4)
 			return loadTool4(input);
+		else if (encoding == ItemEncoding.ENCODING_TOOL_5)
+			return loadTool5(input);
 		else if (encoding == ItemEncoding.ENCODING_BOW_3)
 			return loadBow3(input);
 		else if (encoding == ItemEncoding.ENCODING_BOW_4)
 			return loadBow4(input);
+		else if (encoding == ItemEncoding.ENCODING_BOW_5)
+			return loadBow5(input);
 		else if (encoding == ItemEncoding.ENCODING_ARMOR_4)
 			return loadArmor4(input);
+		else if (encoding == ItemEncoding.ENCODING_ARMOR_5)
+			return loadArmor5(input);
 		throw new IllegalArgumentException("Unknown encoding: " + encoding);
 	}
 
@@ -183,6 +192,26 @@ public class ItemSet {
 		int stackSize = input.readByte();
 		return new SimpleCustomItem(itemType, damage, name, displayName, lore, attributes, defaultEnchantments, stackSize, ItemFlag.getDefaultValues());
 	}
+	
+	private CustomItem loadSimpleItem5(BitInput input) {
+		CustomItemType itemType = CustomItemType.valueOf(input.readJavaString());
+		short damage = input.readShort();
+		String name = input.readJavaString();
+		String displayName = input.readJavaString();
+		String[] lore = new String[input.readByte() & 0xFF];
+		for (int index = 0; index < lore.length; index++)
+			lore[index] = input.readJavaString();
+		AttributeModifier[] attributes = new AttributeModifier[input.readByte() & 0xFF];
+		for (int index = 0; index < attributes.length; index++)
+			attributes[index] = loadAttribute2(input);
+		Enchantment[] defaultEnchantments = new Enchantment[input.readByte() & 0xFF];
+		for (int index = 0; index < defaultEnchantments.length; index++)
+			defaultEnchantments[index] = new Enchantment(EnchantmentType.valueOf(input.readString()), input.readInt());
+		int stackSize = input.readByte();
+		boolean[] itemFlags = input.readBooleans(6);
+		return new SimpleCustomItem(itemType, damage, name, displayName, lore, attributes, defaultEnchantments,
+				stackSize, itemFlags);
+	}
 
 	private CustomItem loadTool2(BitInput input) {
 		CustomItemType itemType = CustomItemType.valueOf(input.readJavaString());
@@ -199,7 +228,9 @@ public class ItemSet {
 		boolean allowEnchanting = input.readBoolean();
 		boolean allowAnvil = input.readBoolean();
 		return new CustomTool(itemType, damage, name, displayName, lore, attributes, new Enchantment[0], durability, allowEnchanting,
-				allowAnvil, new NoIngredient(), ItemFlag.getDefaultValues());
+				allowAnvil, new NoIngredient(), ItemFlag.getDefaultValues(),
+				CustomToolDurability.defaultEntityHitDurabilityLoss(itemType),
+				CustomToolDurability.defaultBlockBreakDurabilityLoss(itemType));
 	}
 
 	private CustomItem loadTool3(BitInput input) {
@@ -218,7 +249,9 @@ public class ItemSet {
 		boolean allowAnvil = input.readBoolean();
 		Ingredient repairItem = loadIngredient(input);
 		return new CustomTool(itemType, damage, name, displayName, lore, attributes, new Enchantment[0], durability, allowEnchanting,
-				allowAnvil, repairItem, ItemFlag.getDefaultValues());
+				allowAnvil, repairItem, ItemFlag.getDefaultValues(),
+				CustomToolDurability.defaultEntityHitDurabilityLoss(itemType),
+				CustomToolDurability.defaultBlockBreakDurabilityLoss(itemType));
 	}
 	
 	private CustomItem loadTool4(BitInput input) {
@@ -240,7 +273,34 @@ public class ItemSet {
 		boolean allowAnvil = input.readBoolean();
 		Ingredient repairItem = loadIngredient(input);
 		return new CustomTool(itemType, damage, name, displayName, lore, attributes, defaultEnchantments, durability, allowEnchanting,
-				allowAnvil, repairItem, ItemFlag.getDefaultValues());
+				allowAnvil, repairItem, ItemFlag.getDefaultValues(),
+				CustomToolDurability.defaultEntityHitDurabilityLoss(itemType),
+				CustomToolDurability.defaultBlockBreakDurabilityLoss(itemType));
+	}
+	
+	private CustomItem loadTool5(BitInput input) {
+		CustomItemType itemType = CustomItemType.valueOf(input.readJavaString());
+		short damage = input.readShort();
+		String name = input.readJavaString();
+		String displayName = input.readJavaString();
+		String[] lore = new String[input.readByte() & 0xFF];
+		for (int index = 0; index < lore.length; index++)
+			lore[index] = input.readJavaString();
+		AttributeModifier[] attributes = new AttributeModifier[input.readByte() & 0xFF];
+		for (int index = 0; index < attributes.length; index++)
+			attributes[index] = loadAttribute2(input);
+		Enchantment[] defaultEnchantments = new Enchantment[input.readByte() & 0xFF];
+		for (int index = 0; index < defaultEnchantments.length; index++)
+			defaultEnchantments[index] = new Enchantment(EnchantmentType.valueOf(input.readString()), input.readInt());
+		long durability = input.readLong();
+		boolean allowEnchanting = input.readBoolean();
+		boolean allowAnvil = input.readBoolean();
+		Ingredient repairItem = loadIngredient(input);
+		boolean[] itemFlags = input.readBooleans(6);
+		int entityHitDurabilityLoss = input.readInt();
+		int blockBreakDurabilityLoss = input.readInt();
+		return new CustomTool(itemType, damage, name, displayName, lore, attributes, defaultEnchantments, durability, allowEnchanting,
+				allowAnvil, repairItem, itemFlags, entityHitDurabilityLoss, blockBreakDurabilityLoss);
 	}
 	
 	private CustomItem loadArmor4(BitInput input) {
@@ -269,7 +329,39 @@ public class ItemSet {
 			color = null;
 		}
 		return new CustomArmor(itemType, damage, name, displayName, lore, attributes, defaultEnchantments, durability, allowEnchanting,
-				allowAnvil, repairItem, color, ItemFlag.getDefaultValues());
+				allowAnvil, repairItem, color, ItemFlag.getDefaultValues(), 0, 0);
+	}
+	
+	private CustomItem loadArmor5(BitInput input) {
+		CustomItemType itemType = CustomItemType.valueOf(input.readJavaString());
+		short damage = input.readShort();
+		String name = input.readJavaString();
+		String displayName = input.readJavaString();
+		String[] lore = new String[input.readByte() & 0xFF];
+		for (int index = 0; index < lore.length; index++)
+			lore[index] = input.readJavaString();
+		AttributeModifier[] attributes = new AttributeModifier[input.readByte() & 0xFF];
+		for (int index = 0; index < attributes.length; index++)
+			attributes[index] = loadAttribute2(input);
+		Enchantment[] defaultEnchantments = new Enchantment[input.readByte() & 0xFF];
+		for (int index = 0; index < defaultEnchantments.length; index++)
+			defaultEnchantments[index] = new Enchantment(EnchantmentType.valueOf(input.readString()), input.readInt());
+		long durability = input.readLong();
+		boolean allowEnchanting = input.readBoolean();
+		boolean allowAnvil = input.readBoolean();
+		Ingredient repairItem = loadIngredient(input);
+		Color color;
+		if (itemType == CustomItemType.LEATHER_BOOTS || itemType == CustomItemType.LEATHER_LEGGINGS
+				|| itemType == CustomItemType.LEATHER_CHESTPLATE || itemType == CustomItemType.LEATHER_HELMET) {
+			color = Color.fromRGB(input.readByte() & 0xFF, input.readByte() & 0xFF, input.readByte() & 0xFF);
+		} else {
+			color = null;
+		}
+		boolean[] itemFlags = input.readBooleans(6);
+		int entityHitDurabilityLoss = input.readInt();
+		int blockBreakDurabilityLoss = input.readInt();
+		return new CustomArmor(itemType, damage, name, displayName, lore, attributes, defaultEnchantments, durability, allowEnchanting,
+				allowAnvil, repairItem, color, itemFlags, entityHitDurabilityLoss, blockBreakDurabilityLoss);
 	}
 
 	private CustomBow loadBow3(BitInput input) {
@@ -290,8 +382,9 @@ public class ItemSet {
 		boolean allowEnchanting = input.readBoolean();
 		boolean allowAnvil = input.readBoolean();
 		Ingredient repairItem = loadIngredient(input);
-		return new CustomBow(damage, name, displayName, lore, attributes, new Enchantment[0], durability, damageMultiplier, speedMultiplier,
-				knockbackStrength, gravity, allowEnchanting, allowAnvil, repairItem, ItemFlag.getDefaultValues());
+		return new CustomBow(damage, name, displayName, lore, attributes, new Enchantment[0], durability, 
+				damageMultiplier, speedMultiplier, knockbackStrength, gravity, allowEnchanting, allowAnvil, 
+				repairItem, ItemFlag.getDefaultValues(), 0, 0, 1);
 	}
 	
 	private CustomBow loadBow4(BitInput input) {
@@ -315,8 +408,39 @@ public class ItemSet {
 		boolean allowEnchanting = input.readBoolean();
 		boolean allowAnvil = input.readBoolean();
 		Ingredient repairItem = loadIngredient(input);
-		return new CustomBow(damage, name, displayName, lore, attributes, defaultEnchantments, durability, damageMultiplier, speedMultiplier,
-				knockbackStrength, gravity, allowEnchanting, allowAnvil, repairItem, ItemFlag.getDefaultValues());
+		return new CustomBow(damage, name, displayName, lore, attributes, defaultEnchantments, durability, 
+				damageMultiplier, speedMultiplier, knockbackStrength, gravity, allowEnchanting, allowAnvil, 
+				repairItem, ItemFlag.getDefaultValues(), 0, 0, 1);
+	}
+	
+	private CustomBow loadBow5(BitInput input) {
+		short damage = input.readShort();
+		String name = input.readJavaString();
+		String displayName = input.readJavaString();
+		String[] lore = new String[input.readByte() & 0xFF];
+		for (int index = 0; index < lore.length; index++)
+			lore[index] = input.readJavaString();
+		AttributeModifier[] attributes = new AttributeModifier[input.readByte() & 0xFF];
+		for (int index = 0; index < attributes.length; index++)
+			attributes[index] = loadAttribute2(input);
+		Enchantment[] defaultEnchantments = new Enchantment[input.readByte() & 0xFF];
+		for (int index = 0; index < defaultEnchantments.length; index++)
+			defaultEnchantments[index] = new Enchantment(EnchantmentType.valueOf(input.readString()), input.readInt());
+		long durability = input.readLong();
+		double damageMultiplier = input.readDouble();
+		double speedMultiplier = input.readDouble();
+		int knockbackStrength = input.readInt();
+		boolean gravity = input.readBoolean();
+		boolean allowEnchanting = input.readBoolean();
+		boolean allowAnvil = input.readBoolean();
+		Ingredient repairItem = loadIngredient(input);
+		boolean[] itemFlags = input.readBooleans(6);
+		int entityHitDurabilityLoss = input.readInt();
+		int blockBreakDurabilityLoss = input.readInt();
+		int shootDurabilityLoss = input.readInt();
+		return new CustomBow(damage, name, displayName, lore, attributes, defaultEnchantments, durability, 
+				damageMultiplier, speedMultiplier, knockbackStrength, gravity, allowEnchanting, allowAnvil, 
+				repairItem, itemFlags, entityHitDurabilityLoss, blockBreakDurabilityLoss, shootDurabilityLoss);
 	}
 
 	private AttributeModifier loadAttribute2(BitInput input) {
@@ -328,7 +452,6 @@ public class ItemSet {
 		items[index] = item;
 		Short2ObjectMap<CustomItem> map = customItemMap.get(item.getMaterial());
 		if (map == null) {
-			//map = new org.bukkit.craftbukkit.libs.it.unimi.dsi.fastutil.shorts.Short2ObjectAVLTreeMap<>();
 			map = new org.bukkit.craftbukkit.libs.it.unimi.dsi.fastutil.shorts.Short2ObjectOpenHashMap<>();
 			customItemMap.put(item.getMaterial(), map);
 		}
@@ -426,5 +549,13 @@ public class ItemSet {
 			}
 		}
 		return null;
+	}
+	
+	/**
+	 * Don't modify this array, only read it!
+	 * @return The array containing all currently loaded custom items
+	 */
+	public CustomItem[] getBackingItems() {
+		return items;
 	}
 }

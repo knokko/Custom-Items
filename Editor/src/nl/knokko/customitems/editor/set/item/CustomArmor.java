@@ -36,18 +36,15 @@ public class CustomArmor extends CustomTool {
 	private int green;
 	private int blue;
 	
-	private int onAttackedDurabilityLoss;
-	
 	public CustomArmor(CustomItemType itemType, short itemDamage, String name, String displayName, String[] lore,
 			AttributeModifier[] attributes, Enchantment[] defaultEnchantments, long durability, boolean allowEnchanting,
 			boolean allowAnvil, Ingredient repairItem, NamedImage texture, int red, int green, int blue, 
-			boolean[] itemFlags, int entityHitDurabilityLoss, int blockBreakDurabilityLoss, int onAttackedDurabilityLoss) {
+			boolean[] itemFlags, int entityHitDurabilityLoss, int blockBreakDurabilityLoss) {
 		super(itemType, itemDamage, name, displayName, lore, attributes, defaultEnchantments, durability,
 				allowEnchanting, allowAnvil, repairItem, texture, itemFlags, entityHitDurabilityLoss, blockBreakDurabilityLoss);
 		this.red = red;
 		this.green = green;
 		this.blue = blue;
-		this.onAttackedDurabilityLoss = onAttackedDurabilityLoss;
 	}
 	
 	@Override
@@ -110,7 +107,7 @@ public class CustomArmor extends CustomTool {
 			output.addBytes((byte) red, (byte) green, (byte) blue);
 		}
 		output.addBooleans(itemFlags);
-		output.addInts(entityHitDurabilityLoss, blockBreakDurabilityLoss, onAttackedDurabilityLoss);
+		output.addInts(entityHitDurabilityLoss, blockBreakDurabilityLoss);
 	}
 	
 	private boolean isLeather() {
@@ -130,10 +127,6 @@ public class CustomArmor extends CustomTool {
 		return blue;
 	}
 	
-	public int getOnAttackedDurabilityLoss() {
-		return onAttackedDurabilityLoss;
-	}
-	
 	public void setRed(int newRed) {
 		red = newRed;
 	}
@@ -144,9 +137,5 @@ public class CustomArmor extends CustomTool {
 	
 	public void setBlue(int newBlue) {
 		blue = newBlue;
-	}
-	
-	public void setOnAttackedDurabilityLoss(int newDurabilityLoss) {
-		onAttackedDurabilityLoss = newDurabilityLoss;
 	}
 }

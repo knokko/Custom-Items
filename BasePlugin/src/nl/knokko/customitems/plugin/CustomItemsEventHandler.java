@@ -33,6 +33,7 @@ import java.util.UUID;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
+import org.bukkit.Sound;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Arrow;
 import org.bukkit.entity.Entity;
@@ -49,7 +50,6 @@ import org.bukkit.event.enchantment.PrepareItemEnchantEvent;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
-import org.bukkit.event.entity.EntityDamageEvent.DamageModifier;
 import org.bukkit.event.entity.EntityShootBowEvent;
 import org.bukkit.event.inventory.InventoryAction;
 import org.bukkit.event.inventory.InventoryClickEvent;
@@ -104,6 +104,7 @@ public class CustomItemsEventHandler implements Listener {
 					if (tool.getItemType().getMainCategory() == Category.HOE) {
 						Material type = event.getClickedBlock().getType();
 						if ((type == Material.DIRT || type == Material.GRASS) && tool.decreaseDurability(item, 1)) {
+							playBreakSound(event.getPlayer());
 							if (event.getHand() == EquipmentSlot.HAND)
 								event.getPlayer().getInventory().setItemInMainHand(null);
 							else
@@ -113,6 +114,10 @@ public class CustomItemsEventHandler implements Listener {
 				}
 			}
 		}
+	}
+	
+	public static void playBreakSound(Player player) {
+		player.playSound(player.getLocation(), Sound.ENTITY_ITEM_BREAK, 1, 1);
 	}
 
 	@EventHandler(ignoreCancelled = true)
@@ -133,10 +138,11 @@ public class CustomItemsEventHandler implements Listener {
 				CustomBow bow = (CustomBow) customItem;
 				Entity projectile = event.getProjectile();
 				if (projectile instanceof Arrow) {
-					if (event.getEntity() instanceof Player && bow.decreaseDurability(event.getBow(), 1)) {
+					if (event.getEntity() instanceof Player && bow.decreaseDurability(event.getBow(), bow.getShootDurabilityLoss())) {
 						Player player = (Player) event.getEntity();
-						if (player.getInventory().getItemInMainHand() != null
-								&& player.getInventory().getItemInMainHand().getType() == Material.BOW) {
+						playBreakSound(player);
+						ItemStack mainHand = player.getInventory().getItemInMainHand();
+						if (mainHand != null && CustomItemsPlugin.getInstance().getSet().getItem(mainHand) == bow) {
 							player.getInventory().setItemInMainHand(null);
 						} else {
 							player.getInventory().setItemInOffHand(null);
@@ -225,8 +231,10 @@ public class CustomItemsEventHandler implements Listener {
 				event.setCancelled(true);
 			else if (customMain instanceof CustomTool) {
 				CustomTool tool = (CustomTool) customMain;
-				if (tool.decreaseDurability(main, 1))
+				if (tool.decreaseDurability(main, 1)) {
+					playBreakSound(event.getPlayer());
 					event.getPlayer().getInventory().setItemInMainHand(null);
+				}
 			} else
 				Bukkit.getLogger().warning("Interesting custom main shear: " + customMain);
 		} else if (customOff != null) {
@@ -234,8 +242,10 @@ public class CustomItemsEventHandler implements Listener {
 				event.setCancelled(true);
 			else if (customOff instanceof CustomTool) {
 				CustomTool tool = (CustomTool) customOff;
-				if (tool.decreaseDurability(off, 1))
+				if (tool.decreaseDurability(off, 1)) {
+					playBreakSound(event.getPlayer());
 					event.getPlayer().getInventory().setItemInOffHand(null);
+				}
 			} else
 				Bukkit.getLogger().warning("Interesting custom off shear: " + customOff);
 		}
@@ -272,22 +282,28 @@ public class CustomItemsEventHandler implements Listener {
 	@EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
 	public void onEntityDamage(EntityDamageEvent event) {
 		if (event.getEntity() instanceof Player) {
-			double original = event.getOriginalDamage(DamageModifier.BASE);
+			Player player = (Player) event.getEntity();
+			double original = event.getDamage();
 
 			// Only act if armor reduced the damage
 			if (isReducedByArmor(event.getCause())) {
+				
 				int armorDamage = Math.max(1, (int) (original / 4));
-				EntityEquipment e = ((Player) event.getEntity()).getEquipment();
+				EntityEquipment e = player.getEquipment();
 				if (decreaseCustomArmorDurability(e.getHelmet(), armorDamage)) {
+					playBreakSound(player);
 					e.setHelmet(null);
 				}
 				if (decreaseCustomArmorDurability(e.getChestplate(), armorDamage)) {
+					playBreakSound(player);
 					e.setChestplate(null);
 				}
 				if (decreaseCustomArmorDurability(e.getLeggings(), armorDamage)) {
+					playBreakSound(player);
 					e.setLeggings(null);
 				}
 				if (decreaseCustomArmorDurability(e.getBoots(), armorDamage)) {
+					playBreakSound(player);
 					e.setBoots(null);
 				}
 			}

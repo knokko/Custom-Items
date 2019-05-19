@@ -63,6 +63,7 @@ import nl.knokko.customitems.encoding.ItemEncoding;
 import nl.knokko.customitems.encoding.RecipeEncoding;
 import nl.knokko.customitems.item.AttributeModifier;
 import nl.knokko.customitems.item.CustomItemType;
+import nl.knokko.customitems.item.CustomToolDurability;
 import nl.knokko.customitems.item.Enchantment;
 import nl.knokko.customitems.item.EnchantmentType;
 import nl.knokko.customitems.item.ItemFlag;
@@ -291,7 +292,8 @@ public class ItemSet {
 			throw new IllegalArgumentException("Can't find texture " + imageName);
 		return new CustomTool(itemType, damage, name, displayName, lore, attributes, new Enchantment[0], durability, allowEnchanting,
 				allowAnvil, new NoIngredient(), texture, ItemFlag.getDefaultValues(),
-				CustomTool.defaultEntityHitDurabilityLoss(itemType), CustomTool.defaultBlockBreakDurabilityLoss(itemType));
+				CustomToolDurability.defaultEntityHitDurabilityLoss(itemType), 
+				CustomToolDurability.defaultBlockBreakDurabilityLoss(itemType));
 	}
 
 	private CustomItem loadTool3(BitInput input) {
@@ -322,7 +324,8 @@ public class ItemSet {
 			throw new IllegalArgumentException("Can't find texture " + imageName);
 		return new CustomTool(itemType, damage, name, displayName, lore, attributes, new Enchantment[0], durability, allowEnchanting,
 				allowAnvil, repairItem, texture, ItemFlag.getDefaultValues(), 
-				CustomTool.defaultEntityHitDurabilityLoss(itemType), CustomTool.defaultBlockBreakDurabilityLoss(itemType));
+				CustomToolDurability.defaultEntityHitDurabilityLoss(itemType), 
+				CustomToolDurability.defaultBlockBreakDurabilityLoss(itemType));
 	}
 	
 	private CustomItem loadTool4(BitInput input) {
@@ -356,7 +359,8 @@ public class ItemSet {
 			throw new IllegalArgumentException("Can't find texture " + imageName);
 		return new CustomTool(itemType, damage, name, displayName, lore, attributes, defaultEnchantments, durability, allowEnchanting,
 				allowAnvil, repairItem, texture, ItemFlag.getDefaultValues(),
-				CustomTool.defaultEntityHitDurabilityLoss(itemType), CustomTool.defaultBlockBreakDurabilityLoss(itemType));
+				CustomToolDurability.defaultEntityHitDurabilityLoss(itemType), 
+				CustomToolDurability.defaultBlockBreakDurabilityLoss(itemType));
 	}
 	
 	private CustomItem loadTool5(BitInput input) {
@@ -559,7 +563,7 @@ public class ItemSet {
 		if (texture == null)
 			throw new IllegalArgumentException("Can't find texture " + imageName);
 		return new CustomArmor(itemType, damage, name, displayName, lore, attributes, defaultEnchantments, durability, allowEnchanting,
-				allowAnvil, repairItem, texture, red, green, blue, ItemFlag.getDefaultValues(), 0, 0, 1);
+				allowAnvil, repairItem, texture, red, green, blue, ItemFlag.getDefaultValues(), 0, 0);
 	}
 	
 	private CustomItem loadArmor5(BitInput input) {
@@ -599,7 +603,6 @@ public class ItemSet {
 		boolean[] itemFlags = input.readBooleans(6);
 		int entityHitDurabilityLoss = input.readInt();
 		int blockBreakDurabilityLoss = input.readInt();
-		int attackedDurabilityLoss = input.readInt();
 		
 		String imageName = input.readJavaString();
 		NamedImage texture = null;
@@ -614,7 +617,7 @@ public class ItemSet {
 		
 		return new CustomArmor(itemType, damage, name, displayName, lore, attributes, defaultEnchantments, durability, allowEnchanting,
 				allowAnvil, repairItem, texture, red, green, blue, itemFlags, entityHitDurabilityLoss, 
-				blockBreakDurabilityLoss, attackedDurabilityLoss);
+				blockBreakDurabilityLoss);
 	}
 
 	private AttributeModifier loadAttribute2(BitInput input) {
@@ -1496,7 +1499,7 @@ public class ItemSet {
 			Enchantment[] newEnchantments, boolean allowEnchanting, boolean allowAnvil, 
 			Ingredient repairItem, long newDurability, NamedImage newTexture, int newRed, int newGreen, 
 			int newBlue, boolean[] itemFlags, int entityHitDurabilityLoss, int blockBreakDurabilityLoss, 
-			int attackedDurabilityLoss, boolean checkClass) {
+			boolean checkClass) {
 		if (!bypassChecks()) {
 			if (armor == null)
 				return "Can't change bows that do not exist";
@@ -1508,8 +1511,6 @@ public class ItemSet {
 				return "Green (" + armor.getGreen() + ") is out of range";
 			if (armor.getBlue() < 0 || armor.getBlue() > 255)
 				return "Blue (" + armor.getBlue() + ") is out of range";
-			if (attackedDurabilityLoss < 0)
-				return "The attacked durability loss can't be negative";
 		}
 		String error = changeTool(armor, newType, newDamage, newName, newDisplayName, newLore, newAttributes, newEnchantments,
 				allowEnchanting, allowAnvil, repairItem, newDurability, newTexture, itemFlags,
@@ -1518,7 +1519,6 @@ public class ItemSet {
 			armor.setRed(newRed);
 			armor.setGreen(newGreen);
 			armor.setBlue(newBlue);
-			armor.setOnAttackedDurabilityLoss(attackedDurabilityLoss);
 			return null;
 		} else {
 			return error;

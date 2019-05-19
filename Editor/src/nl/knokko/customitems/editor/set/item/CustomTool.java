@@ -28,26 +28,9 @@ import nl.knokko.customitems.encoding.ItemEncoding;
 import nl.knokko.customitems.item.AttributeModifier;
 import nl.knokko.customitems.item.CustomItemType;
 import nl.knokko.customitems.item.Enchantment;
-import nl.knokko.customitems.item.CustomItemType.Category;
 import nl.knokko.util.bits.BitOutput;
 
 public class CustomTool extends CustomItem {
-	
-	public static int defaultEntityHitDurabilityLoss(CustomItemType itemType) {
-		Category toolCategory = itemType.getMainCategory();
-		if (toolCategory == Category.SWORD) return 1;
-		else if (toolCategory == Category.PICKAXE || toolCategory == Category.AXE
-				|| toolCategory == Category.SHOVEL) return 2;
-		return 0;
-	}
-	
-	public static int defaultBlockBreakDurabilityLoss(CustomItemType itemType) {
-		Category toolCategory = itemType.getMainCategory();
-		if (toolCategory == Category.SWORD) return 2;
-		else if (toolCategory == Category.PICKAXE || toolCategory == Category.AXE
-				|| toolCategory == Category.SHOVEL) return 1;
-		return 0;
-	}
 	
 	protected long durability;
 	

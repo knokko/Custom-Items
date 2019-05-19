@@ -35,6 +35,7 @@ import org.bukkit.inventory.ItemStack;
 
 import nl.knokko.customitems.plugin.CustomItemsPlugin;
 import nl.knokko.customitems.plugin.LanguageFile;
+import nl.knokko.customitems.plugin.set.ItemSet;
 import nl.knokko.customitems.plugin.set.item.CustomItem;
 
 public class CommandCustomItems implements CommandExecutor {
@@ -69,8 +70,7 @@ public class CommandCustomItems implements CommandExecutor {
 		}
 		if(args.length == 0) {
 			sendUseage(sender);
-		}
-		else {
+		} else {
 			if(args[0].equals("give")) {
 				if(args.length == 2 || args.length == 3 || args.length == 4) {
 					CustomItem item = CustomItemsPlugin.getInstance().getSet().getItem(args[1]);
@@ -111,8 +111,7 @@ public class CommandCustomItems implements CommandExecutor {
 				else {
 					sendGiveUseage(sender);
 				}
-			}
-			else if(args[0].equals("damage")) {
+			} else if(args[0].equals("damage")) {
 				if(sender instanceof Player) {
 					Player player = (Player) sender;
 					ItemStack item = player.getInventory().getItemInMainHand();
@@ -126,8 +125,18 @@ public class CommandCustomItems implements CommandExecutor {
 				else {
 					sender.sendMessage(lang.getCommandDamageNoPlayer());
 				}
-			}
-			else {
+			} else if (args[0].equals("list")) {
+				ItemSet set = CustomItemsPlugin.getInstance().getSet();
+				CustomItem[] items = set.getBackingItems();
+				if (items.length > 0) {
+					sender.sendMessage("All custom items:");
+					for (CustomItem item : items) {
+						sender.sendMessage(item.getName());
+					}
+				} else {
+					sender.sendMessage(ChatColor.RED + "There are 0 custom items");
+				}
+			} else {
 				sendUseage(sender);
 			}
 		}

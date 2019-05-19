@@ -35,6 +35,7 @@ import nl.knokko.customitems.item.AttributeModifier.Operation;
 import nl.knokko.customitems.item.AttributeModifier.Slot;
 import nl.knokko.customitems.item.CustomItemType;
 import nl.knokko.customitems.item.CustomItemType.Category;
+import nl.knokko.customitems.item.CustomToolDurability;
 import nl.knokko.gui.component.image.CheckboxComponent;
 import nl.knokko.gui.component.text.IntEditField;
 import nl.knokko.gui.component.text.TextComponent;
@@ -94,10 +95,10 @@ public class EditItemTool extends EditItemBase {
 				throw new Error("Unsupported category for EditItemTool: " + toolCategory);
 			internalDamage.setDirectText(Short.toString(menu.getSet().nextAvailableDamage(internalType.currentType)));
 			entityHitDurabilityLoss = new IntEditField(
-					CustomTool.defaultEntityHitDurabilityLoss(internalType.currentType), 0, 
+					CustomToolDurability.defaultEntityHitDurabilityLoss(internalType.currentType), 0, 
 					EditProps.EDIT_BASE, EditProps.EDIT_ACTIVE);
 			blockBreakDurabilityLoss = new IntEditField(
-					CustomTool.defaultBlockBreakDurabilityLoss(internalType.currentType), 0, 
+					CustomToolDurability.defaultBlockBreakDurabilityLoss(internalType.currentType), 0, 
 					EditProps.EDIT_BASE, EditProps.EDIT_ACTIVE);
 		}
 	}

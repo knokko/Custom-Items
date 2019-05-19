@@ -34,16 +34,21 @@ public class CustomBow extends CustomTool {
 	private final double speedMultiplier;
 	private final int knockbackStrength;
 	private final boolean hasGravity;
+	
+	private final int shootDurabilityLoss;
 
 	public CustomBow(short itemDamage, String name, String displayName, String[] lore, AttributeModifier[] attributes,
 			Enchantment[] defaultEnchantments, long maxDurability, double damageMultiplier, double speedMultiplier, int knockbackStrength,
-			boolean hasGravity, boolean allowEnchanting, boolean allowAnvil, Ingredient repairItem, boolean[] itemFlags) {
-		super(CustomItemType.BOW, itemDamage, name, displayName, lore, attributes, defaultEnchantments, maxDurability, allowEnchanting,
-				allowAnvil, repairItem, itemFlags);
+			boolean hasGravity, boolean allowEnchanting, boolean allowAnvil, Ingredient repairItem, 
+			boolean[] itemFlags, int entityHitDurabilityLoss, int blockBreakDurabilityLoss, int shootDurabilityLoss) {
+		super(CustomItemType.BOW, itemDamage, name, displayName, lore, attributes, defaultEnchantments, 
+				maxDurability, allowEnchanting, allowAnvil, repairItem, itemFlags, entityHitDurabilityLoss,
+				blockBreakDurabilityLoss);
 		this.damageMultiplier = damageMultiplier;
 		this.speedMultiplier = speedMultiplier;
 		this.knockbackStrength = knockbackStrength;
 		this.hasGravity = hasGravity;
+		this.shootDurabilityLoss = shootDurabilityLoss;
 	}
 
 	public double getDamageMultiplier() {
@@ -60,5 +65,9 @@ public class CustomBow extends CustomTool {
 
 	public boolean hasGravity() {
 		return hasGravity;
+	}
+	
+	public int getShootDurabilityLoss() {
+		return shootDurabilityLoss;
 	}
 }

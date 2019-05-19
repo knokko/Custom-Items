@@ -35,8 +35,8 @@ import org.bukkit.inventory.meta.ItemMeta;
 
 import nl.knokko.customitems.item.AttributeModifier;
 import nl.knokko.customitems.item.CustomItemType;
-import nl.knokko.customitems.item.CustomItemType.Category;
 import nl.knokko.customitems.item.Enchantment;
+import nl.knokko.customitems.plugin.CustomItemsEventHandler;
 import nl.knokko.customitems.plugin.CustomItemsPlugin;
 import nl.knokko.customitems.plugin.recipe.ingredient.Ingredient;
 
@@ -66,26 +66,14 @@ public class CustomTool extends CustomItem {
 
 	public CustomTool(CustomItemType itemType, short itemDamage, String name, String displayName, String[] lore, 
 			AttributeModifier[] attributes, Enchantment[] defaultEnchantments, long maxDurability, boolean allowEnchanting, boolean allowAnvil, 
-			Ingredient repairItem, boolean[] itemFlags) {
+			Ingredient repairItem, boolean[] itemFlags, int entityHitDurabilityLoss, int blockBreakDurabilityLoss) {
 		super(itemType, itemDamage, name, displayName, lore, attributes, defaultEnchantments, itemFlags);
 		this.maxDurability = maxDurability;
 		this.allowEnchanting = allowEnchanting;
 		this.allowAnvil = allowAnvil;
 		this.repairItem = repairItem;
-		Category c = itemType.getMainCategory();
-		if (c == Category.HOE || c == Category.BOW || c == Category.HELMET || c == Category.CHESTPLATE
-				|| c == Category.LEGGINGS || c == Category.BOOTS || c == Category.SHEAR) {
-			entityHitDurabilityLoss = 0;
-			blockBreakDurabilityLoss = 0;
-		} else if (c == Category.SWORD) {
-			entityHitDurabilityLoss = 1;
-			blockBreakDurabilityLoss = 2;
-		} else if (c == Category.AXE || c == Category.PICKAXE || c == Category.SHOVEL) {
-			entityHitDurabilityLoss = 2;
-			blockBreakDurabilityLoss = 1;
-		} else {
-			throw new IllegalArgumentException("Wrong category: " + c);
-		}
+		this.entityHitDurabilityLoss = entityHitDurabilityLoss;
+		this.blockBreakDurabilityLoss = blockBreakDurabilityLoss;
 	}
 	
 	@Override
@@ -130,14 +118,19 @@ public class CustomTool extends CustomItem {
 	
 	@Override
 	public void onBlockBreak(Player player, ItemStack tool, Block block) {
-		if (blockBreakDurabilityLoss != 0 && decreaseDurability(tool, blockBreakDurabilityLoss))
+		if (blockBreakDurabilityLoss != 0 && decreaseDurability(tool, blockBreakDurabilityLoss)) {
+			CustomItemsEventHandler.playBreakSound(player);
 			player.getInventory().setItemInMainHand(null);
+		}
 	}
 	
 	@Override
 	public void onEntityHit(LivingEntity attacker, ItemStack tool, Entity target) {
-		if (entityHitDurabilityLoss != 0 && decreaseDurability(tool, entityHitDurabilityLoss))
+		if (entityHitDurabilityLoss != 0 && decreaseDurability(tool, entityHitDurabilityLoss)) {
+			if (attacker instanceof Player)
+				CustomItemsEventHandler.playBreakSound((Player) attacker);
 			attacker.getEquipment().setItemInMainHand(null);
+		}
 	}
 	
 	public boolean forbidDefaultUse(ItemStack item) {

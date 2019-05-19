@@ -4,10 +4,5 @@ Long term:
 
 Short term:
 -Add /ci addsentineldrop
--Add possibility to manage item flags (and look at the custom unbreakable 'flag')
--Add an option to choose how much damage items will take from hitting enemies and breaking blocks
--Allow using multiple item sets at the same time (enables easy reusing of item sets)
 -Allow loading texture from item edit menu
--Play sound when a custom item breaks
--Add /ci list
 -Fix license headers
