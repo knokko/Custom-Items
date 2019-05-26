@@ -1,6 +1,5 @@
 package nl.knokko.customitems.editor.test.mainmenu;
 
-import java.awt.event.KeyEvent;
 import java.io.File;
 import java.io.IOException;
 
@@ -44,7 +43,7 @@ public class CreateItemSetTest implements GuiTestProgram {
 		test.click("Create");
 		
 		test.click(name + "full");
-		test.pressAndRelease(KeyEvent.VK_BACK_SPACE, 4);
+		test.backspace(4);
 		
 		test.assertComponentWithText(name);
 		test.click("Create");

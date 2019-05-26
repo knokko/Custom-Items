@@ -1,7 +1,6 @@
 package nl.knokko.customitems.editor.test.editmenu;
 
 import nl.knokko.gui.testing.GuiTestHelper;
-import nl.knokko.gui.testing.GuiTestProgram;
 
 /**
  * Checks if all menus and buttons are present in the edit menu. This test
@@ -10,10 +9,9 @@ import nl.knokko.gui.testing.GuiTestProgram;
  * @author knokko
  *
  */
-public class ExploreEditMenuTest implements GuiTestProgram {
+public class ExploreEditMenuTest {
 
-	@Override
-	public void test(GuiTestHelper test) {
+	public static void test(GuiTestHelper test) {
 
 		// Edit menu buttons
 		test.assertComponentsWithTexts("Quit", "Save", "Save and quit", "Export", "Textures", "Items", "Recipes");

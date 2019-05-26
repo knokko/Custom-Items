@@ -1,6 +1,5 @@
 package nl.knokko.customitems.editor.test.editmenu.texture;
 
-import java.awt.event.KeyEvent;
 import java.awt.image.BufferedImage;
 
 import nl.knokko.gui.testing.GuiTestHelper;
@@ -44,7 +43,7 @@ public class CreateSimpleTextureTest1 implements GuiTestProgram {
 		test.click("Create");
 		test.assertComponentWithText("The _ character is the only special character that is allowed in names.");
 		test.click("simple_test_1");
-		test.pressAndRelease(KeyEvent.VK_BACK_SPACE, 2);
+		test.backspace(2);
 		test.click("Create");
 		test.assertComponentsWithTexts("Back", "Load texture", "Edit", "Delete", "simple_test", "test_bow_first");
 		test.clickNearest("Edit", "simple_test", 2);

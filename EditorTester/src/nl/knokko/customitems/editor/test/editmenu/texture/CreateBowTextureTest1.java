@@ -1,6 +1,5 @@
 package nl.knokko.customitems.editor.test.editmenu.texture;
 
-import java.awt.event.KeyEvent;
 import java.awt.image.BufferedImage;
 
 import nl.knokko.gui.testing.GuiTestHelper;
@@ -47,7 +46,7 @@ public class CreateBowTextureTest1 implements GuiTestProgram {
 		test.click("Create");
 		test.assertComponentWithText("The _ character is the only special character that is allowed in names.");
 		test.click("test_bow1");
-		test.pressAndRelease(KeyEvent.VK_BACK_SPACE);
+		test.backspace(1);
 		test.type("_first");
 		test.click("Create");
 		test.assertComponentWithText("Pull 0.0 doesn't have a texture");
@@ -70,10 +69,10 @@ public class CreateBowTextureTest1 implements GuiTestProgram {
 		test.click("Select");
 		test.assertNearestImage("0.65", image2, 6);
 		test.click("0.65");
-		test.pressAndRelease(KeyEvent.VK_BACK_SPACE, 2);
+		test.backspace(2);
 		test.type("45");
 		test.click("0.9");
-		test.pressAndRelease(KeyEvent.VK_BACK_SPACE);
+		test.backspace(1);
 		test.type('6');
 		test.clickNearest("Edit...", "0.6", 4);
 		test.click("autotest3.png");
@@ -81,7 +80,7 @@ public class CreateBowTextureTest1 implements GuiTestProgram {
 		test.assertNearestImage("0.6", image3, 7);
 		test.click("Add pull");
 		test.click("0.3");
-		test.pressAndRelease(KeyEvent.VK_BACK_SPACE);
+		test.backspace(1);
 		test.type("95");
 		test.clickNearest("Edit...", "0.95", 5);
 		test.click("autotest4.png");
@@ -98,7 +97,7 @@ public class CreateBowTextureTest1 implements GuiTestProgram {
 		test.assertNearestImage("0.6", image3, 9);
 		test.assertNearestImage("0.95", image4, 9);
 		test.click("0.45");
-		test.pressAndRelease(KeyEvent.VK_BACK_SPACE, 2);
+		test.backspace(2);
 		test.type("35");
 		test.assertComponentWithText("0.35");
 		test.click("Apply");
