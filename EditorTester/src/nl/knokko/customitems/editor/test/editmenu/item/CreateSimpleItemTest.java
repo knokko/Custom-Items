@@ -1,7 +1,5 @@
 package nl.knokko.customitems.editor.test.editmenu.item;
 
-import java.awt.event.KeyEvent;
-
 import nl.knokko.gui.testing.GuiTestHelper;
 
 public class CreateSimpleItemTest {
@@ -32,8 +30,10 @@ public class CreateSimpleItemTest {
 		test.click("64");
 		test.backspace(1);
 		test.type('1');
+		test.assertComponentWithText("61");
 		LoreTest.test(test, lore1, lore2);
 		AttributeModTest.test(test, "generic.armor", "chest", "Chain multiply", "3.14",
 				"generic.movementSpeed", "feet", "Multiply", "1.2");
+		// TODO test enchantments
 	}
 }

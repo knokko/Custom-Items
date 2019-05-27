@@ -6,6 +6,20 @@ import nl.knokko.gui.testing.GuiTestHelper;
 
 public class AttributeModTest {
 	
+	/**
+	 * Tests the functionality of the attribute modifiers submenu in an item edit menu. The attribute modifiers
+	 * that should be set eventually are the parameters of this method.
+	 * This test should be run from an item edit menu and should end in that same menu.
+	 * @param test The test instance
+	 * @param attribute1 The attribute name of the first attribute modifier
+	 * @param slot1 The slot of the first attribute modifier
+	 * @param op1 The operation of the first attribute modifier
+	 * @param value1 The value (as string) of the first attribute modifier
+	 * @param attribute2 The attribute name of the second attribute modifier
+	 * @param slot2 The slot of the second attribute modifier
+	 * @param op2 The operation of the second attribute modifier
+	 * @param value2 The value (as string) of the second attribute modifier
+	 */
 	public static void test(GuiTestHelper test, String attribute1, String slot1, String op1, String value1,
 			String attribute2, String slot2, String op2, String value2) {
 		test.click("Change attributes...");

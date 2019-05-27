@@ -6,6 +6,13 @@ import nl.knokko.gui.testing.TestException;
 
 public class LoreTest {
 	
+	/**
+	 * Tests the functionality of the lore sub menu. This method will test if you can add lines and
+	 * remove lines and if the saving and positioning works correctly.
+	 * @param test The test instance
+	 * @param lore1 The first line of lore
+	 * @param lore2 The second line of lore
+	 */
 	public static void test(GuiTestHelper test, String lore1, String lore2) {
 		test.click("Change lore...");
 		test.assertComponentsWithTexts("Cancel", "Add line", "Apply");

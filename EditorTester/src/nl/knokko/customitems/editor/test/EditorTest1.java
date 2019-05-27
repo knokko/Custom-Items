@@ -20,11 +20,11 @@ public class EditorTest1 implements GuiTestProgram {
 	@Override
 	public void test(GuiTestHelper test) {
 		test.setDelayTime(20);
-		new ExploreMainMenuTest().test(test);
-		new CreateItemSetTest("automatic_test").test(test);
+		ExploreMainMenuTest.test(test);
+		CreateItemSetTest.test(test, "automatic test");
 		ExploreEditMenuTest.test(test);
-		new CreateBowTextureTest1().test(test);
-		new CreateSimpleTextureTest1().test(test);
+		CreateBowTextureTest1.test(test, "test_bow_first");
+		CreateSimpleTextureTest1.test(test, "simple_test");
 		CreateSimpleItemTest.create(test, "simple_test_item", "simple_test_one", "The very first line of lore", "The second line of lore");
 	}
 }

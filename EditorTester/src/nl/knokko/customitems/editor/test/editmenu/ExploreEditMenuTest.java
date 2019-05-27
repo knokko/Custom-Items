@@ -2,15 +2,13 @@ package nl.knokko.customitems.editor.test.editmenu;
 
 import nl.knokko.gui.testing.GuiTestHelper;
 
-/**
- * Checks if all menus and buttons are present in the edit menu. This test
- * should be run from the edit menu.
- * 
- * @author knokko
- *
- */
 public class ExploreEditMenuTest {
 
+	/**
+	 * Checks if all menus and buttons are present in the edit menu. This test
+	 * should be run from the edit menu.
+	 * @param test The test instance
+	 */
 	public static void test(GuiTestHelper test) {
 
 		// Edit menu buttons
