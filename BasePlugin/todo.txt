@@ -2,7 +2,9 @@ Long term:
 -Work on automated testing
 -Replace minecrafts enchanting and anvil system
 
+Medium term:
+-Add mob drops and block drops
+
 Short term:
--Add /ci addsentineldrop
 -Allow loading texture from item edit menu
--Fix license headers
+-Add possiblity for armor to give extra resistance to certain damage sources
