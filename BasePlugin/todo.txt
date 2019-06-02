@@ -4,7 +4,8 @@ Long term:
 
 Medium term:
 -Add mob drops and block drops
+-Add possibility for item models
 
 Short term:
 -Allow loading texture from item edit menu
--Add possiblity for armor to give extra resistance to certain damage sources
+-Add possibility for armor to give extra resistance to certain damage sources
