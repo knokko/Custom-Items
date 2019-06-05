@@ -1540,7 +1540,7 @@ public class ItemSet {
 			if (checkClass && item.getClass() != CustomBow.class)
 				return "Use the appropriate method for that class";
 			if (item.getTexture() == null)
-				return "You need to select a texture";
+				return "Every item needs a texture";
 			List<BowTextures.Entry> pullTextures = item.getTexture().getPullTextures();
 			for (BowTextures.Entry pullTexture : pullTextures) {
 				if (pullTexture == null)

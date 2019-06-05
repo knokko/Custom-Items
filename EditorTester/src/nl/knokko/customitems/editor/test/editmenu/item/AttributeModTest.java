@@ -43,21 +43,23 @@ public class AttributeModTest {
 	 * @param op2 The operation of the second attribute modifier
 	 * @param value2 The value (as string) of the second attribute modifier
 	 */
-	public static void test(GuiTestHelper test, String defaultAttackDamage, String attribute1, String slot1, String op1, String value1,
+	public static void test(GuiTestHelper test, 
+			String defaultAttribute, String defaultSlot, String defaultOp, String defaultValue,
+			String attribute1, String slot1, String op1, String value1,
 			String attribute2, String slot2, String op2, String value2) {
 		test.click("Change attributes...");
 		test.assertComponentsWithTexts("Cancel", "New Attribute", "Apply");
 		test.click("New Attribute");
-		BufferedImage deleteImage = (BufferedImage) test.getComponentWithText("mainhand").getState().getWindow().getTextureLoader().loadTexture("nl/knokko/gui/images/icons/delete.png").getImage();
+		BufferedImage deleteImage = (BufferedImage) test.getComponentWithText(defaultSlot).getState().getWindow().getTextureLoader().loadTexture("nl/knokko/gui/images/icons/delete.png").getImage();
 		test.assertImageShown(deleteImage);
-		test.assertComponentsWithTexts("generic.attackDamage", "mainhand", "Add", "Value: ", defaultAttackDamage);
-		test.click("generic.attackDamage");
+		test.assertComponentsWithTexts(defaultAttribute, defaultSlot, defaultOp, "Value: ", defaultValue);
+		test.click(defaultAttribute);
 		test.click(attribute1);
-		test.click("mainhand");
+		test.click(defaultSlot);
 		test.click(slot1);
-		test.click("Add");
+		test.click(defaultOp);
 		test.click(op1);
-		test.click(defaultAttackDamage);
+		test.click(defaultValue);
 		test.backspace(3);
 		test.type("test");
 		test.click("Apply");
@@ -68,14 +70,16 @@ public class AttributeModTest {
 		test.click("New Attribute");
 		
 		// Click nearest to make sure we edit the right attribute
-		test.clickNearest("generic.attackDamage", "New Attribute", attribute1.equals("generic.attackDamage") ? 2 : 1);
+		test.clickNearest(defaultAttribute, "New Attribute", attribute1.equals(defaultAttribute) ? 2 : 1);
 		test.click(attribute2);
-		test.clickNearest("mainhand", "New Attribute", slot1.equals("mainhand") ? 2 : 1);
+		test.clickNearest(defaultSlot, "New Attribute", slot1.equals(defaultSlot) ? 2 : 1);
 		test.click(slot2);
-		test.clickNearest("Add", "New Attribute", op1.equals("Add") ? 2 : 1);
+		test.clickNearest(defaultOp, "New Attribute", op1.equals(defaultOp) ? 2 : 1);
 		test.click(op2);
-		test.clickNearest(defaultAttackDamage, "New Attribute", value1.equals(defaultAttackDamage) ? 2 : 1);
-		test.backspace(3);
+		test.clickNearest(defaultValue, "New Attribute", value1.equals(defaultValue) ? 2 : 1);
+		
+		// Better too many backspaces than too few
+		test.backspace(15);
 		test.type(value2);
 		test.assertComponentWithText(value2);
 		test.click("Apply");

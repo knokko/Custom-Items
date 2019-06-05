@@ -56,7 +56,7 @@ public class CreateToolTest {
 		
 		// Not my most pretty solution ever, but will do the trick
 		CustomItemType customItemType = CustomItemType.valueOf("IRON_" + toolType.toUpperCase());
-		AttributeModTest.test(test, CustomItemDamage.getDefaultAttackDamage(customItemType) + "", attribute1, slot1, op1, value1, attribute2, slot2, op2, value2);
+		AttributeModTest.test(test, "generic.attackDamage", "mainhand", "Add", CustomItemDamage.getDefaultAttackDamage(customItemType) + "", attribute1, slot1, op1, value1, attribute2, slot2, op2, value2);
 		EnchantmentsTest.test(test, enchantment1, level1, enchantment2, level2);
 		toolOnly(test, customItemType, maxUses, repairItemCategory, repairItem, attackDurLoss, breakDurLoss, 6);
 		test.click("Create");

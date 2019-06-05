@@ -24,6 +24,7 @@
 package nl.knokko.customitems.editor.test;
 
 import nl.knokko.customitems.editor.test.editmenu.ExploreEditMenuTest;
+import nl.knokko.customitems.editor.test.editmenu.item.CreateBowTest;
 import nl.knokko.customitems.editor.test.editmenu.item.CreateSimpleItemTest;
 import nl.knokko.customitems.editor.test.editmenu.item.CreateToolTest;
 import nl.knokko.customitems.editor.test.editmenu.texture.CreateBowTextureTest1;
@@ -59,5 +60,10 @@ public class EditorTest1 implements GuiTestProgram {
 				"simple_test_item", "4", "3", "Test Test Chop", "Chop Chop akse", "generic.attackSpeed", 
 				"offhand", "Multiply", "3.14", "generic.movementSpeed", "mainhand", "Chain multiply", "1.3", 
 				"knockback", "4", "damage undead", "7");
+		CreateBowTest.create(test, "fragile_bow", "test_bow_first", "34", "Simple vanilla item", "arrow", 
+				"5", "6", "7", "A quite fragile bow", "Also deals more damage", "8", "3.14", "9", 
+				"generic.knockbackResistance", "offhand", "Add", "0.4", 
+				"generic.attackDamage", "mainhand", "Multiply", "2.0", 
+				"arrow infinite", "7", "durability", "2");
 	}
 }
