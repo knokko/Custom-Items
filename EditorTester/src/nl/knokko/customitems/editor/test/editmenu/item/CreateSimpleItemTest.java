@@ -36,7 +36,9 @@ public class CreateSimpleItemTest {
 	 * @param lore1 The first line of test lore
 	 * @param lore2 The second line of test lore
 	 */
-	public static void create(GuiTestHelper test, String itemName, String textureName, String lore1, String lore2) {
+	public static void create(GuiTestHelper test, String itemName, String textureName, String stacksize, String lore1, String lore2,
+			String attribute1, String slot1, String op1, String value1, String attribute2, String slot2, String op2,
+			String value2, String enchantment1, String level1, String enchantment2, String level2) {
 		test.click("Items");
 		test.assertComponentsWithTexts("Back", "Create item");
 		test.click("Create item");
@@ -50,13 +52,15 @@ public class CreateSimpleItemTest {
 		ItemNameTest.test(test, itemName);
 		SimpleTextureTest.test(test, textureName);
 		DisplayNameTest.test(test, itemName);
-		test.click("64");
-		test.backspace(1);
-		test.type('1');
-		test.assertComponentWithText("61");
 		LoreTest.test(test, lore1, lore2);
-		AttributeModTest.test(test, "generic.armor", "chest", "Chain multiply", "3.14",
-				"generic.movementSpeed", "feet", "Multiply", "1.2");
-		// TODO test enchantments
+		AttributeModTest.test(test, attribute1, slot1, op1, value1, attribute2, slot2, op2, value2);
+		EnchantmentsTest.test(test, enchantment1, level1, enchantment2, level2);
+		
+		// This part is only for simple custom items
+		test.click("64");
+		test.backspace(2);
+		test.type(stacksize);
+		test.assertComponentWithText(stacksize);
+		test.click("Create");
 	}
 }

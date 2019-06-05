@@ -48,6 +48,11 @@ public class EditorTest1 implements GuiTestProgram {
 		ExploreEditMenuTest.test(test);
 		CreateBowTextureTest1.test(test, "test_bow_first");
 		CreateSimpleTextureTest1.test(test, "simple_test");
-		CreateSimpleItemTest.create(test, "simple_test_item", "simple_test_one", "The very first line of lore", "The second line of lore");
+		CreateSimpleItemTest.create(test, "simple_test_item", "simple_test_one", "52",
+				"The very first line of lore", "The second line of lore", 
+				"generic.armor", "head", "Multiply", "1.3", 
+				"generic.attackSpeed", "offhand", "Add", "4.0", 
+				"fire aspect", "5", "knockback", "1");
+		test.assertComponentsWithTexts("Back", "Create item", "Edit", "Delete", "simple_test_item");
 	}
 }
