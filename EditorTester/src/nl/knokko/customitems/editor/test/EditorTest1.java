@@ -25,6 +25,7 @@ package nl.knokko.customitems.editor.test;
 
 import nl.knokko.customitems.editor.test.editmenu.ExploreEditMenuTest;
 import nl.knokko.customitems.editor.test.editmenu.item.CreateSimpleItemTest;
+import nl.knokko.customitems.editor.test.editmenu.item.CreateToolTest;
 import nl.knokko.customitems.editor.test.editmenu.texture.CreateBowTextureTest1;
 import nl.knokko.customitems.editor.test.editmenu.texture.CreateSimpleTextureTest1;
 import nl.knokko.customitems.editor.test.mainmenu.CreateItemSetTest;
@@ -54,5 +55,9 @@ public class EditorTest1 implements GuiTestProgram {
 				"generic.attackSpeed", "offhand", "Add", "4.0", 
 				"fire aspect", "5", "knockback", "1");
 		test.assertComponentsWithTexts("Back", "Create item", "Edit", "Delete", "simple_test_item");
+		CreateToolTest.create(test, "Axe", "test_aks", "simple_test_one", "1234", "Custom Item", 
+				"simple_test_item", "4", "3", "Test Test Chop", "Chop Chop akse", "generic.attackSpeed", 
+				"offhand", "Multiply", "3.14", "generic.movementSpeed", "mainhand", "Chain multiply", "1.3", 
+				"knockback", "4", "damage undead", "7");
 	}
 }

@@ -1603,7 +1603,7 @@ public class ItemSet {
 			if (checkClass && item.getClass() != CustomTool.class)
 				return "Use the appropriate method for that class";
 			if (item.getRepairItem() instanceof CustomItemIngredient
-					&& !(((CustomItemIngredient) item.getRepairItem()).getItem().getClass() == CustomItem.class))
+					&& !(((CustomItemIngredient) item.getRepairItem()).getItem().getClass() == SimpleCustomItem.class))
 				return "Only vanilla items and simple custom items are allowed as repair item.";
 			if (item.allowAnvilActions() && item.getDisplayName().contains("§"))
 				return "Items with color codes in their display name can not allow anvil actions";
@@ -1637,14 +1637,13 @@ public class ItemSet {
 			boolean allowAnvil, Ingredient repairItem, long newDurability, NamedImage newImage, 
 			boolean[] itemFlags, int entityHitDurabilityLoss, int blockBreakDurabilityLoss,
 			boolean checkClass) {
-		// TODO Change and check entityHitDurabilityLoss and blockBreakDurabilityLoss!!
 		if (!bypassChecks()) {
 			if (checkClass && item.getClass() != CustomTool.class)
 				return "Use the appropriate method to change this class";
 			if (allowAnvil && newDisplayName.contains("§"))
 				return "Items with color codes in their display name can not allow anvil actions";
 			if (repairItem instanceof CustomItemIngredient
-					&& !(((CustomItemIngredient) repairItem).getItem().getClass() == CustomItem.class))
+					&& !(((CustomItemIngredient) repairItem).getItem().getClass() == SimpleCustomItem.class))
 				return "Only vanilla items and simple custom items are allowed as repair item.";
 			if (allowEnchanting && newEnchantments.length > 0)
 				return "You can't allow enchanting on items that have default enchantments";

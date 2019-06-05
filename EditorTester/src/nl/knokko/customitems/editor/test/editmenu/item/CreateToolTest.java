@@ -1,5 +1,6 @@
 package nl.knokko.customitems.editor.test.editmenu.item;
 
+import nl.knokko.customitems.item.CustomItemDamage;
 import nl.knokko.customitems.item.CustomItemType;
 import nl.knokko.customitems.item.CustomToolDurability;
 import nl.knokko.gui.testing.GuiTestHelper;
@@ -47,16 +48,17 @@ public class CreateToolTest {
 				"Default enchantments: ", "Item flags: ", "Texture: ", "", "1", "Change lore...",
 				"Change attributes...", "Change enchantments...", "Change flags...", "None",
 				"Allow enchanting", "Allow anvil actions", "Max uses: ", "Repair item: ",
-				"Durability loss on attack: ", "Durability loss on block break: ", "500", "2", "1");
+				"Durability loss on attack:", "Durability loss on block break:", "500", "2", "1");
 		ItemNameTest.test(test, itemName);
 		SimpleTextureTest.test(test, textureName);
 		DisplayNameTest.test(test, itemName);
 		LoreTest.test(test, lore1, lore2);
-		AttributeModTest.test(test, attribute1, slot1, op1, value1, attribute2, slot2, op2, value2);
-		EnchantmentsTest.test(test, enchantment1, level1, enchantment2, level2);
 		
 		// Not my most pretty solution ever, but will do the trick
-		toolOnly(test, CustomItemType.valueOf("IRON_" + toolType.toUpperCase()), maxUses, repairItemCategory, repairItem, attackDurLoss, breakDurLoss);
+		CustomItemType customItemType = CustomItemType.valueOf("IRON_" + toolType.toUpperCase());
+		AttributeModTest.test(test, CustomItemDamage.getDefaultAttackDamage(customItemType) + "", attribute1, slot1, op1, value1, attribute2, slot2, op2, value2);
+		EnchantmentsTest.test(test, enchantment1, level1, enchantment2, level2);
+		toolOnly(test, customItemType, maxUses, repairItemCategory, repairItem, attackDurLoss, breakDurLoss, 6);
 		test.click("Create");
 		test.assertComponentsWithTexts("Create item", itemName);
 	}
@@ -66,7 +68,7 @@ public class CreateToolTest {
 		test.click("None");
 		test.assertComponentsWithTexts("Back", "Change", "None");
 		test.click("Change");
-		test.assertComponentsWithTexts("Cancel", "Custom item", "Simple vanilla item", 
+		test.assertComponentsWithTexts("Cancel", "Custom Item", "Simple vanilla item", 
 				"Vanilla item with datavalue", "Empty");
 		test.click(repairItemCategory);
 		if (!repairItemCategory.equals("Empty")) {
@@ -82,20 +84,20 @@ public class CreateToolTest {
 		}
 	}
 	
-	public static void attackDurabilityLoss(GuiTestHelper test, CustomItemType type, String attackDurLoss) {
+	public static void attackDurabilityLoss(GuiTestHelper test, CustomItemType type, String attackDurLoss, int numberOfEditFields) {
 		int defaultAttackDurLoss = CustomToolDurability.defaultEntityHitDurabilityLoss(type);
-		test.click(defaultAttackDurLoss + "");
-		test.backspace(1);
+		test.clickNearestEdit("Durability loss on attack:", numberOfEditFields);
+		test.backspace(Integer.toString(defaultAttackDurLoss).length());
 		test.click("Create");
 		test.assertComponentWithText("The entity hit durability loss should be a positive integer");
 		test.click("");
 		test.type(attackDurLoss);
 	}
 	
-	public static void breakDurabilityLoss(GuiTestHelper test, CustomItemType type, String breakDurLoss) {
+	public static void breakDurabilityLoss(GuiTestHelper test, CustomItemType type, String breakDurLoss, int numberOfEditFields) {
 		int defaultBreakDurLoss = CustomToolDurability.defaultBlockBreakDurabilityLoss(type);
-		test.click(defaultBreakDurLoss + "");
-		test.backspace(1);
+		test.clickNearestEdit("Durability loss on block break:", numberOfEditFields);
+		test.backspace(Integer.toString(defaultBreakDurLoss).length());
 		test.click("Create");
 		test.assertComponentWithText("The block break durability loss should be a positive integer");
 		test.click("");
@@ -108,19 +110,19 @@ public class CreateToolTest {
 		// Better too much backspace than too little
 		test.backspace(15);
 		test.click("Create");
-		test.assertComponentWithText("The durability must ben an integer");
+		test.assertComponentWithText("The durability must be an integer");
 		test.click("");
 		test.type(newMaxUses);
 	}
 	
 	public static void toolOnly(GuiTestHelper test, CustomItemType type, String maxUses, String repairItemCategory, 
-			String repairItem, String attackDurLoss, String breakDurLoss) {
+			String repairItem, String attackDurLoss, String breakDurLoss, int numberOfEditFields) {
 		test.uncheck("Allow enchanting", 2);
 		test.uncheck("Allow anvil actions", 2);
-		test.check("Allow enchanting", 2);
+		test.check("Allow anvil actions", 2);
 		maxUses(test, "500", maxUses);
 		repairItem(test, repairItemCategory, repairItem);
-		attackDurabilityLoss(test, type, attackDurLoss);
-		breakDurabilityLoss(test, type, breakDurLoss);
+		attackDurabilityLoss(test, type, attackDurLoss, numberOfEditFields);
+		breakDurabilityLoss(test, type, breakDurLoss, numberOfEditFields);
 	}
 }

@@ -43,21 +43,21 @@ public class AttributeModTest {
 	 * @param op2 The operation of the second attribute modifier
 	 * @param value2 The value (as string) of the second attribute modifier
 	 */
-	public static void test(GuiTestHelper test, String attribute1, String slot1, String op1, String value1,
+	public static void test(GuiTestHelper test, String defaultAttackDamage, String attribute1, String slot1, String op1, String value1,
 			String attribute2, String slot2, String op2, String value2) {
 		test.click("Change attributes...");
 		test.assertComponentsWithTexts("Cancel", "New Attribute", "Apply");
 		test.click("New Attribute");
 		BufferedImage deleteImage = (BufferedImage) test.getComponentWithText("mainhand").getState().getWindow().getTextureLoader().loadTexture("nl/knokko/gui/images/icons/delete.png").getImage();
 		test.assertImageShown(deleteImage);
-		test.assertComponentsWithTexts("generic.attackDamage", "mainhand", "Add", "Value: ", "5.0");
+		test.assertComponentsWithTexts("generic.attackDamage", "mainhand", "Add", "Value: ", defaultAttackDamage);
 		test.click("generic.attackDamage");
 		test.click(attribute1);
 		test.click("mainhand");
 		test.click(slot1);
 		test.click("Add");
 		test.click(op1);
-		test.click("5.0");
+		test.click(defaultAttackDamage);
 		test.backspace(3);
 		test.type("test");
 		test.click("Apply");
@@ -74,7 +74,7 @@ public class AttributeModTest {
 		test.click(slot2);
 		test.clickNearest("Add", "New Attribute", op1.equals("Add") ? 2 : 1);
 		test.click(op2);
-		test.clickNearest("5.0", "New Attribute", value1.equals("5.0") ? 2 : 1);
+		test.clickNearest(defaultAttackDamage, "New Attribute", value1.equals(defaultAttackDamage) ? 2 : 1);
 		test.backspace(3);
 		test.type(value2);
 		test.assertComponentWithText(value2);
