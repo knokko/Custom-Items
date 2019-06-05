@@ -130,7 +130,7 @@ public class EnchantmentsOverview extends GuiMenu {
 				EnchantmentsOverview.this.removeComponent(this);
 			}), 0f, 0f, 0.075f, 1f);
 			addComponent(enchantmentButton, 0.09f, 0f, 0.41f, 1f);
-			addComponent(new TextComponent("Value: ", EditProps.LABEL), 0.775f, 0f, 0.87f, 1f);
+			addComponent(new TextComponent("Level: ", EditProps.LABEL), 0.775f, 0f, 0.87f, 1f);
 			addComponent(valueField, 0.875f, 0f, 0.975f, 1f);
 		}
 	}
