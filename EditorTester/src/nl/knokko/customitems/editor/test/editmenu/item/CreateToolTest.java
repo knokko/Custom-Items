@@ -79,8 +79,10 @@ public class CreateToolTest {
 		}
 		if (repairItemCategory.equals("Vanilla item with datavalue")) {
 			test.assertComponentWithText(repairItem + "(0)");
-		} else {
+		} else if (repairItem != null){
 			test.assertComponentWithText(repairItem);
+		} else {
+			test.assertComponentWithText("None");
 		}
 	}
 	
