@@ -5,7 +5,9 @@ Long term:
 Medium term:
 -Add mob drops and block drops
 -Add possibility for item models
+-Add shields
 
 Short term:
 -Allow loading texture from item edit menu
 -Add possibility for armor to give extra resistance to certain damage sources
+-Add a command to show custom item tags that can be used for command blocks
