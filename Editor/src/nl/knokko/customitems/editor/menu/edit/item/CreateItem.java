@@ -64,10 +64,10 @@ public class CreateItem extends GuiMenu {
 			state.getWindow().setMainComponent(new EditItemTool(menu, null, Category.SHOVEL));
 		}), 0.5f, 0.275f, 0.7f, 0.375f);
 		addComponent(new TextButton("Hoe", EditProps.CHOOSE_BASE, EditProps.CHOOSE_HOVER, () -> {
-			state.getWindow().setMainComponent(new EditItemTool(menu, null, Category.HOE));
+			state.getWindow().setMainComponent(new EditItemHoe(menu, null));
 		}), 0.5f, 0.15f, 0.7f, 0.25f);
 		addComponent(new TextButton("Shear", EditProps.CHOOSE_BASE, EditProps.CHOOSE_HOVER, () -> {
-			state.getWindow().setMainComponent(new EditItemTool(menu, null, Category.SHEAR));
+			state.getWindow().setMainComponent(new EditItemShears(menu, null));
 		}), 0.5f, 0.025f, 0.7f, 0.125f);
 		addComponent(new TextButton("Bow", EditProps.CHOOSE_BASE, EditProps.CHOOSE_HOVER, () -> {
 			state.getWindow().setMainComponent(new EditItemBow(menu, null));

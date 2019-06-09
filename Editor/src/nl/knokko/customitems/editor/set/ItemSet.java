@@ -46,7 +46,9 @@ import javax.imageio.stream.MemoryCacheImageOutputStream;
 import nl.knokko.customitems.editor.Editor;
 import nl.knokko.customitems.editor.set.item.CustomArmor;
 import nl.knokko.customitems.editor.set.item.CustomBow;
+import nl.knokko.customitems.editor.set.item.CustomHoe;
 import nl.knokko.customitems.editor.set.item.CustomItem;
+import nl.knokko.customitems.editor.set.item.CustomShears;
 import nl.knokko.customitems.editor.set.item.CustomTool;
 import nl.knokko.customitems.editor.set.item.NamedImage;
 import nl.knokko.customitems.editor.set.item.SimpleCustomItem;
@@ -109,6 +111,10 @@ public class ItemSet {
 			return loadTool4(input);
 		else if (encoding == ItemEncoding.ENCODING_TOOL_5)
 			return loadTool5(input);
+		else if (encoding == ItemEncoding.ENCODING_HOE_5)
+			return loadHoe5(input);
+		else if (encoding == ItemEncoding.ENCODING_SHEAR_5)
+			return loadShear5(input);
 		else if (encoding == ItemEncoding.ENCODING_BOW_3)
 			return loadBow3(input);
 		else if (encoding == ItemEncoding.ENCODING_BOW_4)
@@ -401,6 +407,88 @@ public class ItemSet {
 		
 		return new CustomTool(itemType, damage, name, displayName, lore, attributes, defaultEnchantments, durability, allowEnchanting,
 				allowAnvil, repairItem, texture, itemFlags, entityHitDurabilityLoss, blockBreakDurabilityLoss);
+	}
+	
+	private CustomItem loadHoe5(BitInput input) {
+		CustomItemType itemType = CustomItemType.valueOf(input.readJavaString());
+		short damage = input.readShort();
+		String name = input.readJavaString();
+		String displayName = input.readJavaString();
+		String[] lore = new String[input.readByte() & 0xFF];
+		for (int index = 0; index < lore.length; index++) {
+			lore[index] = input.readJavaString();
+		}
+		AttributeModifier[] attributes = new AttributeModifier[input.readByte() & 0xFF];
+		for (int index = 0; index < attributes.length; index++)
+			attributes[index] = loadAttribute2(input);
+		Enchantment[] defaultEnchantments = new Enchantment[input.readByte() & 0xFF];
+		for (int index = 0; index < defaultEnchantments.length; index++)
+			defaultEnchantments[index] = new Enchantment(EnchantmentType.valueOf(input.readString()), input.readInt());
+		long durability = input.readLong();
+		boolean allowEnchanting = input.readBoolean();
+		boolean allowAnvil = input.readBoolean();
+		Ingredient repairItem = Recipe.loadIngredient(input, this);
+		
+		// Use hardcoded 6 instead of variable because only 6 item flags existed in this encoding
+		boolean[] itemFlags = input.readBooleans(6);
+		int entityHitDurabilityLoss = input.readInt();
+		int blockBreakDurabilityLoss = input.readInt();
+		int tillDurabilityLoss = input.readInt();
+		
+		String imageName = input.readJavaString();
+		NamedImage texture = null;
+		for (NamedImage current : textures) {
+			if (current.getName().equals(imageName)) {
+				texture = current;
+				break;
+			}
+		}
+		if (texture == null)
+			throw new IllegalArgumentException("Can't find texture " + imageName);
+		
+		return new CustomHoe(itemType, damage, name, displayName, lore, attributes, defaultEnchantments, durability, allowEnchanting,
+				allowAnvil, repairItem, texture, itemFlags, entityHitDurabilityLoss, blockBreakDurabilityLoss, tillDurabilityLoss);
+	}
+	
+	private CustomItem loadShear5(BitInput input) {
+		CustomItemType itemType = CustomItemType.valueOf(input.readJavaString());
+		short damage = input.readShort();
+		String name = input.readJavaString();
+		String displayName = input.readJavaString();
+		String[] lore = new String[input.readByte() & 0xFF];
+		for (int index = 0; index < lore.length; index++) {
+			lore[index] = input.readJavaString();
+		}
+		AttributeModifier[] attributes = new AttributeModifier[input.readByte() & 0xFF];
+		for (int index = 0; index < attributes.length; index++)
+			attributes[index] = loadAttribute2(input);
+		Enchantment[] defaultEnchantments = new Enchantment[input.readByte() & 0xFF];
+		for (int index = 0; index < defaultEnchantments.length; index++)
+			defaultEnchantments[index] = new Enchantment(EnchantmentType.valueOf(input.readString()), input.readInt());
+		long durability = input.readLong();
+		boolean allowEnchanting = input.readBoolean();
+		boolean allowAnvil = input.readBoolean();
+		Ingredient repairItem = Recipe.loadIngredient(input, this);
+		
+		// Use hardcoded 6 instead of variable because only 6 item flags existed in this encoding
+		boolean[] itemFlags = input.readBooleans(6);
+		int entityHitDurabilityLoss = input.readInt();
+		int blockBreakDurabilityLoss = input.readInt();
+		int shearDurabilityLoss = input.readInt();
+		
+		String imageName = input.readJavaString();
+		NamedImage texture = null;
+		for (NamedImage current : textures) {
+			if (current.getName().equals(imageName)) {
+				texture = current;
+				break;
+			}
+		}
+		if (texture == null)
+			throw new IllegalArgumentException("Can't find texture " + imageName);
+		
+		return new CustomShears(itemType, damage, name, displayName, lore, attributes, defaultEnchantments, durability, allowEnchanting,
+				allowAnvil, repairItem, texture, itemFlags, entityHitDurabilityLoss, blockBreakDurabilityLoss, shearDurabilityLoss);
 	}
 
 	private CustomBow loadBow3(BitInput input) {
@@ -1612,6 +1700,30 @@ public class ItemSet {
 		}
 		return addItem(item, false);
 	}
+	
+	public String addShears(CustomShears shears, boolean checkClass) {
+		if (!bypassChecks()) {
+			if (shears == null)
+				return "Can't add null items";
+			if (checkClass && shears.getClass() != CustomShears.class)
+				return "Use the appropriate method for that class";
+			if (shears.getShearDurabilityLoss() < 0)
+				return "The shear durability loss must be a positive integer";
+		}
+		return addTool(shears, false);
+	}
+	
+	public String addHoe(CustomHoe hoe, boolean checkClass) {
+		if (!bypassChecks()) {
+			if (hoe == null)
+				return "Can't add null items";
+			if (checkClass && hoe.getClass() != CustomHoe.class)
+				return "Use the appropriate method for that class";
+			if (hoe.getTillDurabilityLoss() < 0)
+				return "The till durability loss must be a positive integer";
+		}
+		return addTool(hoe, false);
+	}
 
 	/**
 	 * Attempts to change the specified tool in this item set. If the tool can be
@@ -1662,6 +1774,54 @@ public class ItemSet {
 			item.setDurability(newDurability);
 			item.setEntityHitDurabilityLoss(entityHitDurabilityLoss);
 			item.setBlockBreakDurabilityLoss(blockBreakDurabilityLoss);
+			return null;
+		} else {
+			return error;
+		}
+	}
+	
+	public String changeShears(CustomShears shears, CustomItemType newType, short newDamage, String newName,
+			String newDisplayName, String[] newLore, AttributeModifier[] newAttributes, Enchantment[] newEnchantments, boolean allowEnchanting,
+			boolean allowAnvil, Ingredient repairItem, long newDurability, NamedImage newImage, 
+			boolean[] itemFlags, int entityHitDurabilityLoss, int blockBreakDurabilityLoss, int shearDurabilityLoss,
+			boolean checkClass) {
+		if (!bypassChecks()) {
+			if (shearDurabilityLoss < 0) {
+				return "The shear durability loss must be positive";
+			}
+			if (checkClass && shears.getClass() != CustomShears.class) {
+				return "Use the appropriate method to change this class";
+			}
+		}
+		String error = changeTool(shears, newType, newDamage, newName, newDisplayName, newLore, newAttributes,
+				newEnchantments, allowEnchanting, allowAnvil, repairItem, newDurability, newImage, itemFlags,
+				entityHitDurabilityLoss, blockBreakDurabilityLoss, false);
+		if (error == null) {
+			shears.setShearDurabilityLoss(shearDurabilityLoss);
+			return null;
+		} else {
+			return error;
+		}
+	}
+	
+	public String changeHoe(CustomHoe hoe, CustomItemType newType, short newDamage, String newName,
+			String newDisplayName, String[] newLore, AttributeModifier[] newAttributes, Enchantment[] newEnchantments, boolean allowEnchanting,
+			boolean allowAnvil, Ingredient repairItem, long newDurability, NamedImage newImage, 
+			boolean[] itemFlags, int entityHitDurabilityLoss, int blockBreakDurabilityLoss, int tillDurabilityLoss,
+			boolean checkClass) {
+		if (!bypassChecks()) {
+			if (tillDurabilityLoss < 0) {
+				return "The till durability loss must be positive";
+			}
+			if (checkClass && hoe.getClass() != CustomHoe.class) {
+				return "Use the appropriate method to change this class";
+			}
+		}
+		String error = changeTool(hoe, newType, newDamage, newName, newDisplayName, newLore, newAttributes,
+				newEnchantments, allowEnchanting, allowAnvil, repairItem, newDurability, newImage, itemFlags,
+				entityHitDurabilityLoss, blockBreakDurabilityLoss, false);
+		if (error == null) {
+			hoe.setTillDurabilityLoss(tillDurabilityLoss);
 			return null;
 		} else {
 			return error;

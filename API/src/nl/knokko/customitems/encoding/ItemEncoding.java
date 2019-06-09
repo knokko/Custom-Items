@@ -81,4 +81,14 @@ public class ItemEncoding {
 	 * Add support for item flags and durability loss for entity attacking, block breaking and getting attacked
 	 */
 	public static final byte ENCODING_ARMOR_5 = 13;
+	
+	/**
+	 * Add support for shear durability loss. This is the first shear encoding
+	 */
+	public static final byte ENCODING_SHEAR_5 = 14;
+	
+	/**
+	 * Add support for use durability loss. This is the first hoe encoding
+	 */
+	public static final byte ENCODING_HOE_5 = 15;
 }

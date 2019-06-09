@@ -48,7 +48,7 @@ public class MainMenu extends GuiMenu {
 			state.getWindow().setMainComponent(LoadMenu.INSTANCE);
 		}), 0.3f, 0.45f, 0.7f, 0.6f);
 		addComponent(new TextButton("Exit editor", BUTTON_PROPERTIES, HOVER_PROPERTIES, () -> {
-			state.getWindow().close();
+			state.getWindow().stopRunning();
 		}), 0.3f, 0.2f, 0.7f, 0.35f);
 	}
 	
