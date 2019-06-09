@@ -1,5 +1,4 @@
 Long term:
--Work on automated testing
 -Replace minecrafts enchanting and anvil system
 
 Medium term:
@@ -8,6 +7,7 @@ Medium term:
 -Add shields
 
 Short term:
+-Work on automated testing
 -Allow loading texture from item edit menu
 -Add possibility for armor to give extra resistance to certain damage sources
 -Add a command to show custom item tags that can be used for command blocks
