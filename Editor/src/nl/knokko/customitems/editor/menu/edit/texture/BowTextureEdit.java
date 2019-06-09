@@ -37,8 +37,8 @@ import nl.knokko.gui.component.WrapperComponent;
 import nl.knokko.gui.component.image.ImageButton;
 import nl.knokko.gui.component.image.SimpleImageComponent;
 import nl.knokko.gui.component.menu.GuiMenu;
-import nl.knokko.gui.component.text.TextButton;
-import nl.knokko.gui.component.text.TextComponent;
+import nl.knokko.gui.component.text.dynamic.DynamicTextButton;
+import nl.knokko.gui.component.text.dynamic.DynamicTextComponent;
 import nl.knokko.gui.component.text.TextEditField;
 import nl.knokko.gui.texture.loader.GuiTextureLoader;
 
@@ -46,7 +46,7 @@ public class BowTextureEdit extends GuiMenu {
 
 	protected final EditMenu menu;
 	protected final PullTextures pullTextures;
-	protected final TextComponent errorComponent;
+	protected final DynamicTextComponent errorComponent;
 	protected final WrapperComponent<SimpleImageComponent> defaultTexture;
 	protected final TextEditField nameField;
 
@@ -59,7 +59,7 @@ public class BowTextureEdit extends GuiMenu {
 		this.menu = menu;
 		this.previous = previous;
 		pullTextures = new PullTextures();
-		errorComponent = new TextComponent("", EditProps.ERROR);
+		errorComponent = new DynamicTextComponent("", EditProps.ERROR);
 		defaultTexture = new WrapperComponent<SimpleImageComponent>(null);
 		nameField = new TextEditField("", EditProps.EDIT_BASE, EditProps.EDIT_ACTIVE);
 		if (previous != null) {
@@ -84,22 +84,22 @@ public class BowTextureEdit extends GuiMenu {
 
 	@Override
 	protected void addComponents() {
-		addComponent(new TextButton("Cancel", EditProps.CANCEL_BASE, EditProps.CANCEL_HOVER, () -> {
+		addComponent(new DynamicTextButton("Cancel", EditProps.CANCEL_BASE, EditProps.CANCEL_HOVER, () -> {
 			state.getWindow().setMainComponent(menu.getTextureOverview());
 		}), 0.1f, 0.7f, 0.25f, 0.8f);
 		addComponent(errorComponent, 0.05f, 0.9f, 0.95f, 0.975f);
 		addComponent(pullTextures, 0.65f, 0.025f, 0.95f, 0.775f);
-		addComponent(new TextComponent("Base texture: ", EditProps.LABEL), 0.2f, 0.55f, 0.4f, 0.65f);
+		addComponent(new DynamicTextComponent("Base texture: ", EditProps.LABEL), 0.2f, 0.55f, 0.4f, 0.65f);
 		addComponent(TextureEdit.createImageSelect((BufferedImage texture) -> {
 			defaultTexture.setComponent(new SimpleImageComponent(state.getWindow().getTextureLoader().loadTexture(texture)));
 			defaultImage = texture;
 		}, errorComponent, this), 0.425f, 0.55f, 0.525f, 0.65f);
-		addComponent(new TextComponent("Name: ", EditProps.LABEL), 0.2f, 0.4f, 0.325f, 0.5f);
+		addComponent(new DynamicTextComponent("Name: ", EditProps.LABEL), 0.2f, 0.4f, 0.325f, 0.5f);
 		addComponent(nameField, 0.35f, 0.4f, 0.6f, 0.5f);
 		if (previous != null) {
 			defaultTexture.setComponent(new SimpleImageComponent(state.getWindow().getTextureLoader().loadTexture(previous.getImage())));
 			nameField.setText(previous.getName());
-			addComponent(new TextButton("Apply", EditProps.SAVE_BASE, EditProps.SAVE_HOVER, () -> {
+			addComponent(new DynamicTextButton("Apply", EditProps.SAVE_BASE, EditProps.SAVE_HOVER, () -> {
 				if (defaultImage == null) {
 					errorComponent.setText("You need to give this bow a base texture.");
 				} else {
@@ -112,7 +112,7 @@ public class BowTextureEdit extends GuiMenu {
 				}
 			}), 0.1f, 0.1f, 0.25f, 0.2f);
 		} else {
-			addComponent(new TextButton("Create", EditProps.SAVE_BASE, EditProps.SAVE_HOVER, () -> {
+			addComponent(new DynamicTextButton("Create", EditProps.SAVE_BASE, EditProps.SAVE_HOVER, () -> {
 				if (defaultImage == null) {
 					errorComponent.setText("You need to give this bow a base texture.");
 				} else {
@@ -130,7 +130,7 @@ public class BowTextureEdit extends GuiMenu {
 			}), 0.1f, 0.1f, 0.25f, 0.2f);
 		}
 		addComponent(defaultTexture, 0.54f, 0.55f, 0.64f, 0.65f);
-		addComponent(new TextButton("Add pull", EditProps.BUTTON, EditProps.HOVER, () -> {
+		addComponent(new DynamicTextButton("Add pull", EditProps.BUTTON, EditProps.HOVER, () -> {
 			pulls.add(new Entry(null, 0.3));
 			pullTextures.refreshPullComponents();
 		}), 0.3f, 0.1f, 0.45f, 0.2f);
@@ -182,7 +182,7 @@ public class BowTextureEdit extends GuiMenu {
 
 		@Override
 		protected void addComponents() {
-			addComponent(new TextComponent("Pull: ", EditProps.LABEL), 0.05f, 0.5f, 0.3f, 0.9f);
+			addComponent(new DynamicTextComponent("Pull: ", EditProps.LABEL), 0.05f, 0.5f, 0.3f, 0.9f);
 			addComponent(new TextEditField(entry.getPull() + "", EditProps.EDIT_BASE, EditProps.EDIT_ACTIVE) {
 				
 				@Override
@@ -211,7 +211,7 @@ public class BowTextureEdit extends GuiMenu {
 				pulls.remove(entry);
 				pullTextures.refreshPullComponents();
 			}), 0.875f, 0.5f, 0.975f, 0.9f);
-			addComponent(new TextComponent("Texture: ", EditProps.LABEL), 0.05f, 0.05f, 0.5f, 0.45f);
+			addComponent(new DynamicTextComponent("Texture: ", EditProps.LABEL), 0.05f, 0.05f, 0.5f, 0.45f);
 			WrapperComponent<SimpleImageComponent> imageWrapper;
 			if (entry.getTexture() == null)
 				imageWrapper = new WrapperComponent<SimpleImageComponent>(null);

@@ -27,7 +27,7 @@ import nl.knokko.customitems.editor.menu.edit.EditMenu;
 import nl.knokko.customitems.editor.menu.edit.EditProps;
 import nl.knokko.gui.color.GuiColor;
 import nl.knokko.gui.component.menu.GuiMenu;
-import nl.knokko.gui.component.text.TextButton;
+import nl.knokko.gui.component.text.dynamic.DynamicTextButton;
 
 public class TextureCreate extends GuiMenu {
 	
@@ -39,13 +39,13 @@ public class TextureCreate extends GuiMenu {
 
 	@Override
 	protected void addComponents() {
-		addComponent(new TextButton("Back", EditProps.CANCEL_BASE, EditProps.CANCEL_HOVER, () -> {
+		addComponent(new DynamicTextButton("Back", EditProps.CANCEL_BASE, EditProps.CANCEL_HOVER, () -> {
 			state.getWindow().setMainComponent(menu.getTextureOverview());
 		}), 0.1f, 0.7f, 0.25f, 0.8f);
-		addComponent(new TextButton("Load simple texture", EditProps.BUTTON, EditProps.HOVER, () -> {
+		addComponent(new DynamicTextButton("Load simple texture", EditProps.BUTTON, EditProps.HOVER, () -> {
 			state.getWindow().setMainComponent(new TextureEdit(menu, null));
 		}), 0.5f, 0.6f, 0.75f, 0.7f);
-		addComponent(new TextButton("Load bow texture", EditProps.BUTTON, EditProps.HOVER, () -> {
+		addComponent(new DynamicTextButton("Load bow texture", EditProps.BUTTON, EditProps.HOVER, () -> {
 			state.getWindow().setMainComponent(new BowTextureEdit(menu, null));
 		}), 0.5f, 0.45f, 0.75f, 0.55f);
 	}

@@ -36,8 +36,8 @@ import nl.knokko.customitems.item.ItemFlag;
 import nl.knokko.gui.color.GuiColor;
 import nl.knokko.gui.component.menu.GuiMenu;
 import nl.knokko.gui.component.menu.TextArrayEditMenu;
-import nl.knokko.gui.component.text.TextButton;
-import nl.knokko.gui.component.text.TextComponent;
+import nl.knokko.gui.component.text.dynamic.DynamicTextButton;
+import nl.knokko.gui.component.text.dynamic.DynamicTextComponent;
 import nl.knokko.gui.component.text.TextEditField;
 
 public abstract class EditItemBase extends GuiMenu {
@@ -58,7 +58,7 @@ public abstract class EditItemBase extends GuiMenu {
 	protected AttributeModifier[] attributes;
 	protected Enchantment[] enchantments;
 	protected TextureSelect textureSelect;
-	protected TextComponent errorComponent;
+	protected DynamicTextComponent errorComponent;
 	protected boolean[] itemFlags;
 
 	public EditItemBase(EditMenu menu, CustomItem previous) {
@@ -93,21 +93,21 @@ public abstract class EditItemBase extends GuiMenu {
 
 	@Override
 	protected void addComponents() {
-		errorComponent = new TextComponent("", EditProps.ERROR);
-		addComponent(new TextButton("Cancel", EditProps.CANCEL_BASE, EditProps.CANCEL_HOVER, () -> {
+		errorComponent = new DynamicTextComponent("", EditProps.ERROR);
+		addComponent(new DynamicTextButton("Cancel", EditProps.CANCEL_BASE, EditProps.CANCEL_HOVER, () -> {
 			state.getWindow().setMainComponent(menu.getItemOverview());
 		}), 0.025f, 0.7f, 0.15f, 0.8f);
-		addComponent(new TextComponent("Name: ", EditProps.LABEL), LABEL_X, 0.8f, LABEL_X + 0.1f, 0.85f);
-		addComponent(new TextComponent("Internal item type: ", EditProps.LABEL), LABEL_X, 0.74f, LABEL_X + 0.2f, 0.79f);
-		addComponent(new TextComponent("Internal item damage: ", EditProps.LABEL), LABEL_X, 0.68f, LABEL_X + 0.2f, 0.73f);
-		addComponent(new TextComponent("Display name: ", EditProps.LABEL), LABEL_X, 0.62f, LABEL_X + 0.18f, 0.67f);
-		addComponent(new TextComponent("Lore: ", EditProps.LABEL), LABEL_X, 0.56f, LABEL_X + 0.1f, 0.61f);
-		addComponent(new TextComponent("Attribute modifiers: ", EditProps.LABEL), LABEL_X, 0.5f, LABEL_X + 0.2f, 0.55f);
-		addComponent(new TextComponent("Default enchantments: ", EditProps.LABEL), LABEL_X, 0.44f, LABEL_X + 0.2f, 0.49f);
-		addComponent(new TextComponent("Item flags: ", EditProps.LABEL), LABEL_X, 0.38f, LABEL_X + 0.135f, 0.43f);
-		addComponent(new TextComponent("Texture: ", EditProps.LABEL), LABEL_X, 0.32f, LABEL_X + 0.125f, 0.37f);
+		addComponent(new DynamicTextComponent("Name: ", EditProps.LABEL), LABEL_X, 0.8f, LABEL_X + 0.1f, 0.85f);
+		addComponent(new DynamicTextComponent("Internal item type: ", EditProps.LABEL), LABEL_X, 0.74f, LABEL_X + 0.2f, 0.79f);
+		addComponent(new DynamicTextComponent("Internal item damage: ", EditProps.LABEL), LABEL_X, 0.68f, LABEL_X + 0.2f, 0.73f);
+		addComponent(new DynamicTextComponent("Display name: ", EditProps.LABEL), LABEL_X, 0.62f, LABEL_X + 0.18f, 0.67f);
+		addComponent(new DynamicTextComponent("Lore: ", EditProps.LABEL), LABEL_X, 0.56f, LABEL_X + 0.1f, 0.61f);
+		addComponent(new DynamicTextComponent("Attribute modifiers: ", EditProps.LABEL), LABEL_X, 0.5f, LABEL_X + 0.2f, 0.55f);
+		addComponent(new DynamicTextComponent("Default enchantments: ", EditProps.LABEL), LABEL_X, 0.44f, LABEL_X + 0.2f, 0.49f);
+		addComponent(new DynamicTextComponent("Item flags: ", EditProps.LABEL), LABEL_X, 0.38f, LABEL_X + 0.135f, 0.43f);
+		addComponent(new DynamicTextComponent("Texture: ", EditProps.LABEL), LABEL_X, 0.32f, LABEL_X + 0.125f, 0.37f);
 		if(previous() != null) {
-			addComponent(new TextButton("Apply", EditProps.SAVE_BASE, EditProps.SAVE_HOVER, () -> {
+			addComponent(new DynamicTextButton("Apply", EditProps.SAVE_BASE, EditProps.SAVE_HOVER, () -> {
 				String error = apply();
 				if(error != null) {
 					errorComponent.setText(error);
@@ -117,7 +117,7 @@ public abstract class EditItemBase extends GuiMenu {
 			}), 0.025f, 0.1f, 0.15f, 0.2f);
 		}
 		else {
-			addComponent(new TextButton("Create", EditProps.SAVE_BASE, EditProps.SAVE_HOVER, () -> {
+			addComponent(new DynamicTextButton("Create", EditProps.SAVE_BASE, EditProps.SAVE_HOVER, () -> {
 				String error = create();
 				if(error != null) {
 					errorComponent.setProperties(EditProps.ERROR);
@@ -135,7 +135,7 @@ public abstract class EditItemBase extends GuiMenu {
 		addLoreComponent();
 		addAttributesComponent();
 		addEnchantmentsComponent();
-		addComponent(new TextButton("Change flags...", EditProps.BUTTON, EditProps.HOVER, () -> {
+		addComponent(new DynamicTextButton("Change flags...", EditProps.BUTTON, EditProps.HOVER, () -> {
 			state.getWindow().setMainComponent(new ItemFlagMenu(this, itemFlags));
 		}), BUTTON_X, 0.38f, BUTTON_X + 0.1f, 0.43f);
 		addComponent(textureSelect, BUTTON_X, 0.32f, BUTTON_X + 0.1f, 0.37f);
@@ -183,7 +183,7 @@ public abstract class EditItemBase extends GuiMenu {
 		return displayName.getText().replaceAll("&", "§");
 	}
 	
-	protected class ItemTypeSelect extends TextButton {
+	protected class ItemTypeSelect extends DynamicTextButton {
 		
 		protected CustomItemType currentType;
 
@@ -204,7 +204,7 @@ public abstract class EditItemBase extends GuiMenu {
 		}
 	}
 	
-	protected class TextureSelect extends TextButton {
+	protected class TextureSelect extends DynamicTextButton {
 		
 		protected NamedImage currentTexture;
 		
@@ -228,7 +228,7 @@ public abstract class EditItemBase extends GuiMenu {
 	}
 	
 	private void addLoreComponent() {
-		addComponent(new TextButton("Change lore...", EditProps.BUTTON, EditProps.HOVER, () -> {
+		addComponent(new DynamicTextButton("Change lore...", EditProps.BUTTON, EditProps.HOVER, () -> {
 			state.getWindow().setMainComponent(new TextArrayEditMenu(EditItemBase.this, (String[] newLore) -> {
 				lore = newLore;
 				for (int index = 0; index < lore.length; index++)
@@ -240,7 +240,7 @@ public abstract class EditItemBase extends GuiMenu {
 	protected abstract AttributeModifier getExampleAttributeModifier();
 	
 	private void addAttributesComponent() {
-		addComponent(new TextButton("Change attributes...", EditProps.BUTTON, EditProps.HOVER, () -> {
+		addComponent(new DynamicTextButton("Change attributes...", EditProps.BUTTON, EditProps.HOVER, () -> {
 			state.getWindow().setMainComponent(new AttributesOverview(getExampleAttributeModifier(), attributes, EditItemBase.this, (AttributeModifier[] attributes) -> {
 				this.attributes = attributes;
 			}));
@@ -248,7 +248,7 @@ public abstract class EditItemBase extends GuiMenu {
 	}
 	
 	private void addEnchantmentsComponent() {
-		addComponent(new TextButton("Change enchantments...", EditProps.BUTTON, EditProps.HOVER, () -> {
+		addComponent(new DynamicTextButton("Change enchantments...", EditProps.BUTTON, EditProps.HOVER, () -> {
 			state.getWindow().setMainComponent(new EnchantmentsOverview(enchantments, EditItemBase.this, (Enchantment[] enchantments) -> {
 				this.enchantments = enchantments;
 			}));

@@ -31,10 +31,9 @@ import nl.knokko.customitems.editor.set.item.Material;
 import nl.knokko.gui.color.GuiColor;
 import nl.knokko.gui.component.GuiComponent;
 import nl.knokko.gui.component.menu.GuiMenu;
-import nl.knokko.gui.component.text.TextButton;
-import nl.knokko.gui.component.text.TextComponent;
-import nl.knokko.gui.component.text.TextEditField;
 import nl.knokko.gui.component.text.dynamic.DynamicTextButton;
+import nl.knokko.gui.component.text.dynamic.DynamicTextComponent;
+import nl.knokko.gui.component.text.TextEditField;
 
 public class SelectSimpleVanillaItem extends GuiMenu {
 	
@@ -57,10 +56,10 @@ public class SelectSimpleVanillaItem extends GuiMenu {
 
 	@Override
 	protected void addComponents() {
-		addComponent(new TextButton("Cancel", EditProps.CANCEL_BASE, EditProps.CANCEL_HOVER, () -> {
+		addComponent(new DynamicTextButton("Cancel", EditProps.CANCEL_BASE, EditProps.CANCEL_HOVER, () -> {
 			state.getWindow().setMainComponent(returnMenu);
 		}), 0.1f, 0.7f, 0.25f, 0.8f);
-		addComponent(new TextComponent("Search:", EditProps.LABEL), 0.1f, 0.525f, 0.25f, 0.625f);
+		addComponent(new DynamicTextComponent("Search:", EditProps.LABEL), 0.1f, 0.525f, 0.25f, 0.625f);
 		addComponent(filterField, 0.1f, 0.4f, 0.25f, 0.5f);
 		addComponent(list, 0.35f, 0f, 1f, 1f);
 	}

@@ -39,7 +39,7 @@ import nl.knokko.customitems.item.CustomItemType.Category;
 import nl.knokko.customitems.item.CustomToolDurability;
 import nl.knokko.gui.component.image.CheckboxComponent;
 import nl.knokko.gui.component.text.IntEditField;
-import nl.knokko.gui.component.text.TextComponent;
+import nl.knokko.gui.component.text.dynamic.DynamicTextComponent;
 import nl.knokko.gui.util.Option;
 
 public class EditItemTool extends EditItemBase {
@@ -115,16 +115,16 @@ public class EditItemTool extends EditItemBase {
 		super.addComponents();
 		internalType.setText(internalType.currentType.toString());
 		addComponent(allowEnchanting, 0.75f, 0.8f, 0.775f, 0.825f);
-		addComponent(new TextComponent("Allow enchanting", EditProps.LABEL), 0.8f, 0.8f, 0.95f, 0.875f);
+		addComponent(new DynamicTextComponent("Allow enchanting", EditProps.LABEL), 0.8f, 0.8f, 0.95f, 0.875f);
 		addComponent(allowAnvil, 0.75f, 0.725f, 0.775f, 0.75f);
-		addComponent(new TextComponent("Allow anvil actions", EditProps.LABEL), 0.8f, 0.725f, 0.95f, 0.8f);
+		addComponent(new DynamicTextComponent("Allow anvil actions", EditProps.LABEL), 0.8f, 0.725f, 0.95f, 0.8f);
 		addComponent(durability, 0.85f, 0.65f, 0.925f, 0.725f);
-		addComponent(new TextComponent("Max uses: ", EditProps.LABEL), 0.71f, 0.65f, 0.84f, 0.725f);
-		addComponent(new TextComponent("Repair item: ", EditProps.LABEL), 0.71f, 0.575f, 0.84f, 0.65f);
+		addComponent(new DynamicTextComponent("Max uses: ", EditProps.LABEL), 0.71f, 0.65f, 0.84f, 0.725f);
+		addComponent(new DynamicTextComponent("Repair item: ", EditProps.LABEL), 0.71f, 0.575f, 0.84f, 0.65f);
 		addComponent(repairItem, 0.85f, 0.575f, 0.99f, 0.65f);
-		addComponent(new TextComponent("Durability loss on attack:", EditProps.LABEL), 0.6f, 0.5f, 0.84f, 0.575f);
+		addComponent(new DynamicTextComponent("Durability loss on attack:", EditProps.LABEL), 0.6f, 0.5f, 0.84f, 0.575f);
 		addComponent(entityHitDurabilityLoss, 0.85f, 0.5f, 0.9f, 0.575f);
-		addComponent(new TextComponent("Durability loss on block break:", EditProps.LABEL), 0.6f, 0.425f, 0.84f, 0.5f);
+		addComponent(new DynamicTextComponent("Durability loss on block break:", EditProps.LABEL), 0.6f, 0.425f, 0.84f, 0.5f);
 		addComponent(blockBreakDurabilityLoss, 0.85f, 0.425f, 0.9f, 0.5f);
 		if (category == Category.SWORD) {
 			errorComponent.setProperties(EditProps.LABEL);

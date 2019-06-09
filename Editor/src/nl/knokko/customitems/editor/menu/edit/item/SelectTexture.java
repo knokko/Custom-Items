@@ -32,7 +32,7 @@ import nl.knokko.gui.color.GuiColor;
 import nl.knokko.gui.component.GuiComponent;
 import nl.knokko.gui.component.menu.GuiMenu;
 import nl.knokko.gui.component.image.SimpleImageComponent;
-import nl.knokko.gui.component.text.TextButton;
+import nl.knokko.gui.component.text.dynamic.DynamicTextButton;
 
 public class SelectTexture extends GuiMenu {
 
@@ -55,7 +55,7 @@ public class SelectTexture extends GuiMenu {
 
 	@Override
 	protected void addComponents() {
-		addComponent(new TextButton("Cancel", EditProps.CANCEL_BASE, EditProps.CANCEL_HOVER, () -> {
+		addComponent(new DynamicTextButton("Cancel", EditProps.CANCEL_BASE, EditProps.CANCEL_HOVER, () -> {
 			state.getWindow().setMainComponent(returnMenu);
 		}), 0.1f, 0.6f, 0.3f, 0.7f);
 		Collection<NamedImage> textures = set.getTextures();
@@ -65,7 +65,7 @@ public class SelectTexture extends GuiMenu {
 				addComponent(
 						new SimpleImageComponent(state.getWindow().getTextureLoader().loadTexture(texture.getImage())),
 						0.4f, 0.9f - index * 0.15f, 0.5f, 1f - index * 0.15f);
-				addComponent(new TextButton(texture.getName(), EditProps.SELECT_BASE, EditProps.SELECT_HOVER, () -> {
+				addComponent(new DynamicTextButton(texture.getName(), EditProps.SELECT_BASE, EditProps.SELECT_HOVER, () -> {
 					returnAction.onSelect(texture);
 					state.getWindow().setMainComponent(returnMenu);
 				}), 0.55f, 0.9f - index * 0.15f, 0.85f, 1f - index * 0.15f);

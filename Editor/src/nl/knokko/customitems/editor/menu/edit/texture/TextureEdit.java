@@ -39,15 +39,15 @@ import nl.knokko.gui.component.WrapperComponent;
 import nl.knokko.gui.component.menu.FileChooserMenu;
 import nl.knokko.gui.component.menu.GuiMenu;
 import nl.knokko.gui.component.image.SimpleImageComponent;
-import nl.knokko.gui.component.text.TextButton;
-import nl.knokko.gui.component.text.TextComponent;
+import nl.knokko.gui.component.text.dynamic.DynamicTextButton;
+import nl.knokko.gui.component.text.dynamic.DynamicTextComponent;
 import nl.knokko.gui.component.text.TextEditField;
 
 public class TextureEdit extends GuiMenu {
 	
 	protected final EditMenu menu;
 	protected final NamedImage previous;
-	protected final TextComponent errorComponent;
+	protected final DynamicTextComponent errorComponent;
 	
 	protected TextEditField name;
 	protected BufferedImage image;
@@ -56,7 +56,7 @@ public class TextureEdit extends GuiMenu {
 	public TextureEdit(EditMenu menu, NamedImage previous) {
 		this.menu = menu;
 		this.previous = previous;
-		errorComponent = new TextComponent("", EditProps.ERROR);
+		errorComponent = new DynamicTextComponent("", EditProps.ERROR);
 		wrapper = new WrapperComponent<SimpleImageComponent>(null);
 	}
 	
@@ -68,7 +68,7 @@ public class TextureEdit extends GuiMenu {
 	@Override
 	protected void addComponents() {
 		addComponent(errorComponent, 0.1f, 0.9f, 0.9f, 1f);
-		addComponent(new TextButton("Cancel", EditProps.CANCEL_BASE, EditProps.CANCEL_HOVER, () -> {
+		addComponent(new DynamicTextButton("Cancel", EditProps.CANCEL_BASE, EditProps.CANCEL_HOVER, () -> {
 			state.getWindow().setMainComponent(menu.getTextureOverview());
 		}), 0.1f, 0.7f, 0.25f, 0.8f);
 		if(previous != null) {
@@ -79,12 +79,12 @@ public class TextureEdit extends GuiMenu {
 		else {
 			name = new TextEditField("", EditProps.EDIT_BASE, EditProps.EDIT_ACTIVE);
 		}
-		addComponent(new TextComponent("Name: ", EditProps.LABEL), 0.4f, 0.6f, 0.55f, 0.7f);
+		addComponent(new DynamicTextComponent("Name: ", EditProps.LABEL), 0.4f, 0.6f, 0.55f, 0.7f);
 		addComponent(name, 0.6f, 0.6f, 0.9f, 0.7f);
-		addComponent(new TextComponent("Texture: ", EditProps.LABEL), 0.4f, 0.4f, 0.55f, 0.5f);
+		addComponent(new DynamicTextComponent("Texture: ", EditProps.LABEL), 0.4f, 0.4f, 0.55f, 0.5f);
 		addComponent(wrapper, 0.6f, 0.4f, 0.7f, 0.5f);
 		addComponent(createImageSelect(), 0.75f, 0.4f, 0.9f, 0.5f);
-		addComponent(new TextButton(previous != null ? "Apply" : "Create", EditProps.SAVE_BASE, EditProps.SAVE_HOVER, () -> {
+		addComponent(new DynamicTextButton(previous != null ? "Apply" : "Create", EditProps.SAVE_BASE, EditProps.SAVE_HOVER, () -> {
 			if(image != null) {
 				String error = CreateMenu.testFileName(name.getText() + ".png");
 				if(error != null)
@@ -110,8 +110,8 @@ public class TextureEdit extends GuiMenu {
 		}), 0.4f, 0.3f, 0.6f, 0.4f);
 	}
 	
-	public static TextButton createImageSelect(ImageListener listener, TextComponent errorComponent, GuiComponent returnMenu) {
-		return new TextButton("Edit...", EditProps.CHOOSE_BASE, EditProps.CHOOSE_HOVER, () -> {
+	public static DynamicTextButton createImageSelect(ImageListener listener, DynamicTextComponent errorComponent, GuiComponent returnMenu) {
+		return new DynamicTextButton("Edit...", EditProps.CHOOSE_BASE, EditProps.CHOOSE_HOVER, () -> {
 			returnMenu.getState().getWindow().setMainComponent(new FileChooserMenu(returnMenu, (File file) -> {
 				try {
 					BufferedImage loaded = ImageIO.read(file);
@@ -141,7 +141,7 @@ public class TextureEdit extends GuiMenu {
 		});
 	}
 	
-	private TextButton createImageSelect() {
+	private DynamicTextButton createImageSelect() {
 		return createImageSelect((BufferedImage loaded) -> {
 			image = loaded;
 			wrapper.setComponent(new SimpleImageComponent(state.getWindow().getTextureLoader().loadTexture(image)));

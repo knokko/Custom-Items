@@ -28,7 +28,7 @@ import nl.knokko.customitems.item.AttributeModifier.Operation;
 import nl.knokko.gui.color.GuiColor;
 import nl.knokko.gui.component.GuiComponent;
 import nl.knokko.gui.component.menu.GuiMenu;
-import nl.knokko.gui.component.text.TextButton;
+import nl.knokko.gui.component.text.dynamic.DynamicTextButton;
 
 public class OperationSelect extends GuiMenu {
 	
@@ -47,13 +47,13 @@ public class OperationSelect extends GuiMenu {
 
 	@Override
 	protected void addComponents() {
-		addComponent(new TextButton("Cancel", EditProps.CANCEL_BASE, EditProps.CANCEL_HOVER, () -> {
+		addComponent(new DynamicTextButton("Cancel", EditProps.CANCEL_BASE, EditProps.CANCEL_HOVER, () -> {
 			state.getWindow().setMainComponent(returnMenu);
 		}), 0.1f, 0.7f, 0.25f, 0.8f);
 		Operation[] values = Operation.values();
 		for (int index = 0; index < values.length; index++) {
 			Operation op = values[index];
-			addComponent(new TextButton(op.toString(), EditProps.BUTTON, EditProps.HOVER, () -> {
+			addComponent(new DynamicTextButton(op.toString(), EditProps.BUTTON, EditProps.HOVER, () -> {
 				receiver.onSelect(op);
 				state.getWindow().setMainComponent(returnMenu);
 			}), 0.4f, 0.8f - index * 0.15f, 0.65f, 0.9f - index * 0.15f);

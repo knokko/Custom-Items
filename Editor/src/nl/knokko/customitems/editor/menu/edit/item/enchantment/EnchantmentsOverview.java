@@ -32,8 +32,8 @@ import nl.knokko.gui.color.GuiColor;
 import nl.knokko.gui.component.GuiComponent;
 import nl.knokko.gui.component.image.ImageButton;
 import nl.knokko.gui.component.menu.GuiMenu;
-import nl.knokko.gui.component.text.TextButton;
-import nl.knokko.gui.component.text.TextComponent;
+import nl.knokko.gui.component.text.dynamic.DynamicTextButton;
+import nl.knokko.gui.component.text.dynamic.DynamicTextComponent;
 import nl.knokko.gui.component.text.TextEditField;
 import nl.knokko.gui.texture.GuiTexture;
 import nl.knokko.gui.texture.loader.GuiTextureLoader;
@@ -46,7 +46,7 @@ public class EnchantmentsOverview extends GuiMenu {
 	private final Receiver receiver;
 	private final GuiComponent returnMenu;
 	
-	private final TextComponent errorComponent;
+	private final DynamicTextComponent errorComponent;
 	
 	private GuiTexture deleteBase;
 	private GuiTexture deleteHover;
@@ -55,7 +55,7 @@ public class EnchantmentsOverview extends GuiMenu {
 		this.current = currentEnchantments;
 		this.receiver = receiver;
 		this.returnMenu = returnMenu;
-		this.errorComponent = new TextComponent("", EditProps.ERROR);
+		this.errorComponent = new DynamicTextComponent("", EditProps.ERROR);
 	}
 	
 	@Override
@@ -68,14 +68,14 @@ public class EnchantmentsOverview extends GuiMenu {
 		GuiTextureLoader loader = state.getWindow().getTextureLoader();
 		deleteBase = loader.loadTexture("nl/knokko/gui/images/icons/delete.png");
 		deleteHover = loader.loadTexture("nl/knokko/gui/images/icons/delete_hover.png");
-		addComponent(new TextButton("Cancel", EditProps.CANCEL_BASE, EditProps.CANCEL_HOVER, () -> {
+		addComponent(new DynamicTextButton("Cancel", EditProps.CANCEL_BASE, EditProps.CANCEL_HOVER, () -> {
 			state.getWindow().setMainComponent(returnMenu);
 		}), 0.05f, 0.8f, 0.2f, 0.9f);
-		addComponent(new TextButton("New Enchantment", EditProps.BUTTON, EditProps.HOVER, () -> {
+		addComponent(new DynamicTextButton("New Enchantment", EditProps.BUTTON, EditProps.HOVER, () -> {
 			float y = 0.8f - (getComponents().size() - 4) * 0.125f;
 			addComponent(new Entry(EXAMPLE_ENCHANTMENT), 0.4f, y, 1f, y + 0.1f);
 		}), 0.05f, 0.5f, 0.3f, 0.6f);
-		addComponent(new TextButton("Apply", EditProps.SAVE_BASE, EditProps.SAVE_HOVER, () -> {
+		addComponent(new DynamicTextButton("Apply", EditProps.SAVE_BASE, EditProps.SAVE_HOVER, () -> {
 			List<SubComponent> components = getComponents();
 			Enchantment[] result = new Enchantment[components.size() - 4];
 			int index = 0;
@@ -106,7 +106,7 @@ public class EnchantmentsOverview extends GuiMenu {
 		private EnchantmentType type;
 		private TextEditField valueField;
 		
-		private TextButton enchantmentButton;
+		private DynamicTextButton enchantmentButton;
 		
 		private Entry(Enchantment enchantment) {
 			this.type = enchantment.getType();
@@ -120,7 +120,7 @@ public class EnchantmentsOverview extends GuiMenu {
 
 		@Override
 		protected void addComponents() {
-			enchantmentButton = new TextButton(type.getName(), EditProps.BUTTON, EditProps.HOVER, () -> {
+			enchantmentButton = new DynamicTextButton(type.getName(), EditProps.BUTTON, EditProps.HOVER, () -> {
 				state.getWindow().setMainComponent(new EnchantmentSelect((EnchantmentType newEnchantment) -> {
 					this.type = newEnchantment;
 					enchantmentButton.setText(type.getName());
@@ -130,7 +130,7 @@ public class EnchantmentsOverview extends GuiMenu {
 				EnchantmentsOverview.this.removeComponent(this);
 			}), 0f, 0f, 0.075f, 1f);
 			addComponent(enchantmentButton, 0.09f, 0f, 0.41f, 1f);
-			addComponent(new TextComponent("Level: ", EditProps.LABEL), 0.775f, 0f, 0.87f, 1f);
+			addComponent(new DynamicTextComponent("Level: ", EditProps.LABEL), 0.775f, 0f, 0.87f, 1f);
 			addComponent(valueField, 0.875f, 0f, 0.975f, 1f);
 		}
 	}

@@ -28,10 +28,10 @@ import java.awt.Color;
 import nl.knokko.customitems.editor.set.ItemSet;
 import nl.knokko.customitems.editor.set.recipe.result.Result;
 import nl.knokko.gui.component.GuiComponent;
-import nl.knokko.gui.component.text.TextButton;
+import nl.knokko.gui.component.text.dynamic.DynamicTextButton;
 import nl.knokko.gui.util.TextBuilder.Properties;
 
-public class ResultComponent extends TextButton {
+public class ResultComponent extends DynamicTextButton {
 	
 	public static final Properties PROPS = Properties.createButton(new Color(0, 150, 0), new Color(0, 50, 0), 512, 128);
 	public static final Properties HOVER_PROPS = Properties.createButton(new Color(0, 220, 0), new Color(0, 70, 0), 512, 128);

@@ -32,11 +32,10 @@ import nl.knokko.gui.color.GuiColor;
 import nl.knokko.gui.component.GuiComponent;
 import nl.knokko.gui.component.menu.GuiMenu;
 import nl.knokko.gui.component.text.ConditionalTextButton;
-import nl.knokko.gui.component.text.TextButton;
-import nl.knokko.gui.component.text.TextComponent;
+import nl.knokko.gui.component.text.dynamic.DynamicTextButton;
+import nl.knokko.gui.component.text.dynamic.DynamicTextComponent;
 import nl.knokko.gui.component.text.TextEditField;
 import nl.knokko.gui.component.text.dynamic.DynamicActivatableTextButton;
-import nl.knokko.gui.component.text.dynamic.DynamicTextButton;
 
 public class SelectDataVanillaItem extends GuiMenu {
 	
@@ -44,7 +43,7 @@ public class SelectDataVanillaItem extends GuiMenu {
 	private final Receiver receiver;
 	private final TextEditField dataField;
 	private final TextEditField filterField;
-	private final TextComponent errorComponent;
+	private final DynamicTextComponent errorComponent;
 	private final List list;
 	
 	private Material selected;
@@ -54,18 +53,18 @@ public class SelectDataVanillaItem extends GuiMenu {
 		this.receiver = receiver;
 		this.dataField = new TextEditField("0", EditProps.EDIT_BASE, EditProps.EDIT_ACTIVE);
 		this.filterField = new TextEditField("", EditProps.EDIT_BASE, EditProps.EDIT_ACTIVE);
-		this.errorComponent = new TextComponent("", EditProps.ERROR);
+		this.errorComponent = new DynamicTextComponent("", EditProps.ERROR);
 		this.list = new List();
 	}
 
 	@Override
 	protected void addComponents() {
-		addComponent(new TextButton("Cancel", EditProps.CANCEL_BASE, EditProps.CANCEL_HOVER, () -> {
+		addComponent(new DynamicTextButton("Cancel", EditProps.CANCEL_BASE, EditProps.CANCEL_HOVER, () -> {
 			state.getWindow().setMainComponent(returnMenu);
 		}), 0.1f, 0.75f, 0.25f, 0.85f);
-		addComponent(new TextComponent("Data value: ", EditProps.LABEL), 0.1f, 0.55f, 0.25f, 0.65f);
+		addComponent(new DynamicTextComponent("Data value: ", EditProps.LABEL), 0.1f, 0.55f, 0.25f, 0.65f);
 		addComponent(dataField, 0.1f, 0.425f, 0.25f, 0.525f);
-		addComponent(new TextComponent("Search:", EditProps.LABEL), 0.1f, 0.325f, 0.25f, 0.4f);
+		addComponent(new DynamicTextComponent("Search:", EditProps.LABEL), 0.1f, 0.325f, 0.25f, 0.4f);
 		addComponent(filterField, 0.1f, 0.2f, 0.25f, 0.3f);
 		addComponent(errorComponent, 0.05f, 0.89f, 0.95f, 0.99f);
 		addComponent(new ConditionalTextButton("OK", EditProps.BUTTON, EditProps.HOVER, () -> {

@@ -38,8 +38,8 @@ import nl.knokko.gui.color.GuiColor;
 import nl.knokko.gui.component.image.ImageButton;
 import nl.knokko.gui.component.menu.GuiMenu;
 import nl.knokko.gui.component.text.ConditionalTextButton;
-import nl.knokko.gui.component.text.TextButton;
-import nl.knokko.gui.component.text.TextComponent;
+import nl.knokko.gui.component.text.dynamic.DynamicTextButton;
+import nl.knokko.gui.component.text.dynamic.DynamicTextComponent;
 import nl.knokko.gui.texture.GuiTexture;
 
 public class ShapelessRecipeEdit extends GuiMenu {
@@ -49,19 +49,19 @@ public class ShapelessRecipeEdit extends GuiMenu {
 	
 	private final Ingredients ingredients;
 	private final ResultComponent result;
-	private final TextComponent errorComponent;
+	private final DynamicTextComponent errorComponent;
 
 	public ShapelessRecipeEdit(EditMenu menu, ShapelessRecipe previous) {
 		this.menu = menu;
 		this.previous = previous;
 		ingredients = new Ingredients();
 		result = new ResultComponent(previous != null ? previous.getResult() : new SimpleVanillaResult(Material.DIAMOND, (byte) 1), this, menu.getSet());
-		errorComponent = new TextComponent("", EditProps.ERROR);
+		errorComponent = new DynamicTextComponent("", EditProps.ERROR);
 	}
 
 	@Override
 	protected void addComponents() {
-		addComponent(new TextButton("Cancel", EditProps.CANCEL_BASE, EditProps.CANCEL_HOVER, () -> {
+		addComponent(new DynamicTextButton("Cancel", EditProps.CANCEL_BASE, EditProps.CANCEL_HOVER, () -> {
 			state.getWindow().setMainComponent(menu.getRecipeOverview());
 		}), 0.1f, 0.7f, 0.25f, 0.8f);
 		addComponent(new ConditionalTextButton("Add ingredient", EditProps.BUTTON, EditProps.HOVER, () -> {
@@ -98,9 +98,9 @@ public class ShapelessRecipeEdit extends GuiMenu {
 			return ingredients.getComponents().size() > 0;
 		}), 0.1f, 0.2f, 0.25f, 0.3f);
 		addComponent(errorComponent, 0.05f, 0.9f, 0.95f, 0.975f);
-		addComponent(new TextComponent("Ingredients", EditProps.LABEL), 0.4f, 0.8f, 0.55f, 0.875f);
+		addComponent(new DynamicTextComponent("Ingredients", EditProps.LABEL), 0.4f, 0.8f, 0.55f, 0.875f);
 		addComponent(ingredients, 0.4f, 0.025f, 0.7f, 0.775f);
-		addComponent(new TextComponent("Result", EditProps.LABEL), 0.75f, 0.725f, 0.9f, 0.8f);
+		addComponent(new DynamicTextComponent("Result", EditProps.LABEL), 0.75f, 0.725f, 0.9f, 0.8f);
 		addComponent(result, 0.75f, 0.6f, 0.95f, 0.7f);
 	}
 	

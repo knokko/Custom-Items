@@ -33,7 +33,7 @@ import nl.knokko.customitems.item.AttributeModifier.Operation;
 import nl.knokko.customitems.item.AttributeModifier.Slot;
 import nl.knokko.customitems.item.CustomItemType.Category;
 import nl.knokko.gui.component.text.IntEditField;
-import nl.knokko.gui.component.text.TextComponent;
+import nl.knokko.gui.component.text.dynamic.DynamicTextComponent;
 import nl.knokko.gui.util.Option;
 
 public class EditItemSimple extends EditItemBase {
@@ -62,7 +62,7 @@ public class EditItemSimple extends EditItemBase {
 	@Override
 	protected void addComponents() {
 		super.addComponents();
-		addComponent(new TextComponent("Max stacksize:", EditProps.LABEL), 0.71f, 0.35f, 0.895f, 0.45f);
+		addComponent(new DynamicTextComponent("Max stacksize:", EditProps.LABEL), 0.71f, 0.35f, 0.895f, 0.45f);
 		addComponent(maxStacksize, 0.9f, 0.35f, 0.975f, 0.45f);
 	}
 

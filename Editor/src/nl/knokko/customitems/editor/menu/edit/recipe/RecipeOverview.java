@@ -32,8 +32,8 @@ import nl.knokko.customitems.editor.set.recipe.ShapedRecipe;
 import nl.knokko.customitems.editor.set.recipe.ShapelessRecipe;
 import nl.knokko.gui.color.GuiColor;
 import nl.knokko.gui.component.menu.GuiMenu;
-import nl.knokko.gui.component.text.TextButton;
-import nl.knokko.gui.component.text.TextComponent;
+import nl.knokko.gui.component.text.dynamic.DynamicTextButton;
+import nl.knokko.gui.component.text.dynamic.DynamicTextComponent;
 
 public class RecipeOverview extends GuiMenu {
 	
@@ -54,13 +54,13 @@ public class RecipeOverview extends GuiMenu {
 
 	@Override
 	protected void addComponents() {
-		addComponent(new TextButton("Back", EditProps.BUTTON, EditProps.HOVER, () -> {
+		addComponent(new DynamicTextButton("Back", EditProps.BUTTON, EditProps.HOVER, () -> {
 			state.getWindow().setMainComponent(menu);
 		}), 0.1f, 0.7f, 0.25f, 0.8f);
-		addComponent(new TextButton("Create shaped recipe", EditProps.BUTTON, EditProps.HOVER, () -> {
+		addComponent(new DynamicTextButton("Create shaped recipe", EditProps.BUTTON, EditProps.HOVER, () -> {
 			state.getWindow().setMainComponent(new ShapedRecipeEdit(menu, null));
 		}), 0.05f, 0.3f, 0.4f, 0.4f);
-		addComponent(new TextButton("Create shapeless recipe", EditProps.BUTTON, EditProps.HOVER, () -> {
+		addComponent(new DynamicTextButton("Create shapeless recipe", EditProps.BUTTON, EditProps.HOVER, () -> {
 			state.getWindow().setMainComponent(new ShapelessRecipeEdit(menu, null));
 		}), 0.05f, 0.1f, 0.4f, 0.2f);
 		addComponent(list, 0.4f, 0.05f, 1f, 0.95f);
@@ -88,8 +88,8 @@ public class RecipeOverview extends GuiMenu {
 			Collection<Recipe> recipes = menu.getSet().getRecipes();
 			int index = 0;
 			for (Recipe recipe : recipes) {
-				addComponent(new TextComponent(recipe.getResult().getString(), EditProps.LABEL), 0f, 0.9f - index * 0.15f, 0.6f, 1f - index * 0.15f);
-				addComponent(new TextButton("Edit", EditProps.BUTTON, EditProps.HOVER, () -> {
+				addComponent(new DynamicTextComponent(recipe.getResult().getString(), EditProps.LABEL), 0f, 0.9f - index * 0.15f, 0.6f, 1f - index * 0.15f);
+				addComponent(new DynamicTextButton("Edit", EditProps.BUTTON, EditProps.HOVER, () -> {
 					if (recipe instanceof ShapedRecipe)
 						state.getWindow().setMainComponent(new ShapedRecipeEdit(menu, (ShapedRecipe) recipe));
 					else if (recipe instanceof ShapelessRecipe)
@@ -97,7 +97,7 @@ public class RecipeOverview extends GuiMenu {
 					else
 						throw new IllegalStateException("Unknown recipe class: " + recipe.getClass());
 				}), 0.65f, 0.9f - index * 0.15f, 0.75f, 1f - index * 0.15f);
-				addComponent(new TextButton("Delete", EditProps.QUIT_BASE, EditProps.QUIT_HOVER, () -> {
+				addComponent(new DynamicTextButton("Delete", EditProps.QUIT_BASE, EditProps.QUIT_HOVER, () -> {
 					menu.getSet().removeRecipe(recipe);
 					refresh();
 				}), 0.8f, 0.9f - index * 0.15f, 0.95f, 1f - index * 0.15f);

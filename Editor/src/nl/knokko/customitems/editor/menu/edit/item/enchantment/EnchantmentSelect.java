@@ -28,7 +28,7 @@ import nl.knokko.customitems.item.EnchantmentType;
 import nl.knokko.gui.color.GuiColor;
 import nl.knokko.gui.component.GuiComponent;
 import nl.knokko.gui.component.menu.GuiMenu;
-import nl.knokko.gui.component.text.TextButton;
+import nl.knokko.gui.component.text.dynamic.DynamicTextButton;
 
 public class EnchantmentSelect extends GuiMenu {
 
@@ -47,14 +47,14 @@ public class EnchantmentSelect extends GuiMenu {
 
 	@Override
 	protected void addComponents() {
-		addComponent(new TextButton("Back", EditProps.CANCEL_BASE, EditProps.CANCEL_HOVER, () -> {
+		addComponent(new DynamicTextButton("Back", EditProps.CANCEL_BASE, EditProps.CANCEL_HOVER, () -> {
 			state.getWindow().setMainComponent(returnMenu);
 		}), 0.1f, 0.1f, 0.2f, 0.2f);
 		float x = 0.3f;
 		float y = 0.9f;
 		EnchantmentType[] enchantments = EnchantmentType.values();
 		for (EnchantmentType enchantment : enchantments) {
-			addComponent(new TextButton(enchantment.getName(), EditProps.SELECT_BASE, EditProps.SELECT_HOVER, () -> {
+			addComponent(new DynamicTextButton(enchantment.getName(), EditProps.SELECT_BASE, EditProps.SELECT_HOVER, () -> {
 				receiver.onSelect(enchantment);
 				state.getWindow().setMainComponent(returnMenu);
 			}), x, y - 0.05f, x + 0.125f, y);

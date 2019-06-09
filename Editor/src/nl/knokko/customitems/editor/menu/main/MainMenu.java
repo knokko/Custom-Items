@@ -28,7 +28,7 @@ import java.awt.Color;
 import nl.knokko.gui.color.GuiColor;
 import nl.knokko.gui.color.SimpleGuiColor;
 import nl.knokko.gui.component.menu.GuiMenu;
-import nl.knokko.gui.component.text.TextButton;
+import nl.knokko.gui.component.text.dynamic.DynamicTextButton;
 import nl.knokko.gui.util.TextBuilder.Properties;
 
 public class MainMenu extends GuiMenu {
@@ -41,13 +41,13 @@ public class MainMenu extends GuiMenu {
 
 	@Override
 	protected void addComponents() {
-		addComponent(new TextButton("New item set", BUTTON_PROPERTIES, HOVER_PROPERTIES, () ->  {
+		addComponent(new DynamicTextButton("New item set", BUTTON_PROPERTIES, HOVER_PROPERTIES, () ->  {
 			state.getWindow().setMainComponent(CreateMenu.INSTANCE);
 		}), 0.3f, 0.65f, 0.7f, 0.8f);
-		addComponent(new TextButton("Edit item set", BUTTON_PROPERTIES, HOVER_PROPERTIES, () -> {
+		addComponent(new DynamicTextButton("Edit item set", BUTTON_PROPERTIES, HOVER_PROPERTIES, () -> {
 			state.getWindow().setMainComponent(LoadMenu.INSTANCE);
 		}), 0.3f, 0.45f, 0.7f, 0.6f);
-		addComponent(new TextButton("Exit editor", BUTTON_PROPERTIES, HOVER_PROPERTIES, () -> {
+		addComponent(new DynamicTextButton("Exit editor", BUTTON_PROPERTIES, HOVER_PROPERTIES, () -> {
 			state.getWindow().stopRunning();
 		}), 0.3f, 0.2f, 0.7f, 0.35f);
 	}

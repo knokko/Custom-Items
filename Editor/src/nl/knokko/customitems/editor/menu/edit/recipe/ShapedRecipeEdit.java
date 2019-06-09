@@ -35,8 +35,8 @@ import nl.knokko.customitems.editor.set.recipe.result.SimpleVanillaResult;
 import nl.knokko.gui.color.GuiColor;
 import nl.knokko.gui.color.SimpleGuiColor;
 import nl.knokko.gui.component.menu.GuiMenu;
-import nl.knokko.gui.component.text.TextButton;
-import nl.knokko.gui.component.text.TextComponent;
+import nl.knokko.gui.component.text.dynamic.DynamicTextButton;
+import nl.knokko.gui.component.text.dynamic.DynamicTextComponent;
 
 public class ShapedRecipeEdit extends GuiMenu {
 	
@@ -46,12 +46,12 @@ public class ShapedRecipeEdit extends GuiMenu {
 	private final ShapedRecipe previous;
 	private final Ingredients ingredientsComponent;
 	private final ResultComponent resultComponent;
-	private final TextComponent errorComponent;
+	private final DynamicTextComponent errorComponent;
 
 	public ShapedRecipeEdit(EditMenu menu, ShapedRecipe previous) {
 		this.menu = menu;
 		this.previous = previous;
-		errorComponent = new TextComponent("", EditProps.ERROR);
+		errorComponent = new DynamicTextComponent("", EditProps.ERROR);
 		if (previous != null)
 			resultComponent = new ResultComponent(previous.getResult(), this, menu.getSet());
 		else
@@ -64,10 +64,10 @@ public class ShapedRecipeEdit extends GuiMenu {
 
 	@Override
 	protected void addComponents() {
-		addComponent(new TextButton("Cancel", EditProps.CANCEL_BASE, EditProps.CANCEL_HOVER, () -> {
+		addComponent(new DynamicTextButton("Cancel", EditProps.CANCEL_BASE, EditProps.CANCEL_HOVER, () -> {
 			state.getWindow().setMainComponent(menu.getRecipeOverview());
 		}), 0.1f, 0.85f, 0.25f, 0.95f);
-		addComponent(new TextButton("Apply", EditProps.SAVE_BASE, EditProps.SAVE_HOVER, () -> {
+		addComponent(new DynamicTextButton("Apply", EditProps.SAVE_BASE, EditProps.SAVE_HOVER, () -> {
 			if (previous != null) {
 				Ingredient[] ingredients = new Ingredient[9];
 				for (int index = 0; index < ingredients.length; index++)

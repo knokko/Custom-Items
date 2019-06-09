@@ -9,7 +9,7 @@ import nl.knokko.customitems.item.AttributeModifier.Operation;
 import nl.knokko.customitems.item.AttributeModifier.Slot;
 import nl.knokko.customitems.item.CustomItemType.Category;
 import nl.knokko.gui.component.text.IntEditField;
-import nl.knokko.gui.component.text.TextComponent;
+import nl.knokko.gui.component.text.dynamic.DynamicTextComponent;
 import nl.knokko.gui.util.Option;
 
 public class EditItemShears extends EditItemTool {
@@ -38,7 +38,7 @@ public class EditItemShears extends EditItemTool {
 	@Override
 	protected void addComponents() {
 		super.addComponents();
-		addComponent(new TextComponent("Durability loss on shearing:", EditProps.LABEL), 0.6f, 0.35f, 0.84f, 0.425f);
+		addComponent(new DynamicTextComponent("Durability loss on shearing:", EditProps.LABEL), 0.6f, 0.35f, 0.84f, 0.425f);
 		addComponent(shearDurabilityLoss, 0.85f, 0.35f, 0.9f, 0.425f);
 	}
 	

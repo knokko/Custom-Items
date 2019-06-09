@@ -36,7 +36,7 @@ import nl.knokko.customitems.item.CustomItemType.Category;
 import nl.knokko.gui.component.image.CheckboxComponent;
 import nl.knokko.gui.component.text.FloatEditField;
 import nl.knokko.gui.component.text.IntEditField;
-import nl.knokko.gui.component.text.TextComponent;
+import nl.knokko.gui.component.text.dynamic.DynamicTextComponent;
 import nl.knokko.gui.util.Option;
 
 public class EditItemBow extends EditItemTool {
@@ -82,15 +82,15 @@ public class EditItemBow extends EditItemTool {
 	@Override
 	protected void addComponents() {
 		super.addComponents();
-		addComponent(new TextComponent("Durability loss on shooting:", EditProps.LABEL), 0.6f, 0.35f, 0.84f, 0.425f);
+		addComponent(new DynamicTextComponent("Durability loss on shooting:", EditProps.LABEL), 0.6f, 0.35f, 0.84f, 0.425f);
 		addComponent(shootDurabilityLoss, 0.85f, 0.35f, 0.9f, 0.425f);
-		addComponent(new TextComponent("Damage multiplier: ", EditProps.LABEL), 0.71f, 0.245f, 0.895f, 0.32f);
+		addComponent(new DynamicTextComponent("Damage multiplier: ", EditProps.LABEL), 0.71f, 0.245f, 0.895f, 0.32f);
 		addComponent(damageMultiplier, 0.895f, 0.245f, 0.965f, 0.32f);
-		addComponent(new TextComponent("Speed multiplier: ", EditProps.LABEL), 0.71f, 0.17f, 0.88f, 0.245f);
+		addComponent(new DynamicTextComponent("Speed multiplier: ", EditProps.LABEL), 0.71f, 0.17f, 0.88f, 0.245f);
 		addComponent(speedMultiplier, 0.895f, 0.17f, 0.965f, 0.245f);
-		addComponent(new TextComponent("knockback strength: ", EditProps.LABEL), 0.71f, 0.095f, 0.9f, 0.17f);
+		addComponent(new DynamicTextComponent("knockback strength: ", EditProps.LABEL), 0.71f, 0.095f, 0.9f, 0.17f);
 		addComponent(knockbackStrength, 0.9f, 0.095f, 0.95f, 0.17f);
-		addComponent(new TextComponent("Arrow gravity", EditProps.LABEL), 0.8f, 0.02f, 0.95f, 0.095f);
+		addComponent(new DynamicTextComponent("Arrow gravity", EditProps.LABEL), 0.8f, 0.02f, 0.95f, 0.095f);
 		addComponent(gravity, 0.75f, 0.02f, 0.775f, 0.045f);
 	}
 

@@ -35,7 +35,6 @@ import nl.knokko.customitems.editor.set.ItemSet;
 import nl.knokko.gui.color.GuiColor;
 import nl.knokko.gui.color.SimpleGuiColor;
 import nl.knokko.gui.component.menu.GuiMenu;
-import nl.knokko.gui.component.text.TextButton;
 import nl.knokko.gui.component.text.dynamic.DynamicTextButton;
 import nl.knokko.gui.util.TextBuilder.Properties;
 import nl.knokko.util.bits.BitInput;
@@ -51,13 +50,13 @@ public class LoadMenu extends GuiMenu {
 	protected void addComponents() {
 		setList = new SetList();
 		addComponent(setList, 0.3f, 0f, 1f, 0.8f);
-		addComponent(new TextButton("Cancel", Properties.createButton(new Color(200, 100, 0), new Color(50, 25, 0)), Properties.createButton(new Color(250, 125, 0), new Color(75, 35, 0)), () -> {
+		addComponent(new DynamicTextButton("Cancel", Properties.createButton(new Color(200, 100, 0), new Color(50, 25, 0)), Properties.createButton(new Color(250, 125, 0), new Color(75, 35, 0)), () -> {
 			state.getWindow().setMainComponent(MainMenu.INSTANCE);
 		}), 0.05f, 0.8f, 0.25f, 0.9f);
-		addComponent(new TextButton("Load back-up", Properties.createButton(new Color(200, 100, 0), new Color(50, 25, 0)), Properties.createButton(new Color(250, 125, 0), new Color(75, 35, 0)), () -> {
+		addComponent(new DynamicTextButton("Load back-up", Properties.createButton(new Color(200, 100, 0), new Color(50, 25, 0)), Properties.createButton(new Color(250, 125, 0), new Color(75, 35, 0)), () -> {
 			state.getWindow().setMainComponent(BackupMenu.INSTANCE);
 		}), 0.05f, 0.6f, 0.25f, 0.7f);
-		addComponent(new TextButton("Refresh", Properties.createButton(new Color(150, 150, 250), new Color(30, 30, 100)), Properties.createButton(new Color(180, 180, 255), new Color(40, 40, 120)), () -> {
+		addComponent(new DynamicTextButton("Refresh", Properties.createButton(new Color(150, 150, 250), new Color(30, 30, 100)), Properties.createButton(new Color(180, 180, 255), new Color(40, 40, 120)), () -> {
 			setList.refresh();
 		}), 0.35f, 0.85f, 0.55f, 0.95f);
 	}
@@ -77,10 +76,10 @@ public class LoadMenu extends GuiMenu {
 		protected void addComponents() {
 			setList = new BackupSetList();
 			addComponent(setList, 0.3f, 0f, 1f, 0.8f);
-			addComponent(new TextButton("Back", Properties.createButton(new Color(200, 100, 0), new Color(50, 25, 0)), Properties.createButton(new Color(250, 125, 0), new Color(75, 35, 0)), () -> {
+			addComponent(new DynamicTextButton("Back", Properties.createButton(new Color(200, 100, 0), new Color(50, 25, 0)), Properties.createButton(new Color(250, 125, 0), new Color(75, 35, 0)), () -> {
 				state.getWindow().setMainComponent(LoadMenu.INSTANCE);
 			}), 0.05f, 0.8f, 0.25f, 0.9f);
-			addComponent(new TextButton("Refresh", Properties.createButton(new Color(150, 150, 250), new Color(30, 30, 100)), Properties.createButton(new Color(180, 180, 255), new Color(40, 40, 120)), () -> {
+			addComponent(new DynamicTextButton("Refresh", Properties.createButton(new Color(150, 150, 250), new Color(30, 30, 100)), Properties.createButton(new Color(180, 180, 255), new Color(40, 40, 120)), () -> {
 				setList.refresh();
 			}), 0.35f, 0.85f, 0.55f, 0.95f);
 		}
@@ -182,7 +181,7 @@ public class LoadMenu extends GuiMenu {
 			if(files != null) {
 				for(int index = 0; index < files.length; index++) {
 					final File file = files[index];
-					addComponent(new TextButton(file.getName().substring(0, file.getName().length() - 5), BUTTON_PROPERTIES, HOVER_PROPERTIES, () -> {
+					addComponent(new DynamicTextButton(file.getName().substring(0, file.getName().length() - 5), BUTTON_PROPERTIES, HOVER_PROPERTIES, () -> {
 						try {
 							BitInput input = ByteArrayBitInput.fromFile(file);
 							ItemSet set = new ItemSet(file.getName().substring(0, file.getName().length() - 5), input);

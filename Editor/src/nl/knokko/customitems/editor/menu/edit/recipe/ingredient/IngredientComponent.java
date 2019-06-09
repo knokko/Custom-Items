@@ -29,10 +29,10 @@ import nl.knokko.customitems.editor.set.ItemSet;
 import nl.knokko.customitems.editor.set.recipe.ingredient.Ingredient;
 import nl.knokko.customitems.editor.set.recipe.ingredient.NoIngredient;
 import nl.knokko.gui.component.GuiComponent;
-import nl.knokko.gui.component.text.TextButton;
+import nl.knokko.gui.component.text.dynamic.DynamicTextButton;
 import nl.knokko.gui.util.TextBuilder.Properties;
 
-public class IngredientComponent extends TextButton {
+public class IngredientComponent extends DynamicTextButton {
 	
 	public static final Properties PROPS = Properties.createLabel(Color.BLACK, new Color(255, 150, 0), 512, 128);
 	public static final Properties HOVER_PROPS = Properties.createLabel(Color.BLUE, new Color(255, 200, 0), 512, 128);

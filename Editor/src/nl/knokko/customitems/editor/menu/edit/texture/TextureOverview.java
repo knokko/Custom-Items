@@ -32,19 +32,19 @@ import nl.knokko.customitems.editor.set.item.texture.BowTextures;
 import nl.knokko.gui.color.GuiColor;
 import nl.knokko.gui.component.image.SimpleImageComponent;
 import nl.knokko.gui.component.menu.GuiMenu;
-import nl.knokko.gui.component.text.TextButton;
-import nl.knokko.gui.component.text.TextComponent;
+import nl.knokko.gui.component.text.dynamic.DynamicTextButton;
+import nl.knokko.gui.component.text.dynamic.DynamicTextComponent;
 
 public class TextureOverview extends GuiMenu {
 	
 	protected final EditMenu menu;
 	protected final TextureList textureList;
-	protected final TextComponent errorComponent;
+	protected final DynamicTextComponent errorComponent;
 
 	public TextureOverview(EditMenu menu) {
 		this.menu = menu;
 		textureList = new TextureList();
-		errorComponent = new TextComponent("", EditProps.ERROR);
+		errorComponent = new DynamicTextComponent("", EditProps.ERROR);
 	}
 	
 	@Override
@@ -62,10 +62,10 @@ public class TextureOverview extends GuiMenu {
 	protected void addComponents() {
 		addComponent(errorComponent, 0.05f, 0.9f, 0.95f, 1f);
 		addComponent(textureList, 0.3f, 0f, 1f, 0.9f);
-		addComponent(new TextButton("Back", EditProps.CANCEL_BASE, EditProps.CANCEL_HOVER, () -> {
+		addComponent(new DynamicTextButton("Back", EditProps.CANCEL_BASE, EditProps.CANCEL_HOVER, () -> {
 			state.getWindow().setMainComponent(menu);
 		}), 0.05f, 0.7f, 0.2f, 0.8f);
-		addComponent(new TextButton("Load texture", EditProps.BUTTON, EditProps.HOVER, () -> {
+		addComponent(new DynamicTextButton("Load texture", EditProps.BUTTON, EditProps.HOVER, () -> {
 			state.getWindow().setMainComponent(new TextureCreate(menu));
 		}), 0.05f, 0.4f, 0.25f, 0.5f);
 	}
@@ -88,14 +88,14 @@ public class TextureOverview extends GuiMenu {
 			int index = 0;
 			for(NamedImage texture : textures) {
 				addComponent(new SimpleImageComponent(state.getWindow().getTextureLoader().loadTexture(texture.getImage())), 0f, 0.9f - index * 0.15f, 0.2f, 1f - index * 0.15f);
-				addComponent(new TextComponent(texture.getName(), EditProps.LABEL), 0.25f, 0.9f - index * 0.15f, 0.55f, 1f - index * 0.15f);
-				addComponent(new TextButton("Edit", EditProps.BUTTON, EditProps.HOVER, () -> {
+				addComponent(new DynamicTextComponent(texture.getName(), EditProps.LABEL), 0.25f, 0.9f - index * 0.15f, 0.55f, 1f - index * 0.15f);
+				addComponent(new DynamicTextButton("Edit", EditProps.BUTTON, EditProps.HOVER, () -> {
 					if (texture instanceof BowTextures)
 						state.getWindow().setMainComponent(new BowTextureEdit(menu, (BowTextures) texture));
 					else
 						state.getWindow().setMainComponent(new TextureEdit(menu, texture));
 				}), 0.6f, 0.9f - index * 0.15f, 0.7f, 1f - index * 0.15f);
-				addComponent(new TextButton("Delete", EditProps.QUIT_BASE, EditProps.QUIT_HOVER, () -> {
+				addComponent(new DynamicTextButton("Delete", EditProps.QUIT_BASE, EditProps.QUIT_HOVER, () -> {
 					String error = menu.getSet().removeTexture(texture);
 					if(error != null)
 						errorComponent.setText(error);

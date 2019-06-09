@@ -28,7 +28,7 @@ import nl.knokko.customitems.editor.menu.edit.EditProps;
 import nl.knokko.customitems.item.CustomItemType.Category;
 import nl.knokko.gui.color.GuiColor;
 import nl.knokko.gui.component.menu.GuiMenu;
-import nl.knokko.gui.component.text.TextButton;
+import nl.knokko.gui.component.text.dynamic.DynamicTextButton;
 
 public class CreateItem extends GuiMenu {
 	
@@ -45,43 +45,43 @@ public class CreateItem extends GuiMenu {
 
 	@Override
 	protected void addComponents() {
-		addComponent(new TextButton("Cancel", EditProps.CANCEL_BASE, EditProps.CANCEL_HOVER, () -> {
+		addComponent(new DynamicTextButton("Cancel", EditProps.CANCEL_BASE, EditProps.CANCEL_HOVER, () -> {
 			state.getWindow().setMainComponent(menu.getItemOverview());
 		}), 0.1f, 0.8f, 0.25f, 0.9f);
-		addComponent(new TextButton("Simple Item", EditProps.CHOOSE_BASE, EditProps.CHOOSE_HOVER, () -> {
+		addComponent(new DynamicTextButton("Simple Item", EditProps.CHOOSE_BASE, EditProps.CHOOSE_HOVER, () -> {
 			state.getWindow().setMainComponent(new EditItemSimple(menu, null));
 		}), 0.5f, 0.8f, 0.7f, 0.9f);
-		addComponent(new TextButton("Sword", EditProps.CHOOSE_BASE, EditProps.CHOOSE_HOVER, () -> {
+		addComponent(new DynamicTextButton("Sword", EditProps.CHOOSE_BASE, EditProps.CHOOSE_HOVER, () -> {
 			state.getWindow().setMainComponent(new EditItemTool(menu, null, Category.SWORD));
 		}), 0.5f, 0.65f, 0.7f, 0.75f);
-		addComponent(new TextButton("Pickaxe", EditProps.CHOOSE_BASE, EditProps.CHOOSE_HOVER, () -> {
+		addComponent(new DynamicTextButton("Pickaxe", EditProps.CHOOSE_BASE, EditProps.CHOOSE_HOVER, () -> {
 			state.getWindow().setMainComponent(new EditItemTool(menu, null, Category.PICKAXE));
 		}), 0.5f, 0.525f, 0.7f, 0.625f);
-		addComponent(new TextButton("Axe", EditProps.CHOOSE_BASE, EditProps.CHOOSE_HOVER, () -> {
+		addComponent(new DynamicTextButton("Axe", EditProps.CHOOSE_BASE, EditProps.CHOOSE_HOVER, () -> {
 			state.getWindow().setMainComponent(new EditItemTool(menu, null, Category.AXE));
 		}), 0.5f, 0.4f, 0.7f, 0.5f);
-		addComponent(new TextButton("Shovel", EditProps.CHOOSE_BASE, EditProps.CHOOSE_HOVER, () -> {
+		addComponent(new DynamicTextButton("Shovel", EditProps.CHOOSE_BASE, EditProps.CHOOSE_HOVER, () -> {
 			state.getWindow().setMainComponent(new EditItemTool(menu, null, Category.SHOVEL));
 		}), 0.5f, 0.275f, 0.7f, 0.375f);
-		addComponent(new TextButton("Hoe", EditProps.CHOOSE_BASE, EditProps.CHOOSE_HOVER, () -> {
+		addComponent(new DynamicTextButton("Hoe", EditProps.CHOOSE_BASE, EditProps.CHOOSE_HOVER, () -> {
 			state.getWindow().setMainComponent(new EditItemHoe(menu, null));
 		}), 0.5f, 0.15f, 0.7f, 0.25f);
-		addComponent(new TextButton("Shear", EditProps.CHOOSE_BASE, EditProps.CHOOSE_HOVER, () -> {
+		addComponent(new DynamicTextButton("Shear", EditProps.CHOOSE_BASE, EditProps.CHOOSE_HOVER, () -> {
 			state.getWindow().setMainComponent(new EditItemShears(menu, null));
 		}), 0.5f, 0.025f, 0.7f, 0.125f);
-		addComponent(new TextButton("Bow", EditProps.CHOOSE_BASE, EditProps.CHOOSE_HOVER, () -> {
+		addComponent(new DynamicTextButton("Bow", EditProps.CHOOSE_BASE, EditProps.CHOOSE_HOVER, () -> {
 			state.getWindow().setMainComponent(new EditItemBow(menu, null));
 		}), 0.75f, 0.65f, 0.95f, 0.75f);
-		addComponent(new TextButton("Helmet", EditProps.CHOOSE_BASE, EditProps.CHOOSE_HOVER, () -> {
+		addComponent(new DynamicTextButton("Helmet", EditProps.CHOOSE_BASE, EditProps.CHOOSE_HOVER, () -> {
 			state.getWindow().setMainComponent(new EditItemArmor(menu, null, Category.HELMET));
 		}), 0.75f, 0.525f, 0.95f, 0.625f);
-		addComponent(new TextButton("Chestplate", EditProps.CHOOSE_BASE, EditProps.CHOOSE_HOVER, () -> {
+		addComponent(new DynamicTextButton("Chestplate", EditProps.CHOOSE_BASE, EditProps.CHOOSE_HOVER, () -> {
 			state.getWindow().setMainComponent(new EditItemArmor(menu, null, Category.CHESTPLATE));
 		}), 0.75f, 0.4f, 0.95f, 0.5f);
-		addComponent(new TextButton("Leggings", EditProps.CHOOSE_BASE, EditProps.CHOOSE_HOVER, () -> {
+		addComponent(new DynamicTextButton("Leggings", EditProps.CHOOSE_BASE, EditProps.CHOOSE_HOVER, () -> {
 			state.getWindow().setMainComponent(new EditItemArmor(menu, null, Category.LEGGINGS));
 		}), 0.75f, 0.275f, 0.95f, 0.375f);
-		addComponent(new TextButton("Boots", EditProps.CHOOSE_BASE, EditProps.CHOOSE_HOVER, () -> {
+		addComponent(new DynamicTextButton("Boots", EditProps.CHOOSE_BASE, EditProps.CHOOSE_HOVER, () -> {
 			state.getWindow().setMainComponent(new EditItemArmor(menu, null, Category.BOOTS));
 		}), 0.75f, 0.15f, 0.95f, 0.25f);
 	}

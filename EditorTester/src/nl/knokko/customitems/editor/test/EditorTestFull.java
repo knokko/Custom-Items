@@ -44,7 +44,7 @@ public class EditorTestFull implements GuiTestProgram {
 
 	@Override
 	public void test(GuiTestHelper test) {
-		test.setDelayTime(20);
+		test.setDelayTime(15);
 		ExploreMainMenuTest.test(test);
 		CreateItemSetTest.test(test, "automatic test");
 		ExploreEditMenuTest.test(test);

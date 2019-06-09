@@ -37,7 +37,7 @@ import nl.knokko.customitems.editor.set.recipe.ingredient.SimpleVanillaIngredien
 import nl.knokko.gui.color.GuiColor;
 import nl.knokko.gui.component.GuiComponent;
 import nl.knokko.gui.component.menu.GuiMenu;
-import nl.knokko.gui.component.text.TextButton;
+import nl.knokko.gui.component.text.dynamic.DynamicTextButton;
 
 public class ChooseIngredient extends GuiMenu {
 	
@@ -55,28 +55,28 @@ public class ChooseIngredient extends GuiMenu {
 
 	@Override
 	protected void addComponents() {
-		addComponent(new TextButton("Cancel", EditProps.CANCEL_BASE, EditProps.CANCEL_HOVER, () -> {
+		addComponent(new DynamicTextButton("Cancel", EditProps.CANCEL_BASE, EditProps.CANCEL_HOVER, () -> {
 			state.getWindow().setMainComponent(returnMenu);
 		}), 0.2f, 0.3f, 0.35f, 0.4f);
-		addComponent(new TextButton("Custom Item", EditProps.BUTTON, EditProps.HOVER, () -> {
+		addComponent(new DynamicTextButton("Custom Item", EditProps.BUTTON, EditProps.HOVER, () -> {
 			state.getWindow().setMainComponent(new SelectCustomItem(returnMenu, (CustomItem item) -> {
 				listener.set(new CustomItemIngredient(item));
 				//the SelectCustomItem will go the the returnGui automatically
 			}, set));
 		}), 0.6f, 0.7f, 0.8f, 0.8f);
-		addComponent(new TextButton("Simple vanilla item", EditProps.BUTTON, EditProps.HOVER, () -> {
+		addComponent(new DynamicTextButton("Simple vanilla item", EditProps.BUTTON, EditProps.HOVER, () -> {
 			state.getWindow().setMainComponent(new SelectSimpleVanillaItem(returnMenu, (Material material) -> {
 				listener.set(new SimpleVanillaIngredient(material));
 				//the SelectSimpleVanillaItem will go to the returnGui automatically
 			}, false));
 		}), 0.6f, 0.55f, 0.8f, 0.65f);
-		addComponent(new TextButton("Vanilla item with datavalue", EditProps.BUTTON, EditProps.HOVER, () -> {
+		addComponent(new DynamicTextButton("Vanilla item with datavalue", EditProps.BUTTON, EditProps.HOVER, () -> {
 			state.getWindow().setMainComponent(new SelectDataVanillaItem(returnMenu, (Material material, byte data) -> {
 				listener.set(new DataVanillaIngredient(material, data));
 			}));
 		}), 0.6f, 0.4f, 0.8f, 0.5f);
 		if (allowEmpty) {
-			addComponent(new TextButton("Empty", EditProps.BUTTON, EditProps.HOVER, () -> {
+			addComponent(new DynamicTextButton("Empty", EditProps.BUTTON, EditProps.HOVER, () -> {
 				listener.set(new NoIngredient());
 				state.getWindow().setMainComponent(returnMenu);
 			}), 0.6f, 0.25f, 0.8f, 0.35f);

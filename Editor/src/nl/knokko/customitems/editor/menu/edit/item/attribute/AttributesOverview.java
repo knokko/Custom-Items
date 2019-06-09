@@ -34,8 +34,8 @@ import nl.knokko.gui.color.GuiColor;
 import nl.knokko.gui.component.GuiComponent;
 import nl.knokko.gui.component.image.ImageButton;
 import nl.knokko.gui.component.menu.GuiMenu;
-import nl.knokko.gui.component.text.TextButton;
-import nl.knokko.gui.component.text.TextComponent;
+import nl.knokko.gui.component.text.dynamic.DynamicTextButton;
+import nl.knokko.gui.component.text.dynamic.DynamicTextComponent;
 import nl.knokko.gui.component.text.TextEditField;
 import nl.knokko.gui.texture.GuiTexture;
 import nl.knokko.gui.texture.loader.GuiTextureLoader;
@@ -48,7 +48,7 @@ public class AttributesOverview extends GuiMenu {
 	
 	private final AttributeModifier exampleModifier;
 	
-	private final TextComponent errorComponent;
+	private final DynamicTextComponent errorComponent;
 	
 	private GuiTexture deleteBase;
 	private GuiTexture deleteHover;
@@ -58,7 +58,7 @@ public class AttributesOverview extends GuiMenu {
 		this.receiver = receiver;
 		this.returnMenu = returnMenu;
 		this.exampleModifier = exampleModifier;
-		this.errorComponent = new TextComponent("", EditProps.ERROR);
+		this.errorComponent = new DynamicTextComponent("", EditProps.ERROR);
 	}
 	
 	@Override
@@ -71,14 +71,14 @@ public class AttributesOverview extends GuiMenu {
 		GuiTextureLoader loader = state.getWindow().getTextureLoader();
 		deleteBase = loader.loadTexture("nl/knokko/gui/images/icons/delete.png");
 		deleteHover = loader.loadTexture("nl/knokko/gui/images/icons/delete_hover.png");
-		addComponent(new TextButton("Cancel", EditProps.CANCEL_BASE, EditProps.CANCEL_HOVER, () -> {
+		addComponent(new DynamicTextButton("Cancel", EditProps.CANCEL_BASE, EditProps.CANCEL_HOVER, () -> {
 			state.getWindow().setMainComponent(returnMenu);
 		}), 0.05f, 0.8f, 0.2f, 0.9f);
-		addComponent(new TextButton("New Attribute", EditProps.BUTTON, EditProps.HOVER, () -> {
+		addComponent(new DynamicTextButton("New Attribute", EditProps.BUTTON, EditProps.HOVER, () -> {
 			float y = 0.8f - (getComponents().size() - 4) * 0.125f;
 			addComponent(new Entry(exampleModifier), 0.4f, y, 1f, y + 0.1f);
 		}), 0.05f, 0.5f, 0.3f, 0.6f);
-		addComponent(new TextButton("Apply", EditProps.SAVE_BASE, EditProps.SAVE_HOVER, () -> {
+		addComponent(new DynamicTextButton("Apply", EditProps.SAVE_BASE, EditProps.SAVE_HOVER, () -> {
 			List<SubComponent> components = getComponents();
 			AttributeModifier[] result = new AttributeModifier[components.size() - 4];
 			int index = 0;
@@ -111,9 +111,9 @@ public class AttributesOverview extends GuiMenu {
 		private Operation operation;
 		private TextEditField valueField;
 		
-		private TextButton attributeButton;
-		private TextButton slotButton;
-		private TextButton operationButton;
+		private DynamicTextButton attributeButton;
+		private DynamicTextButton slotButton;
+		private DynamicTextButton operationButton;
 		
 		private Entry(AttributeModifier attribute) {
 			this.attribute = attribute.getAttribute();
@@ -129,19 +129,19 @@ public class AttributesOverview extends GuiMenu {
 
 		@Override
 		protected void addComponents() {
-			attributeButton = new TextButton(attribute.getName(), EditProps.BUTTON, EditProps.HOVER, () -> {
+			attributeButton = new DynamicTextButton(attribute.getName(), EditProps.BUTTON, EditProps.HOVER, () -> {
 				state.getWindow().setMainComponent(new AttributeSelect((Attribute newAttribute) -> {
 					this.attribute = newAttribute;
 					attributeButton.setText(attribute.getName());
 				}, AttributesOverview.this));
 			});
-			slotButton = new TextButton(slot.getSlot(), EditProps.BUTTON, EditProps.HOVER, () -> {
+			slotButton = new DynamicTextButton(slot.getSlot(), EditProps.BUTTON, EditProps.HOVER, () -> {
 				state.getWindow().setMainComponent(new SlotSelect(AttributesOverview.this, (Slot slot) -> {
 					this.slot = slot;
 					slotButton.setText(slot.getSlot());
 				}));
 			});
-			operationButton = new TextButton(operation.toString(), EditProps.BUTTON, EditProps.HOVER, () -> {
+			operationButton = new DynamicTextButton(operation.toString(), EditProps.BUTTON, EditProps.HOVER, () -> {
 				state.getWindow().setMainComponent(new OperationSelect(AttributesOverview.this, (Operation operation) -> {
 					this.operation = operation;
 					operationButton.setText(operation.toString());
@@ -153,7 +153,7 @@ public class AttributesOverview extends GuiMenu {
 			addComponent(attributeButton, 0.09f, 0f, 0.41f, 1f);
 			addComponent(slotButton, 0.425f, 0f, 0.55f, 1f);
 			addComponent(operationButton, 0.56f, 0f, 0.76f, 1f);
-			addComponent(new TextComponent("Value: ", EditProps.LABEL), 0.775f, 0f, 0.87f, 1f);
+			addComponent(new DynamicTextComponent("Value: ", EditProps.LABEL), 0.775f, 0f, 0.87f, 1f);
 			addComponent(valueField, 0.875f, 0f, 0.975f, 1f);
 		}
 	}
