@@ -37,6 +37,6 @@ public class EditorTester {
 		GuiWindow window = new AWTGuiWindow();
 		window.setMainComponent(MainMenu.INSTANCE);
 		Editor.setWindow(window);
-		SafeGuiTester.testSafely(new EditorTest1(), window);
+		SafeGuiTester.testSafely(new EditorTestFull(), window);
 	}
 }
