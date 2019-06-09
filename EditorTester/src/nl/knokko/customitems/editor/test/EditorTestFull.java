@@ -40,7 +40,7 @@ import nl.knokko.gui.testing.GuiTestProgram;
  * @author knokko
  *
  */
-public class EditorTest1 implements GuiTestProgram {
+public class EditorTestFull implements GuiTestProgram {
 
 	@Override
 	public void test(GuiTestHelper test) {
@@ -60,10 +60,19 @@ public class EditorTest1 implements GuiTestProgram {
 				"simple_test_item", "4", "3", "Test Test Chop", "Chop Chop akse", "generic.attackSpeed", 
 				"offhand", "Multiply", "3.14", "generic.movementSpeed", "mainhand", "Chain multiply", "1.3", 
 				"knockback", "4", "damage undead", "7");
+		CreateToolTest.create(test, "Sword", "test_sword", "simple_test_one", "3214", "Vanilla item with datavalue", 
+				"apple", "6", "7", "Test Test Slash", "Smite sword", "generic.attackDamage", 
+				"mainhand", "Multiply", "1.8", "generic.knockbackResistance", "mainhand", "Add", "0.7", 
+				"fire aspect", "2", "loot bonus mobs", "1");
+		CreateToolTest.create(test, "Pickaxe", "test_pick", "simple_test_one", "4132", "Empty", 
+				null, "4", "1", "Test Test Break", "Breaking pick", "generic.luck", 
+				"mainhand", "Multiply", "1.6", "generic.knockbackResistance", "offhand", "Add", "0.2", 
+				"dig speed", "8", "durability", "4");
 		CreateBowTest.create(test, "fragile_bow", "test_bow_first", "34", "Simple vanilla item", "arrow", 
 				"5", "6", "7", "A quite fragile bow", "Also deals more damage", "8", "3.14", "9", 
 				"generic.knockbackResistance", "offhand", "Add", "0.4", 
 				"generic.attackDamage", "mainhand", "Multiply", "2.0", 
 				"arrow infinite", "7", "durability", "2");
+		test.assertComponentsWithTexts("simple_test_item", "test_aks", "fragile_bow");
 	}
 }
