@@ -26,6 +26,7 @@ package nl.knokko.customitems.editor.test;
 import nl.knokko.customitems.editor.test.editmenu.ExploreEditMenuTest;
 import nl.knokko.customitems.editor.test.editmenu.item.CreateBowTest;
 import nl.knokko.customitems.editor.test.editmenu.item.CreateHoeTest;
+import nl.knokko.customitems.editor.test.editmenu.item.CreateShearsTest;
 import nl.knokko.customitems.editor.test.editmenu.item.CreateSimpleItemTest;
 import nl.knokko.customitems.editor.test.editmenu.item.CreateToolTest;
 import nl.knokko.customitems.editor.test.editmenu.texture.CreateBowTextureTest1;
@@ -45,7 +46,7 @@ public class EditorTestFull implements GuiTestProgram {
 
 	@Override
 	public void test(GuiTestHelper test) {
-		test.setDelayTime(15);
+		test.setDelayTime(8);
 		ExploreMainMenuTest.test(test);
 		CreateItemSetTest.test(test, "automatic test");
 		ExploreEditMenuTest.test(test);
@@ -61,6 +62,10 @@ public class EditorTestFull implements GuiTestProgram {
 				"simple_test_item", "4", "3", "Test Test Chop", "Chop Chop akse", "generic.attackSpeed", 
 				"offhand", "Multiply", "3.14", "generic.movementSpeed", "mainhand", "Chain multiply", "1.3", 
 				"knockback", "4", "damage undead", "7");
+		CreateToolTest.create(test, "Shovel", "test_shovel", "simple_test_one", "4312", 
+				"Vanilla item with datavalue", "anvil", "2", "1", "For digging graves", "Or just normal stuff", 
+				"generic.armor", "mainhand","Multiply", "3.0", "generic.luck", "mainhand", "Add", "1.0", 
+				"mending", "3", "dig speed", "5");
 		CreateToolTest.create(test, "Sword", "test_sword", "simple_test_one", "3214", "Vanilla item with datavalue", 
 				"apple", "6", "7", "Test Test Slash", "Smite sword", "generic.attackDamage", 
 				"mainhand", "Multiply", "1.8", "generic.knockbackResistance", "mainhand", "Add", "0.7", 
@@ -74,6 +79,10 @@ public class EditorTestFull implements GuiTestProgram {
 				"generic.attackSpeed", "mainhand", "Multiply", "2.0", 
 				"generic.attackDamage", "mainhand", "Add", "8.0", 
 				"loot bonus blocks", "2", "loot bonus mobs", "5");
+		CreateShearsTest.create(test, "test_shears", "simple_test_one", "64", "Simple vanilla item", "arrow", 
+				"4", "3", "2", "Improve your defences", "Or just obtain wool from sheeps", 
+				"generic.maxHealth", "offhand", "Add", "6.0", 
+				"generic.armorToughness", "offhand", "Add", "3.0", "damage all", "8", "binding curse", "1");
 		CreateBowTest.create(test, "fragile_bow", "test_bow_first", "34", "Simple vanilla item", "arrow", 
 				"5", "6", "7", "A quite fragile bow", "Also deals more damage", "8", "3.14", "9", 
 				"generic.knockbackResistance", "offhand", "Add", "0.4", 

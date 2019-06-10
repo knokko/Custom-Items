@@ -94,6 +94,11 @@ public class CreateBowTextureTest1 {
 		test.click("0.9");
 		test.backspace(1);
 		test.type('6');
+		
+		// For some reason, that extra delay is necessary
+		test.assertComponentWithText("0.6");
+		test.delay(1000);
+		
 		test.clickNearest("Edit...", "0.6", 4);
 		test.click("autotest3.png");
 		test.click("Select");
