@@ -25,6 +25,7 @@ package nl.knokko.customitems.editor.test;
 
 import nl.knokko.customitems.editor.test.editmenu.ExploreEditMenuTest;
 import nl.knokko.customitems.editor.test.editmenu.item.CreateBowTest;
+import nl.knokko.customitems.editor.test.editmenu.item.CreateHoeTest;
 import nl.knokko.customitems.editor.test.editmenu.item.CreateSimpleItemTest;
 import nl.knokko.customitems.editor.test.editmenu.item.CreateToolTest;
 import nl.knokko.customitems.editor.test.editmenu.texture.CreateBowTextureTest1;
@@ -67,12 +68,18 @@ public class EditorTestFull implements GuiTestProgram {
 		CreateToolTest.create(test, "Pickaxe", "test_pick", "simple_test_one", "4132", "Empty", 
 				null, "4", "1", "Test Test Break", "Breaking pick", "generic.luck", 
 				"mainhand", "Multiply", "1.6", "generic.knockbackResistance", "offhand", "Add", "0.2", 
-				"dig speed", "8", "durability", "4");
+				"dig speed", "8", "silk touch", "4");
+		CreateHoeTest.create(test, "test_hoe", "simple_test_one", "2431", "Custom Item", "simple_test_item", 
+				"1", "2", "3", "A fighting hoe", "Can also till dirt", 
+				"generic.attackSpeed", "mainhand", "Multiply", "2.0", 
+				"generic.attackDamage", "mainhand", "Add", "8.0", 
+				"loot bonus blocks", "2", "loot bonus mobs", "5");
 		CreateBowTest.create(test, "fragile_bow", "test_bow_first", "34", "Simple vanilla item", "arrow", 
 				"5", "6", "7", "A quite fragile bow", "Also deals more damage", "8", "3.14", "9", 
 				"generic.knockbackResistance", "offhand", "Add", "0.4", 
 				"generic.attackDamage", "mainhand", "Multiply", "2.0", 
 				"arrow infinite", "7", "durability", "2");
 		test.assertComponentsWithTexts("simple_test_item", "test_aks", "fragile_bow");
+		// TODO Also create EditorTestQuick
 	}
 }
