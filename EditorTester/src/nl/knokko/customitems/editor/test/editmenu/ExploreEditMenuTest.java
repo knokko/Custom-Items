@@ -71,8 +71,8 @@ public class ExploreEditMenuTest {
 		test.click("Simple Item");
 		test.assertComponentsWithTexts("Cancel", "Create", "Name: ", "Internal item type: ",
 				"Internal item damage: ", "Display name: ", "Lore: ", "Attribute modifiers: ",
-				"Default enchantments: ", "Texture: ", "", "Diamond hoe", "1", "Change lore...",
-				"Change attributes...", "Change enchantments...", "None", "Max stacksize:", "64");
+				"Default enchantments: ", "Texture: ", "", "Diamond hoe", "1", "Change...", "None", 
+				"Max stacksize:", "64");
 		
 		// Now look into recipes
 		test.click("Cancel");
@@ -91,6 +91,9 @@ public class ExploreEditMenuTest {
 		test.assertComponentsWithTexts("Cancel", "Custom Item", "Simple vanilla item",
 				"Vanilla item with datavalue", "Empty");
 		test.click("Custom Item");
+		
+		// It appears that this delay is necessary to make sure things are processed the right way
+		test.delay(30);
 		test.click("Cancel");
 		test.click("empty");
 		test.click("Change");

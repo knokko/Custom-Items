@@ -17,9 +17,8 @@ public class CreateBowTest {
 		test.click("Bow");
 		test.assertComponentsWithTexts("Cancel", "Create", "Name: ", "Internal item type: ",
 				"Internal item damage: ", "Display name: ", "Lore: ", "Attribute modifiers: ",
-				"Default enchantments: ", "Item flags: ", "Texture: ", "", "1", "Change lore...",
-				"Change attributes...", "Change enchantments...", "Change flags...", "None",
-				"Allow enchanting", "Allow anvil actions", "Max uses: ", "Repair item: ",
+				"Default enchantments: ", "Item flags: ", "Texture: ", "", "1", "Change...",
+				"None", "Allow enchanting", "Allow anvil actions", "Max uses: ", "Repair item: ",
 				"Durability loss on attack:", "Durability loss on block break:",
 				"Durability loss on shooting:", "Damage multiplier: ", "Speed multiplier: ",
 				"knockback strength: ", "Arrow gravity", "500", "0", "1", "1.0", "1.0");

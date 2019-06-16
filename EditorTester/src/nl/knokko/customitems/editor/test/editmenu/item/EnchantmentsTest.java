@@ -7,7 +7,7 @@ import nl.knokko.gui.testing.GuiTestHelper;
 public class EnchantmentsTest {
 	
 	public static void test(GuiTestHelper test, String enchantment1, String level1, String enchantment2, String level2) {
-		test.click("Change enchantments...");
+		test.clickNearest("Change...", "Default enchantments: ", 4);
 		test.assertComponentsWithTexts("Cancel", "New Enchantment", "Apply");
 		test.click("New Enchantment");
 		test.assertComponentsWithTexts("durability", "Level: ", "2");
@@ -29,7 +29,7 @@ public class EnchantmentsTest {
 		test.type(level2);
 		test.assertComponentWithText(level2);
 		test.click("Apply");
-		test.click("Change enchantments...");
+		test.clickNearest("Change...", "Default enchantments: ", 4);
 		test.assertComponentsWithTexts(enchantment1, level1, enchantment2, level2);
 		test.click("Cancel");
 	}

@@ -32,6 +32,7 @@ import javax.imageio.ImageIO;
 import nl.knokko.customitems.editor.menu.edit.EditMenu;
 import nl.knokko.customitems.editor.menu.edit.EditProps;
 import nl.knokko.customitems.editor.menu.main.CreateMenu;
+import nl.knokko.customitems.editor.set.ItemSet;
 import nl.knokko.customitems.editor.set.item.NamedImage;
 import nl.knokko.gui.color.GuiColor;
 import nl.knokko.gui.component.GuiComponent;
@@ -45,16 +46,22 @@ import nl.knokko.gui.component.text.TextEditField;
 
 public class TextureEdit extends GuiMenu {
 	
-	protected final EditMenu menu;
+	protected final ItemSet itemSet;
+	protected final GuiComponent returnMenu;
 	protected final NamedImage previous;
 	protected final DynamicTextComponent errorComponent;
 	
 	protected TextEditField name;
 	protected BufferedImage image;
 	protected WrapperComponent<SimpleImageComponent> wrapper;
-
+	
 	public TextureEdit(EditMenu menu, NamedImage previous) {
-		this.menu = menu;
+		this(menu.getSet(), menu.getTextureOverview(), previous);
+	}
+
+	public TextureEdit(ItemSet set, GuiComponent returnMenu, NamedImage previous) {
+		this.itemSet = set;
+		this.returnMenu = returnMenu;
 		this.previous = previous;
 		errorComponent = new DynamicTextComponent("", EditProps.ERROR);
 		wrapper = new WrapperComponent<SimpleImageComponent>(null);
@@ -69,7 +76,7 @@ public class TextureEdit extends GuiMenu {
 	protected void addComponents() {
 		addComponent(errorComponent, 0.1f, 0.9f, 0.9f, 1f);
 		addComponent(new DynamicTextButton("Cancel", EditProps.CANCEL_BASE, EditProps.CANCEL_HOVER, () -> {
-			state.getWindow().setMainComponent(menu.getTextureOverview());
+			state.getWindow().setMainComponent(returnMenu);
 		}), 0.1f, 0.7f, 0.25f, 0.8f);
 		if(previous != null) {
 			name = new TextEditField(previous.getName(), EditProps.EDIT_BASE, EditProps.EDIT_ACTIVE);
@@ -91,18 +98,18 @@ public class TextureEdit extends GuiMenu {
 					errorComponent.setText(error);
 				else {
 					if(previous != null) {
-						error = menu.getSet().changeTexture(previous, name.getText(), image, true);
+						error = itemSet.changeTexture(previous, name.getText(), image, true);
 						if(error != null)
 							errorComponent.setText(error);
 						else
-							state.getWindow().setMainComponent(menu.getTextureOverview());
+							state.getWindow().setMainComponent(returnMenu);
 					}
 					else {
-						error = menu.getSet().addTexture(new NamedImage(name.getText(), image), true);
+						error = itemSet.addTexture(new NamedImage(name.getText(), image), true);
 						if(error != null)
 							errorComponent.setText(error);
 						else
-							state.getWindow().setMainComponent(menu.getTextureOverview());
+							state.getWindow().setMainComponent(returnMenu);
 					}
 				}
 			} else

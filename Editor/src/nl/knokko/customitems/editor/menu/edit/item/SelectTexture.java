@@ -26,6 +26,7 @@ package nl.knokko.customitems.editor.menu.edit.item;
 import java.util.Collection;
 
 import nl.knokko.customitems.editor.menu.edit.EditProps;
+import nl.knokko.customitems.editor.menu.edit.texture.TextureEdit;
 import nl.knokko.customitems.editor.set.ItemSet;
 import nl.knokko.customitems.editor.set.item.NamedImage;
 import nl.knokko.gui.color.GuiColor;
@@ -40,17 +41,26 @@ public class SelectTexture extends GuiMenu {
 	private final ReturnAction returnAction;
 	private final TextureFilter filter;
 	private final ItemSet set;
+	
+	private final TextureList textureList;
 
 	public SelectTexture(ItemSet set, GuiComponent returnMenu, TextureFilter filter, ReturnAction returnAction) {
 		this.returnMenu = returnMenu;
 		this.returnAction = returnAction;
 		this.filter = filter;
 		this.set = set;
+		this.textureList = new TextureList();
 	}
 
 	@Override
 	public GuiColor getBackgroundColor() {
 		return EditProps.BACKGROUND;
+	}
+	
+	@Override
+	public void init() {
+		if(didInit) textureList.refresh();
+		super.init();
 	}
 
 	@Override
@@ -58,18 +68,43 @@ public class SelectTexture extends GuiMenu {
 		addComponent(new DynamicTextButton("Cancel", EditProps.CANCEL_BASE, EditProps.CANCEL_HOVER, () -> {
 			state.getWindow().setMainComponent(returnMenu);
 		}), 0.1f, 0.6f, 0.3f, 0.7f);
-		Collection<NamedImage> textures = set.getTextures();
-		int index = 0;
-		for (NamedImage texture : textures) {
-			if (filter.approve(texture)) {
-				addComponent(
-						new SimpleImageComponent(state.getWindow().getTextureLoader().loadTexture(texture.getImage())),
-						0.4f, 0.9f - index * 0.15f, 0.5f, 1f - index * 0.15f);
-				addComponent(new DynamicTextButton(texture.getName(), EditProps.SELECT_BASE, EditProps.SELECT_HOVER, () -> {
-					returnAction.onSelect(texture);
-					state.getWindow().setMainComponent(returnMenu);
-				}), 0.55f, 0.9f - index * 0.15f, 0.85f, 1f - index * 0.15f);
-				index++;
+		addComponent(new DynamicTextButton("Load texture...", EditProps.BUTTON, EditProps.HOVER, () -> {
+			state.getWindow().setMainComponent(new TextureEdit(set, this, null));
+		}), 0.1f, 0.3f, 0.35f, 0.4f);
+		addComponent(textureList, 0.4f, 0.1f, 0.85f, 0.9f);
+	}
+	
+	protected class TextureList extends GuiMenu {
+
+		@Override
+		protected void addComponents() {
+			addTextureComponents();
+		}
+		
+		@Override
+		public GuiColor getBackgroundColor() {
+			return EditProps.BACKGROUND;
+		}
+		
+		protected void refresh() {
+			clearComponents();
+			addTextureComponents();
+		}
+		
+		protected void addTextureComponents() {
+			Collection<NamedImage> textures = set.getTextures();
+			int index = 0;
+			for (NamedImage texture : textures) {
+				if (filter.approve(texture)) {
+					addComponent(
+							new SimpleImageComponent(state.getWindow().getTextureLoader().loadTexture(texture.getImage())),
+							0f, 0.9f - index * 0.15f, 0.25f, 1f - index * 0.15f);
+					addComponent(new DynamicTextButton(texture.getName(), EditProps.SELECT_BASE, EditProps.SELECT_HOVER, () -> {
+						returnAction.onSelect(texture);
+						state.getWindow().setMainComponent(returnMenu);
+					}), 0.25f, 0.9f - index * 0.15f, 1f, 1f - index * 0.15f);
+					index++;
+				}
 			}
 		}
 	}

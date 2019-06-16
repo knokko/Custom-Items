@@ -45,9 +45,8 @@ public class CreateToolTest {
 		test.click(toolType);
 		test.assertComponentsWithTexts("Cancel", "Create", "Name: ", "Internal item type: ",
 				"Internal item damage: ", "Display name: ", "Lore: ", "Attribute modifiers: ",
-				"Default enchantments: ", "Item flags: ", "Texture: ", "", "1", "Change lore...",
-				"Change attributes...", "Change enchantments...", "Change flags...", "None",
-				"Allow enchanting", "Allow anvil actions", "Max uses: ", "Repair item: ",
+				"Default enchantments: ", "Item flags: ", "Texture: ", "", "1", "Change...",
+				"None", "Allow enchanting", "Allow anvil actions", "Max uses: ", "Repair item: ",
 				"Durability loss on attack:", "Durability loss on block break:", "500", "2", "1");
 		ItemNameTest.test(test, itemName);
 		SimpleTextureTest.test(test, textureName);
@@ -121,6 +120,7 @@ public class CreateToolTest {
 			String repairItem, String attackDurLoss, String breakDurLoss, int numberOfEditFields) {
 		test.uncheck("Allow enchanting", 2);
 		test.uncheck("Allow anvil actions", 2);
+		test.delay(30);
 		test.check("Allow anvil actions", 2);
 		maxUses(test, "500", maxUses);
 		repairItem(test, repairItemCategory, repairItem);

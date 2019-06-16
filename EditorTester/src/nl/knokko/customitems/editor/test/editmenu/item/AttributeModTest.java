@@ -47,7 +47,7 @@ public class AttributeModTest {
 			String defaultAttribute, String defaultSlot, String defaultOp, String defaultValue,
 			String attribute1, String slot1, String op1, String value1,
 			String attribute2, String slot2, String op2, String value2) {
-		test.click("Change attributes...");
+		test.clickNearest("Change...", "Attribute modifiers: ", 4);
 		test.assertComponentsWithTexts("Cancel", "New Attribute", "Apply");
 		test.click("New Attribute");
 		BufferedImage deleteImage = (BufferedImage) test.getComponentWithText(defaultSlot).getState().getWindow().getTextureLoader().loadTexture("nl/knokko/gui/images/icons/delete.png").getImage();
@@ -56,6 +56,7 @@ public class AttributeModTest {
 		test.click(defaultAttribute);
 		test.click(attribute1);
 		test.click(defaultSlot);
+		test.delay(30);
 		test.click(slot1);
 		test.click(defaultOp);
 		test.click(op1);
@@ -73,8 +74,10 @@ public class AttributeModTest {
 		test.clickNearest(defaultAttribute, "New Attribute", attribute1.equals(defaultAttribute) ? 2 : 1);
 		test.click(attribute2);
 		test.clickNearest(defaultSlot, "New Attribute", slot1.equals(defaultSlot) ? 2 : 1);
+		test.delay(30);
 		test.click(slot2);
 		test.clickNearest(defaultOp, "New Attribute", op1.equals(defaultOp) ? 2 : 1);
+		test.delay(30);
 		test.click(op2);
 		test.clickNearest(defaultValue, "New Attribute", value1.equals(defaultValue) ? 2 : 1);
 		
@@ -83,14 +86,14 @@ public class AttributeModTest {
 		test.type(value2);
 		test.assertComponentWithText(value2);
 		test.click("Apply");
-		test.click("Change attributes...");
+		test.clickNearest("Change...", "Attribute modifiers: ", 4);
 		test.assertComponentsWithTexts("Cancel", "New Attribute", "Apply", attribute1, slot1, op1, value1,
 				attribute2, slot2, op2, value2);
 		test.click(value2);
 		test.type("1");
 		test.assertComponentWithText(value2 + "1");
 		test.click("Apply");
-		test.click("Change attributes...");
+		test.clickNearest("Change...", "Attribute modifiers: ", 4);
 		test.click(value2 + "1");
 		test.backspace(1);
 		test.assertComponentWithText(value2);
