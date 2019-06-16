@@ -38,7 +38,7 @@ public class EditItemShears extends EditItemTool {
 	@Override
 	protected void addComponents() {
 		super.addComponents();
-		addComponent(new DynamicTextComponent("Durability loss on shearing:", EditProps.LABEL), 0.6f, 0.35f, 0.84f, 0.425f);
+		addComponent(new DynamicTextComponent("Durability loss on shearing:", EditProps.LABEL), 0.55f, 0.35f, 0.84f, 0.425f);
 		addComponent(shearDurabilityLoss, 0.85f, 0.35f, 0.9f, 0.425f);
 	}
 	

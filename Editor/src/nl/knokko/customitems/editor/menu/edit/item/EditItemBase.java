@@ -135,7 +135,7 @@ public abstract class EditItemBase extends GuiMenu {
 		addLoreComponent();
 		addAttributesComponent();
 		addEnchantmentsComponent();
-		addComponent(new DynamicTextButton("Change flags...", EditProps.BUTTON, EditProps.HOVER, () -> {
+		addComponent(new DynamicTextButton("Change...", EditProps.BUTTON, EditProps.HOVER, () -> {
 			state.getWindow().setMainComponent(new ItemFlagMenu(this, itemFlags));
 		}), BUTTON_X, 0.38f, BUTTON_X + 0.1f, 0.43f);
 		addComponent(textureSelect, BUTTON_X, 0.32f, BUTTON_X + 0.1f, 0.37f);
@@ -228,7 +228,7 @@ public abstract class EditItemBase extends GuiMenu {
 	}
 	
 	private void addLoreComponent() {
-		addComponent(new DynamicTextButton("Change lore...", EditProps.BUTTON, EditProps.HOVER, () -> {
+		addComponent(new DynamicTextButton("Change...", EditProps.BUTTON, EditProps.HOVER, () -> {
 			state.getWindow().setMainComponent(new TextArrayEditMenu(EditItemBase.this, (String[] newLore) -> {
 				lore = newLore;
 				for (int index = 0; index < lore.length; index++)
@@ -240,7 +240,7 @@ public abstract class EditItemBase extends GuiMenu {
 	protected abstract AttributeModifier getExampleAttributeModifier();
 	
 	private void addAttributesComponent() {
-		addComponent(new DynamicTextButton("Change attributes...", EditProps.BUTTON, EditProps.HOVER, () -> {
+		addComponent(new DynamicTextButton("Change...", EditProps.BUTTON, EditProps.HOVER, () -> {
 			state.getWindow().setMainComponent(new AttributesOverview(getExampleAttributeModifier(), attributes, EditItemBase.this, (AttributeModifier[] attributes) -> {
 				this.attributes = attributes;
 			}));
@@ -248,7 +248,7 @@ public abstract class EditItemBase extends GuiMenu {
 	}
 	
 	private void addEnchantmentsComponent() {
-		addComponent(new DynamicTextButton("Change enchantments...", EditProps.BUTTON, EditProps.HOVER, () -> {
+		addComponent(new DynamicTextButton("Change...", EditProps.BUTTON, EditProps.HOVER, () -> {
 			state.getWindow().setMainComponent(new EnchantmentsOverview(enchantments, EditItemBase.this, (Enchantment[] enchantments) -> {
 				this.enchantments = enchantments;
 			}));

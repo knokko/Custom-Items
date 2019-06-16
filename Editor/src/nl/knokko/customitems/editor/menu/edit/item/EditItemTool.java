@@ -122,9 +122,9 @@ public class EditItemTool extends EditItemBase {
 		addComponent(new DynamicTextComponent("Max uses: ", EditProps.LABEL), 0.71f, 0.65f, 0.84f, 0.725f);
 		addComponent(new DynamicTextComponent("Repair item: ", EditProps.LABEL), 0.71f, 0.575f, 0.84f, 0.65f);
 		addComponent(repairItem, 0.85f, 0.575f, 0.99f, 0.65f);
-		addComponent(new DynamicTextComponent("Durability loss on attack:", EditProps.LABEL), 0.6f, 0.5f, 0.84f, 0.575f);
+		addComponent(new DynamicTextComponent("Durability loss on attack:", EditProps.LABEL), 0.55f, 0.5f, 0.84f, 0.575f);
 		addComponent(entityHitDurabilityLoss, 0.85f, 0.5f, 0.9f, 0.575f);
-		addComponent(new DynamicTextComponent("Durability loss on block break:", EditProps.LABEL), 0.6f, 0.425f, 0.84f, 0.5f);
+		addComponent(new DynamicTextComponent("Durability loss on block break:", EditProps.LABEL), 0.55f, 0.425f, 0.84f, 0.5f);
 		addComponent(blockBreakDurabilityLoss, 0.85f, 0.425f, 0.9f, 0.5f);
 		if (category == Category.SWORD) {
 			errorComponent.setProperties(EditProps.LABEL);

@@ -82,7 +82,7 @@ public class EditItemBow extends EditItemTool {
 	@Override
 	protected void addComponents() {
 		super.addComponents();
-		addComponent(new DynamicTextComponent("Durability loss on shooting:", EditProps.LABEL), 0.6f, 0.35f, 0.84f, 0.425f);
+		addComponent(new DynamicTextComponent("Durability loss on shooting:", EditProps.LABEL), 0.55f, 0.35f, 0.84f, 0.425f);
 		addComponent(shootDurabilityLoss, 0.85f, 0.35f, 0.9f, 0.425f);
 		addComponent(new DynamicTextComponent("Damage multiplier: ", EditProps.LABEL), 0.71f, 0.245f, 0.895f, 0.32f);
 		addComponent(damageMultiplier, 0.895f, 0.245f, 0.965f, 0.32f);
