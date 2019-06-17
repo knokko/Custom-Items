@@ -1,8 +1,9 @@
 Long term:
 -Replace minecrafts enchanting and anvil system
+-Create a website generator
 
 Medium term:
--Add mob drops and block drops
+-Add mob drops and block drops (including NPCs)
 -Add possibility for item models
 -Add shields
 
