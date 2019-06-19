@@ -215,7 +215,7 @@ public class CustomTool extends CustomItem {
 	}
 	
 	private String getDurabilityString(List<String> lore) {
-		if (lore.isEmpty()) {
+		if (lore == null || lore.isEmpty()) {
 			return null;
 		}
 		
