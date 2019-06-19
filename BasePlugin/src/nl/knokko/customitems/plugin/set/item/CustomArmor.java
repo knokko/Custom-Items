@@ -23,8 +23,11 @@
  *******************************************************************************/
 package nl.knokko.customitems.plugin.set.item;
 
+import java.util.List;
+
 import org.bukkit.Color;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.inventory.meta.LeatherArmorMeta;
 
 import nl.knokko.customitems.item.AttributeModifier;
@@ -46,15 +49,13 @@ public class CustomArmor extends CustomTool {
 	}
 	
 	@Override
-	public ItemStack create(int amount, long durability) {
-		ItemStack base = super.create(amount, durability);
+	public ItemMeta createItemMeta(ItemStack item, List<String> lore) {
+		ItemMeta meta = super.createItemMeta(item, lore);
 		CustomItemType i = itemType;
 		if (i == CustomItemType.LEATHER_HELMET || i == CustomItemType.LEATHER_CHESTPLATE
 				|| i == CustomItemType.LEATHER_LEGGINGS || i == CustomItemType.LEATHER_BOOTS) {
-			LeatherArmorMeta meta = (LeatherArmorMeta) base.getItemMeta();
-			meta.setColor(color);
-			base.setItemMeta(meta);
+			((LeatherArmorMeta) meta).setColor(color);
 		}
-		return base;
+		return meta;
 	}
 }

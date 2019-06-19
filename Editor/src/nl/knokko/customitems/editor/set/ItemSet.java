@@ -868,8 +868,15 @@ public class ItemSet {
 					jsonWriter.println("{");
 					jsonWriter.println("    " + Q + "parent" + Q + ": " + Q + "item/handheld" + Q + ",");
 					jsonWriter.println("    " + Q + "textures" + Q + ": {");
+					CustomItemType i = item.getItemType();
+					boolean leather = i == CustomItemType.LEATHER_BOOTS || i == CustomItemType.LEATHER_LEGGINGS
+							|| i == CustomItemType.LEATHER_CHESTPLATE || i == CustomItemType.LEATHER_HELMET;
 					jsonWriter.println("        " + Q + "layer0" + Q + ": " + Q + "customitems/"
-							+ item.getTexture().getName() + Q);
+							+ item.getTexture().getName() + Q + (leather ? "," : ""));
+					if (leather) {
+						jsonWriter.println("        " + Q + "layer1" + Q + ": " + Q + "customitems/"
+								+ item.getTexture().getName() + Q);
+					}
 					jsonWriter.println("    }");
 					jsonWriter.println("}");
 				}
@@ -924,19 +931,8 @@ public class ItemSet {
 							return 0;
 						throw new IllegalArgumentException("a is " + a + " and b is " + b);
 					});
-					String modelName = entry.getKey().name().toLowerCase();
-
-					// Bukkit naming is not identical to minecraft naming, so this hack is required
-					if (entry.getKey() == CustomItemType.CARROT_STICK)
-						modelName = "carrot_on_a_stick";
-					if (modelName.startsWith("gold"))
-						modelName = modelName.replace("gold", "golden");
-					if (modelName.startsWith("wood"))
-						modelName = modelName.replace("wood", "wooden");
-					
-					// Notice that the line below has been moved down because the naming
-					// of minecraft resourcepacks changed
-					String textureName = modelName;
+					String modelName = entry.getKey().getModelName14();
+					String textureName = entry.getKey().getTextureName14();
 					
 					ZipEntry zipEntry = new ZipEntry("assets/minecraft/models/item/" + modelName + ".json");
 					zipOutput.putNextEntry(zipEntry);
@@ -1116,8 +1112,15 @@ public class ItemSet {
 					jsonWriter.println("{");
 					jsonWriter.println("    " + Q + "parent" + Q + ": " + Q + "item/handheld" + Q + ",");
 					jsonWriter.println("    " + Q + "textures" + Q + ": {");
+					CustomItemType i = item.getItemType();
+					boolean leather = i == CustomItemType.LEATHER_BOOTS || i == CustomItemType.LEATHER_LEGGINGS
+							|| i == CustomItemType.LEATHER_CHESTPLATE || i == CustomItemType.LEATHER_HELMET;
 					jsonWriter.println("        " + Q + "layer0" + Q + ": " + Q + "customitems/"
-							+ item.getTexture().getName() + Q);
+							+ item.getTexture().getName() + Q + (leather ? "," : ""));
+					if (leather) {
+						jsonWriter.println("        " + Q + "layer1" + Q + ": " + Q + "customitems/"
+								+ item.getTexture().getName() + Q);
+					}
 					jsonWriter.println("    }");
 					jsonWriter.println("}");
 				}
@@ -1172,16 +1175,8 @@ public class ItemSet {
 							return 0;
 						throw new IllegalArgumentException("a is " + a + " and b is " + b);
 					});
-					String modelName = entry.getKey().name().toLowerCase();
-
-					// Bukkit naming is not identical to minecraft naming, so this hack is required
-					if (entry.getKey() == CustomItemType.CARROT_STICK)
-						modelName = "carrot_on_a_stick";
-					String textureName = modelName;
-					if (modelName.startsWith("gold"))
-						modelName = modelName.replace("gold", "golden");
-					if (modelName.startsWith("wood"))
-						modelName = modelName.replace("wood", "wooden");
+					String modelName = entry.getKey().getModelName12();
+					String textureName = entry.getKey().getTextureName12();
 					ZipEntry zipEntry = new ZipEntry("assets/minecraft/models/item/" + modelName + ".json");
 					zipOutput.putNextEntry(zipEntry);
 					PrintWriter jsonWriter = new PrintWriter(zipOutput);
