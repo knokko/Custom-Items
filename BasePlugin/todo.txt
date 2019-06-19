@@ -6,6 +6,7 @@ Medium term:
 -Add mob drops and block drops (including NPCs)
 -Add possibility for item models
 -Add shields
+-Add possibility to merge two item sets
 
 Short term:
 -Work on automated testing
