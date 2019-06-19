@@ -83,14 +83,93 @@ public enum CustomItemType {
 	private final short maxDurability;
 	private final Category[] categories;
 	
+	private final String minecraftName;
+	private final String textureName12;
+	private final String modelName12;
+	private final String textureName14;
+	private final String modelName14;
+	
 	CustomItemType(int maxDurability, Category... categories){
 		this.maxDurability = (short) maxDurability;
 		this.categories = categories;
+		
+		String lowerCaseName = this.name().toLowerCase();
+		if (lowerCaseName.equals("carrot_stick")) {
+			this.minecraftName = "carrot_on_a_stick";
+			this.textureName12 = this.minecraftName;
+			this.modelName12 = this.minecraftName;
+			this.textureName14 = this.minecraftName;
+			this.modelName14 = this.minecraftName;
+		}
+		else if (lowerCaseName.startsWith("gold")) {
+			this.minecraftName = lowerCaseName.replace("gold", "golden");
+			this.textureName12 = lowerCaseName;
+			this.modelName12 = this.minecraftName;
+			this.textureName14 = this.minecraftName;
+			this.modelName14 = this.minecraftName;
+		}
+		else if (lowerCaseName.startsWith("wood")) {
+			this.minecraftName = lowerCaseName.replace("wood", "wooden");
+			this.textureName12 = lowerCaseName;
+			this.modelName12 = this.minecraftName;
+			this.textureName14 = this.minecraftName;
+			this.modelName14 = this.minecraftName;
+		}
+		else {
+			this.minecraftName = lowerCaseName;
+			this.textureName12 = lowerCaseName;
+			this.modelName12 = lowerCaseName;
+			this.textureName14 = lowerCaseName;
+			this.modelName14 = lowerCaseName;
+		}
 	}
 	
 	@Override
 	public String toString() {
 		return name().charAt(0) + name().substring(1).toLowerCase().replaceAll("_", " ");
+	}
+	
+	/**
+	 * @return The in-game name of the item that this CustomItemType represents
+	 */
+	public String getMinecraftName() {
+		return minecraftName;
+	}
+	
+	/**
+	 * The file name (without extension) of the texture of the in-game item represented by this CustomItemType
+	 * in the assets/minecraft/textures/items folder. This method is only for minecraft version 1.12 (these
+	 * names are different in other versions of minecraft).
+	 */
+	public String getTextureName12() {
+		return textureName12;
+	}
+	
+	/**
+	 * The file name (without extension) of the model of the in-game item represented by this CustomItemType
+	 * in the assets/minecraft/models/item folder. This method is only for minecraft version 1.12 (currently,
+	 * the names are the same as in minecraft 1.12, but I had rather keep these methods separated just in case).
+	 */
+	public String getModelName12() {
+		return modelName12;
+	}
+	
+	/**
+	 * The file name (without extension) of the texture of the in-game item represented by this CustomItemType
+	 * in the assets/minecraft/textures/item folder. This method is only for minecraft version 1.14 (these
+	 * names are different in other versions of minecraft).
+	 */
+	public String getTextureName14() {
+		return textureName14;
+	}
+	
+	/**
+	 * The file name (without extension) of the model of the in-game item represented by this CustomItemType
+	 * in the assets/minecraft/models/item folder. This method is only for minecraft version 1.14 (currently,
+	 * the names are the same as in minecraft 1.12, but I had rather keep these methods separated just in case).
+	 */
+	public String getModelName14() {
+		return modelName14;
 	}
 	
 	public short getMaxDurability() {

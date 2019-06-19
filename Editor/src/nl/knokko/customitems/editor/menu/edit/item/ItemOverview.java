@@ -25,6 +25,7 @@ package nl.knokko.customitems.editor.menu.edit.item;
 
 import java.util.Collection;
 
+import nl.knokko.customitems.editor.menu.commandhelp.CommandBlockHelpOverview;
 import nl.knokko.customitems.editor.menu.edit.EditMenu;
 import nl.knokko.customitems.editor.menu.edit.EditProps;
 import nl.knokko.customitems.editor.set.item.CustomArmor;
@@ -68,11 +69,14 @@ public class ItemOverview extends GuiMenu {
 		addComponent(itemList, 0.3f, 0f, 1f, 0.9f);
 		addComponent(new DynamicTextButton("Back", EditProps.CANCEL_BASE, EditProps.CANCEL_HOVER, () -> {
 			state.getWindow().setMainComponent(menu);
-		}), 0.05f, 0.7f, 0.2f, 0.8f);
-		addComponent(errorComponent, 0.05f, 0.9f, 0.95f, 1f);
+		}), 0.025f, 0.7f, 0.175f, 0.8f);
+		addComponent(errorComponent, 0.025f, 0.9f, 0.975f, 1f);
+		addComponent(new DynamicTextButton("Command block help", EditProps.BUTTON, EditProps.HOVER, () -> {
+			state.getWindow().setMainComponent(new CommandBlockHelpOverview(menu.getSet(), this));
+		}), 0.025f, 0.1f, 0.275f, 0.2f);
 		addComponent(new DynamicTextButton("Create item", EditProps.BUTTON, EditProps.HOVER, () -> {
 			state.getWindow().setMainComponent(new CreateItem(menu));
-		}), 0.05f, 0.4f, 0.25f, 0.5f);
+		}), 0.025f, 0.4f, 0.225f, 0.5f);
 	}
 	
 	private class ItemList extends GuiMenu {
