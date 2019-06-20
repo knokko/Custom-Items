@@ -25,44 +25,46 @@ package nl.knokko.customitems.item;
 
 public enum EnchantmentType {
 	
-	PROTECTION_ENVIRONMENTAL(0),
-	PROTECTION_FIRE(1),
-	PROTECTION_FALL(2),
-	PROTECTION_EXPLOSIONS(3),
-	PROTECTION_PROJECTILE(4),
-	OXYGEN(5),
-	WATER_WORKER(6),
-	MENDING(70),
-	THORNS(7),
-	VANISHING_CURSE(71),
-	DEPTH_STRIDER(8),
-	FROST_WALKER(9),
-	BINDING_CURSE(10),
-	DAMAGE_ALL(16),
-	DAMAGE_UNDEAD(17),
-	DAMAGE_ARTHROPODS(18),
-	KNOCKBACK(19),
-	FIRE_ASPECT(20),
-	LOOT_BONUS_MOBS(21),
-	SWEEPING_EDGE(22),
-	DIG_SPEED(32),
-	SILK_TOUCH(33),
-	DURABILITY(34),
-	LOOT_BONUS_BLOCKS(35),
-	ARROW_DAMAGE(48),
-	ARROW_KNOCKBACK(49),
-	ARROW_FIRE(50),
-	ARROW_INFINITE(51),
-	LUCK(61),
-	LURE(62);
+	PROTECTION_ENVIRONMENTAL("protection", 0),
+	PROTECTION_FIRE("fire_protection", 1),
+	PROTECTION_FALL("feather_falling", 2),
+	PROTECTION_EXPLOSIONS("blast_protection", 3),
+	PROTECTION_PROJECTILE("projectile_protection", 4),
+	OXYGEN("respiration", 5),
+	WATER_WORKER("aqua_affinity", 6),
+	MENDING("mending", 70),
+	THORNS("thorns", 7),
+	VANISHING_CURSE("vanishing_curse", 71),
+	DEPTH_STRIDER("depth_strider", 8),
+	FROST_WALKER("frost_walker", 9),
+	BINDING_CURSE("binding_curse", 10),
+	DAMAGE_ALL("sharpness", 16),
+	DAMAGE_UNDEAD("smite", 17),
+	DAMAGE_ARTHROPODS("bane_of_arthropods", 18),
+	KNOCKBACK("knockback", 19),
+	FIRE_ASPECT("fire_aspect", 20),
+	LOOT_BONUS_MOBS("looting", 21),
+	SWEEPING_EDGE("sweeping", 22),
+	DIG_SPEED("efficiency", 32),
+	SILK_TOUCH("silk_touch", 33),
+	DURABILITY("unbreaking", 34),
+	LOOT_BONUS_BLOCKS("fortune", 35),
+	ARROW_DAMAGE("power", 48),
+	ARROW_KNOCKBACK("punch", 49),
+	ARROW_FIRE("flame", 50),
+	ARROW_INFINITE("infinity", 51),
+	LUCK("luck_of_the_sea", 61),
+	LURE("lure", 62);
 	
 	private final String niceName;
 	
 	private final int numericID;
+	private final String minecraftName;
 	
-	private EnchantmentType(int numericID) {
+	private EnchantmentType(String minecraftName, int numericID) {
 		niceName = name().toLowerCase().replace('_', ' ');
 		this.numericID = numericID;
+		this.minecraftName = minecraftName;
 	}
 	
 	public String getName() {
@@ -71,5 +73,9 @@ public enum EnchantmentType {
 	
 	public int getNumericID() {
 		return numericID;
+	}
+	
+	public String getMinecraftName() {
+		return minecraftName;
 	}
 }

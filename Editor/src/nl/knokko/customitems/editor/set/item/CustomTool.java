@@ -67,6 +67,17 @@ public class CustomTool extends CustomItem {
 	}
 	
 	@Override
+	protected String getLoreContent14() {
+		String lore = super.getLoreContent14();
+		String preLore = "\"\\\"Durability " + durability + " / " + durability + "\\\"\",\"\\\"\\\"\"";
+		if (lore.isEmpty()) {
+			return preLore;
+		} else {
+			return preLore + "," + lore;
+		}
+	}
+	
+	@Override
 	public void export(BitOutput output) {
 		/*
 		 * First encoding

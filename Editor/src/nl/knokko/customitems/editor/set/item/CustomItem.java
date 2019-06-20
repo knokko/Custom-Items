@@ -47,6 +47,10 @@ public abstract class CustomItem extends nl.knokko.customitems.item.CustomItem {
 	public final String getNBTTag12() {
 		return "{" + getNBTTagContent12() + "}";
 	}
+	
+	public final String getNBTTag14() {
+		return "{Damage:" + itemDamage + "," + getNBTTagContent14() + "}";
+	}
 
 	protected String getNBTTagContent12() {
 		String content = "Unbreakable:1,display:{" + getDisplayTagContent12() + "},";
@@ -112,18 +116,93 @@ public abstract class CustomItem extends nl.knokko.customitems.item.CustomItem {
 		}
 		return content;
 	}
+	
+	protected String getNBTTagContent14() {
+		String content = "Unbreakable:1,display:{" + getDisplayTagContent14() + "},";
+		String attributes = "AttributeModifiers:[";
+		if (this.attributes.length > 0) {
+			/*
+			 * From the core plugin source code for the most and least id long most =
+			 * modifiers.size() + 1 + slot.hashCode() * name.hashCode(); long least =
+			 * modifiers.size() + 1 + slot.hashCode() + name.hashCode(); if (most == 0) most
+			 * = -8; if (least == 0) least = 12;
+			 */
+			int index = 0;
+			for (AttributeModifier attribute : this.attributes) {
+				String slot = attribute.getSlot().getSlot();
+				String name = attribute.getAttribute().getName();
+				long most = 1 + index + slot.hashCode() * name.hashCode();
+				long least = 1 + index + slot.hashCode() + name.hashCode();
+				if (most == 0)
+					most = -8;
+				if (least == 0)
+					least = 12;
+				attributes += "{UUIDMost:" + most + ",UUIDLeast:" + least + ",Amount:" + attribute.getValue()
+				 + ",Slot:\"" + slot + "\",AttributeName:\"" + name + "\",Operation:" 
+				 + attribute.getOperation().getOperation() + ",Name:\"" + name + "\"}";
+				if (index != this.attributes.length - 1) {
+					attributes += ",";
+				}
+				index++;
+			}
+		} else {
+			throw new UnsupportedOperationException("Custom items without attribute modifiers can't be given with command blocks in minecraft 1.14");
+		}
+		content += attributes + "]";
+		int hideFlags = 0;
+		int adder = 1;
+		for (int flag = 0; flag < itemFlags.length; flag++) {
+			if (itemFlags[flag]) {
+				hideFlags += adder;
+			}
+			adder *= 2;
+		}
+		if (hideFlags != 0) {
+			content += ",HideFlags:" + hideFlags;
+		}
+		
+		if (defaultEnchantments.length > 0) {
+			String ench = ",Enchantments:[";
+			for (int index = 0; index < defaultEnchantments.length; index++) {
+				Enchantment current = defaultEnchantments[index];
+				if (index != 0) {
+					ench += ",";
+				}
+				ench += "{id:" + current.getType().getMinecraftName() + ",lvl:" + current.getLevel() + "}";
+			}
+			content += ench + "]";
+		}
+		return content;
+	}
 
 	protected String getDisplayTagContent12() {
 		return "Name:\"" + displayName + "\",Lore:[" + getLoreContent12() + "]";
 	}
 	
+	protected String getDisplayTagContent14() {
+		return "Name:\"\\\"" + displayName + "\\\"\",Lore:[" + getLoreContent14() + "]";
+	}
+	
 	protected String getLoreContent12() {
+		System.out.println("getLoreContent12");
 		String allLore = "";
 		for(int index = 0; index < lore.length; index++) {
 			if (index != 0) {
 				allLore += ",";
 			}
 			allLore += "\"" + lore[index] + "\"";
+		}
+		return allLore;
+	}
+	
+	protected String getLoreContent14() {
+		System.out.println("getLoreContent14");
+		String allLore = "";
+		for(int index = 0; index < lore.length; index++) {
+			if (index != 0) {
+				allLore += ",";
+			}
+			allLore += "\"\\\"" + lore[index] + "\\\"\"";
 		}
 		return allLore;
 	}

@@ -108,6 +108,8 @@ public class CustomTool extends CustomItem {
         }
         for (String s : lore)
     		itemLore.add(s);
+        
+        // Interesting item:
         return itemLore;
 	}
 	
