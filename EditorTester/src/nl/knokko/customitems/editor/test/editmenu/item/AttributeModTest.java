@@ -59,6 +59,7 @@ public class AttributeModTest {
 		test.delay(30);
 		test.click(slot1);
 		test.click(defaultOp);
+		test.delay(30);
 		test.click(op1);
 		test.click(defaultValue);
 		test.backspace(3);
