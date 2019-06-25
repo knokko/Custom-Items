@@ -29,6 +29,7 @@ import nl.knokko.customitems.editor.test.editmenu.item.CreateHoeTest;
 import nl.knokko.customitems.editor.test.editmenu.item.CreateShearsTest;
 import nl.knokko.customitems.editor.test.editmenu.item.CreateSimpleItemTest;
 import nl.knokko.customitems.editor.test.editmenu.item.CreateToolTest;
+import nl.knokko.customitems.editor.test.editmenu.recipe.AddRecipeTest;
 import nl.knokko.customitems.editor.test.editmenu.texture.CreateBowTextureTest1;
 import nl.knokko.customitems.editor.test.editmenu.texture.CreateSimpleTextureTest1;
 import nl.knokko.customitems.editor.test.mainmenu.CreateItemSetTest;
@@ -50,8 +51,12 @@ public class EditorTestFull implements GuiTestProgram {
 		ExploreMainMenuTest.test(test);
 		CreateItemSetTest.test(test, "automatic test");
 		ExploreEditMenuTest.test(test);
+		
+		// Test creating textures
 		CreateBowTextureTest1.test(test, "test_bow_first");
 		CreateSimpleTextureTest1.test(test, "simple_test");
+		
+		// Test creating items
 		CreateSimpleItemTest.create(test, "simple_test_item", "simple_test_one", "52",
 				"The very first line of lore", "The second line of lore", 
 				"generic.armor", "head", "Multiply", "1.3", 
@@ -90,5 +95,12 @@ public class EditorTestFull implements GuiTestProgram {
 				"arrow infinite", "7", "durability", "2");
 		test.assertComponentsWithTexts("simple_test_item", "test_aks", "fragile_bow");
 		// TODO Also create EditorTestQuick
+		
+		// Test adding recipes
+		test.click("Back");
+		test.click("Recipes");
+		AddRecipeTest.addShapelessRecipe(test, "Custom Item;test_hoe", "1", "Custom Item;test_aks",
+				"Simple vanilla item;apple", "Vanilla item with datavalue;anvil;OK");
+		
 	}
 }

@@ -18,6 +18,7 @@ public class EnchantmentsTest {
 		test.click("2");
 		test.backspace(1);
 		test.type(level1);
+		test.delay(30);
 		test.click("New Enchantment");
 		test.clickNearestImage("New Enchantment", deleteImage, 2);
 		test.assertComponentsWithTexts(enchantment1, level1);
