@@ -43,7 +43,7 @@ public class CommandBlockHelpOverview extends GuiMenu {
 			state.getWindow().setMainComponent(new HelpSummon(set, this));
 		}), 0.2f, 0.55f, 0.7f, 0.65f);
 		addComponent(new DynamicTextButton("Create a mob spawner that spawns skeletons with custom equipment", EditProps.BUTTON, EditProps.HOVER, () -> {
-			// TODO Bring the user to the right menu
+			state.getWindow().setMainComponent(new HelpMobSpawner(set, this));
 		}), 0.2f, 0.35f, 0.95f, 0.45f);
 	}
 	
