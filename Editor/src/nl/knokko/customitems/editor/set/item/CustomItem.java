@@ -192,7 +192,6 @@ public abstract class CustomItem extends nl.knokko.customitems.item.CustomItem {
 	}
 	
 	protected String getLoreContent12() {
-		System.out.println("getLoreContent12");
 		String allLore = "";
 		for(int index = 0; index < lore.length; index++) {
 			if (index != 0) {
@@ -204,7 +203,6 @@ public abstract class CustomItem extends nl.knokko.customitems.item.CustomItem {
 	}
 	
 	protected String getLoreContent14() {
-		System.out.println("getLoreContent14");
 		String allLore = "";
 		for(int index = 0; index < lore.length; index++) {
 			if (index != 0) {
