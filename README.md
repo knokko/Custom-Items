@@ -6,16 +6,20 @@ This project is work in progress, so the features are not yet complete.
 However, there are already quite some things that can be achieved.
 
 
-Java projects:
+# Java projects:
 
 This repository has 4 java projects: The API, BasePlugin, Editor and EditorTester.
+
 The API is the code that is used by both BasePlugin and Editor.
+
 The BasePlugin is the code for the actual plug-in.
+
 The Editor is the code for the editor users need to use to create their item sets.
+
 The EditorTester is the code for the automatic tests for the Editor.
 
 
-Dependencies:
+# Dependencies:
 
 API doesn't rely on any dependencies.
 
@@ -27,7 +31,7 @@ EditorTester relies on API, BitHelper, Editor, Gui, GuiTester (code is on github
 
 Currently, I have java projects for all dependencies except jnativehook on my laptop. If you would want to also work on this plug-in, you can download all the code from them to your computer, turn them into a java project and add them to your buildpath. Install jnativehook however you like. (Yeah yeah, I should look into maven or gradle someday instead of keeping up this dirty business...)
 
-Exporting:
+# Exporting:
 
 To export the plug-in, create a jar file containing the sources of both API and BasePlugin (notice that the plugin.yml is in the source folder of BasePlugin).
 
