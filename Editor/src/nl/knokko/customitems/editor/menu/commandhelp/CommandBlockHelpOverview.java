@@ -13,13 +13,12 @@ import nl.knokko.gui.component.text.dynamic.DynamicTextComponent;
 
 public class CommandBlockHelpOverview extends GuiMenu {
 	
-	public static boolean setClipboard(String text) {
+	public static String setClipboard(String text) {
 		try {
 			Toolkit.getDefaultToolkit().getSystemClipboard().setContents(new StringSelection(text), null);
-			return true;
+			return null;
 		} catch (IllegalStateException ex) {
-			ex.printStackTrace();
-			return false;
+			return ex.getMessage();
 		}
 	}
 
@@ -41,7 +40,7 @@ public class CommandBlockHelpOverview extends GuiMenu {
 			state.getWindow().setMainComponent(new HelpGive(set, this));
 		}), 0.2f, 0.75f, 0.8f, 0.85f);
 		addComponent(new DynamicTextButton("Spawn a zombie with custom equipment", EditProps.BUTTON, EditProps.HOVER, () -> {
-			// TODO Bring the user to a menu to select the custom items
+			state.getWindow().setMainComponent(new HelpSummon(set, this));
 		}), 0.2f, 0.55f, 0.7f, 0.65f);
 		addComponent(new DynamicTextButton("Create a mob spawner that spawns skeletons with custom equipment", EditProps.BUTTON, EditProps.HOVER, () -> {
 			// TODO Bring the user to the right menu

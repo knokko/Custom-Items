@@ -55,24 +55,26 @@ public class HelpGive extends GuiMenu {
 		addComponent(new DynamicTextButton("Generate for minecraft 1.12", EditProps.BUTTON, EditProps.HOVER, () -> {
 			String command = "/give @p " + selectedItem.getItemType().getMinecraftName() + " 1 "
 					+ selectedItem.getItemDamage() + " " + selectedItem.getNBTTag12();
-			if (CommandBlockHelpOverview.setClipboard(command)) {
+			String error = CommandBlockHelpOverview.setClipboard(command);
+			if (error == null) {
 				infoComponent.setProperties(EditProps.LABEL);
 				infoComponent.setText("Copied command to clipboard");
 			} else {
 				infoComponent.setProperties(EditProps.ERROR);
-				infoComponent.setText("Could not copy command to clipboard for unkown reason");
+				infoComponent.setText("Could not copy command to clipboard because: " + error);
 			}
 		}), 0.2f, 0.05f, 0.45f, 0.15f);
 		addComponent(new DynamicTextButton("Generate for minecraft 1.14", EditProps.BUTTON, EditProps.HOVER, () -> {
 			if (selectedItem.getAttributes().length > 0) {
 				String command = "/give @p " + selectedItem.getItemType().getMinecraftName()
 						+ selectedItem.getNBTTag14();
-				if (CommandBlockHelpOverview.setClipboard(command)) {
+				String error = CommandBlockHelpOverview.setClipboard(command);
+				if (error == null) {
 					infoComponent.setProperties(EditProps.LABEL);
 					infoComponent.setText("Copied command to clipboard");
 				} else {
 					infoComponent.setProperties(EditProps.ERROR);
-					infoComponent.setText("Could not copy command to clipboard for unkown reason");
+					infoComponent.setText("Could not copy command to clipboard because: " + error);
 				}
 			} else {
 				infoComponent.setProperties(EditProps.ERROR);

@@ -51,6 +51,14 @@ public abstract class CustomItem extends nl.knokko.customitems.item.CustomItem {
 	public final String getNBTTag14() {
 		return "{Damage:" + itemDamage + "," + getNBTTagContent14() + "}";
 	}
+	
+	public final String getEquipmentTag12(int amount) {
+		return "{Count:" + amount + ",id:" + itemType.getMinecraftName() + ",tag:" + getNBTTag12() + "}";
+	}
+	
+	public final String getEquipmentTag14(int amount) {
+		return "{Count:" + amount + ",id:" + itemType.getMinecraftName() + ",tag:" + getNBTTag14() + "}";
+	}
 
 	protected String getNBTTagContent12() {
 		String content = "Unbreakable:1,display:{" + getDisplayTagContent12() + "},";
