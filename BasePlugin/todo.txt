@@ -11,4 +11,3 @@ Medium term:
 Short term:
 -Work on automated testing
 -Add possibility for armor to give extra resistance to certain damage sources
--Add a command to show custom item tags that can be used for command blocks
