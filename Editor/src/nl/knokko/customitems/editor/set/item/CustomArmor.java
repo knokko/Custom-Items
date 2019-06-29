@@ -23,6 +23,7 @@
  *******************************************************************************/
 package nl.knokko.customitems.editor.set.item;
 
+import nl.knokko.customitems.damage.DamageResistances;
 import nl.knokko.customitems.editor.set.recipe.ingredient.Ingredient;
 import nl.knokko.customitems.encoding.ItemEncoding;
 import nl.knokko.customitems.item.AttributeModifier;
@@ -36,15 +37,19 @@ public class CustomArmor extends CustomTool {
 	private int green;
 	private int blue;
 	
+	private DamageResistances damageResistances;
+	
 	public CustomArmor(CustomItemType itemType, short itemDamage, String name, String displayName, String[] lore,
 			AttributeModifier[] attributes, Enchantment[] defaultEnchantments, long durability, boolean allowEnchanting,
 			boolean allowAnvil, Ingredient repairItem, NamedImage texture, int red, int green, int blue, 
-			boolean[] itemFlags, int entityHitDurabilityLoss, int blockBreakDurabilityLoss) {
+			boolean[] itemFlags, int entityHitDurabilityLoss, int blockBreakDurabilityLoss,
+			DamageResistances damageResistances) {
 		super(itemType, itemDamage, name, displayName, lore, attributes, defaultEnchantments, durability,
 				allowEnchanting, allowAnvil, repairItem, texture, itemFlags, entityHitDurabilityLoss, blockBreakDurabilityLoss);
 		this.red = red;
 		this.green = green;
 		this.blue = blue;
+		this.damageResistances = damageResistances;
 	}
 	
 	@Override
@@ -146,5 +151,13 @@ public class CustomArmor extends CustomTool {
 	
 	public void setBlue(int newBlue) {
 		blue = newBlue;
+	}
+	
+	public DamageResistances getDamageResistances() {
+		return damageResistances;
+	}
+	
+	public void setDamageResistances(DamageResistances newResistances) {
+		damageResistances = newResistances;
 	}
 }

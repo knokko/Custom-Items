@@ -91,4 +91,9 @@ public class ItemEncoding {
 	 * Add support for use durability loss. This is the first hoe encoding
 	 */
 	public static final byte ENCODING_HOE_5 = 15;
+	
+	/**
+	 * Add support for damage resistances.
+	 */
+	public static final byte ENCODING_ARMOR_6 = 16;
 }
