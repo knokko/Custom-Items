@@ -43,6 +43,7 @@ import java.util.zip.ZipOutputStream;
 import javax.imageio.ImageIO;
 import javax.imageio.stream.MemoryCacheImageOutputStream;
 
+import nl.knokko.customitems.damage.DamageResistances;
 import nl.knokko.customitems.editor.Editor;
 import nl.knokko.customitems.editor.set.item.CustomArmor;
 import nl.knokko.customitems.editor.set.item.CustomBow;
@@ -651,7 +652,8 @@ public class ItemSet {
 		if (texture == null)
 			throw new IllegalArgumentException("Can't find texture " + imageName);
 		return new CustomArmor(itemType, damage, name, displayName, lore, attributes, defaultEnchantments, durability, allowEnchanting,
-				allowAnvil, repairItem, texture, red, green, blue, ItemFlag.getDefaultValues(), 0, 0);
+				allowAnvil, repairItem, texture, red, green, blue, ItemFlag.getDefaultValues(), 0, 0,
+				new DamageResistances());
 	}
 	
 	private CustomItem loadArmor5(BitInput input) {
@@ -705,7 +707,7 @@ public class ItemSet {
 		
 		return new CustomArmor(itemType, damage, name, displayName, lore, attributes, defaultEnchantments, durability, allowEnchanting,
 				allowAnvil, repairItem, texture, red, green, blue, itemFlags, entityHitDurabilityLoss, 
-				blockBreakDurabilityLoss);
+				blockBreakDurabilityLoss, new DamageResistances());
 	}
 
 	private AttributeModifier loadAttribute2(BitInput input) {
