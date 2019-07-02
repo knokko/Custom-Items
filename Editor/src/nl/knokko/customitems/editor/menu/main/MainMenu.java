@@ -32,7 +32,6 @@ public class MainMenu extends GuiMenu {
 	
 	public static final MainMenu INSTANCE = new MainMenu();
 	
-
 	@Override
 	protected void addComponents() {
 		addComponent(new DynamicTextButton("New item set", EditProps.BUTTON, EditProps.HOVER, () ->  {

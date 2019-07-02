@@ -33,14 +33,11 @@ import nl.knokko.customitems.editor.set.recipe.ingredient.Ingredient;
 import nl.knokko.customitems.editor.set.recipe.ingredient.NoIngredient;
 import nl.knokko.customitems.editor.set.recipe.result.SimpleVanillaResult;
 import nl.knokko.gui.color.GuiColor;
-import nl.knokko.gui.color.SimpleGuiColor;
 import nl.knokko.gui.component.menu.GuiMenu;
 import nl.knokko.gui.component.text.dynamic.DynamicTextButton;
 import nl.knokko.gui.component.text.dynamic.DynamicTextComponent;
 
 public class ShapedRecipeEdit extends GuiMenu {
-	
-	private static final GuiColor INGREDIENT_BACKGROUND = new SimpleGuiColor(200, 100, 0);
 	
 	private final EditMenu menu;
 	private final ShapedRecipe previous;
@@ -129,7 +126,7 @@ public class ShapedRecipeEdit extends GuiMenu {
 		
 		@Override
 		public GuiColor getBackgroundColor() {
-			return INGREDIENT_BACKGROUND;
+			return EditProps.BACKGROUND2;
 		}
 	}
 }

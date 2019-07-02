@@ -23,8 +23,6 @@
  *******************************************************************************/
 package nl.knokko.customitems.editor.menu.edit;
 
-import java.awt.Color;
-
 import nl.knokko.customitems.editor.menu.edit.item.ItemOverview;
 import nl.knokko.customitems.editor.menu.edit.recipe.RecipeOverview;
 import nl.knokko.customitems.editor.menu.edit.texture.TextureOverview;
@@ -34,7 +32,6 @@ import nl.knokko.gui.color.GuiColor;
 import nl.knokko.gui.component.menu.GuiMenu;
 import nl.knokko.gui.component.text.dynamic.DynamicTextButton;
 import nl.knokko.gui.component.text.dynamic.DynamicTextComponent;
-import nl.knokko.gui.util.TextBuilder.Properties;
 
 public class EditMenu extends GuiMenu {
 	
@@ -78,7 +75,7 @@ public class EditMenu extends GuiMenu {
 	@Override
 	protected void addComponents() {
 		addComponent(errorComponent, 0.05f, 0.9f, 0.95f, 1f);
-		addComponent(new DynamicTextButton("Quit", Properties.createButton(new Color(200, 0, 0), new Color(50, 0, 0)), Properties.createButton(new Color(250, 0, 0), new Color(65, 0, 0)), () -> {
+		addComponent(new DynamicTextButton("Quit", EditProps.QUIT_BASE, EditProps.QUIT_HOVER, () -> {
 			state.getWindow().setMainComponent(MainMenu.INSTANCE);
 		}), 0.1f, 0.88f, 0.3f, 0.98f);
 		addComponent(new DynamicTextButton("Save", EditProps.SAVE_BASE, EditProps.SAVE_HOVER, () -> {

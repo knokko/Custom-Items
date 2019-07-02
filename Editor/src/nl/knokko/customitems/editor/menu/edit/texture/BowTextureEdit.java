@@ -32,7 +32,6 @@ import nl.knokko.customitems.editor.menu.edit.EditProps;
 import nl.knokko.customitems.editor.set.item.texture.BowTextures;
 import nl.knokko.customitems.editor.set.item.texture.BowTextures.Entry;
 import nl.knokko.gui.color.GuiColor;
-import nl.knokko.gui.color.SimpleGuiColor;
 import nl.knokko.gui.component.WrapperComponent;
 import nl.knokko.gui.component.image.ImageButton;
 import nl.knokko.gui.component.image.SimpleImageComponent;
@@ -165,8 +164,6 @@ public class BowTextureEdit extends GuiMenu {
 		}
 	}
 	
-	private static final GuiColor BACKGROUND = new SimpleGuiColor(100, 0, 200);
-	
 	private class PullTexture extends GuiMenu {
 		
 		private final Entry entry;
@@ -177,7 +174,7 @@ public class BowTextureEdit extends GuiMenu {
 		
 		@Override
 		public GuiColor getBackgroundColor() {
-			return BACKGROUND;
+			return EditProps.BACKGROUND2;
 		}
 
 		@Override
