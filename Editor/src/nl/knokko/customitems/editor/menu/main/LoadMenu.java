@@ -23,7 +23,6 @@
  *******************************************************************************/
 package nl.knokko.customitems.editor.menu.main;
 
-import java.awt.Color;
 import java.io.File;
 import java.io.FilenameFilter;
 import java.io.IOException;
@@ -31,12 +30,11 @@ import java.util.Calendar;
 
 import nl.knokko.customitems.editor.Editor;
 import nl.knokko.customitems.editor.menu.edit.EditMenu;
+import nl.knokko.customitems.editor.menu.edit.EditProps;
 import nl.knokko.customitems.editor.set.ItemSet;
 import nl.knokko.gui.color.GuiColor;
-import nl.knokko.gui.color.SimpleGuiColor;
 import nl.knokko.gui.component.menu.GuiMenu;
 import nl.knokko.gui.component.text.dynamic.DynamicTextButton;
-import nl.knokko.gui.util.TextBuilder.Properties;
 import nl.knokko.util.bits.BitInput;
 import nl.knokko.util.bits.ByteArrayBitInput;
 
@@ -50,20 +48,20 @@ public class LoadMenu extends GuiMenu {
 	protected void addComponents() {
 		setList = new SetList();
 		addComponent(setList, 0.3f, 0f, 1f, 0.8f);
-		addComponent(new DynamicTextButton("Cancel", Properties.createButton(new Color(200, 100, 0), new Color(50, 25, 0)), Properties.createButton(new Color(250, 125, 0), new Color(75, 35, 0)), () -> {
+		addComponent(new DynamicTextButton("Cancel", EditProps.CANCEL_BASE, EditProps.CANCEL_HOVER, () -> {
 			state.getWindow().setMainComponent(MainMenu.INSTANCE);
 		}), 0.05f, 0.8f, 0.25f, 0.9f);
-		addComponent(new DynamicTextButton("Load back-up", Properties.createButton(new Color(200, 100, 0), new Color(50, 25, 0)), Properties.createButton(new Color(250, 125, 0), new Color(75, 35, 0)), () -> {
+		addComponent(new DynamicTextButton("Load back-up", EditProps.BUTTON, EditProps.HOVER, () -> {
 			state.getWindow().setMainComponent(BackupMenu.INSTANCE);
 		}), 0.05f, 0.6f, 0.25f, 0.7f);
-		addComponent(new DynamicTextButton("Refresh", Properties.createButton(new Color(150, 150, 250), new Color(30, 30, 100)), Properties.createButton(new Color(180, 180, 255), new Color(40, 40, 120)), () -> {
+		addComponent(new DynamicTextButton("Refresh", EditProps.BUTTON, EditProps.HOVER, () -> {
 			setList.refresh();
 		}), 0.35f, 0.85f, 0.55f, 0.95f);
 	}
 	
 	@Override
 	public GuiColor getBackgroundColor() {
-		return MainMenu.BACKGROUND;
+		return EditProps.BACKGROUND;
 	}
 	
 	private static class BackupMenu extends GuiMenu {
@@ -76,24 +74,24 @@ public class LoadMenu extends GuiMenu {
 		protected void addComponents() {
 			setList = new BackupSetList();
 			addComponent(setList, 0.3f, 0f, 1f, 0.8f);
-			addComponent(new DynamicTextButton("Back", Properties.createButton(new Color(200, 100, 0), new Color(50, 25, 0)), Properties.createButton(new Color(250, 125, 0), new Color(75, 35, 0)), () -> {
+			addComponent(new DynamicTextButton("Back", EditProps.CANCEL_BASE, EditProps.CANCEL_HOVER, () -> {
 				state.getWindow().setMainComponent(LoadMenu.INSTANCE);
 			}), 0.05f, 0.8f, 0.25f, 0.9f);
-			addComponent(new DynamicTextButton("Refresh", Properties.createButton(new Color(150, 150, 250), new Color(30, 30, 100)), Properties.createButton(new Color(180, 180, 255), new Color(40, 40, 120)), () -> {
+			addComponent(new DynamicTextButton("Refresh", EditProps.BUTTON, EditProps.HOVER, () -> {
 				setList.refresh();
 			}), 0.35f, 0.85f, 0.55f, 0.95f);
 		}
 		
 		@Override
 		public GuiColor getBackgroundColor() {
-			return MainMenu.BACKGROUND;
+			return EditProps.BACKGROUND;
 		}
 	}
 	
 	private static class BackupSetList extends GuiMenu {
 		
-		private static final Properties BUTTON_PROPERTIES = Properties.createButton(new Color(0, 200, 0), new Color(0, 50, 0), 1024, 128);
-		private static final Properties HOVER_PROPERTIES = Properties.createButton(new Color(0, 250, 0), new Color(0, 70, 0), 1024, 128);
+		//private static final Properties BUTTON_PROPERTIES = Properties.createButton(new Color(0, 200, 0), new Color(0, 50, 0), 1024, 128);
+		//private static final Properties HOVER_PROPERTIES = Properties.createButton(new Color(0, 250, 0), new Color(0, 70, 0), 1024, 128);
 
 		@Override
 		protected void addComponents() {
@@ -102,7 +100,7 @@ public class LoadMenu extends GuiMenu {
 		
 		@Override
 		public GuiColor getBackgroundColor() {
-			return new SimpleGuiColor(200, 150, 0);
+			return EditProps.BACKGROUND;
 		}
 		
 		private void refresh() {
@@ -138,7 +136,7 @@ public class LoadMenu extends GuiMenu {
 						}
 					}
 					String finalSetName = setName;
-					addComponent(new DynamicTextButton(displayName, BUTTON_PROPERTIES, HOVER_PROPERTIES, () -> {
+					addComponent(new DynamicTextButton(displayName, EditProps.BUTTON, EditProps.HOVER, () -> {
 						try {
 							BitInput input = ByteArrayBitInput.fromFile(file);
 							ItemSet set = new ItemSet(finalSetName, input);
@@ -155,8 +153,8 @@ public class LoadMenu extends GuiMenu {
 	
 	private static class SetList extends GuiMenu {
 		
-		private static final Properties BUTTON_PROPERTIES = Properties.createButton(new Color(0, 200, 0), new Color(0, 50, 0), 512, 128);
-		private static final Properties HOVER_PROPERTIES = Properties.createButton(new Color(0, 250, 0), new Color(0, 70, 0), 512, 128);
+		//private static final Properties BUTTON_PROPERTIES = Properties.createButton(new Color(0, 200, 0), new Color(0, 50, 0), 512, 128);
+		//private static final Properties HOVER_PROPERTIES = Properties.createButton(new Color(0, 250, 0), new Color(0, 70, 0), 512, 128);
 
 		@Override
 		protected void addComponents() {
@@ -165,7 +163,7 @@ public class LoadMenu extends GuiMenu {
 		
 		@Override
 		public GuiColor getBackgroundColor() {
-			return new SimpleGuiColor(200, 150, 0);
+			return EditProps.BACKGROUND;
 		}
 		
 		private void refresh() {
@@ -181,7 +179,7 @@ public class LoadMenu extends GuiMenu {
 			if(files != null) {
 				for(int index = 0; index < files.length; index++) {
 					final File file = files[index];
-					addComponent(new DynamicTextButton(file.getName().substring(0, file.getName().length() - 5), BUTTON_PROPERTIES, HOVER_PROPERTIES, () -> {
+					addComponent(new DynamicTextButton(file.getName().substring(0, file.getName().length() - 5), EditProps.BUTTON, EditProps.HOVER, () -> {
 						try {
 							BitInput input = ByteArrayBitInput.fromFile(file);
 							ItemSet set = new ItemSet(file.getName().substring(0, file.getName().length() - 5), input);
