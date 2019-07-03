@@ -21,9 +21,9 @@ The EditorTester is the code for the automatic tests for the Editor.
 
 # Dependencies:
 
-API doesn't rely on any dependencies.
+API only relies on BitHelper (code is on github.com/knokko/BitHelper).
 
-BasePlugin relies on CraftBukkit (obviously), API (the javaproject within this repository), BitHelper (code is on github.com/knokko/BitHelper) and CorePlugin (code is on github.com/knokko/Core-Plugin-1.12.2).
+BasePlugin relies on CraftBukkit (obviously), API (the javaproject within this repository), BitHelper and CorePlugin (code is on github.com/knokko/Core-Plugin-1.12.2).
 
 Editor relies on API, BitHelper and Gui (code is on github.com/knokko/Gui).
 

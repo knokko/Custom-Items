@@ -126,6 +126,8 @@ public class ItemSet {
 			return loadArmor4(input);
 		else if (encoding == ItemEncoding.ENCODING_ARMOR_5)
 			return loadArmor5(input);
+		else if (encoding == ItemEncoding.ENCODING_ARMOR_6)
+			return loadArmor6(input);
 		throw new IllegalArgumentException("Unknown encoding: " + encoding);
 	}
 
@@ -708,6 +710,62 @@ public class ItemSet {
 		return new CustomArmor(itemType, damage, name, displayName, lore, attributes, defaultEnchantments, durability, allowEnchanting,
 				allowAnvil, repairItem, texture, red, green, blue, itemFlags, entityHitDurabilityLoss, 
 				blockBreakDurabilityLoss, new DamageResistances());
+	}
+	
+	private CustomItem loadArmor6(BitInput input) {
+		CustomItemType itemType = CustomItemType.valueOf(input.readJavaString());
+		short damage = input.readShort();
+		String name = input.readJavaString();
+		String displayName = input.readJavaString();
+		String[] lore = new String[input.readByte() & 0xFF];
+		for (int index = 0; index < lore.length; index++) {
+			lore[index] = input.readJavaString();
+		}
+		AttributeModifier[] attributes = new AttributeModifier[input.readByte() & 0xFF];
+		for (int index = 0; index < attributes.length; index++)
+			attributes[index] = loadAttribute2(input);
+		Enchantment[] defaultEnchantments = new Enchantment[input.readByte() & 0xFF];
+		for (int index = 0; index < defaultEnchantments.length; index++)
+			defaultEnchantments[index] = new Enchantment(EnchantmentType.valueOf(input.readString()), input.readInt());
+		long durability = input.readLong();
+		boolean allowEnchanting = input.readBoolean();
+		boolean allowAnvil = input.readBoolean();
+		Ingredient repairItem = Recipe.loadIngredient(input, this);
+		int red;
+		int green;
+		int blue;
+		if (itemType == CustomItemType.LEATHER_BOOTS || itemType == CustomItemType.LEATHER_LEGGINGS
+				|| itemType == CustomItemType.LEATHER_CHESTPLATE || itemType == CustomItemType.LEATHER_HELMET) {
+			red = input.readByte() & 0xFF;
+			green = input.readByte() & 0xFF;
+			blue = input.readByte() & 0xFF;
+		} else {
+			red = 160;
+			green = 101;
+			blue = 64;
+		}
+		
+		// Don't use ItemFlag.values().length because it only had 6 flags during the version it was saved
+		boolean[] itemFlags = input.readBooleans(6);
+		int entityHitDurabilityLoss = input.readInt();
+		int blockBreakDurabilityLoss = input.readInt();
+		
+		DamageResistances resistances = new DamageResistances(input);
+		
+		String imageName = input.readJavaString();
+		NamedImage texture = null;
+		for (NamedImage current : textures) {
+			if (current.getName().equals(imageName)) {
+				texture = current;
+				break;
+			}
+		}
+		if (texture == null)
+			throw new IllegalArgumentException("Can't find texture " + imageName);
+		
+		return new CustomArmor(itemType, damage, name, displayName, lore, attributes, defaultEnchantments, durability, allowEnchanting,
+				allowAnvil, repairItem, texture, red, green, blue, itemFlags, entityHitDurabilityLoss, 
+				blockBreakDurabilityLoss, resistances);
 	}
 
 	private AttributeModifier loadAttribute2(BitInput input) {
@@ -1584,7 +1642,7 @@ public class ItemSet {
 			Enchantment[] newEnchantments, boolean allowEnchanting, boolean allowAnvil, 
 			Ingredient repairItem, long newDurability, NamedImage newTexture, int newRed, int newGreen, 
 			int newBlue, boolean[] itemFlags, int entityHitDurabilityLoss, int blockBreakDurabilityLoss, 
-			boolean checkClass) {
+			DamageResistances resistances, boolean checkClass) {
 		if (!bypassChecks()) {
 			if (armor == null)
 				return "Can't change bows that do not exist";
@@ -1596,6 +1654,8 @@ public class ItemSet {
 				return "Green (" + armor.getGreen() + ") is out of range";
 			if (armor.getBlue() < 0 || armor.getBlue() > 255)
 				return "Blue (" + armor.getBlue() + ") is out of range";
+			if (resistances == null)
+				return "The damage resistances can't be null";
 		}
 		String error = changeTool(armor, newType, newDamage, newName, newDisplayName, newLore, newAttributes, newEnchantments,
 				allowEnchanting, allowAnvil, repairItem, newDurability, newTexture, itemFlags,
@@ -1604,6 +1664,7 @@ public class ItemSet {
 			armor.setRed(newRed);
 			armor.setGreen(newGreen);
 			armor.setBlue(newBlue);
+			armor.setDamageResistances(resistances);
 			return null;
 		} else {
 			return error;

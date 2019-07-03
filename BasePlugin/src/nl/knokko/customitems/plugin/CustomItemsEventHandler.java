@@ -34,6 +34,7 @@ import java.util.UUID;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.Sound;
+import org.bukkit.attribute.Attribute;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Arrow;
 import org.bukkit.entity.Entity;
@@ -73,6 +74,7 @@ import org.bukkit.metadata.MetadataValue;
 import org.bukkit.plugin.Plugin;
 
 import nl.knokko.core.plugin.item.ItemHelper;
+import nl.knokko.customitems.damage.DamageSource;
 import nl.knokko.customitems.item.CustomItemType.Category;
 import nl.knokko.customitems.plugin.recipe.CustomRecipe;
 import nl.knokko.customitems.plugin.recipe.ShapedCustomRecipe;
@@ -115,7 +117,7 @@ public class CustomItemsEventHandler implements Listener {
 			}
 		}
 	}
-	
+
 	public static void playBreakSound(Player player) {
 		player.playSound(player.getLocation(), Sound.ENTITY_ITEM_BREAK, 1, 1);
 	}
@@ -138,7 +140,8 @@ public class CustomItemsEventHandler implements Listener {
 				CustomBow bow = (CustomBow) customItem;
 				Entity projectile = event.getProjectile();
 				if (projectile instanceof Arrow) {
-					if (event.getEntity() instanceof Player && bow.decreaseDurability(event.getBow(), bow.getShootDurabilityLoss())) {
+					if (event.getEntity() instanceof Player
+							&& bow.decreaseDurability(event.getBow(), bow.getShootDurabilityLoss())) {
 						Player player = (Player) event.getEntity();
 						playBreakSound(player);
 						ItemStack mainHand = player.getInventory().getItemInMainHand();
@@ -278,7 +281,7 @@ public class CustomItemsEventHandler implements Listener {
 			}
 		}
 	}
-
+	
 	@EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
 	public void onEntityDamage(EntityDamageEvent event) {
 		if (event.getEntity() instanceof Player) {
@@ -309,14 +312,7 @@ public class CustomItemsEventHandler implements Listener {
 			}
 		}
 	}
-
-	private boolean isReducedByArmor(DamageCause c) {
-		return c == DamageCause.BLOCK_EXPLOSION || c == DamageCause.CONTACT || c == DamageCause.ENTITY_ATTACK
-				|| c == DamageCause.ENTITY_EXPLOSION || c == DamageCause.ENTITY_SWEEP_ATTACK
-				|| c == DamageCause.FALLING_BLOCK || c == DamageCause.FLY_INTO_WALL || c == DamageCause.HOT_FLOOR
-				|| c == DamageCause.LAVA || c == DamageCause.PROJECTILE;
-	}
-
+	
 	private boolean decreaseCustomArmorDurability(ItemStack piece, int damage) {
 		if (CustomItem.isCustom(piece)) {
 			CustomItem custom = CustomItemsPlugin.getInstance().getSet().getItem(piece);
@@ -328,6 +324,71 @@ public class CustomItemsEventHandler implements Listener {
 			}
 		} else {
 			return false;
+		}
+	}
+	
+	@EventHandler(priority = EventPriority.LOW, ignoreCancelled = true)
+	public void beforeEntityDamage(EntityDamageEvent event) {
+		if (event.getEntity() instanceof Player) {
+			try {
+				DamageSource damageSource = DamageSource.valueOf(event.getCause().name());
+				
+				Player player = (Player) event.getEntity();
+
+				EntityEquipment e = player.getEquipment();
+				short[] damageResistances = new short[4];
+				
+				applyCustomArmorDamageReduction(e.getHelmet(), damageSource, damageResistances, 0);
+				applyCustomArmorDamageReduction(e.getChestplate(), damageSource, damageResistances, 1);
+				applyCustomArmorDamageReduction(e.getLeggings(), damageSource, damageResistances, 2);
+				applyCustomArmorDamageReduction(e.getBoots(), damageSource, damageResistances, 3);
+				
+				int totalDamageResistance = 0;
+				for (short damageResistance : damageResistances) {
+					totalDamageResistance += damageResistance;
+				}
+				
+				if (totalDamageResistance < 100) {
+					event.setDamage(event.getDamage() * (100 - totalDamageResistance) * 0.01);
+				} else {
+					if (totalDamageResistance > 100) {
+						double healing = event.getDamage() * (totalDamageResistance - 100) * 0.01;
+						double newHealth = player.getHealth() + healing;
+						player.setHealth(Math.min(player.getAttribute(Attribute.GENERIC_MAX_HEALTH).getValue(), newHealth));
+					}
+					
+					// Don't cancel the event because armor durability reduction should still take place
+					// TODO But I don't know if that would be desirable or not...
+					event.setDamage(0);
+				}
+			} catch (IllegalArgumentException ex) {
+				// This will happen when the damage cause is not known to this plug-in.
+				// This plug-in only knows the damage causes of craftbukkit 1.12, which means that
+				// this catch block will be reached when a new damage cause is used in a later version
+				// of minecraft.
+				Bukkit.getLogger().warning("Unknown damage cause: " + event.getCause());
+			}
+		}
+	}
+
+	private boolean isReducedByArmor(DamageCause c) {
+		return c == DamageCause.BLOCK_EXPLOSION || c == DamageCause.CONTACT || c == DamageCause.ENTITY_ATTACK
+				|| c == DamageCause.ENTITY_EXPLOSION || c == DamageCause.ENTITY_SWEEP_ATTACK
+				|| c == DamageCause.FALLING_BLOCK || c == DamageCause.FLY_INTO_WALL || c == DamageCause.HOT_FLOOR
+				|| c == DamageCause.LAVA || c == DamageCause.PROJECTILE;
+	}
+
+	private void applyCustomArmorDamageReduction(ItemStack armorPiece, DamageSource source, short[] damageResistances, int resistanceIndex) {
+		if (CustomItem.isCustom(armorPiece)) {
+			CustomItem custom = CustomItemsPlugin.getInstance().getSet().getItem(armorPiece);
+			if (custom instanceof CustomArmor) {
+				CustomArmor armor = (CustomArmor) custom;
+				if (source != null) {
+					damageResistances[resistanceIndex] = armor.getDamageResistances().getResistance(source);
+				}
+			} else {
+				Bukkit.getLogger().warning("Strange armor piece " + armorPiece);
+			}
 		}
 	}
 
@@ -530,7 +591,8 @@ public class CustomItemsEventHandler implements Listener {
 								ItemMeta resultMeta = result.getItemMeta();
 								int repairCount = (int) Math.round(Math.log(repairCost + 1) / Math.log(2));
 								// TODO repair cost becomes invisible after no change?
-								((Repairable) resultMeta).setRepairCost((int) Math.round(Math.pow(2, repairCount + 1) - 1));
+								((Repairable) resultMeta)
+										.setRepairCost((int) Math.round(Math.pow(2, repairCount + 1) - 1));
 								result.setItemMeta(resultMeta);
 								event.setResult(result);
 								int finalLevelCost = levelCost;
@@ -631,7 +693,7 @@ public class CustomItemsEventHandler implements Listener {
 						boolean overrule0 = CustomItem.isCustom(contents[0]) && contents[0].getAmount() > recipeAmount0;
 						boolean overrule1 = CustomItem.isCustom(contents[1]) && contents[1].getAmount() > recipeAmount1;
 						if (overrule0 || overrule1) {
-							
+
 							event.setCancelled(true);
 							if (event.isLeftClick()) {
 								// The default way of trading
@@ -666,7 +728,7 @@ public class CustomItemsEventHandler implements Listener {
 
 								// Using shift-click for trading
 								else if (event.getAction() == InventoryAction.MOVE_TO_OTHER_INVENTORY) {
-									
+
 									int trades = contents[0].getAmount() / recipeAmount0;
 									if (hasSecondIngredient) {
 										int trades2 = contents[1].getAmount() / recipeAmount1;
@@ -674,7 +736,7 @@ public class CustomItemsEventHandler implements Listener {
 											trades = trades2;
 										}
 									}
-									
+
 									{
 										int newAmount = contents[0].getAmount() - trades * recipeAmount0;
 										if (newAmount > 0) {
@@ -691,12 +753,12 @@ public class CustomItemsEventHandler implements Listener {
 											contents[1] = null;
 										}
 									}
-									
+
 									ItemStack result = recipe.getResult();
 									for (int counter = 0; counter < trades; counter++) {
 										event.getWhoClicked().getInventory().addItem(result);
 									}
-									
+
 									inv.setContents(contents);
 								}
 

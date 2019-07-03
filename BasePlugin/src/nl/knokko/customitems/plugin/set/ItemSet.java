@@ -35,6 +35,7 @@ import org.bukkit.craftbukkit.libs.it.unimi.dsi.fastutil.shorts.Short2ObjectMap;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.material.MaterialData;
 
+import nl.knokko.customitems.damage.DamageResistances;
 import nl.knokko.customitems.encoding.ItemEncoding;
 import nl.knokko.customitems.encoding.RecipeEncoding;
 import nl.knokko.customitems.encoding.SetEncoding;
@@ -129,6 +130,8 @@ public class ItemSet {
 			return loadArmor4(input);
 		else if (encoding == ItemEncoding.ENCODING_ARMOR_5)
 			return loadArmor5(input);
+		else if (encoding == ItemEncoding.ENCODING_ARMOR_6)
+			return loadArmor6(input);
 		throw new IllegalArgumentException("Unknown encoding: " + encoding);
 	}
 
@@ -329,7 +332,7 @@ public class ItemSet {
 			color = null;
 		}
 		return new CustomArmor(itemType, damage, name, displayName, lore, attributes, defaultEnchantments, durability, allowEnchanting,
-				allowAnvil, repairItem, color, ItemFlag.getDefaultValues(), 0, 0);
+				allowAnvil, repairItem, color, ItemFlag.getDefaultValues(), 0, 0, new DamageResistances());
 	}
 	
 	private CustomItem loadArmor5(BitInput input) {
@@ -361,7 +364,42 @@ public class ItemSet {
 		int entityHitDurabilityLoss = input.readInt();
 		int blockBreakDurabilityLoss = input.readInt();
 		return new CustomArmor(itemType, damage, name, displayName, lore, attributes, defaultEnchantments, durability, allowEnchanting,
-				allowAnvil, repairItem, color, itemFlags, entityHitDurabilityLoss, blockBreakDurabilityLoss);
+				allowAnvil, repairItem, color, itemFlags, entityHitDurabilityLoss, blockBreakDurabilityLoss,
+				new DamageResistances());
+	}
+	
+	private CustomItem loadArmor6(BitInput input) {
+		CustomItemType itemType = CustomItemType.valueOf(input.readJavaString());
+		short damage = input.readShort();
+		String name = input.readJavaString();
+		String displayName = input.readJavaString();
+		String[] lore = new String[input.readByte() & 0xFF];
+		for (int index = 0; index < lore.length; index++)
+			lore[index] = input.readJavaString();
+		AttributeModifier[] attributes = new AttributeModifier[input.readByte() & 0xFF];
+		for (int index = 0; index < attributes.length; index++)
+			attributes[index] = loadAttribute2(input);
+		Enchantment[] defaultEnchantments = new Enchantment[input.readByte() & 0xFF];
+		for (int index = 0; index < defaultEnchantments.length; index++)
+			defaultEnchantments[index] = new Enchantment(EnchantmentType.valueOf(input.readString()), input.readInt());
+		long durability = input.readLong();
+		boolean allowEnchanting = input.readBoolean();
+		boolean allowAnvil = input.readBoolean();
+		Ingredient repairItem = loadIngredient(input);
+		Color color;
+		if (itemType == CustomItemType.LEATHER_BOOTS || itemType == CustomItemType.LEATHER_LEGGINGS
+				|| itemType == CustomItemType.LEATHER_CHESTPLATE || itemType == CustomItemType.LEATHER_HELMET) {
+			color = Color.fromRGB(input.readByte() & 0xFF, input.readByte() & 0xFF, input.readByte() & 0xFF);
+		} else {
+			color = null;
+		}
+		boolean[] itemFlags = input.readBooleans(6);
+		int entityHitDurabilityLoss = input.readInt();
+		int blockBreakDurabilityLoss = input.readInt();
+		DamageResistances damageResistances = new DamageResistances(input);
+		return new CustomArmor(itemType, damage, name, displayName, lore, attributes, defaultEnchantments, durability, allowEnchanting,
+				allowAnvil, repairItem, color, itemFlags, entityHitDurabilityLoss, blockBreakDurabilityLoss,
+				damageResistances);
 	}
 
 	private CustomBow loadBow3(BitInput input) {

@@ -30,6 +30,7 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.inventory.meta.LeatherArmorMeta;
 
+import nl.knokko.customitems.damage.DamageResistances;
 import nl.knokko.customitems.item.AttributeModifier;
 import nl.knokko.customitems.item.CustomItemType;
 import nl.knokko.customitems.item.Enchantment;
@@ -38,14 +39,17 @@ import nl.knokko.customitems.plugin.recipe.ingredient.Ingredient;
 public class CustomArmor extends CustomTool {
 	
 	private final Color color;
+	
+	private final DamageResistances damageResistances;
 
 	public CustomArmor(CustomItemType itemType, short itemDamage, String name, String displayName, String[] lore,
 			AttributeModifier[] attributes, Enchantment[] defaultEnchantments, long maxDurability,
 			boolean allowEnchanting, boolean allowAnvil, Ingredient repairItem, Color color, boolean[] itemFlags,
-			int entityHitDurabilityLoss, int blockBreakDurabilityLoss) {
+			int entityHitDurabilityLoss, int blockBreakDurabilityLoss, DamageResistances damageResistances) {
 		super(itemType, itemDamage, name, displayName, lore, attributes, defaultEnchantments, maxDurability,
 				allowEnchanting, allowAnvil, repairItem, itemFlags, entityHitDurabilityLoss, blockBreakDurabilityLoss);
 		this.color = color;
+		this.damageResistances = damageResistances;
 	}
 	
 	@Override
@@ -57,5 +61,9 @@ public class CustomArmor extends CustomTool {
 			((LeatherArmorMeta) meta).setColor(color);
 		}
 		return meta;
+	}
+	
+	public DamageResistances getDamageResistances() {
+		return damageResistances;
 	}
 }

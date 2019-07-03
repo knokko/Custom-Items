@@ -36,6 +36,8 @@ import nl.knokko.customitems.item.CustomItemType.Category;
 import nl.knokko.gui.component.WrapperComponent;
 import nl.knokko.gui.component.text.ConditionalTextComponent;
 import nl.knokko.gui.component.text.IntEditField;
+import nl.knokko.gui.component.text.dynamic.DynamicTextButton;
+import nl.knokko.gui.component.text.dynamic.DynamicTextComponent;
 import nl.knokko.gui.util.Option;
 
 public class EditItemArmor extends EditItemTool {
@@ -49,6 +51,8 @@ public class EditItemArmor extends EditItemTool {
 	private final ColorEditField red;
 	private final ColorEditField green;
 	private final ColorEditField blue;
+	
+	private DamageResistances damageResistances;
 
 	public EditItemArmor(EditMenu menu, CustomArmor previous, Category toolCategory) {
 		super(menu, previous, toolCategory);
@@ -57,10 +61,12 @@ public class EditItemArmor extends EditItemTool {
 			red = new ColorEditField(DEFAULT_RED);
 			green = new ColorEditField(DEFAULT_GREEN);
 			blue = new ColorEditField(DEFAULT_BLUE);
+			damageResistances = new DamageResistances();
 		} else {
 			red = new ColorEditField(previous.getRed());
 			green = new ColorEditField(previous.getGreen());
 			blue = new ColorEditField(previous.getBlue());
+			damageResistances = previous.getDamageResistances();
 		}
 	}
 	
@@ -159,13 +165,12 @@ public class EditItemArmor extends EditItemTool {
 		int blueValue = getColorValue(blue, DEFAULT_BLUE);
 		if (blueValue == -1) return "The blue must be an integer at least 0 and at most 255";
 		
-		// TODO Allow actual customization of damage resistances
 		return menu.getSet().addArmor(
 				new CustomArmor(internalType.currentType, damage, name.getText(), getDisplayName(),
 						lore, attributes, enchantments, maxUses, allowEnchanting.isChecked(),
 						allowAnvil.isChecked(), repairItem.getIngredient(), textureSelect.currentTexture,
 						redValue, greenValue, blueValue, itemFlags, entityHitDurabilityLoss, 
-						blockBreakDurabilityLoss, new DamageResistances()),
+						blockBreakDurabilityLoss, damageResistances),
 						true);
 	}
 	
@@ -180,19 +185,28 @@ public class EditItemArmor extends EditItemTool {
 		return menu.getSet().changeArmor(previous, internalType.currentType, damage, name.getText(),
 				getDisplayName(), lore, attributes, enchantments, allowEnchanting.isChecked(),
 				allowAnvil.isChecked(), repairItem.getIngredient(), maxUses, textureSelect.currentTexture,
-				redValue, greenValue, blueValue, itemFlags, entityHit, blockBreak,
+				redValue, greenValue, blueValue, itemFlags, entityHit, blockBreak, damageResistances,
 				true);
 	}
 	
 	@Override
 	protected void addComponents() {
 		super.addComponents();
-		addComponent(new ConditionalTextComponent("Red: ", EditProps.LABEL, () -> {return showColors();}), 0.78f, 0.35f, 0.84f, 0.45f);
-		addComponent(new ConditionalTextComponent("Green: ", EditProps.LABEL, () -> {return showColors();}), 0.75f, 0.24f, 0.84f, 0.34f);
-		addComponent(new ConditionalTextComponent("Blue: ", EditProps.LABEL, () -> {return showColors();}), 0.77f, 0.13f, 0.84f, 0.23f);
-		addComponent(red, 0.85f, 0.35f, 0.9f, 0.45f);
-		addComponent(green, 0.85f, 0.24f, 0.9f, 0.34f);
-		addComponent(blue, 0.85f, 0.13f, 0.9f, 0.23f);
+		addComponent(new DynamicTextComponent("Damage resistances: ", EditProps.LABEL), 0.62f, 0.35f, 0.84f, 0.425f);
+		addComponent(new DynamicTextButton("Change...", EditProps.BUTTON, EditProps.HOVER, () -> {
+			state.getWindow().setMainComponent(new EditDamageResistances(damageResistances, () -> {
+				state.getWindow().setMainComponent(this);
+			}, (DamageResistances newResistances) -> {
+				state.getWindow().setMainComponent(this);
+				damageResistances = newResistances;
+			}));
+		}), 0.85f, 0.35f, 0.99f, 0.425f);
+		addComponent(new ConditionalTextComponent("Red: ", EditProps.LABEL, () -> {return showColors();}), 0.78f, 0.29f, 0.84f, 0.35f);
+		addComponent(new ConditionalTextComponent("Green: ", EditProps.LABEL, () -> {return showColors();}), 0.75f, 0.21f, 0.84f, 0.27f);
+		addComponent(new ConditionalTextComponent("Blue: ", EditProps.LABEL, () -> {return showColors();}), 0.77f, 0.13f, 0.84f, 0.19f);
+		addComponent(red, 0.85f, 0.28f, 0.9f, 0.35f);
+		addComponent(green, 0.85f, 0.20f, 0.9f, 0.27f);
+		addComponent(blue, 0.85f, 0.12f, 0.9f, 0.19f);
 		errorComponent.setProperties(EditProps.LABEL);
 		errorComponent.setText("Hint: Use attribute modifiers to set the armor (toughness) of this piece.");
 	}
