@@ -45,7 +45,7 @@ public class LoreTest {
 		test.type(lore1);
 		
 		// Appears necessary to delay briefly
-		test.delay(50);
+		test.delay(80);
 		test.click("Add line");
 		test.click("Text...");
 		test.backspace(7);
