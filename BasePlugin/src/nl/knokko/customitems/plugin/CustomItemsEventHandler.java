@@ -357,8 +357,7 @@ public class CustomItemsEventHandler implements Listener {
 						player.setHealth(Math.min(player.getAttribute(Attribute.GENERIC_MAX_HEALTH).getValue(), newHealth));
 					}
 					
-					// Don't cancel the event because armor durability reduction should still take place
-					// TODO But I don't know if that would be desirable or not...
+					event.setCancelled(true);
 					event.setDamage(0);
 				}
 			} catch (IllegalArgumentException ex) {

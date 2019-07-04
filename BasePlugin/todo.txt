@@ -10,6 +10,5 @@ Medium term:
 
 Short term:
 -Work on automated testing
--Add %-token after the edit fields in the custom armor damage reduction menu
--Think about whether or not to cancel damage event when custom armor reduction prevents all damage
 -Change colors of file chooser menu
+-Improve Gui performance
