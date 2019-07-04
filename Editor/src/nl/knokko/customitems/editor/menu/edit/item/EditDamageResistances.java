@@ -54,7 +54,8 @@ public class EditDamageResistances extends GuiMenu {
 			float y = 0.7f - 0.1f * (index % 7);
 			DamageSource source = damageSources[index];
 			addComponent(new DynamicTextComponent(source + ":", EditProps.LABEL), x, y, x + 0.12f, y + 0.1f);
-			addComponent(resistances[index], x + 0.13f, y, x + 0.18f, y + 0.1f);
+			addComponent(resistances[index], x + 0.13f, y, x + 0.17f, y + 0.1f);
+			addComponent(new DynamicTextComponent("%", EditProps.LABEL), x + 0.17f, y, x + 0.19f, y + 0.1f);
 		}
 		addComponent(errorComponent, 0.05f, 0.9f, 0.95f, 1f);
 	}
