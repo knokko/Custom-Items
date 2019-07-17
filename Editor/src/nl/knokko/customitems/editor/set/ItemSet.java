@@ -44,6 +44,8 @@ import javax.imageio.ImageIO;
 import javax.imageio.stream.MemoryCacheImageOutputStream;
 
 import nl.knokko.customitems.damage.DamageResistances;
+import nl.knokko.customitems.drops.BlockDrop;
+import nl.knokko.customitems.drops.EntityDrop;
 import nl.knokko.customitems.editor.Editor;
 import nl.knokko.customitems.editor.set.item.CustomArmor;
 import nl.knokko.customitems.editor.set.item.CustomBow;
@@ -70,6 +72,7 @@ import nl.knokko.customitems.item.CustomToolDurability;
 import nl.knokko.customitems.item.Enchantment;
 import nl.knokko.customitems.item.EnchantmentType;
 import nl.knokko.customitems.item.ItemFlag;
+import nl.knokko.customitems.item.ItemSetBase;
 import nl.knokko.gui.keycode.KeyCode;
 import nl.knokko.gui.window.input.WindowInput;
 import nl.knokko.customitems.item.AttributeModifier.Attribute;
@@ -81,7 +84,7 @@ import nl.knokko.util.bits.ByteArrayBitOutput;
 
 import static nl.knokko.customitems.encoding.SetEncoding.*;
 
-public class ItemSet {
+public class ItemSet implements ItemSetBase {
 
 	private Recipe loadRecipe(BitInput input) {
 		byte encoding = input.readByte();
@@ -783,12 +786,16 @@ public class ItemSet {
 	private Collection<NamedImage> textures;
 	private Collection<CustomItem> items;
 	private Collection<Recipe> recipes;
+	private Collection<BlockDrop> blockDrops;
+	private Collection<EntityDrop> mobDrops;
 
 	public ItemSet(String fileName) {
 		this.fileName = fileName;
-		textures = new ArrayList<NamedImage>();
-		items = new ArrayList<CustomItem>();
-		recipes = new ArrayList<Recipe>();
+		textures = new ArrayList<>();
+		items = new ArrayList<>();
+		recipes = new ArrayList<>();
+		blockDrops = new ArrayList<>();
+		mobDrops = new ArrayList<>();
 	}
 
 	public ItemSet(String fileName, BitInput input) {
@@ -798,6 +805,8 @@ public class ItemSet {
 			load1(input);
 		else if (encoding == ENCODING_2)
 			load2(input);
+		else if (encoding == ENCODING_3)
+			load3(input);
 		else
 			throw new IllegalArgumentException("Unknown encoding: " + encoding);
 	}
@@ -835,6 +844,10 @@ public class ItemSet {
 		recipes = new ArrayList<Recipe>(recipeAmount);
 		for (int counter = 0; counter < recipeAmount; counter++)
 			recipes.add(loadRecipe(input));
+		
+		// Drops (there are no drops in this encoding)
+		blockDrops = new ArrayList<>();
+		mobDrops = new ArrayList<>();
 	}
 
 	private void load2(BitInput input) {
@@ -864,6 +877,50 @@ public class ItemSet {
 		recipes = new ArrayList<Recipe>(recipeAmount);
 		for (int counter = 0; counter < recipeAmount; counter++)
 			recipes.add(loadRecipe(input));
+		
+		// Drops (there are no drops in this encoding)
+		blockDrops = new ArrayList<>();
+		mobDrops = new ArrayList<>();
+	}
+	
+	private void load3(BitInput input) {
+		// Textures
+		int textureAmount = input.readInt();
+		// System.out.println("amount of textures is " + textureAmount);
+		textures = new ArrayList<NamedImage>(textureAmount);
+		for (int counter = 0; counter < textureAmount; counter++) {
+			byte textureType = input.readByte();
+			if (textureType == NamedImage.ENCODING_BOW)
+				textures.add(new BowTextures(input));
+			else if (textureType == NamedImage.ENCODING_SIMPLE)
+				textures.add(new NamedImage(input));
+			else
+				throw new IllegalArgumentException("Unknown texture encoding: " + textureType);
+		}
+		// System.out.println("textures are " + textures);
+		// Items
+		int itemAmount = input.readInt();
+		// System.out.println("amount of items is " + itemAmount);
+		items = new ArrayList<CustomItem>(itemAmount);
+		for (int counter = 0; counter < itemAmount; counter++)
+			items.add(loadItem(input));
+
+		// Recipes
+		int recipeAmount = input.readInt();
+		recipes = new ArrayList<Recipe>(recipeAmount);
+		for (int counter = 0; counter < recipeAmount; counter++)
+			recipes.add(loadRecipe(input));
+		
+		// Drops
+		int numBlockDrops = input.readInt();
+		blockDrops = new ArrayList<>(numBlockDrops);
+		for (int counter = 0; counter < numBlockDrops; counter++)
+			blockDrops.add(BlockDrop.load(input, this));
+		
+		int numMobDrops = input.readInt();
+		mobDrops = new ArrayList<>(numMobDrops);
+		for (int counter = 0; counter < numMobDrops; counter++)
+			mobDrops.add(EntityDrop.load(input, this));
 	}
 
 	/**
@@ -881,7 +938,7 @@ public class ItemSet {
 			File file = new File(Editor.getFolder() + "/" + fileName + ".cis");// cis stands for Custom Item Set
 			OutputStream fileOutput = Files.newOutputStream(file.toPath());
 			ByteArrayBitOutput output = new ByteArrayBitOutput();
-			export1(output);
+			export3(output);
 			output.terminate();
 			fileOutput.write(output.getBytes());
 			fileOutput.flush();
@@ -1125,7 +1182,7 @@ public class ItemSet {
 			File file = new File(Editor.getFolder() + "/" + fileName + ".cis");// cis stands for Custom Item Set
 			OutputStream fileOutput = Files.newOutputStream(file.toPath());
 			ByteArrayBitOutput output = new ByteArrayBitOutput();
-			export1(output);
+			export3(output);
 			output.terminate();
 			fileOutput.write(output.getBytes());
 			fileOutput.flush();
@@ -1363,6 +1420,7 @@ public class ItemSet {
 		}
 	}
 
+	@SuppressWarnings("unused")
 	private void export1(BitOutput output) {
 		output.addByte(ENCODING_1);
 
@@ -1375,6 +1433,33 @@ public class ItemSet {
 		output.addInt(recipes.size());
 		for (Recipe recipe : recipes)
 			recipe.save(output);
+		
+		// There are no drops in this encoding
+	}
+	
+	// I wonder why there is no export2
+	
+	private void export3(BitOutput output) {
+		output.addByte(ENCODING_3);
+
+		// Items
+		output.addInt(items.size());
+		for (CustomItem item : items)
+			item.export(output);
+
+		// Recipes
+		output.addInt(recipes.size());
+		for (Recipe recipe : recipes)
+			recipe.save(output);
+		
+		// Drops
+		output.addInt(blockDrops.size());
+		for (BlockDrop drop : blockDrops)
+			drop.save(output);
+		
+		output.addInt(mobDrops.size());
+		for (EntityDrop drop : mobDrops)
+			drop.save(output);
 	}
 
 	public String save() {
@@ -1384,7 +1469,7 @@ public class ItemSet {
 			File file = new File(Editor.getFolder() + "/" + fileName + ".cisb");// cisb stands for Custom Item Set
 																				// Builder
 			ByteArrayBitOutput output = new ByteArrayBitOutput();
-			save2(output);
+			save3(output);
 			output.terminate();
 			byte[] bytes = output.getBytes();
 			OutputStream mainOutput = Files.newOutputStream(file.toPath());
@@ -1432,6 +1517,7 @@ public class ItemSet {
 			recipe.save(output);
 	}
 
+	@SuppressWarnings("unused")
 	private void save2(BitOutput output) {
 		output.addByte(ENCODING_2);
 		output.addInt(textures.size());
@@ -1463,6 +1549,47 @@ public class ItemSet {
 		output.addInt(recipes.size());
 		for (Recipe recipe : recipes)
 			recipe.save(output);
+	}
+	
+	private void save3(BitOutput output) {
+		output.addByte(ENCODING_3);
+		output.addInt(textures.size());
+		for (NamedImage texture : textures) {
+			if (texture instanceof BowTextures)
+				output.addByte(NamedImage.ENCODING_BOW);
+			else
+				output.addByte(NamedImage.ENCODING_SIMPLE);
+			texture.save(output);
+		}
+		output.addInt(items.size());
+
+		// Save the normal items before the tools so that tools can use normal items as
+		// repair item
+		List<CustomItem> sorted = new ArrayList<CustomItem>(items.size());
+		for (CustomItem item : items) {
+			if (!(item instanceof CustomTool)) {
+				sorted.add(item);
+			}
+		}
+		for (CustomItem item : items) {
+			if (item instanceof CustomTool) {
+				sorted.add(item);
+			}
+		}
+		for (CustomItem item : sorted)
+			item.save(output);
+
+		output.addInt(recipes.size());
+		for (Recipe recipe : recipes)
+			recipe.save(output);
+		
+		output.addInt(blockDrops.size());
+		for (BlockDrop drop : blockDrops)
+			drop.save(output);
+		
+		output.addInt(mobDrops.size());
+		for (EntityDrop drop : mobDrops)
+			drop.save(output);
 	}
 
 	/**
@@ -2222,5 +2349,13 @@ public class ItemSet {
 			if (!usedDamage[damage - 1])
 				return damage;
 		return -1;
+	}
+
+	@Override
+	public CustomItem getCustomItemByName(String name) {
+		for (CustomItem item : items)
+			if (item.getName().equals(name))
+				return item;
+		return null;
 	}
 }

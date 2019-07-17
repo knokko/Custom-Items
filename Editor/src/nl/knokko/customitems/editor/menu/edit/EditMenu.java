@@ -23,6 +23,7 @@
  *******************************************************************************/
 package nl.knokko.customitems.editor.menu.edit;
 
+import nl.knokko.customitems.editor.menu.edit.drops.DropsMenu;
 import nl.knokko.customitems.editor.menu.edit.item.ItemOverview;
 import nl.knokko.customitems.editor.menu.edit.recipe.RecipeOverview;
 import nl.knokko.customitems.editor.menu.edit.texture.TextureOverview;
@@ -42,12 +43,15 @@ public class EditMenu extends GuiMenu {
 	protected final ItemOverview itemOverview;
 	protected final TextureOverview textureOverview;
 	protected final RecipeOverview recipeOverview;
+	protected final DropsMenu dropsMenu;
 
 	public EditMenu(ItemSet set) {
 		this.set = set;
 		itemOverview = new ItemOverview(this);
 		textureOverview = new TextureOverview(this);
 		recipeOverview = new RecipeOverview(this);
+		dropsMenu = new DropsMenu(this);
+		
 		errorComponent = new DynamicTextComponent("", EditProps.ERROR);
 	}
 	
@@ -122,5 +126,8 @@ public class EditMenu extends GuiMenu {
 		addComponent(new DynamicTextButton("Recipes", EditProps.BUTTON, EditProps.HOVER, () -> {
 			state.getWindow().setMainComponent(recipeOverview);
 		}), 0.6f, 0.45f, 0.8f, 0.55f);
+		addComponent(new DynamicTextButton("Drops", EditProps.BUTTON, EditProps.HOVER, () -> {
+			state.getWindow().setMainComponent(dropsMenu);
+		}), 0.6f, 0.3f, 0.8f, 0.4f);
 	}
 }

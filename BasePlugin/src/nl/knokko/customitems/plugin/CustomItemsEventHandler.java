@@ -253,9 +253,13 @@ public class CustomItemsEventHandler implements Listener {
 				Bukkit.getLogger().warning("Interesting custom off shear: " + customOff);
 		}
 	}
+	
+	// TODO Process mob drops
 
 	@EventHandler
 	public void onBlockBreak(BlockBreakEvent event) {
+		
+		// TODO Process block drops
 		ItemStack item = event.getPlayer().getInventory().getItemInMainHand();
 		if (CustomItem.isCustom(item)) {
 			CustomItem custom = CustomItemsPlugin.getInstance().getSet().getItem(item);
