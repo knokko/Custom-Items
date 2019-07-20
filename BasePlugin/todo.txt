@@ -1,14 +1,14 @@
 Long term:
 -Replace minecrafts enchanting and anvil system
 -Create a website generator
+-Dynamic updating of the server item set
 
 Medium term:
--Add mob drops and block drops (including NPCs)
--Add possibility for item models
+-Work on automated testing
+-Change colors of file chooser menu
 -Add shields
 -Add possibility to merge two item sets
 
 Short term:
--Work on automated testing
--Change colors of file chooser menu
--Improve Gui performance
+-Add mob drops and block drops (including NPCs)
+-Add possibility for item models
