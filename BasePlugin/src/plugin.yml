@@ -2,6 +2,7 @@ name: CustomItems
 main: nl.knokko.customitems.plugin.CustomItemsPlugin
 version: 4.6
 depend: [KnokkoCore]
+softdepend: [CrazyEnchantments]
 loadbefore: [UltraChest]
 commands:
   customitems:
