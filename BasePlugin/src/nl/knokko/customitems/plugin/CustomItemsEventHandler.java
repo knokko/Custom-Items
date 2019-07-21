@@ -28,6 +28,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Random;
 import java.util.Set;
 import java.util.UUID;
 
@@ -51,6 +52,7 @@ import org.bukkit.event.enchantment.PrepareItemEnchantEvent;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
+import org.bukkit.event.entity.EntityDeathEvent;
 import org.bukkit.event.entity.EntityShootBowEvent;
 import org.bukkit.event.inventory.InventoryAction;
 import org.bukkit.event.inventory.InventoryClickEvent;
@@ -75,6 +77,7 @@ import org.bukkit.plugin.Plugin;
 
 import nl.knokko.core.plugin.item.ItemHelper;
 import nl.knokko.customitems.damage.DamageSource;
+import nl.knokko.customitems.drops.Drop;
 import nl.knokko.customitems.item.CustomItemType.Category;
 import nl.knokko.customitems.plugin.recipe.CustomRecipe;
 import nl.knokko.customitems.plugin.recipe.ShapedCustomRecipe;
@@ -253,20 +256,51 @@ public class CustomItemsEventHandler implements Listener {
 				Bukkit.getLogger().warning("Interesting custom off shear: " + customOff);
 		}
 	}
-	
-	// TODO Process mob drops
 
-	@EventHandler
+	// Use the highest priority because we want to ignore the event in case it is cancelled
+	// and we may need to modify the setDropItems flag of the event
+	@EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
 	public void onBlockBreak(BlockBreakEvent event) {
+		ItemSet set = CustomItemsPlugin.getInstance().getSet();
 		
-		// TODO Process block drops
+		Drop[] customDrops = set.getDrops(event.getBlock().getType());
+		Random random = new Random();
+		boolean cancelDefaultDrops = false;
+		for (Drop drop : customDrops) {
+			if (drop.chooseToDrop(random)) {
+				if (drop.cancelNormalDrop()) {
+					cancelDefaultDrops = true;
+				}
+				int amountToDrop = drop.chooseDroppedAmount(random);
+				event.getBlock().getWorld().dropItemNaturally(event.getBlock().getLocation(), ((CustomItem) drop.getItemToDrop()).create(amountToDrop));
+			}
+		}
+		if (cancelDefaultDrops) {
+			event.setDropItems(false);
+		}
+		
 		ItemStack item = event.getPlayer().getInventory().getItemInMainHand();
 		if (CustomItem.isCustom(item)) {
-			CustomItem custom = CustomItemsPlugin.getInstance().getSet().getItem(item);
+			CustomItem custom = set.getItem(item);
 			if (custom != null) {
 				custom.onBlockBreak(event.getPlayer(), item, event.getBlock());
 			} else {
 				Bukkit.getLogger().warning("Interesting item: " + item);
+			}
+		}
+	}
+	
+	@EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
+	public void onEntityDeath(EntityDeathEvent event) {
+		Drop[] drops = CustomItemsPlugin.getInstance().getSet().getDrops(event.getEntity());
+		Random random = new Random();
+		
+		for (Drop drop : drops) {
+			if (drop.chooseToDrop(random)) {
+				if (drop.cancelNormalDrop()) {
+					event.getDrops().clear();
+				}
+				event.getDrops().add(((CustomItem) drop.getItemToDrop()).create(drop.chooseDroppedAmount(random)));
 			}
 		}
 	}
