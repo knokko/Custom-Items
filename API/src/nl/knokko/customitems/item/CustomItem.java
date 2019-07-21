@@ -23,7 +23,7 @@
  *******************************************************************************/
 package nl.knokko.customitems.item;
 
-public class CustomItem {
+public abstract class CustomItem {
 	
 	public static final int UNBREAKABLE_TOOL_DURABILITY = -1;
     

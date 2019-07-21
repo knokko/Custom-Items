@@ -35,6 +35,11 @@ public class Drop {
 		this.cancelNormalDrop = cancelNormalDrop;
 	}
 	
+	@Override
+	public String toString() {
+		return drop.getName();
+	}
+	
 	public void save1(BitOutput output) {
 		output.addString(drop.getName());
 		output.addInt(minDropAmount);

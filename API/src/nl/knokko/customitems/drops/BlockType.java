@@ -285,6 +285,11 @@ public enum BlockType {
 		}
 	}
 	
+	@Override
+	public String toString() {
+		return name().toLowerCase().replace('_', ' ');
+	}
+	
 	public Object getBukkitMaterial() {
 		if (bukkitMaterial == null) {
 			throw new UnsupportedOperationException("The Bukkit API is not available");

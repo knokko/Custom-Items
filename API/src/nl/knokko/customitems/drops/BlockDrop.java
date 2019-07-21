@@ -19,13 +19,18 @@ public class BlockDrop {
 		return new BlockDrop(BlockType.getByOrdinal(input.readInt()), Drop.load1(input, set));
 	}
 	
-	private final BlockType block;
+	private BlockType block;
 	
-	private final Drop drop;
+	private Drop drop;
 	
 	public BlockDrop(BlockType block, Drop drop) {
 		this.block = block;
 		this.drop = drop;
+	}
+	
+	@Override
+	public String toString() {
+		return drop + " for block " + block;
 	}
 	
 	public void save(BitOutput output) {
@@ -44,5 +49,13 @@ public class BlockDrop {
 	
 	public Drop getDrop() {
 		return drop;
+	}
+	
+	public void setBlock(BlockType newBlock) {
+		block = newBlock;
+	}
+	
+	public void setDrop(Drop newDrop) {
+		drop = newDrop;
 	}
 }
