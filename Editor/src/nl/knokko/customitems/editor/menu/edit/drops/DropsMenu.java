@@ -2,6 +2,7 @@ package nl.knokko.customitems.editor.menu.edit.drops;
 
 import nl.knokko.customitems.editor.menu.edit.EditMenu;
 import nl.knokko.customitems.editor.menu.edit.EditProps;
+import nl.knokko.customitems.editor.menu.edit.drops.block.BlockDropsOverview;
 import nl.knokko.gui.color.GuiColor;
 import nl.knokko.gui.component.menu.GuiMenu;
 import nl.knokko.gui.component.text.dynamic.DynamicTextButton;
@@ -21,7 +22,7 @@ public class DropsMenu extends GuiMenu {
 		}), 0.025f, 0.8f, 0.2f, 0.9f);
 		
 		addComponent(new DynamicTextButton("Block drops", EditProps.BUTTON, EditProps.HOVER, () -> {
-			
+			state.getWindow().setMainComponent(new BlockDropsOverview(editMenu.getSet(), this));
 		}), 0.7f, 0.7f, 0.9f, 0.8f);
 		addComponent(new DynamicTextButton("Mob drops", EditProps.BUTTON, EditProps.HOVER, () -> {
 			

@@ -45,6 +45,8 @@ import javax.imageio.stream.MemoryCacheImageOutputStream;
 
 import nl.knokko.customitems.damage.DamageResistances;
 import nl.knokko.customitems.drops.BlockDrop;
+import nl.knokko.customitems.drops.BlockType;
+import nl.knokko.customitems.drops.Drop;
 import nl.knokko.customitems.drops.EntityDrop;
 import nl.knokko.customitems.editor.Editor;
 import nl.knokko.customitems.editor.set.item.CustomArmor;
@@ -2204,7 +2206,9 @@ public class ItemSet implements ItemSetBase {
 					return "At least one of your recipes has this item as an ingredient.";
 			}
 		}
-		items.remove(item);
+		if (!items.remove(item)) {
+			return "This item is not in the item set";
+		}
 		return null;
 	}
 
@@ -2310,7 +2314,80 @@ public class ItemSet implements ItemSetBase {
 	}
 
 	public void removeRecipe(Recipe recipe) {
-		recipes.remove(recipe);
+		if (!recipes.remove(recipe) && !bypassChecks()) {
+			throw new IllegalArgumentException("The given recipe was not in the recipe list!");
+		}
+	}
+	
+	private String validateDrop(Drop d) {
+		if (d == null)
+			return "The drop is null";
+		if (d.getItemToDrop() == null)
+			return "The item to drop is null";
+		if (d.getMinDropAmount() < 1)
+			return "The minimum drop amount must be at least 1";
+		if (d.getMinDropAmount() > 64)
+			return "The minimum drop amount must be at most 64";
+		if (d.getMaxDropAmount() < 1)
+			return "The maximum drop amount must be at least 1";
+		if (d.getMaxDropAmount() > 64)
+			return "The maximum drop amount must be at most 64";
+		if (d.getDropChance() < 1)
+			return "The drop chance must be at least 1";
+		if (d.getDropChance() > 100)
+			return "The drop chance must be at most 100";
+		return null;
+	}
+	
+	public String addBlockDrop(BlockDrop drop) {
+		if (!bypassChecks()) {
+			if (drop == null)
+				return "The blockDrop is null";
+			if (drop.getBlock() == null)
+				return "The block is null";
+			String dropError = validateDrop(drop.getDrop());
+			if (dropError != null)
+				return dropError;
+		}
+		blockDrops.add(drop);
+		return null;
+	}
+	
+	public String changeBlockDrop(BlockDrop old, BlockType newBlock, Drop newDrop) {
+		if (!bypassChecks()) {
+			if (old == null)
+				return "The old blockDrop is null";
+			boolean has = false;
+			for (BlockDrop existing : blockDrops) {
+				if (existing == old) {
+					has = true;
+					break;
+				}
+			}
+			if (!has) {
+				return "The old blockDrop was not in this item set";
+			}
+			if (newBlock == null)
+				return "The new block is null";
+			String dropError = validateDrop(newDrop);
+			if (dropError != null)
+				return dropError;
+		}
+		old.setBlock(newBlock);
+		old.setDrop(newDrop);
+		return null;
+	}
+	
+	public void removeBlockDrop(BlockDrop drop) {
+		if (!blockDrops.remove(drop) && !bypassChecks()) {
+			throw new IllegalArgumentException("The drop " + drop + " was not in the block drop list!");
+		}
+	}
+	
+	public void removeMobDrop(EntityDrop drop) {
+		if (!mobDrops.remove(drop) && !bypassChecks()) {
+			throw new IllegalArgumentException("The drop " + drop + " was not in the mob drop list!");
+		}
 	}
 
 	/**
@@ -2338,6 +2415,22 @@ public class ItemSet implements ItemSetBase {
 	 */
 	public Collection<Recipe> getRecipes() {
 		return recipes;
+	}
+	
+	/**
+	 * Do not modify this collection directly!
+	 * @return The mob drop collection of this ItemSet
+	 */
+	public Collection<EntityDrop> getMobDrops(){
+		return mobDrops;
+	}
+	
+	/**
+	 * Do not modify this collection directly!
+	 * @return The block drop collection of this ItemSet
+	 */
+	public Collection<BlockDrop> getBlockDrops(){
+		return blockDrops;
 	}
 
 	public short nextAvailableDamage(CustomItemType type) {
