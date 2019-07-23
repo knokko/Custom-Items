@@ -86,6 +86,11 @@ public enum CIEntityType {
 		}
 	}
 	
+	@Override
+	public String toString() {
+		return name().replace('_', ' ').toLowerCase();
+	}
+	
 	public Object getBukkitEntityType() {
 		if (bukkitEntityType == null) {
 			throw new UnsupportedOperationException("The Bukkit API is not available");

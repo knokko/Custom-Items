@@ -30,7 +30,7 @@ public class BlockDropsOverview extends GuiMenu {
 		addComponent(new DynamicTextButton("Back", EditProps.CANCEL_BASE, EditProps.CANCEL_HOVER, () -> {
 			state.getWindow().setMainComponent(returnMenu);
 		}), 0.025f, 0.8f, 0.2f, 0.9f);
-		addComponent(new DynamicTextButton("New", EditProps.BUTTON, EditProps.HOVER, () -> {
+		addComponent(new DynamicTextButton("New block drop", EditProps.BUTTON, EditProps.HOVER, () -> {
 			state.getWindow().setMainComponent(new EditBlockDrop(set, this, null));
 		}), 0.025f, 0.2f, 0.2f, 0.3f);
 		addComponent(list, 0.3f, 0f, 1f, 1f);
@@ -83,7 +83,7 @@ public class BlockDropsOverview extends GuiMenu {
 				addComponent(new DynamicTextButton("Edit", EditProps.BUTTON, EditProps.HOVER, () -> {
 					state.getWindow().setMainComponent(new EditBlockDrop(set, BlockDropsOverview.this, drop));
 				}), 0.5f, 0.05f, 0.7f, 0.95f);
-				addComponent(new DynamicTextButton("Delete", EditProps.BUTTON, EditProps.HOVER, () -> {
+				addComponent(new DynamicTextButton("Delete", EditProps.QUIT_BASE, EditProps.QUIT_HOVER, () -> {
 					set.removeBlockDrop(drop);
 					list.refresh();
 				}), 0.75f, 0.05f, 0.95f, 0.95f);

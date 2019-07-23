@@ -46,6 +46,7 @@ import javax.imageio.stream.MemoryCacheImageOutputStream;
 import nl.knokko.customitems.damage.DamageResistances;
 import nl.knokko.customitems.drops.BlockDrop;
 import nl.knokko.customitems.drops.BlockType;
+import nl.knokko.customitems.drops.CIEntityType;
 import nl.knokko.customitems.drops.Drop;
 import nl.knokko.customitems.drops.EntityDrop;
 import nl.knokko.customitems.editor.Editor;
@@ -2332,6 +2333,8 @@ public class ItemSet implements ItemSetBase {
 			return "The maximum drop amount must be at least 1";
 		if (d.getMaxDropAmount() > 64)
 			return "The maximum drop amount must be at most 64";
+		if (d.getMaxDropAmount() < d.getMinDropAmount())
+			return "The maximum drop amount can't be smaller than the minimum drop amount";
 		if (d.getDropChance() < 1)
 			return "The drop chance must be at least 1";
 		if (d.getDropChance() > 100)
@@ -2382,6 +2385,38 @@ public class ItemSet implements ItemSetBase {
 		if (!blockDrops.remove(drop) && !bypassChecks()) {
 			throw new IllegalArgumentException("The drop " + drop + " was not in the block drop list!");
 		}
+	}
+	
+	public String addMobDrop(EntityDrop drop) {
+		if (!bypassChecks()) {
+			if (drop == null)
+				return "The mob drop is null";
+			if (drop.getEntityType() == null)
+				return "The entity type is null";
+			String dropError = validateDrop(drop.getDrop());
+			if (dropError != null)
+				return dropError;
+			if (mobDrops.contains(drop))
+				return "That mob drop is already in the mob drop list";
+		}
+		mobDrops.add(drop);
+		return null;
+	}
+	
+	public String changeMobDrop(EntityDrop old, CIEntityType newType, String newRequiredName, Drop newDrop) {
+		if (!bypassChecks()) {
+			if (newType == null)
+				return "The selected entity type is null";
+			String dropError = validateDrop(newDrop);
+			if (dropError != null)
+				return dropError;
+			if (!mobDrops.contains(old))
+				return "The mob drop you are changing is not in the mob drop list";
+		}
+		old.setEntityType(newType);
+		old.setRequiredName(newRequiredName);
+		old.setDrop(newDrop);
+		return null;
 	}
 	
 	public void removeMobDrop(EntityDrop drop) {

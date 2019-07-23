@@ -19,15 +19,20 @@ public class EntityDrop {
 		return new EntityDrop(CIEntityType.getByOrdinal(input.readInt()), input.readString(), Drop.load1(input, set));
 	}
 	
-	private final CIEntityType entity;
-	private final String requiredName;
+	private CIEntityType entity;
+	private String requiredName;
 	
-	private final Drop drop;
+	private Drop drop;
 	
 	public EntityDrop(CIEntityType entity, String requiredName, Drop drop) {
 		this.entity = entity;
 		this.requiredName = requiredName;
 		this.drop = drop;
+	}
+	
+	@Override
+	public String toString() {
+		return drop + " for " + entity + (requiredName == null ? "" : " named " + requiredName);
 	}
 	
 	public void save(BitOutput output) {
@@ -51,5 +56,17 @@ public class EntityDrop {
 	
 	public Drop getDrop() {
 		return drop;
+	}
+	
+	public void setEntityType(CIEntityType newType) {
+		entity = newType;
+	}
+	
+	public void setRequiredName(String newReqName) {
+		requiredName = newReqName;
+	}
+	
+	public void setDrop(Drop newDrop) {
+		drop = newDrop;
 	}
 }
