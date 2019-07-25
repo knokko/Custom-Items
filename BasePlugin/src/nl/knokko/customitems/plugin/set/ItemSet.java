@@ -68,7 +68,9 @@ import nl.knokko.customitems.plugin.recipe.ingredient.NoIngredient;
 import nl.knokko.customitems.plugin.recipe.ingredient.SimpleVanillaIngredient;
 import nl.knokko.customitems.plugin.set.item.CustomArmor;
 import nl.knokko.customitems.plugin.set.item.CustomBow;
+import nl.knokko.customitems.plugin.set.item.CustomHoe;
 import nl.knokko.customitems.plugin.set.item.CustomItem;
+import nl.knokko.customitems.plugin.set.item.CustomShears;
 import nl.knokko.customitems.plugin.set.item.CustomTool;
 import nl.knokko.customitems.plugin.set.item.SimpleCustomItem;
 import nl.knokko.util.bits.BitInput;
@@ -165,6 +167,10 @@ public class ItemSet implements ItemSetBase {
 			return loadTool4(input);
 		else if (encoding == ItemEncoding.ENCODING_TOOL_5)
 			return loadTool5(input);
+		else if (encoding == ItemEncoding.ENCODING_HOE_5)
+			return loadHoe5(input);
+		else if (encoding == ItemEncoding.ENCODING_SHEAR_5)
+			return loadShear5(input);
 		else if (encoding == ItemEncoding.ENCODING_BOW_3)
 			return loadBow3(input);
 		else if (encoding == ItemEncoding.ENCODING_BOW_4)
@@ -353,6 +359,58 @@ public class ItemSet implements ItemSetBase {
 		int blockBreakDurabilityLoss = input.readInt();
 		return new CustomTool(itemType, damage, name, displayName, lore, attributes, defaultEnchantments, durability,
 				allowEnchanting, allowAnvil, repairItem, itemFlags, entityHitDurabilityLoss, blockBreakDurabilityLoss);
+	}
+	
+	private CustomItem loadHoe5(BitInput input) {
+		CustomItemType itemType = CustomItemType.valueOf(input.readJavaString());
+		short damage = input.readShort();
+		String name = input.readJavaString();
+		String displayName = input.readJavaString();
+		String[] lore = new String[input.readByte() & 0xFF];
+		for (int index = 0; index < lore.length; index++)
+			lore[index] = input.readJavaString();
+		AttributeModifier[] attributes = new AttributeModifier[input.readByte() & 0xFF];
+		for (int index = 0; index < attributes.length; index++)
+			attributes[index] = loadAttribute2(input);
+		Enchantment[] defaultEnchantments = new Enchantment[input.readByte() & 0xFF];
+		for (int index = 0; index < defaultEnchantments.length; index++)
+			defaultEnchantments[index] = new Enchantment(EnchantmentType.valueOf(input.readString()), input.readInt());
+		long durability = input.readLong();
+		boolean allowEnchanting = input.readBoolean();
+		boolean allowAnvil = input.readBoolean();
+		Ingredient repairItem = loadIngredient(input);
+		boolean[] itemFlags = input.readBooleans(6);
+		int entityHitDurabilityLoss = input.readInt();
+		int blockBreakDurabilityLoss = input.readInt();
+		int tillDurabilityLoss = input.readInt();
+		return new CustomHoe(itemType, damage, name, displayName, lore, attributes, defaultEnchantments, durability,
+				allowEnchanting, allowAnvil, repairItem, itemFlags, entityHitDurabilityLoss, blockBreakDurabilityLoss, tillDurabilityLoss);
+	}
+	
+	private CustomItem loadShear5(BitInput input) {
+		CustomItemType itemType = CustomItemType.valueOf(input.readJavaString());
+		short damage = input.readShort();
+		String name = input.readJavaString();
+		String displayName = input.readJavaString();
+		String[] lore = new String[input.readByte() & 0xFF];
+		for (int index = 0; index < lore.length; index++)
+			lore[index] = input.readJavaString();
+		AttributeModifier[] attributes = new AttributeModifier[input.readByte() & 0xFF];
+		for (int index = 0; index < attributes.length; index++)
+			attributes[index] = loadAttribute2(input);
+		Enchantment[] defaultEnchantments = new Enchantment[input.readByte() & 0xFF];
+		for (int index = 0; index < defaultEnchantments.length; index++)
+			defaultEnchantments[index] = new Enchantment(EnchantmentType.valueOf(input.readString()), input.readInt());
+		long durability = input.readLong();
+		boolean allowEnchanting = input.readBoolean();
+		boolean allowAnvil = input.readBoolean();
+		Ingredient repairItem = loadIngredient(input);
+		boolean[] itemFlags = input.readBooleans(6);
+		int entityHitDurabilityLoss = input.readInt();
+		int blockBreakDurabilityLoss = input.readInt();
+		int shearDurabilityLoss = input.readInt();
+		return new CustomShears(itemType, damage, name, displayName, lore, attributes, defaultEnchantments, durability,
+				allowEnchanting, allowAnvil, repairItem, itemFlags, entityHitDurabilityLoss, blockBreakDurabilityLoss, shearDurabilityLoss);
 	}
 
 	private CustomItem loadArmor4(BitInput input) {
@@ -580,7 +638,6 @@ public class ItemSet implements ItemSetBase {
 			ItemStack stack = new ItemStack(Material.valueOf(input.readJavaString()), amount);
 			MaterialData data = stack.getData();
 			data.setData((byte) input.readNumber((byte) 4, false));
-			System.out.println("Stack data has been set to " + data.getData());
 			stack.setData(data);
 			stack.setDurability(data.getData());
 			return stack;
@@ -624,10 +681,11 @@ public class ItemSet implements ItemSetBase {
 	public Drop[] getDrops(Material block) {
 		if (block.isBlock()) {
 			BlockType blockType = BlockType.fromBukkitMaterial(block);
-			if (blockType != null)
+			if (blockType != null) {
 				return blockDropMap[blockType.ordinal()];
-			else
+			} else {
 				return NO_DROPS;
+			}
 		} else {
 			return NO_DROPS;
 		}

@@ -1,7 +1,5 @@
 package nl.knokko.customitems.drops;
 
-import nl.knokko.customitems.util.CustomItemUtils;
-
 public enum CIEntityType {
 	
 	ELDER_GUARDIAN,
@@ -76,25 +74,8 @@ public enum CIEntityType {
 		}
 	}
 	
-	private final Object bukkitEntityType;
-	
-	CIEntityType(){
-		if (!name().equals("NPC") && CustomItemUtils.IS_PLUGIN) {
-			bukkitEntityType = CustomItemUtils.getBukkitEntityType(name());
-		} else {
-			bukkitEntityType = null;
-		}
-	}
-	
 	@Override
 	public String toString() {
 		return name().replace('_', ' ').toLowerCase();
-	}
-	
-	public Object getBukkitEntityType() {
-		if (bukkitEntityType == null) {
-			throw new UnsupportedOperationException("The Bukkit API is not available");
-		}
-		return bukkitEntityType;
 	}
 }

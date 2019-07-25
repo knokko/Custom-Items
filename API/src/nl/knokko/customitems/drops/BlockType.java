@@ -1,7 +1,5 @@
 package nl.knokko.customitems.drops;
 
-import nl.knokko.customitems.util.CustomItemUtils;
-
 public enum BlockType {
 	
 	AIR,
@@ -269,32 +267,14 @@ public enum BlockType {
 	
 	public static BlockType fromBukkitMaterial(Enum<?> material) {
 		try {
-			return valueOf(material.name());
+			return valueOf(material.name().replace("LEGACY_", ""));
 		} catch (IllegalArgumentException ex) {
 			return null;
-		}
-	}
-	
-	private final Object bukkitMaterial;
-	
-	BlockType(){
-		if (CustomItemUtils.IS_PLUGIN) {
-			bukkitMaterial = CustomItemUtils.getBukkitMaterial(name());
-		} else {
-			bukkitMaterial = null;
 		}
 	}
 	
 	@Override
 	public String toString() {
 		return name().toLowerCase().replace('_', ' ');
-	}
-	
-	public Object getBukkitMaterial() {
-		if (bukkitMaterial == null) {
-			throw new UnsupportedOperationException("The Bukkit API is not available");
-		} else {
-			return bukkitMaterial;
-		}
 	}
 }

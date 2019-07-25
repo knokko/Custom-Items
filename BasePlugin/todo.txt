@@ -10,5 +10,4 @@ Medium term:
 -Add possibility to merge two item sets
 
 Short term:
--Add mob drops and block drops (including NPCs)
 -Add possibility for item models

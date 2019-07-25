@@ -78,14 +78,15 @@ import org.bukkit.plugin.Plugin;
 import nl.knokko.core.plugin.item.ItemHelper;
 import nl.knokko.customitems.damage.DamageSource;
 import nl.knokko.customitems.drops.Drop;
-import nl.knokko.customitems.item.CustomItemType.Category;
 import nl.knokko.customitems.plugin.recipe.CustomRecipe;
 import nl.knokko.customitems.plugin.recipe.ShapedCustomRecipe;
 import nl.knokko.customitems.plugin.recipe.ShapelessCustomRecipe;
 import nl.knokko.customitems.plugin.set.ItemSet;
 import nl.knokko.customitems.plugin.set.item.CustomArmor;
 import nl.knokko.customitems.plugin.set.item.CustomBow;
+import nl.knokko.customitems.plugin.set.item.CustomHoe;
 import nl.knokko.customitems.plugin.set.item.CustomItem;
+import nl.knokko.customitems.plugin.set.item.CustomShears;
 import nl.knokko.customitems.plugin.set.item.CustomTool;
 
 import static org.bukkit.enchantments.Enchantment.*;
@@ -106,9 +107,9 @@ public class CustomItemsEventHandler implements Listener {
 					event.setCancelled(true);
 				else if (custom instanceof CustomTool) {
 					CustomTool tool = (CustomTool) custom;
-					if (tool.getItemType().getMainCategory() == Category.HOE) {
+					if (tool instanceof CustomHoe) {
 						Material type = event.getClickedBlock().getType();
-						if ((type == Material.DIRT || type == Material.GRASS) && tool.decreaseDurability(item, 1)) {
+						if ((type == Material.DIRT || type == Material.GRASS) && tool.decreaseDurability(item, ((CustomHoe) tool).getTillDurabilityLoss())) {
 							playBreakSound(event.getPlayer());
 							if (event.getHand() == EquipmentSlot.HAND)
 								event.getPlayer().getInventory().setItemInMainHand(null);
@@ -235,9 +236,9 @@ public class CustomItemsEventHandler implements Listener {
 		if (customMain != null) {
 			if (customMain.forbidDefaultUse(main))
 				event.setCancelled(true);
-			else if (customMain instanceof CustomTool) {
-				CustomTool tool = (CustomTool) customMain;
-				if (tool.decreaseDurability(main, 1)) {
+			else if (customMain instanceof CustomShears) {
+				CustomShears tool = (CustomShears) customMain;
+				if (tool.decreaseDurability(main, tool.getShearDurabilityLoss())) {
 					playBreakSound(event.getPlayer());
 					event.getPlayer().getInventory().setItemInMainHand(null);
 				}
@@ -246,9 +247,9 @@ public class CustomItemsEventHandler implements Listener {
 		} else if (customOff != null) {
 			if (customOff.forbidDefaultUse(off))
 				event.setCancelled(true);
-			else if (customOff instanceof CustomTool) {
-				CustomTool tool = (CustomTool) customOff;
-				if (tool.decreaseDurability(off, 1)) {
+			else if (customOff instanceof CustomShears) {
+				CustomShears tool = (CustomShears) customOff;
+				if (tool.decreaseDurability(off, tool.getShearDurabilityLoss())) {
 					playBreakSound(event.getPlayer());
 					event.getPlayer().getInventory().setItemInOffHand(null);
 				}
@@ -263,7 +264,9 @@ public class CustomItemsEventHandler implements Listener {
 	public void onBlockBreak(BlockBreakEvent event) {
 		ItemSet set = CustomItemsPlugin.getInstance().getSet();
 		
+		
 		Drop[] customDrops = set.getDrops(event.getBlock().getType());
+		
 		Random random = new Random();
 		boolean cancelDefaultDrops = false;
 		for (Drop drop : customDrops) {
