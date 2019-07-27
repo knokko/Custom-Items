@@ -6,8 +6,10 @@ Long term:
 Medium term:
 -Work on automated testing
 -Change colors of file chooser menu
+-Add guns
 -Add shields
 -Add tridents (1.14 only)
+-Add custom arrows
 -Add custom food
 -Add possibility to merge two item sets
 
