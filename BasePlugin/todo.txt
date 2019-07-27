@@ -5,6 +5,7 @@ Long term:
 
 Medium term:
 -Work on automated testing
+-Add custom item placeholders to commands and substitute them right before execution
 -Change colors of file chooser menu
 -Add villager command block help
 -Add guns
