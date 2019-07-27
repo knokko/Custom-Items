@@ -53,7 +53,7 @@ public abstract class CustomItem extends nl.knokko.customitems.item.CustomItem {
 	}
 	
 	public final String getEquipmentTag12(int amount) {
-		return "{Count:" + amount + ",id:" + itemType.getMinecraftName() + ",tag:" + getNBTTag12() + "}";
+		return "{Count:" + amount + ",Damage:" + itemDamage + ",id:" + itemType.getMinecraftName() + ",tag:" + getNBTTag12() + "}";
 	}
 	
 	public final String getEquipmentTag14(int amount) {
