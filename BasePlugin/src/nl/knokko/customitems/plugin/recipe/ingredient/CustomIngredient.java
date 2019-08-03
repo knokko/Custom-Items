@@ -33,6 +33,7 @@ public class CustomIngredient implements Ingredient {
     private final CustomItem item;
     
     public CustomIngredient(CustomItem item){
+    	if (item == null) throw new NullPointerException("item");
         this.item = item;
     }
 

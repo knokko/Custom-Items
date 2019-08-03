@@ -42,6 +42,7 @@ public abstract class CustomItem {
     		String[] lore, AttributeModifier[] attributes, Enchantment[] defaultEnchantments, boolean[] itemFlags){
         this.itemType = itemType;
         this.itemDamage = itemDamage;
+        if (name == null) throw new NullPointerException("name");
         this.name = name;
         this.displayName = displayName;
         this.lore = lore;
