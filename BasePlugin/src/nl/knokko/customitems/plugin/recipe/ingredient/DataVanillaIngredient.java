@@ -39,7 +39,7 @@ public class DataVanillaIngredient implements Ingredient {
 	@Override
 	@SuppressWarnings("deprecation")
 	public boolean accept(ItemStack item) {
-		return item.getType() == type && item.getData().getData() == data;
+		return item != null && item.getType() == type && item.getData().getData() == data;
 	}
 
 	@Override

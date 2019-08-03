@@ -30,7 +30,7 @@ public class NoIngredient implements Ingredient {
 
 	@Override
 	public boolean accept(ItemStack item) {
-		return item.getType() == Material.AIR;
+		return item == null || item.getType() == Material.AIR;
 	}
 
 	@Override

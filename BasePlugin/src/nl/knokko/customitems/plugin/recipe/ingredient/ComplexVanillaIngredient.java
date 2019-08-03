@@ -41,8 +41,7 @@ public class ComplexVanillaIngredient implements Ingredient {
 	@Override
 	@SuppressWarnings("deprecation")
 	public boolean accept(ItemStack item) {
-		// TODO Work this out later
-		return item.getType() == type && item.getData().getData() == data && item.getDurability() == durability;
+		return item != null && item.getType() == type && item.getData().getData() == data && item.getDurability() == durability;
 	}
 
 	@Override

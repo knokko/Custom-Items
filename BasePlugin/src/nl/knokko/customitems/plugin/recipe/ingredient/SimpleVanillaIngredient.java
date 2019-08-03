@@ -36,7 +36,7 @@ public class SimpleVanillaIngredient implements Ingredient {
 
     @Override
     public boolean accept(ItemStack item) {
-        return item.getType() == type;
+        return item != null && item.getType() == type;
     }
 
 	@Override
