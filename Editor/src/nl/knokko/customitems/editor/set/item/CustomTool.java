@@ -45,8 +45,9 @@ public class CustomTool extends CustomItem {
 	public CustomTool(CustomItemType itemType, short itemDamage, String name, String displayName, String[] lore,
 			AttributeModifier[] attributes, Enchantment[] defaultEnchantments, long durability, boolean allowEnchanting, boolean allowAnvil, 
 			Ingredient repairItem, NamedImage texture, boolean[] itemFlags, int entityHitDurabilityLoss,
-			int blockBreakDurabilityLoss) {
-		super(itemType, itemDamage, name, displayName, lore, attributes, defaultEnchantments, texture, itemFlags);
+			int blockBreakDurabilityLoss, byte[] customModel) {
+		super(itemType, itemDamage, name, displayName, lore, attributes, defaultEnchantments, texture, 
+				itemFlags, customModel);
 		this.durability = durability;
 		this.allowEnchanting = allowEnchanting;
 		this.allowAnvil = allowAnvil;

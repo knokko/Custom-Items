@@ -14,9 +14,10 @@ public class CustomShears extends CustomTool {
 	public CustomShears(CustomItemType itemType, short itemDamage, String name, String displayName, String[] lore,
 			AttributeModifier[] attributes, Enchantment[] defaultEnchantments, long durability, boolean allowEnchanting,
 			boolean allowAnvil, Ingredient repairItem, NamedImage texture, boolean[] itemFlags,
-			int entityHitDurabilityLoss, int blockBreakDurabilityLoss, int shearDurabilityLoss) {
+			int entityHitDurabilityLoss, int blockBreakDurabilityLoss, int shearDurabilityLoss, 
+			byte[] customModel) {
 		super(itemType, itemDamage, name, displayName, lore, attributes, defaultEnchantments, durability, allowEnchanting,
-				allowAnvil, repairItem, texture, itemFlags, entityHitDurabilityLoss, blockBreakDurabilityLoss);
+				allowAnvil, repairItem, texture, itemFlags, entityHitDurabilityLoss, blockBreakDurabilityLoss, customModel);
 		this.shearDurabilityLoss = shearDurabilityLoss;
 	}
 	

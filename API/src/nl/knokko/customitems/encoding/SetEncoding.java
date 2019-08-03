@@ -32,4 +32,9 @@ public class SetEncoding {
 	 * Adds drops
 	 */
 	public static final byte ENCODING_3 = 2;
+	
+	/**
+	 * Add custom item models
+	 */
+	public static final byte ENCODING_4 = 3;
 }

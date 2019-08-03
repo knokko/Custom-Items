@@ -44,9 +44,9 @@ public class CustomBow extends CustomTool {
 			long durability, double damageMultiplier, double speedMultiplier, int knockbackStrength, 
 			boolean hasGravity, boolean allowEnchanting, boolean allowAnvil, Ingredient repairItem, 
 			BowTextures texture, boolean[] itemFlags, int entityHitDurabilityLoss, int blockBreakDurabilityLoss,
-			int shootDurabilityLoss) {
+			int shootDurabilityLoss, byte[] customModel) {
 		super(CustomItemType.BOW, itemDamage, name, displayName, lore, attributes, enchantments, durability, allowEnchanting,
-				allowAnvil, repairItem, texture, itemFlags, entityHitDurabilityLoss, blockBreakDurabilityLoss);
+				allowAnvil, repairItem, texture, itemFlags, entityHitDurabilityLoss, blockBreakDurabilityLoss, customModel);
 		this.damageMultiplier = damageMultiplier;
 		this.speedMultiplier = speedMultiplier;
 		this.knockbackStrength = knockbackStrength;

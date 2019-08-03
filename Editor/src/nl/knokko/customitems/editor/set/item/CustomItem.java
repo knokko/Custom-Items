@@ -31,12 +31,14 @@ import nl.knokko.util.bits.BitOutput;
 public abstract class CustomItem extends nl.knokko.customitems.item.CustomItem {
 
 	protected NamedImage texture;
+	protected byte[] customModel;
 
 	public CustomItem(CustomItemType itemType, short itemDamage, String name, String displayName, String[] lore,
 			AttributeModifier[] attributes, Enchantment[] defaultEnchantments, NamedImage texture,
-			boolean[] itemFlags) {
+			boolean[] itemFlags, byte[] customModel) {
 		super(itemType, itemDamage, name, displayName, lore, attributes, defaultEnchantments, itemFlags);
 		this.texture = texture;
+		this.customModel = customModel;
 	}
 
 	@Override
@@ -216,6 +218,13 @@ public abstract class CustomItem extends nl.knokko.customitems.item.CustomItem {
 	public NamedImage getTexture() {
 		return texture;
 	}
+	
+	/**
+	 * @return The file content of the custom model fire or null if this item doesn't have a custom model
+	 */
+	public byte[] getCustomModel() {
+		return customModel;
+	}
 
 	public void setName(String name) {
 		this.name = name;
@@ -252,10 +261,23 @@ public abstract class CustomItem extends nl.knokko.customitems.item.CustomItem {
 	public void setItemFlags(boolean[] itemFlags) {
 		this.itemFlags = itemFlags;
 	}
+	
+	public void setCustomModel(byte[] content) {
+		customModel = content;
+	}
 
-	public void save(BitOutput output) {
+	public final void save1(BitOutput output) {
 		export(output);
 		output.addJavaString(texture.getName());
+	}
+	
+	public final void save2(BitOutput output) {
+		export(output);
+		output.addJavaString(texture.getName());
+		output.addBoolean(customModel != null);
+		if (customModel != null) {
+			output.addByteArray(customModel);
+		}
 	}
 
 	public abstract void export(BitOutput output);
