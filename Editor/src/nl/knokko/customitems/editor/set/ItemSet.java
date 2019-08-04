@@ -1001,6 +1001,57 @@ public class ItemSet implements ItemSetBase {
 	 */
 	private static final String Q = "" + '"';
 	
+	public String[] getDefaultModel(CustomItem item) {
+		if (item instanceof CustomBow) {
+			return new String[] {
+			"{",
+			"    \"parent\": \"item/bow\",",
+			"    \"textures\": {",
+			"        \"layer0\": \"customitems/" + item.getTexture().getName() + "_standby\"",
+			"    }",
+			"}"
+			};
+		} else {
+			CustomItemType i = item.getItemType();
+			boolean leather = i == CustomItemType.LEATHER_BOOTS || i == CustomItemType.LEATHER_LEGGINGS
+					|| i == CustomItemType.LEATHER_CHESTPLATE || i == CustomItemType.LEATHER_HELMET;
+			String[] start = {
+			"{",
+			"    \"parent\": \"item/handheld\",",
+			"    \"textures\": {",
+			"        \"layer0\": \"customitems/" + item.getTexture().getName() + Q + (leather ? "," : "")
+			};
+			
+			String[] mid;
+			if (leather) {
+				mid = new String[] {"        \"layer1\": \"customitems/" + item.getTexture().getName() + Q};
+			} else {
+				mid = new String[0];
+			}
+			
+			String[] end = {
+			"    }",
+			"}"
+			};
+			
+			return chain(start, mid, end);
+		}
+	}
+	
+	private String[] chain(String[]...arrays) {
+		int length = 0;
+		for (String[] array : arrays) {
+			length += array.length;
+		}
+		String[] result = new String[length];
+		int index = 0;
+		for (String[] array : arrays) {
+			System.arraycopy(array, 0, result, index, array.length);
+			index += array.length;
+		}
+		return result;
+	}
+	
 	/**
 	 * Experimental feature to export the resourcepack for minecraft 1.14 instead of minecraft 1.12
 	 * @return
@@ -1045,6 +1096,7 @@ public class ItemSet implements ItemSetBase {
 				ZipEntry entry = new ZipEntry("assets/minecraft/models/customitems/" + item.getName() + ".json");
 				zipOutput.putNextEntry(entry);
 				PrintWriter jsonWriter = new PrintWriter(zipOutput);
+				/*
 				if (item instanceof CustomBow) {
 					jsonWriter.println("{");
 					jsonWriter.println("    " + Q + "parent" + Q + ": " + Q + "item/bow" + Q + ",");
@@ -1069,7 +1121,18 @@ public class ItemSet implements ItemSetBase {
 					jsonWriter.println("    }");
 					jsonWriter.println("}");
 				}
-				jsonWriter.flush();
+				*/
+				byte[] customModel = item.getCustomModel();
+				if (customModel != null) {
+					zipOutput.write(customModel);
+					zipOutput.flush();
+				} else {
+					String[] modelContent = getDefaultModel(item);
+					for (String line : modelContent) {
+						jsonWriter.println(line);
+					}
+					jsonWriter.flush();
+				}
 				zipOutput.closeEntry();
 				if (item instanceof CustomBow) {
 					CustomBow bow = (CustomBow) item;
@@ -1289,6 +1352,7 @@ public class ItemSet implements ItemSetBase {
 				ZipEntry entry = new ZipEntry("assets/minecraft/models/customitems/" + item.getName() + ".json");
 				zipOutput.putNextEntry(entry);
 				PrintWriter jsonWriter = new PrintWriter(zipOutput);
+				/*
 				if (item instanceof CustomBow) {
 					jsonWriter.println("{");
 					jsonWriter.println("    " + Q + "parent" + Q + ": " + Q + "item/bow" + Q + ",");
@@ -1313,7 +1377,18 @@ public class ItemSet implements ItemSetBase {
 					jsonWriter.println("    }");
 					jsonWriter.println("}");
 				}
-				jsonWriter.flush();
+				*/
+				byte[] customModel = item.getCustomModel();
+				if (customModel != null) {
+					zipOutput.write(customModel);
+					zipOutput.flush();
+				} else {
+					String[] modelContent = getDefaultModel(item);
+					for (String line : modelContent) {
+						jsonWriter.println(line);
+					}
+					jsonWriter.flush();
+				}
 				zipOutput.closeEntry();
 				if (item instanceof CustomBow) {
 					CustomBow bow = (CustomBow) item;
@@ -1667,7 +1742,7 @@ public class ItemSet implements ItemSetBase {
 	
 	// Use CustomItem.save2 instead of CustomItem.save1
 	private void save4(BitOutput output) {
-		output.addByte(ENCODING_3);
+		output.addByte(ENCODING_4);
 		output.addInt(textures.size());
 		for (NamedImage texture : textures) {
 			if (texture instanceof BowTextures)
