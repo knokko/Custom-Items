@@ -124,7 +124,11 @@ public abstract class EditItemBase extends GuiMenu {
 		addComponent(new DynamicTextComponent("Item flags: ", EditProps.LABEL), LABEL_X, 0.38f, LABEL_X + 0.135f,
 				0.43f);
 		addComponent(new DynamicTextComponent("Texture: ", EditProps.LABEL), LABEL_X, 0.32f, LABEL_X + 0.125f, 0.37f);
-		addComponent(new DynamicTextComponent("Model: ", EditProps.LABEL), LABEL_X, 0.26f, LABEL_X + 0.11f, 0.31f);
+		
+		// I might add custom bow models later, but I leave it out for now
+		if (!(this instanceof EditItemBow)) {
+			addComponent(new DynamicTextComponent("Model: ", EditProps.LABEL), LABEL_X, 0.26f, LABEL_X + 0.11f, 0.31f);
+		}
 		if (previous() != null) {
 			addComponent(new DynamicTextButton("Apply", EditProps.SAVE_BASE, EditProps.SAVE_HOVER, () -> {
 				String error = apply();
