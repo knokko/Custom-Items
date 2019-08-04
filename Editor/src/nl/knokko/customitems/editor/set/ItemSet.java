@@ -1378,6 +1378,7 @@ public class ItemSet implements ItemSetBase {
 				}
 				*/
 				byte[] customModel = item.getCustomModel();
+				System.out.println("customModel of " + item.getDisplayName() + " is " + customModel);
 				if (customModel != null) {
 					zipOutput.write(customModel);
 					zipOutput.flush();
@@ -1956,7 +1957,7 @@ public class ItemSet implements ItemSetBase {
 			Enchantment[] newEnchantments, boolean allowEnchanting, boolean allowAnvil, 
 			Ingredient repairItem, long newDurability, NamedImage newTexture, int newRed, int newGreen, 
 			int newBlue, boolean[] itemFlags, int entityHitDurabilityLoss, int blockBreakDurabilityLoss, 
-			DamageResistances resistances, boolean checkClass) {
+			DamageResistances resistances, byte[] newCustomModel, boolean checkClass) {
 		if (!bypassChecks()) {
 			if (armor == null)
 				return "Can't change bows that do not exist";
@@ -1973,7 +1974,7 @@ public class ItemSet implements ItemSetBase {
 		}
 		String error = changeTool(armor, newType, newDamage, newName, newDisplayName, newLore, newAttributes, newEnchantments,
 				allowEnchanting, allowAnvil, repairItem, newDurability, newTexture, itemFlags,
-				entityHitDurabilityLoss, blockBreakDurabilityLoss, false);
+				entityHitDurabilityLoss, blockBreakDurabilityLoss, newCustomModel, false);
 		if (error == null) {
 			armor.setRed(newRed);
 			armor.setGreen(newGreen);
@@ -2017,7 +2018,7 @@ public class ItemSet implements ItemSetBase {
 			int newKnockbackStrength, boolean useGravity, boolean allowEnchanting, boolean allowAnvil,
 			Ingredient repairItem, long newDurability, BowTextures newTextures, boolean[] itemFlags,
 			int entityHitDurabilityLoss, int blockBreakDurabilityLoss, int shootDurabilityLoss,
-			boolean checkClass) {
+			byte[] newCustomModel, boolean checkClass) {
 		if (!bypassChecks()) {
 			if (bow == null)
 				return "Can't change bows that do not exist";
@@ -2035,7 +2036,7 @@ public class ItemSet implements ItemSetBase {
 		}
 		String error = changeTool(bow, CustomItemType.BOW, newDamage, newName, newDisplayName, newLore, newAttributes, newEnchantments,
 				allowEnchanting, allowAnvil, repairItem, newDurability, newTextures, itemFlags,
-				entityHitDurabilityLoss, blockBreakDurabilityLoss, false);
+				entityHitDurabilityLoss, blockBreakDurabilityLoss, newCustomModel, false);
 		if (error == null) {
 			bow.setDamageMultiplier(newDamageMultiplier);
 			bow.setSpeedMultiplier(newSpeedMultiplier);
@@ -2120,7 +2121,7 @@ public class ItemSet implements ItemSetBase {
 			String newDisplayName, String[] newLore, AttributeModifier[] newAttributes, Enchantment[] newEnchantments, boolean allowEnchanting,
 			boolean allowAnvil, Ingredient repairItem, long newDurability, NamedImage newImage, 
 			boolean[] itemFlags, int entityHitDurabilityLoss, int blockBreakDurabilityLoss,
-			boolean checkClass) {
+			byte[] newCustomModel, boolean checkClass) {
 		if (!bypassChecks()) {
 			if (checkClass && item.getClass() != CustomTool.class)
 				return "Use the appropriate method to change this class";
@@ -2137,7 +2138,7 @@ public class ItemSet implements ItemSetBase {
 				return "The block break durability loss can't be negative";
 		}
 		String error = changeItem(item, newType, newDamage, newName, newDisplayName, newLore, newAttributes, 
-				newEnchantments, newImage, itemFlags,
+				newEnchantments, newImage, itemFlags, newCustomModel,
 				false);
 		if (error == null) {
 			item.setAllowEnchanting(allowEnchanting);
@@ -2156,7 +2157,7 @@ public class ItemSet implements ItemSetBase {
 			String newDisplayName, String[] newLore, AttributeModifier[] newAttributes, Enchantment[] newEnchantments, boolean allowEnchanting,
 			boolean allowAnvil, Ingredient repairItem, long newDurability, NamedImage newImage, 
 			boolean[] itemFlags, int entityHitDurabilityLoss, int blockBreakDurabilityLoss, int shearDurabilityLoss,
-			boolean checkClass) {
+			byte[] newCustomModel, boolean checkClass) {
 		if (!bypassChecks()) {
 			if (shearDurabilityLoss < 0) {
 				return "The shear durability loss must be positive";
@@ -2167,7 +2168,7 @@ public class ItemSet implements ItemSetBase {
 		}
 		String error = changeTool(shears, newType, newDamage, newName, newDisplayName, newLore, newAttributes,
 				newEnchantments, allowEnchanting, allowAnvil, repairItem, newDurability, newImage, itemFlags,
-				entityHitDurabilityLoss, blockBreakDurabilityLoss, false);
+				entityHitDurabilityLoss, blockBreakDurabilityLoss, newCustomModel, false);
 		if (error == null) {
 			shears.setShearDurabilityLoss(shearDurabilityLoss);
 			return null;
@@ -2180,7 +2181,7 @@ public class ItemSet implements ItemSetBase {
 			String newDisplayName, String[] newLore, AttributeModifier[] newAttributes, Enchantment[] newEnchantments, boolean allowEnchanting,
 			boolean allowAnvil, Ingredient repairItem, long newDurability, NamedImage newImage, 
 			boolean[] itemFlags, int entityHitDurabilityLoss, int blockBreakDurabilityLoss, int tillDurabilityLoss,
-			boolean checkClass) {
+			byte[] newCustomModel, boolean checkClass) {
 		if (!bypassChecks()) {
 			if (tillDurabilityLoss < 0) {
 				return "The till durability loss must be positive";
@@ -2191,7 +2192,7 @@ public class ItemSet implements ItemSetBase {
 		}
 		String error = changeTool(hoe, newType, newDamage, newName, newDisplayName, newLore, newAttributes,
 				newEnchantments, allowEnchanting, allowAnvil, repairItem, newDurability, newImage, itemFlags,
-				entityHitDurabilityLoss, blockBreakDurabilityLoss, false);
+				entityHitDurabilityLoss, blockBreakDurabilityLoss, newCustomModel, false);
 		if (error == null) {
 			hoe.setTillDurabilityLoss(tillDurabilityLoss);
 			return null;
@@ -2266,8 +2267,8 @@ public class ItemSet implements ItemSetBase {
 	
 	public String changeSimpleItem(SimpleCustomItem item, CustomItemType newType, short newDamage, String newName,
 			String newDisplayName, String[] newLore, AttributeModifier[] newAttributes, 
-			Enchantment[] newEnchantments, NamedImage newImage, int newStacksize, boolean[] newItemFlags,
-			boolean checkClass) {
+			Enchantment[] newEnchantments, NamedImage newImage, int newStacksize, boolean[] newItemFlags, 
+			byte[] newCustomModel, boolean checkClass) {
 		if (!bypassChecks()) {
 			if (checkClass && item.getClass() != SimpleCustomItem.class)
 				return "Use the right method for the class";
@@ -2275,7 +2276,7 @@ public class ItemSet implements ItemSetBase {
 				return "The maximum stacksize (" + newStacksize + ") is out of range";
 		}
 		String error = changeItem(item, newType, newDamage, newName, newDisplayName, newLore, newAttributes,
-				newEnchantments, newImage, newItemFlags, false);
+				newEnchantments, newImage, newItemFlags, newCustomModel, false);
 		if (error == null) {
 			item.setMaxStacksize(newStacksize);
 		}
@@ -2301,7 +2302,7 @@ public class ItemSet implements ItemSetBase {
 	public String changeItem(CustomItem item, CustomItemType newType, short newDamage, String newName,
 			String newDisplayName, String[] newLore, AttributeModifier[] newAttributes, 
 			Enchantment[] newEnchantments, NamedImage newImage, boolean[] itemFlags,
-			boolean checkClass) {
+			byte[] newCustomModel, boolean checkClass) {
 		if (!bypassChecks()) {
 			if (item == null)
 				return "Can't change null items";
@@ -2369,6 +2370,7 @@ public class ItemSet implements ItemSetBase {
 		item.setDefaultEnchantments(newEnchantments);
 		item.setTexture(newImage);
 		item.setItemFlags(itemFlags);
+		item.setCustomModel(newCustomModel);
 		return null;
 	}
 

@@ -38,7 +38,7 @@ public class EditCustomModel extends GuiMenu {
 		String[] defaultContent = ItemSet.getDefaultModel(textureName, isLeatherArmor);
 		int index = 0;
 		for (String content : defaultContent) {
-			addComponent(new DynamicTextComponent(content, EditProps.LABEL), 0.2f, 0.35f - 0.5f * index, 0.2f + content.length() * 0.03f, 0.45f - 0.5f * index);
+			addComponent(new DynamicTextComponent(content, EditProps.LABEL), 0.2f, 0.40f - 0.05f * index, 0.2f + content.length() * 0.01f, 0.45f - 0.05f * index);
 			index++;
 		}
 		addComponent(new DynamicTextButton("Select file...", EditProps.CHOOSE_BASE, EditProps.CHOOSE_HOVER, () -> {

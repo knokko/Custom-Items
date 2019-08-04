@@ -81,7 +81,7 @@ public class EditItemSimple extends EditItemBase {
 		if (!stackSize.hasValue()) return "The max stacksize should be an integer at least 1 and at most 64";
 		return menu.getSet().changeSimpleItem(previous, internalType.currentType, damage, name.getText(), 
 				getDisplayName(), lore, attributes, enchantments, textureSelect.currentTexture, 
-				stackSize.getValue(), itemFlags, true);
+				stackSize.getValue(), itemFlags, customModel, true);
 	}
 
 	@Override

@@ -162,7 +162,7 @@ public class EditItemTool extends EditItemBase {
 		return menu.getSet().changeTool(previous, internalType.currentType, damage, name.getText(),
 				getDisplayName(), lore, attributes, enchantments, allowEnchanting.isChecked(),
 				allowAnvil.isChecked(), repairItem.getIngredient(), maxUses, textureSelect.currentTexture,
-				itemFlags, entityHitDurabilityLoss, blockBreakDurabilityLoss,
+				itemFlags, entityHitDurabilityLoss, blockBreakDurabilityLoss, customModel,
 				true);
 	}
 
