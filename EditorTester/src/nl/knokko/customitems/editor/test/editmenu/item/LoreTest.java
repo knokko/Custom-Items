@@ -36,8 +36,8 @@ public class LoreTest {
 	 * @param lore1 The first line of lore
 	 * @param lore2 The second line of lore
 	 */
-	public static void test(GuiTestHelper test, String lore1, String lore2) {
-		test.clickNearest("Change...", "Lore: ", 4);
+	public static void test(GuiTestHelper test, String lore1, String lore2, int numChangeButtons) {
+		test.clickNearest("Change...", "Lore: ", numChangeButtons);
 		test.assertComponentsWithTexts("Cancel", "Add line", "Apply");
 		test.click("Add line");
 		test.click("Text...");
@@ -62,7 +62,7 @@ public class LoreTest {
 			throw new TestException("The minY of the second component should equal the previous minY of the first lore");
 		}
 		test.click("Apply");
-		test.clickNearest("Change...", "Lore: ", 4);
+		test.clickNearest("Change...", "Lore: ", numChangeButtons);
 		test.assertComponentsWithTexts("Cancel", "Add line", "Apply", lore2, "");
 		if (test.getComponentWithText(lore2).getState().getMinY() != y1){
 			throw new TestException("The minY of the second component should not change after applying and coming back");

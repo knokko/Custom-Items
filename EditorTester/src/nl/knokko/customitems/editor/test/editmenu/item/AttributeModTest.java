@@ -46,8 +46,8 @@ public class AttributeModTest {
 	public static void test(GuiTestHelper test, 
 			String defaultAttribute, String defaultSlot, String defaultOp, String defaultValue,
 			String attribute1, String slot1, String op1, String value1,
-			String attribute2, String slot2, String op2, String value2) {
-		test.clickNearest("Change...", "Attribute modifiers: ", 4);
+			String attribute2, String slot2, String op2, String value2, int numChangeButtons) {
+		test.clickNearest("Change...", "Attribute modifiers: ", numChangeButtons);
 		test.assertComponentsWithTexts("Cancel", "New Attribute", "Apply");
 		test.click("New Attribute");
 		BufferedImage deleteImage = (BufferedImage) test.getComponentWithText(defaultSlot).getState().getWindow().getTextureLoader().loadTexture("nl/knokko/gui/images/icons/delete.png").getImage();
@@ -87,14 +87,14 @@ public class AttributeModTest {
 		test.type(value2);
 		test.assertComponentWithText(value2);
 		test.click("Apply");
-		test.clickNearest("Change...", "Attribute modifiers: ", 4);
+		test.clickNearest("Change...", "Attribute modifiers: ", numChangeButtons);
 		test.assertComponentsWithTexts("Cancel", "New Attribute", "Apply", attribute1, slot1, op1, value1,
 				attribute2, slot2, op2, value2);
 		test.click(value2);
 		test.type("1");
 		test.assertComponentWithText(value2 + "1");
 		test.click("Apply");
-		test.clickNearest("Change...", "Attribute modifiers: ", 4);
+		test.clickNearest("Change...", "Attribute modifiers: ", numChangeButtons);
 		test.click(value2 + "1");
 		test.backspace(1);
 		test.assertComponentWithText(value2);

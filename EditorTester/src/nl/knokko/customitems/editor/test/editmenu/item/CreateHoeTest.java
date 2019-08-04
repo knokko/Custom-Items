@@ -22,11 +22,12 @@ public class CreateHoeTest {
 		ItemNameTest.test(test, itemName);
 		SimpleTextureTest.test(test, textureName);
 		DisplayNameTest.test(test, itemName);
-		LoreTest.test(test, lore1, lore2);
+		LoreTest.test(test, lore1, lore2, 5);
 		
 		CustomItemType customItemType = CustomItemType.DIAMOND_HOE;
-		AttributeModTest.test(test, "generic.movementSpeed", "offhand", "Multiply", "1.5", attribute1, slot1, op1, value1, attribute2, slot2, op2, value2);
-		EnchantmentsTest.test(test, enchantment1, level1, enchantment2, level2);
+		AttributeModTest.test(test, "generic.movementSpeed", "offhand", "Multiply", "1.5", 
+				attribute1, slot1, op1, value1, attribute2, slot2, op2, value2, 5);
+		EnchantmentsTest.test(test, enchantment1, level1, enchantment2, level2, 5);
 		CreateToolTest.toolOnly(test, customItemType, maxUses, repairItemCategory, repairItem, attackDurLoss, breakDurLoss, 7);
 		
 		// Hoe only:
