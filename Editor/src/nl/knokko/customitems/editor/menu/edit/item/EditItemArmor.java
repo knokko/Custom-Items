@@ -170,7 +170,7 @@ public class EditItemArmor extends EditItemTool {
 						lore, attributes, enchantments, maxUses, allowEnchanting.isChecked(),
 						allowAnvil.isChecked(), repairItem.getIngredient(), textureSelect.currentTexture,
 						redValue, greenValue, blueValue, itemFlags, entityHitDurabilityLoss, 
-						blockBreakDurabilityLoss, damageResistances),
+						blockBreakDurabilityLoss, damageResistances, customModel),
 						true);
 	}
 	
@@ -212,9 +212,7 @@ public class EditItemArmor extends EditItemTool {
 	}
 	
 	private boolean showColors() {
-		CustomItemType t = internalType.currentType;
-		return t == CustomItemType.LEATHER_BOOTS || t == CustomItemType.LEATHER_LEGGINGS
-				|| t == CustomItemType.LEATHER_CHESTPLATE || t == CustomItemType.LEATHER_HELMET;
+		return internalType.currentType.isLeatherArmor();
 	}
 	
 	private class ColorEditField extends WrapperComponent<IntEditField> {

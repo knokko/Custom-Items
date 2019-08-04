@@ -159,8 +159,7 @@ public class CustomArmor extends CustomTool {
 	}
 	
 	private boolean isLeather() {
-		return itemType == CustomItemType.LEATHER_BOOTS || itemType == CustomItemType.LEATHER_LEGGINGS
-				|| itemType == CustomItemType.LEATHER_CHESTPLATE || itemType == CustomItemType.LEATHER_HELMET;
+		return itemType.isLeatherArmor();
 	}
 	
 	public int getRed() {

@@ -665,8 +665,7 @@ public class ItemSet implements ItemSetBase {
 		int red;
 		int green;
 		int blue;
-		if (itemType == CustomItemType.LEATHER_BOOTS || itemType == CustomItemType.LEATHER_LEGGINGS
-				|| itemType == CustomItemType.LEATHER_CHESTPLATE || itemType == CustomItemType.LEATHER_HELMET) {
+		if (itemType.isLeatherArmor()) {
 			red = input.readByte() & 0xFF;
 			green = input.readByte() & 0xFF;
 			blue = input.readByte() & 0xFF;
@@ -713,8 +712,7 @@ public class ItemSet implements ItemSetBase {
 		int red;
 		int green;
 		int blue;
-		if (itemType == CustomItemType.LEATHER_BOOTS || itemType == CustomItemType.LEATHER_LEGGINGS
-				|| itemType == CustomItemType.LEATHER_CHESTPLATE || itemType == CustomItemType.LEATHER_HELMET) {
+		if (itemType.isLeatherArmor()) {
 			red = input.readByte() & 0xFF;
 			green = input.readByte() & 0xFF;
 			blue = input.readByte() & 0xFF;
@@ -767,8 +765,7 @@ public class ItemSet implements ItemSetBase {
 		int red;
 		int green;
 		int blue;
-		if (itemType == CustomItemType.LEATHER_BOOTS || itemType == CustomItemType.LEATHER_LEGGINGS
-				|| itemType == CustomItemType.LEATHER_CHESTPLATE || itemType == CustomItemType.LEATHER_HELMET) {
+		if (itemType.isLeatherArmor()) {
 			red = input.readByte() & 0xFF;
 			green = input.readByte() & 0xFF;
 			blue = input.readByte() & 0xFF;
@@ -1001,30 +998,24 @@ public class ItemSet implements ItemSetBase {
 	 */
 	private static final String Q = "" + '"';
 	
-	public String[] getDefaultModel(CustomItem item) {
+	public static String[] getDefaultModel(CustomItem item) {
 		if (item instanceof CustomBow) {
-			return new String[] {
-			"{",
-			"    \"parent\": \"item/bow\",",
-			"    \"textures\": {",
-			"        \"layer0\": \"customitems/" + item.getTexture().getName() + "_standby\"",
-			"    }",
-			"}"
-			};
-		} else {
-			CustomItemType i = item.getItemType();
-			boolean leather = i == CustomItemType.LEATHER_BOOTS || i == CustomItemType.LEATHER_LEGGINGS
-					|| i == CustomItemType.LEATHER_CHESTPLATE || i == CustomItemType.LEATHER_HELMET;
+			return getDefaultModelBow(item.getTexture().getName());
+		}
+		return getDefaultModel(item.getTexture().getName(), item.getItemType().isLeatherArmor());
+	}
+	
+	public static String[] getDefaultModel(String textureName, boolean isLeather) {
 			String[] start = {
 			"{",
 			"    \"parent\": \"item/handheld\",",
 			"    \"textures\": {",
-			"        \"layer0\": \"customitems/" + item.getTexture().getName() + Q + (leather ? "," : "")
+			"        \"layer0\": \"customitems/" + textureName + Q + (isLeather ? "," : "")
 			};
 			
 			String[] mid;
-			if (leather) {
-				mid = new String[] {"        \"layer1\": \"customitems/" + item.getTexture().getName() + Q};
+			if (isLeather) {
+				mid = new String[] {"        \"layer1\": \"customitems/" + textureName + Q};
 			} else {
 				mid = new String[0];
 			}
@@ -1035,10 +1026,20 @@ public class ItemSet implements ItemSetBase {
 			};
 			
 			return chain(start, mid, end);
-		}
 	}
 	
-	private String[] chain(String[]...arrays) {
+	public static String[] getDefaultModelBow(String textureName) {
+		return new String[] {
+			"{",
+			"    \"parent\": \"item/bow\",",
+			"    \"textures\": {",
+			"        \"layer0\": \"customitems/" + textureName + "_standby\"",
+			"    }",
+			"}"
+		};
+	}
+	
+	private static String[] chain(String[]...arrays) {
 		int length = 0;
 		for (String[] array : arrays) {
 			length += array.length;
@@ -1259,9 +1260,7 @@ public class ItemSet implements ItemSetBase {
 						jsonWriter.println("    " + Q + "parent" + Q + ": " + Q + "item/handheld" + Q + ",");
 						jsonWriter.println("    " + Q + "textures" + Q + ": {");
 						jsonWriter.print("        " + Q + "layer0" + Q + ": " + Q + "item/" + textureName + Q);
-						boolean isLeatherArmor = entry.getKey() == CustomItemType.LEATHER_BOOTS ||
-								entry.getKey() == CustomItemType.LEATHER_LEGGINGS || entry.getKey() == CustomItemType.LEATHER_CHESTPLATE
-								|| entry.getKey() == CustomItemType.LEATHER_HELMET;
+						boolean isLeatherArmor = entry.getKey().isLeatherArmor();
 						if (isLeatherArmor) {
 							jsonWriter.print(",");
 						}
@@ -1514,9 +1513,7 @@ public class ItemSet implements ItemSetBase {
 						jsonWriter.println("    " + Q + "parent" + Q + ": " + Q + "item/handheld" + Q + ",");
 						jsonWriter.println("    " + Q + "textures" + Q + ": {");
 						jsonWriter.print("        " + Q + "layer0" + Q + ": " + Q + "items/" + textureName + Q);
-						boolean isLeatherArmor = entry.getKey() == CustomItemType.LEATHER_BOOTS ||
-								entry.getKey() == CustomItemType.LEATHER_LEGGINGS || entry.getKey() == CustomItemType.LEATHER_CHESTPLATE
-								|| entry.getKey() == CustomItemType.LEATHER_HELMET;
+						boolean isLeatherArmor = entry.getKey().isLeatherArmor();
 						if (isLeatherArmor) {
 							jsonWriter.print(",");
 						}

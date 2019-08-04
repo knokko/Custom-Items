@@ -55,9 +55,7 @@ public class CustomArmor extends CustomTool {
 	@Override
 	public ItemMeta createItemMeta(ItemStack item, List<String> lore) {
 		ItemMeta meta = super.createItemMeta(item, lore);
-		CustomItemType i = itemType;
-		if (i == CustomItemType.LEATHER_HELMET || i == CustomItemType.LEATHER_CHESTPLATE
-				|| i == CustomItemType.LEATHER_LEGGINGS || i == CustomItemType.LEATHER_BOOTS) {
+		if (itemType.isLeatherArmor()) {
 			((LeatherArmorMeta) meta).setColor(color);
 		}
 		return meta;
