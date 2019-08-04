@@ -187,6 +187,11 @@ public enum CustomItemType {
 		return categories[0];
 	}
 	
+	public boolean isLeatherArmor() {
+		return this == LEATHER_BOOTS || this == LEATHER_LEGGINGS || this == LEATHER_CHESTPLATE
+				|| this == LEATHER_HELMET;
+	}
+	
 	public static enum Category {
 		
 		DEFAULT,
