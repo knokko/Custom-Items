@@ -64,6 +64,10 @@ public class LoadMenu extends GuiMenu {
 		return EditProps.BACKGROUND;
 	}
 	
+	public void refresh() {
+		setList.refresh();
+	}
+	
 	private static class BackupMenu extends GuiMenu {
 		
 		private static final BackupMenu INSTANCE = new BackupMenu();

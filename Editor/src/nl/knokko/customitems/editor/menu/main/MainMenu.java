@@ -36,13 +36,16 @@ public class MainMenu extends GuiMenu {
 	protected void addComponents() {
 		addComponent(new DynamicTextButton("New item set", EditProps.BUTTON, EditProps.HOVER, () ->  {
 			state.getWindow().setMainComponent(CreateMenu.INSTANCE);
-		}), 0.3f, 0.65f, 0.7f, 0.8f);
+		}), 0.3f, 0.75f, 0.7f, 0.9f);
 		addComponent(new DynamicTextButton("Edit item set", EditProps.BUTTON, EditProps.HOVER, () -> {
 			state.getWindow().setMainComponent(LoadMenu.INSTANCE);
-		}), 0.3f, 0.45f, 0.7f, 0.6f);
+		}), 0.3f, 0.55f, 0.7f, 0.7f);
+		addComponent(new DynamicTextButton("Combine item sets", EditProps.BUTTON, EditProps.HOVER, () -> {
+			state.getWindow().setMainComponent(CombineMenu.getInstance());
+		}), 0.3f, 0.35f, 0.7f, 0.5f);
 		addComponent(new DynamicTextButton("Exit editor", EditProps.CANCEL_BASE, EditProps.CANCEL_HOVER, () -> {
 			state.getWindow().stopRunning();
-		}), 0.3f, 0.2f, 0.7f, 0.35f);
+		}), 0.3f, 0.1f, 0.7f, 0.25f);
 	}
 	
 	@Override

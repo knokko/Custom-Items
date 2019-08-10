@@ -2616,7 +2616,7 @@ public class ItemSet implements ItemSetBase {
 	 * 
 	 * @return The CustomItem collection of this ItemSet
 	 */
-	public Collection<CustomItem> getItems() {
+	public Collection<CustomItem> getBackingItems() {
 		return items;
 	}
 
@@ -2625,7 +2625,7 @@ public class ItemSet implements ItemSetBase {
 	 * 
 	 * @return The NamedImage collection of this ItemSet
 	 */
-	public Collection<NamedImage> getTextures() {
+	public Collection<NamedImage> getBackingTextures() {
 		return textures;
 	}
 
@@ -2634,7 +2634,7 @@ public class ItemSet implements ItemSetBase {
 	 * 
 	 * @return The Recipe collection of this ItemSet
 	 */
-	public Collection<Recipe> getRecipes() {
+	public Collection<Recipe> getBackingRecipes() {
 		return recipes;
 	}
 	
@@ -2642,7 +2642,7 @@ public class ItemSet implements ItemSetBase {
 	 * Do not modify this collection directly!
 	 * @return The mob drop collection of this ItemSet
 	 */
-	public Collection<EntityDrop> getMobDrops(){
+	public Collection<EntityDrop> getBackingMobDrops(){
 		return mobDrops;
 	}
 	
@@ -2650,7 +2650,7 @@ public class ItemSet implements ItemSetBase {
 	 * Do not modify this collection directly!
 	 * @return The block drop collection of this ItemSet
 	 */
-	public Collection<BlockDrop> getBlockDrops(){
+	public Collection<BlockDrop> getBackingBlockDrops(){
 		return blockDrops;
 	}
 

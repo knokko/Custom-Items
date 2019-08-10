@@ -84,7 +84,7 @@ public class TextureOverview extends GuiMenu {
 		
 		private void refresh() {
 			clearComponents();
-			Collection<NamedImage> textures = menu.getSet().getTextures();
+			Collection<NamedImage> textures = menu.getSet().getBackingTextures();
 			int index = 0;
 			for(NamedImage texture : textures) {
 				addComponent(new SimpleImageComponent(state.getWindow().getTextureLoader().loadTexture(texture.getImage())), 0f, 0.9f - index * 0.15f, 0.2f, 1f - index * 0.15f);

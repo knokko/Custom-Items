@@ -85,7 +85,7 @@ public class RecipeOverview extends GuiMenu {
 		
 		private void refresh() {
 			clearComponents();
-			Collection<Recipe> recipes = menu.getSet().getRecipes();
+			Collection<Recipe> recipes = menu.getSet().getBackingRecipes();
 			int index = 0;
 			for (Recipe recipe : recipes) {
 				addComponent(new DynamicTextComponent(recipe.getResult().getString(), EditProps.LABEL), 0f, 0.9f - index * 0.15f, 0.6f, 1f - index * 0.15f);

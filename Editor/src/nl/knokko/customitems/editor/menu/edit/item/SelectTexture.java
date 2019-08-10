@@ -92,7 +92,7 @@ public class SelectTexture extends GuiMenu {
 		}
 		
 		protected void addTextureComponents() {
-			Collection<NamedImage> textures = set.getTextures();
+			Collection<NamedImage> textures = set.getBackingTextures();
 			int index = 0;
 			for (NamedImage texture : textures) {
 				if (filter.approve(texture)) {

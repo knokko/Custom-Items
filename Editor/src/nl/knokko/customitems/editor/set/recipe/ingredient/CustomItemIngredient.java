@@ -43,7 +43,7 @@ public class CustomItemIngredient implements Ingredient {
 	
 	public CustomItemIngredient(BitInput input, ItemSet set) {
 		String name = input.readJavaString();
-		Collection<CustomItem> items = set.getItems();
+		Collection<CustomItem> items = set.getBackingItems();
 		for (CustomItem item : items) {
 			if(item.getName().equals(name)) {
 				this.item = item;

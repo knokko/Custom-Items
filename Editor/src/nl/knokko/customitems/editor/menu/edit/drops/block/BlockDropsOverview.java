@@ -56,7 +56,7 @@ public class BlockDropsOverview extends GuiMenu {
 		
 		private void refresh() {
 			clearComponents();
-			Collection<BlockDrop> blockDrops = set.getBlockDrops();
+			Collection<BlockDrop> blockDrops = set.getBackingBlockDrops();
 			int index = 0;
 			for (BlockDrop drop : blockDrops) {
 				addComponent(new BlockDropEntry(drop), 0f, 0.9f - 0.125f * index, 1f, 1f - 0.125f * index);

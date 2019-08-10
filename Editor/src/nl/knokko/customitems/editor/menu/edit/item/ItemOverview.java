@@ -93,7 +93,7 @@ public class ItemOverview extends GuiMenu {
 		
 		private void refresh() {
 			clearComponents();
-			Collection<CustomItem> items = menu.getSet().getItems();
+			Collection<CustomItem> items = menu.getSet().getBackingItems();
 			int index = 0;
 			for(CustomItem item : items) {
 				float minY = 0.9f - index * 0.1f;

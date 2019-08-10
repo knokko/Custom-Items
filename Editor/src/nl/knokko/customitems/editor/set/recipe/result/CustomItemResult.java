@@ -44,7 +44,7 @@ public class CustomItemResult extends Result {
 	public CustomItemResult(BitInput input, ItemSet set) {
 		super(input);
 		String name = input.readJavaString();
-		Collection<CustomItem> items = set.getItems();
+		Collection<CustomItem> items = set.getBackingItems();
 		for (CustomItem item : items) {
 			if (item.getName().equals(name)) {
 				this.item = item;

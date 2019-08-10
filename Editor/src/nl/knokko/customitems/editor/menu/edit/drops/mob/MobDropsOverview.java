@@ -55,7 +55,7 @@ public class MobDropsOverview extends GuiMenu {
 		private void refresh() {
 			clearComponents();
 			
-			Collection<EntityDrop> mobDrops = editMenu.getSet().getMobDrops();
+			Collection<EntityDrop> mobDrops = editMenu.getSet().getBackingMobDrops();
 			int index = 0;
 			
 			for (EntityDrop drop : mobDrops) {
