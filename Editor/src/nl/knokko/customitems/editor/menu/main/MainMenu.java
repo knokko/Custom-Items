@@ -23,6 +23,7 @@
  *******************************************************************************/
 package nl.knokko.customitems.editor.menu.main;
 
+import nl.knokko.customitems.editor.menu.commandhelp.CommandBlockHelpOverview;
 import nl.knokko.customitems.editor.menu.edit.EditProps;
 import nl.knokko.gui.color.GuiColor;
 import nl.knokko.gui.component.menu.GuiMenu;
@@ -36,16 +37,21 @@ public class MainMenu extends GuiMenu {
 	protected void addComponents() {
 		addComponent(new DynamicTextButton("New item set", EditProps.BUTTON, EditProps.HOVER, () ->  {
 			state.getWindow().setMainComponent(CreateMenu.INSTANCE);
-		}), 0.3f, 0.75f, 0.7f, 0.9f);
+		}), 0.3f, 0.8f, 0.7f, 0.95f);
 		addComponent(new DynamicTextButton("Edit item set", EditProps.BUTTON, EditProps.HOVER, () -> {
 			state.getWindow().setMainComponent(LoadMenu.INSTANCE);
-		}), 0.3f, 0.55f, 0.7f, 0.7f);
+		}), 0.3f, 0.6f, 0.7f, 0.75f);
 		addComponent(new DynamicTextButton("Combine item sets", EditProps.BUTTON, EditProps.HOVER, () -> {
 			state.getWindow().setMainComponent(CombineMenu.getInstance());
-		}), 0.3f, 0.35f, 0.7f, 0.5f);
+		}), 0.3f, 0.4f, 0.7f, 0.55f);
 		addComponent(new DynamicTextButton("Exit editor", EditProps.CANCEL_BASE, EditProps.CANCEL_HOVER, () -> {
 			state.getWindow().stopRunning();
-		}), 0.3f, 0.1f, 0.7f, 0.25f);
+		}), 0.3f, 0.15f, 0.7f, 0.3f);
+		
+		addComponent(new DynamicTextButton("For help, visit the discord at https://discordapp.com/invite/bmF3Zvu (Click to copy)",
+				EditProps.LABEL, EditProps.LABEL, () -> {
+					CommandBlockHelpOverview.setClipboard("https://discordapp.com/invite/bmF3Zvu");
+		}), 0.025f, 0.025f, 0.975f, 0.125f);
 	}
 	
 	@Override
