@@ -33,6 +33,7 @@ import nl.knokko.customitems.editor.menu.edit.EditMenu;
 import nl.knokko.customitems.editor.menu.edit.EditProps;
 import nl.knokko.customitems.editor.menu.edit.item.attribute.AttributesOverview;
 import nl.knokko.customitems.editor.menu.edit.item.enchantment.EnchantmentsOverview;
+import nl.knokko.customitems.editor.set.ItemSet;
 import nl.knokko.customitems.editor.set.item.CustomItem;
 import nl.knokko.customitems.editor.set.item.NamedImage;
 import nl.knokko.customitems.item.AttributeModifier;
@@ -165,10 +166,9 @@ public abstract class EditItemBase extends GuiMenu {
 		if (!(this instanceof EditItemBow)) {
 			addComponent(new DynamicTextButton("Change...", EditProps.BUTTON, EditProps.HOVER, () -> {
 				state.getWindow()
-						.setMainComponent(new EditCustomModel(
-								textureSelect.currentTexture != null ? textureSelect.currentTexture.getName()
-										: "%TEXTURE_NAME%",
-								internalType.currentType.isLeatherArmor(), this, (File file) -> {
+						.setMainComponent(new EditCustomModel(ItemSet.getDefaultModel(textureSelect.currentTexture != null ? textureSelect.currentTexture.getName()
+								: "%TEXTURE_NAME%", internalType.currentType.isLeatherArmor())
+								, this, (File file) -> {
 									try {
 										if (file.length() > 500000000) {
 											errorComponent.setText("That file is too long");
