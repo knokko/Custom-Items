@@ -5,15 +5,13 @@ Long term:
 
 Medium term:
 -Work on automated testing
--Add custom item placeholders to commands and substitute them right before execution
--Change colors of file chooser menu
 -Add villager command block help
 -Add guns
--Add shields
 -Add tridents (1.14 only)
 -Add custom arrows
 -Add custom food
--Add possibility to merge two item sets
 
 Short term:
--Add possibility for item models
+-Add custom item placeholders to commands and substitute them right before execution
+-Change colors of file chooser menu
+-Add shields
