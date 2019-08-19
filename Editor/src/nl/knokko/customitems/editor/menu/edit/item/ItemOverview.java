@@ -33,6 +33,7 @@ import nl.knokko.customitems.editor.set.item.CustomBow;
 import nl.knokko.customitems.editor.set.item.CustomHoe;
 import nl.knokko.customitems.editor.set.item.CustomItem;
 import nl.knokko.customitems.editor.set.item.CustomShears;
+import nl.knokko.customitems.editor.set.item.CustomShield;
 import nl.knokko.customitems.editor.set.item.CustomTool;
 import nl.knokko.customitems.editor.set.item.SimpleCustomItem;
 import nl.knokko.gui.color.GuiColor;
@@ -108,6 +109,8 @@ public class ItemOverview extends GuiMenu {
 						state.getWindow().setMainComponent(new EditItemShears(menu, (CustomShears) item));
 					else if (item instanceof CustomHoe)
 						state.getWindow().setMainComponent(new EditItemHoe(menu, (CustomHoe) item));
+					else if (item instanceof CustomShield)
+						state.getWindow().setMainComponent(new EditItemShield(menu, (CustomShield) item));
 					else if (item instanceof CustomTool)
 						state.getWindow().setMainComponent(new EditItemTool(menu, (CustomTool) item, item.getItemType().getMainCategory()));
 					else

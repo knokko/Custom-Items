@@ -84,5 +84,8 @@ public class CreateItem extends GuiMenu {
 		addComponent(new DynamicTextButton("Boots", EditProps.CHOOSE_BASE, EditProps.CHOOSE_HOVER, () -> {
 			state.getWindow().setMainComponent(new EditItemArmor(menu, null, Category.BOOTS));
 		}), 0.75f, 0.15f, 0.95f, 0.25f);
+		addComponent(new DynamicTextButton("Shield", EditProps.CHOOSE_BASE, EditProps.CHOOSE_HOVER, () -> {
+			state.getWindow().setMainComponent(new EditItemShield(menu, null));
+		}), 0.75f, 0.025f, 0.95f, 0.125f);
 	}
 }

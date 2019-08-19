@@ -96,4 +96,9 @@ public class ItemEncoding {
 	 * Add support for damage resistances.
 	 */
 	public static final byte ENCODING_ARMOR_6 = 16;
+	
+	/**
+	 * The first encoding of custom shields
+	 */
+	public static final byte ENCODING_SHIELD_6 = 17;
 }

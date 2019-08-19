@@ -55,6 +55,7 @@ import nl.knokko.customitems.editor.set.item.CustomBow;
 import nl.knokko.customitems.editor.set.item.CustomHoe;
 import nl.knokko.customitems.editor.set.item.CustomItem;
 import nl.knokko.customitems.editor.set.item.CustomShears;
+import nl.knokko.customitems.editor.set.item.CustomShield;
 import nl.knokko.customitems.editor.set.item.CustomTool;
 import nl.knokko.customitems.editor.set.item.NamedImage;
 import nl.knokko.customitems.editor.set.item.SimpleCustomItem;
@@ -134,6 +135,8 @@ public class ItemSet implements ItemSetBase {
 			return loadArmor5(input, checkCustomModel);
 		else if (encoding == ItemEncoding.ENCODING_ARMOR_6)
 			return loadArmor6(input, checkCustomModel);
+		else if (encoding == ItemEncoding.ENCODING_SHIELD_6)
+			return loadShield6(input, checkCustomModel);
 		throw new IllegalArgumentException("Unknown encoding: " + encoding);
 	}
 	
@@ -796,6 +799,48 @@ public class ItemSet implements ItemSetBase {
 		return new CustomArmor(itemType, damage, name, displayName, lore, attributes, defaultEnchantments, durability, allowEnchanting,
 				allowAnvil, repairItem, texture, red, green, blue, itemFlags, entityHitDurabilityLoss, 
 				blockBreakDurabilityLoss, resistances, customModel);
+	}
+	
+	private CustomItem loadShield6(BitInput input, boolean checkCustomModel) {
+		CustomItemType itemType = CustomItemType.valueOf(input.readJavaString());
+		short damage = input.readShort();
+		String name = input.readJavaString();
+		String displayName = input.readJavaString();
+		String[] lore = new String[input.readByte() & 0xFF];
+		for (int index = 0; index < lore.length; index++) {
+			lore[index] = input.readJavaString();
+		}
+		AttributeModifier[] attributes = new AttributeModifier[input.readByte() & 0xFF];
+		for (int index = 0; index < attributes.length; index++)
+			attributes[index] = loadAttribute2(input);
+		Enchantment[] defaultEnchantments = new Enchantment[input.readByte() & 0xFF];
+		for (int index = 0; index < defaultEnchantments.length; index++)
+			defaultEnchantments[index] = new Enchantment(EnchantmentType.valueOf(input.readString()), input.readInt());
+		long durability = input.readLong();
+		boolean allowEnchanting = input.readBoolean();
+		boolean allowAnvil = input.readBoolean();
+		Ingredient repairItem = Recipe.loadIngredient(input, this);
+		
+		// Use hardcoded 6 instead of variable because only 6 item flags existed in this encoding
+		boolean[] itemFlags = input.readBooleans(6);
+		int entityHitDurabilityLoss = input.readInt();
+		int blockBreakDurabilityLoss = input.readInt();
+		double thresholdDamage = input.readDouble();
+		
+		String imageName = input.readJavaString();
+		NamedImage texture = null;
+		for (NamedImage current : textures) {
+			if (current.getName().equals(imageName)) {
+				texture = current;
+				break;
+			}
+		}
+		if (texture == null)
+			throw new IllegalArgumentException("Can't find texture " + imageName);
+		byte[] customModel = loadCustomModel(input, checkCustomModel);
+		return new CustomShield(itemType, damage, name, displayName, lore, attributes, defaultEnchantments, 
+				durability, allowEnchanting, allowAnvil, repairItem, texture, itemFlags, 
+				entityHitDurabilityLoss, blockBreakDurabilityLoss, thresholdDamage, customModel);
 	}
 
 	private AttributeModifier loadAttribute2(BitInput input) {
@@ -2046,6 +2091,49 @@ public class ItemSet implements ItemSetBase {
 			return null;
 		} else {
 			return error;
+		}
+	}
+	
+	public String addShield(CustomShield shield, boolean checkClass) {
+		if (!bypassChecks()) {
+			if (shield == null)
+				return "Can't add null items";
+			if (checkClass && shield.getClass() != CustomShield.class)
+				return "Use the appropriate method for that class!";
+			double th = shield.getThresholdDamage();
+			if (th < 0)
+				return "The threshold damage can't be negative";
+			if (th != th)
+				return "The threshold damage can't be NaN";
+		}
+		return addTool(shield, false);
+	}
+	
+	public String changeShield(CustomShield shield, CustomItemType newType, short newDamage, String newName,
+			String newDisplayName, String[] newLore, AttributeModifier[] newAttributes, 
+			Enchantment[] newEnchantments, boolean allowEnchanting, boolean allowAnvil, 
+			Ingredient repairItem, long newDurability, NamedImage newImage, boolean[] itemFlags, 
+			int entityHitDurabilityLoss, int blockBreakDurabilityLoss, double thresholdDamage,
+			byte[] newCustomModel, boolean checkClass) {
+		if (!bypassChecks()) {
+			if (shield == null)
+				return "Can't change null items";
+			if (checkClass && shield.getClass() != CustomShield.class)
+				return "Use the appropriate method for that class!";
+			double th = thresholdDamage;
+			if (th < 0)
+				return "The threshold damage can't be negative";
+			if (th != th)
+				return "The threshold damage can't be NaN";
+		}
+		String error = changeTool(shield, newType, newDamage, newName, newDisplayName, newLore, newAttributes,
+				newEnchantments, allowEnchanting, allowAnvil, repairItem, newDurability, newImage, itemFlags,
+				entityHitDurabilityLoss, blockBreakDurabilityLoss, newCustomModel, false);
+		if (error != null) {
+			return error;
+		} else {
+			shield.setThresholdDamage(thresholdDamage);
+			return null;
 		}
 	}
 
