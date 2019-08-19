@@ -1142,32 +1142,6 @@ public class ItemSet implements ItemSetBase {
 				ZipEntry entry = new ZipEntry("assets/minecraft/models/customitems/" + item.getName() + ".json");
 				zipOutput.putNextEntry(entry);
 				PrintWriter jsonWriter = new PrintWriter(zipOutput);
-				/*
-				if (item instanceof CustomBow) {
-					jsonWriter.println("{");
-					jsonWriter.println("    " + Q + "parent" + Q + ": " + Q + "item/bow" + Q + ",");
-					jsonWriter.println("    " + Q + "textures" + Q + ": {");
-					jsonWriter.println("        " + Q + "layer0" + Q + ": " + Q + "customitems/"
-							+ item.getTexture().getName() + "_standby" + Q);
-					jsonWriter.println("    }");
-					jsonWriter.println("}");
-				} else {
-					jsonWriter.println("{");
-					jsonWriter.println("    " + Q + "parent" + Q + ": " + Q + "item/handheld" + Q + ",");
-					jsonWriter.println("    " + Q + "textures" + Q + ": {");
-					CustomItemType i = item.getItemType();
-					boolean leather = i == CustomItemType.LEATHER_BOOTS || i == CustomItemType.LEATHER_LEGGINGS
-							|| i == CustomItemType.LEATHER_CHESTPLATE || i == CustomItemType.LEATHER_HELMET;
-					jsonWriter.println("        " + Q + "layer0" + Q + ": " + Q + "customitems/"
-							+ item.getTexture().getName() + Q + (leather ? "," : ""));
-					if (leather) {
-						jsonWriter.println("        " + Q + "layer1" + Q + ": " + Q + "customitems/"
-								+ item.getTexture().getName() + Q);
-					}
-					jsonWriter.println("    }");
-					jsonWriter.println("}");
-				}
-				*/
 				byte[] customModel = item.getCustomModel();
 				if (customModel != null) {
 					zipOutput.write(customModel);
@@ -1295,8 +1269,10 @@ public class ItemSet implements ItemSetBase {
 							}
 						}
 						// End of the json file
-						jsonWriter.println("        { " + Q + "predicate" + Q + ": {" + Q + "damaged" + Q + ": 1, " + Q
-								+ "damage" + Q + ": 0}, " + Q + "model" + Q + ": " + Q + "item/" + modelName + Q + "}");
+						jsonWriter.println("        { \"predicate\": {\"damaged\": 1, \"damage\": 0}, \"model\": \"item/" + modelName + "\"},");
+						jsonWriter.println("        { \"predicate\": {\"damaged\": 1, \"damage\": 0, \"pulling\": 1 }, \"model\": \"item/" + modelName + "_pulling_0\"},");
+						jsonWriter.println("        { \"predicate\": {\"damaged\": 1, \"damage\": 0, \"pulling\": 1, \"pull\": 0.65 }, \"model\": \"item/" + modelName + "_pulling_1\"},");
+						jsonWriter.println("        { \"predicate\": {\"damaged\": 1, \"damage\": 0, \"pulling\": 1, \"pull\": 0.9 }, \"model\": \"item/" + modelName + "_pulling_2\"}");
 						jsonWriter.println("    ]");
 						jsonWriter.println("}");
 					} else {
@@ -1396,34 +1372,7 @@ public class ItemSet implements ItemSetBase {
 				ZipEntry entry = new ZipEntry("assets/minecraft/models/customitems/" + item.getName() + ".json");
 				zipOutput.putNextEntry(entry);
 				PrintWriter jsonWriter = new PrintWriter(zipOutput);
-				/*
-				if (item instanceof CustomBow) {
-					jsonWriter.println("{");
-					jsonWriter.println("    " + Q + "parent" + Q + ": " + Q + "item/bow" + Q + ",");
-					jsonWriter.println("    " + Q + "textures" + Q + ": {");
-					jsonWriter.println("        " + Q + "layer0" + Q + ": " + Q + "customitems/"
-							+ item.getTexture().getName() + "_standby" + Q);
-					jsonWriter.println("    }");
-					jsonWriter.println("}");
-				} else {
-					jsonWriter.println("{");
-					jsonWriter.println("    " + Q + "parent" + Q + ": " + Q + "item/handheld" + Q + ",");
-					jsonWriter.println("    " + Q + "textures" + Q + ": {");
-					CustomItemType i = item.getItemType();
-					boolean leather = i == CustomItemType.LEATHER_BOOTS || i == CustomItemType.LEATHER_LEGGINGS
-							|| i == CustomItemType.LEATHER_CHESTPLATE || i == CustomItemType.LEATHER_HELMET;
-					jsonWriter.println("        " + Q + "layer0" + Q + ": " + Q + "customitems/"
-							+ item.getTexture().getName() + Q + (leather ? "," : ""));
-					if (leather) {
-						jsonWriter.println("        " + Q + "layer1" + Q + ": " + Q + "customitems/"
-								+ item.getTexture().getName() + Q);
-					}
-					jsonWriter.println("    }");
-					jsonWriter.println("}");
-				}
-				*/
 				byte[] customModel = item.getCustomModel();
-				System.out.println("customModel of " + item.getDisplayName() + " is " + customModel);
 				if (customModel != null) {
 					zipOutput.write(customModel);
 					zipOutput.flush();
@@ -1549,8 +1498,10 @@ public class ItemSet implements ItemSetBase {
 							}
 						}
 						// End of the json file
-						jsonWriter.println("        { " + Q + "predicate" + Q + ": {" + Q + "damaged" + Q + ": 1, " + Q
-								+ "damage" + Q + ": 0}, " + Q + "model" + Q + ": " + Q + "item/" + modelName + Q + "}");
+						jsonWriter.println("        { \"predicate\": {\"damaged\": 1, \"damage\": 0}, \"model\": \"item/" + modelName + "\"},");
+						jsonWriter.println("        { \"predicate\": {\"damaged\": 1, \"damage\": 0, \"pulling\": 1 }, \"model\": \"item/" + modelName + "_pulling_0\"},");
+						jsonWriter.println("        { \"predicate\": {\"damaged\": 1, \"damage\": 0, \"pulling\": 1, \"pull\": 0.65 }, \"model\": \"item/" + modelName + "_pulling_1\"},");
+						jsonWriter.println("        { \"predicate\": {\"damaged\": 1, \"damage\": 0, \"pulling\": 1, \"pull\": 0.9 }, \"model\": \"item/" + modelName + "_pulling_2\"}");
 						jsonWriter.println("    ]");
 						jsonWriter.println("}");
 					} else {
