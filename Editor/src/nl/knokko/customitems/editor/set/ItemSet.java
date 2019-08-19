@@ -838,9 +838,10 @@ public class ItemSet implements ItemSetBase {
 		if (texture == null)
 			throw new IllegalArgumentException("Can't find texture " + imageName);
 		byte[] customModel = loadCustomModel(input, checkCustomModel);
+		byte[] customBlockingModel = loadCustomModel(input, checkCustomModel);
 		return new CustomShield(itemType, damage, name, displayName, lore, attributes, defaultEnchantments, 
 				durability, allowEnchanting, allowAnvil, repairItem, texture, itemFlags, 
-				entityHitDurabilityLoss, blockBreakDurabilityLoss, thresholdDamage, customModel);
+				entityHitDurabilityLoss, blockBreakDurabilityLoss, thresholdDamage, customModel, customBlockingModel);
 	}
 
 	private AttributeModifier loadAttribute2(BitInput input) {
@@ -1044,13 +1045,15 @@ public class ItemSet implements ItemSetBase {
 	private static final String Q = "" + '"';
 	
 	public static String[] getDefaultModel(CustomItem item) {
-		if (item instanceof CustomBow) {
-			return getDefaultModelBow(item.getTexture().getName());
-		}
-		return getDefaultModel(item.getTexture().getName(), item.getItemType().isLeatherArmor());
+		return getDefaultModel(item.getItemType(), item.getTexture().getName(), item.getItemType().isLeatherArmor());
 	}
 	
-	public static String[] getDefaultModel(String textureName, boolean isLeather) {
+	public static String[] getDefaultModel(CustomItemType type, String textureName, boolean isLeather) {
+		if (type == CustomItemType.BOW) {
+			return getDefaultModelBow(textureName);
+		} else if (type == CustomItemType.SHIELD) {
+			return getDefaultModelShield(textureName);
+		} else {
 			String[] start = {
 			"{",
 			"    \"parent\": \"item/handheld\",",
@@ -1071,6 +1074,7 @@ public class ItemSet implements ItemSetBase {
 			};
 			
 			return chain(start, mid, end);
+		}
 	}
 	
 	public static String[] getDefaultModelBow(String textureName) {
@@ -1081,6 +1085,18 @@ public class ItemSet implements ItemSetBase {
 			"        \"layer0\": \"customitems/" + textureName + "_standby\"",
 			"    }",
 			"}"
+		};
+	}
+	
+	public static String[] getDefaultModelShield(String textureName) {
+		return new String[] {
+				//
+		};
+	}
+	
+	public static String[] getDefaultModelBlockingShield(String textureName) {
+		return new String[] {
+				//
 		};
 	}
 	
@@ -2065,7 +2081,7 @@ public class ItemSet implements ItemSetBase {
 			Enchantment[] newEnchantments, boolean allowEnchanting, boolean allowAnvil, 
 			Ingredient repairItem, long newDurability, NamedImage newImage, boolean[] itemFlags, 
 			int entityHitDurabilityLoss, int blockBreakDurabilityLoss, double thresholdDamage,
-			byte[] newCustomModel, boolean checkClass) {
+			byte[] newCustomModel, byte[] newCustomBlockingModel, boolean checkClass) {
 		if (!bypassChecks()) {
 			if (shield == null)
 				return "Can't change null items";
@@ -2084,6 +2100,7 @@ public class ItemSet implements ItemSetBase {
 			return error;
 		} else {
 			shield.setThresholdDamage(thresholdDamage);
+			shield.setBlockingModel(newCustomBlockingModel);
 			return null;
 		}
 	}

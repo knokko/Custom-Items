@@ -278,6 +278,13 @@ public abstract class CustomItem extends nl.knokko.customitems.item.CustomItem {
 		if (customModel != null) {
 			output.addByteArray(customModel);
 		}
+		if (this instanceof CustomShield) {
+			CustomShield shield = (CustomShield) this;
+			output.addBoolean(shield.getBlockingModel() != null);
+			if (shield.getBlockingModel() != null) {
+				output.addByteArray(shield.getBlockingModel());
+			}
+		}
 	}
 
 	public abstract void export(BitOutput output);

@@ -1,10 +1,18 @@
 package nl.knokko.customitems.editor.menu.edit.item;
 
+import java.io.DataInputStream;
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+import java.nio.file.Files;
+
 import nl.knokko.customitems.editor.menu.edit.EditMenu;
 import nl.knokko.customitems.editor.menu.edit.EditProps;
+import nl.knokko.customitems.editor.set.ItemSet;
 import nl.knokko.customitems.editor.set.item.CustomShield;
 import nl.knokko.customitems.item.CustomItemType.Category;
 import nl.knokko.gui.component.text.FloatEditField;
+import nl.knokko.gui.component.text.dynamic.DynamicTextButton;
 import nl.knokko.gui.component.text.dynamic.DynamicTextComponent;
 import nl.knokko.gui.util.Option;
 
@@ -13,6 +21,8 @@ public class EditItemShield extends EditItemTool {
 	private final CustomShield previous;
 	
 	private final FloatEditField thresholdField;
+	
+	private byte[] customBlockingModel;
 
 	public EditItemShield(EditMenu menu, CustomShield previous) {
 		super(menu, previous, Category.SHIELD);
@@ -29,6 +39,27 @@ public class EditItemShield extends EditItemTool {
 		super.addComponents();
 		addComponent(new DynamicTextComponent("Required damage to lose durability:", EditProps.LABEL), 0.5f, 0.325f, 0.84f, 0.4f);
 		addComponent(thresholdField, 0.85f, 0.325f, 0.9f, 0.425f);
+		
+		addComponent(new DynamicTextComponent("Blocking model: ", EditProps.LABEL), LABEL_X, 0.2f, LABEL_X + 0.2f, 0.25f);
+		addComponent(new DynamicTextButton("Change...", EditProps.BUTTON, EditProps.HOVER, () -> {
+			state.getWindow()
+					.setMainComponent(new EditCustomModel(ItemSet.getDefaultModelBlockingShield(textureSelect.currentTexture != null ? textureSelect.currentTexture.getName() : "TEXTURE_NAME"), this, (File file) -> {
+								try {
+									if (file.length() > 500000000) {
+										errorComponent.setText("That file is too long");
+										return;
+									}
+									byte[] result = new byte[(int) file.length()];
+									InputStream in = Files.newInputStream(file.toPath());
+									DataInputStream dataIn = new DataInputStream(in);
+									dataIn.readFully(result);
+									in.close();
+									customBlockingModel = result;
+								} catch (IOException ioex) {
+									errorComponent.setText(ioex.getMessage());
+								}
+							}));
+		}), BUTTON_X, 0.2f, BUTTON_X + 0.1f, 0.25f);
 	}
 	
 	@Override
@@ -40,7 +71,7 @@ public class EditItemShield extends EditItemTool {
 				new CustomShield(internalType.currentType, damage, name.getText(), getDisplayName(),
 						lore, attributes, enchantments, maxUses, allowEnchanting.isChecked(),
 						allowAnvil.isChecked(), repairItem.getIngredient(), textureSelect.currentTexture, itemFlags,
-						entityHitDurabilityLoss, blockBreakDurabilityLoss, thresholdDamage.getValue(), customModel),
+						entityHitDurabilityLoss, blockBreakDurabilityLoss, thresholdDamage.getValue(), customModel, customBlockingModel),
 						true);
 	}
 	
@@ -53,6 +84,6 @@ public class EditItemShield extends EditItemTool {
 				getDisplayName(), lore, attributes, enchantments, allowEnchanting.isChecked(),
 				allowAnvil.isChecked(), repairItem.getIngredient(), maxUses, textureSelect.currentTexture,
 				itemFlags, entityHitDurabilityLoss, blockBreakDurabilityLoss, thresholdDamage.getValue(),
-				customModel, true);
+				customModel, customBlockingModel, true);
 	}
 }

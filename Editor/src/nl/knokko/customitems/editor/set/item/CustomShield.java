@@ -10,14 +10,18 @@ import nl.knokko.util.bits.BitOutput;
 public class CustomShield extends CustomTool {
 	
 	private double thresholdDamage;
+	
+	private byte[] customBlockingModel;
 
 	public CustomShield(CustomItemType itemType, short itemDamage, String name, String displayName, String[] lore,
 			AttributeModifier[] attributes, Enchantment[] defaultEnchantments, long durability, boolean allowEnchanting,
 			boolean allowAnvil, Ingredient repairItem, NamedImage texture, boolean[] itemFlags,
-			int entityHitDurabilityLoss, int blockBreakDurabilityLoss, double thresholdDamage, byte[] customModel) {
+			int entityHitDurabilityLoss, int blockBreakDurabilityLoss, double thresholdDamage, 
+			byte[] customModel, byte[] customBlockingModel) {
 		super(itemType, itemDamage, name, displayName, lore, attributes, defaultEnchantments, durability, allowEnchanting,
 				allowAnvil, repairItem, texture, itemFlags, entityHitDurabilityLoss, blockBreakDurabilityLoss, customModel);
 		this.thresholdDamage = thresholdDamage;
+		this.customBlockingModel = customBlockingModel;
 	}
 	
 	@Override
@@ -57,5 +61,13 @@ public class CustomShield extends CustomTool {
 	
 	public void setThresholdDamage(double damage) {
 		thresholdDamage = damage;
+	}
+	
+	public byte[] getBlockingModel() {
+		return customBlockingModel;
+	}
+	
+	public void setBlockingModel(byte[] customModel) {
+		customBlockingModel = customModel;
 	}
 }

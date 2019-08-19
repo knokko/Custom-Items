@@ -49,8 +49,8 @@ import nl.knokko.gui.component.text.TextEditField;
 
 public abstract class EditItemBase extends GuiMenu {
 
-	private static final float LABEL_X = 0.2f;
-	private static final float BUTTON_X = 0.4f;
+	protected static final float LABEL_X = 0.2f;
+	protected static final float BUTTON_X = 0.4f;
 
 	private static final AttributeModifier[] DEFAULT_ATTRIBUTES = {};
 	private static final Enchantment[] DEFAULT_ENCHANTMENTS = {};
@@ -166,7 +166,7 @@ public abstract class EditItemBase extends GuiMenu {
 		if (!(this instanceof EditItemBow)) {
 			addComponent(new DynamicTextButton("Change...", EditProps.BUTTON, EditProps.HOVER, () -> {
 				state.getWindow()
-						.setMainComponent(new EditCustomModel(ItemSet.getDefaultModel(textureSelect.currentTexture != null ? textureSelect.currentTexture.getName()
+						.setMainComponent(new EditCustomModel(ItemSet.getDefaultModel(internalType.currentType, textureSelect.currentTexture != null ? textureSelect.currentTexture.getName()
 								: "%TEXTURE_NAME%", internalType.currentType.isLeatherArmor())
 								, this, (File file) -> {
 									try {
