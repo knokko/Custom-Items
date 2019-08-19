@@ -1189,6 +1189,22 @@ public class ItemSet implements ItemSetBase {
 						jsonWriter.flush();
 						zipOutput.closeEntry();
 					}
+				} else if (item instanceof CustomShield) {
+					CustomShield shield = (CustomShield) item;
+					byte[] blockingModel = shield.getBlockingModel();
+					entry = new ZipEntry("assets/minecraft/models/customitems/" + item.getName() + "_blocking.json");
+					zipOutput.putNextEntry(entry);
+					if (blockingModel != null) {
+						zipOutput.write(blockingModel);
+						zipOutput.flush();
+					} else {
+						String[] modelContent = getDefaultModelBlockingShield(item.getName());
+						jsonWriter = new PrintWriter(zipOutput);
+						for (String line : modelContent) {
+							jsonWriter.println(line);
+						}
+						jsonWriter.flush();
+					}
 				}
 			}
 
@@ -1418,6 +1434,22 @@ public class ItemSet implements ItemSetBase {
 						jsonWriter.println("}");
 						jsonWriter.flush();
 						zipOutput.closeEntry();
+					}
+				} else if (item instanceof CustomShield) {
+					CustomShield shield = (CustomShield) item;
+					byte[] blockingModel = shield.getBlockingModel();
+					entry = new ZipEntry("assets/minecraft/models/customitems/" + item.getName() + "_blocking.json");
+					zipOutput.putNextEntry(entry);
+					if (blockingModel != null) {
+						zipOutput.write(blockingModel);
+						zipOutput.flush();
+					} else {
+						String[] modelContent = getDefaultModelBlockingShield(item.getName());
+						jsonWriter = new PrintWriter(zipOutput);
+						for (String line : modelContent) {
+							jsonWriter.println(line);
+						}
+						jsonWriter.flush();
 					}
 				}
 			}
