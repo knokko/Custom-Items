@@ -40,11 +40,7 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.material.MaterialData;
 
 import nl.knokko.customitems.damage.DamageResistances;
-import nl.knokko.customitems.drops.BlockDrop;
-import nl.knokko.customitems.drops.BlockType;
-import nl.knokko.customitems.drops.CIEntityType;
-import nl.knokko.customitems.drops.Drop;
-import nl.knokko.customitems.drops.EntityDrop;
+import nl.knokko.customitems.drops.*;
 import nl.knokko.customitems.encoding.ItemEncoding;
 import nl.knokko.customitems.encoding.RecipeEncoding;
 import nl.knokko.customitems.encoding.SetEncoding;
@@ -58,21 +54,9 @@ import nl.knokko.customitems.item.Enchantment;
 import nl.knokko.customitems.item.EnchantmentType;
 import nl.knokko.customitems.item.ItemFlag;
 import nl.knokko.customitems.item.ItemSetBase;
-import nl.knokko.customitems.plugin.recipe.CustomRecipe;
-import nl.knokko.customitems.plugin.recipe.ShapedCustomRecipe;
-import nl.knokko.customitems.plugin.recipe.ShapelessCustomRecipe;
-import nl.knokko.customitems.plugin.recipe.ingredient.CustomIngredient;
-import nl.knokko.customitems.plugin.recipe.ingredient.DataVanillaIngredient;
-import nl.knokko.customitems.plugin.recipe.ingredient.Ingredient;
-import nl.knokko.customitems.plugin.recipe.ingredient.NoIngredient;
-import nl.knokko.customitems.plugin.recipe.ingredient.SimpleVanillaIngredient;
-import nl.knokko.customitems.plugin.set.item.CustomArmor;
-import nl.knokko.customitems.plugin.set.item.CustomBow;
-import nl.knokko.customitems.plugin.set.item.CustomHoe;
-import nl.knokko.customitems.plugin.set.item.CustomItem;
-import nl.knokko.customitems.plugin.set.item.CustomShears;
-import nl.knokko.customitems.plugin.set.item.CustomTool;
-import nl.knokko.customitems.plugin.set.item.SimpleCustomItem;
+import nl.knokko.customitems.plugin.recipe.*;
+import nl.knokko.customitems.plugin.recipe.ingredient.*;
+import nl.knokko.customitems.plugin.set.item.*;
 import nl.knokko.util.bits.BitInput;
 
 public class ItemSet implements ItemSetBase {
@@ -183,6 +167,8 @@ public class ItemSet implements ItemSetBase {
 			return loadArmor5(input);
 		else if (encoding == ItemEncoding.ENCODING_ARMOR_6)
 			return loadArmor6(input);
+		else if (encoding == ItemEncoding.ENCODING_SHIELD_6)
+			return loadShield6(input);
 		throw new IllegalArgumentException("Unknown encoding: " + encoding);
 	}
 
@@ -584,6 +570,32 @@ public class ItemSet implements ItemSetBase {
 		return new CustomBow(damage, name, displayName, lore, attributes, defaultEnchantments, durability,
 				damageMultiplier, speedMultiplier, knockbackStrength, gravity, allowEnchanting, allowAnvil, repairItem,
 				itemFlags, entityHitDurabilityLoss, blockBreakDurabilityLoss, shootDurabilityLoss);
+	}
+	
+	private CustomItem loadShield6(BitInput input) {
+		CustomItemType itemType = CustomItemType.valueOf(input.readJavaString());
+		short damage = input.readShort();
+		String name = input.readJavaString();
+		String displayName = input.readJavaString();
+		String[] lore = new String[input.readByte() & 0xFF];
+		for (int index = 0; index < lore.length; index++)
+			lore[index] = input.readJavaString();
+		AttributeModifier[] attributes = new AttributeModifier[input.readByte() & 0xFF];
+		for (int index = 0; index < attributes.length; index++)
+			attributes[index] = loadAttribute2(input);
+		Enchantment[] defaultEnchantments = new Enchantment[input.readByte() & 0xFF];
+		for (int index = 0; index < defaultEnchantments.length; index++)
+			defaultEnchantments[index] = new Enchantment(EnchantmentType.valueOf(input.readString()), input.readInt());
+		long durability = input.readLong();
+		boolean allowEnchanting = input.readBoolean();
+		boolean allowAnvil = input.readBoolean();
+		Ingredient repairItem = loadIngredient(input);
+		boolean[] itemFlags = input.readBooleans(6);
+		int entityHitDurabilityLoss = input.readInt();
+		int blockBreakDurabilityLoss = input.readInt();
+		double durabilityThreshold = input.readDouble();
+		return new CustomShield(itemType, damage, name, displayName, lore, attributes, defaultEnchantments, durability,
+				allowEnchanting, allowAnvil, repairItem, itemFlags, entityHitDurabilityLoss, blockBreakDurabilityLoss, durabilityThreshold);
 	}
 
 	private AttributeModifier loadAttribute2(BitInput input) {

@@ -87,6 +87,7 @@ import nl.knokko.customitems.plugin.set.item.CustomBow;
 import nl.knokko.customitems.plugin.set.item.CustomHoe;
 import nl.knokko.customitems.plugin.set.item.CustomItem;
 import nl.knokko.customitems.plugin.set.item.CustomShears;
+import nl.knokko.customitems.plugin.set.item.CustomShield;
 import nl.knokko.customitems.plugin.set.item.CustomTool;
 
 import static org.bukkit.enchantments.Enchantment.*;
@@ -349,6 +350,45 @@ public class CustomItemsEventHandler implements Listener {
 				if (decreaseCustomArmorDurability(e.getBoots(), armorDamage)) {
 					playBreakSound(player);
 					e.setBoots(null);
+				}
+			}
+			
+			// There is no nice shield blocking event, so this dirty check will have to do
+			if (player.isBlocking() && event.getFinalDamage() == 0.0) {
+				
+				CustomShield shield = null;
+				boolean offhand = true;
+				
+				if (CustomItem.isCustom(player.getInventory().getItemInOffHand())) {
+					ItemSet set = CustomItemsPlugin.getInstance().getSet();
+					CustomItem customMain = set.getItem(player.getInventory().getItemInOffHand());
+					if (customMain instanceof CustomShield) {
+						shield = (CustomShield) customMain;
+					}
+				}
+				
+				if (CustomItem.isCustom(player.getInventory().getItemInMainHand())) {
+					ItemSet set = CustomItemsPlugin.getInstance().getSet();
+					CustomItem customMain = set.getItem(player.getInventory().getItemInMainHand());
+					if (customMain instanceof CustomShield) {
+						shield = (CustomShield) customMain;
+						offhand = false;
+					}
+				}
+				
+				if (shield != null && event.getDamage() >= shield.getDurabilityThreshold()) {
+					int lostDurability = (int) (event.getDamage()) + 1;
+					if (offhand) {
+						if (shield.decreaseDurability(player.getInventory().getItemInOffHand(), lostDurability)) {
+							player.getInventory().setItemInOffHand(null);
+							playBreakSound(player);
+						}
+					} else {
+						if (shield.decreaseDurability(player.getInventory().getItemInMainHand(), lostDurability)) {
+							player.getInventory().setItemInOffHand(null);
+							playBreakSound(player);
+						}
+					}
 				}
 			}
 		}
