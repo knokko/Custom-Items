@@ -1552,6 +1552,69 @@ public class ItemSet implements ItemSetBase {
 						jsonWriter.println("        { \"predicate\": {\"damaged\": 1, \"damage\": 0, \"pulling\": 1, \"pull\": 0.9 }, \"model\": \"item/" + modelName + "_pulling_2\"}");
 						jsonWriter.println("    ]");
 						jsonWriter.println("}");
+					} else if (entry.getKey() == CustomItemType.SHIELD) {
+						
+						// The beginning
+						jsonWriter.println("{");
+						jsonWriter.println("    \"parent\": \"builtin/entity\",");
+						jsonWriter.println("    \"display\": {");
+						
+						// All the display stuff, it's copied from minecrafts default shield model
+						jsonWriter.println("        \"thirdperson_righthand\": {");
+						jsonWriter.println("            \"rotation\": [0,90,0],");
+						jsonWriter.println("            \"translation\": [10.51,6,-4],");
+						jsonWriter.println("            \"scale\": [1,1,1]");
+						jsonWriter.println("        },");
+						jsonWriter.println("        \"thirdperson_lefthand\": {");
+						jsonWriter.println("            \"rotation\": [0,90,0],");
+						jsonWriter.println("            \"translation\": [10.51,6,12],");
+						jsonWriter.println("            \"scale\": [1,1,1]");
+						jsonWriter.println("        },");
+						jsonWriter.println("        \"firstperson_righthand\": {");
+						jsonWriter.println("            \"rotation\": [0,180,5],");
+						jsonWriter.println("            \"translation\": [-10,2,-10],");
+						jsonWriter.println("            \"scale\": [1.25,1.25,1.25]");
+						jsonWriter.println("        },");
+						jsonWriter.println("        \"firstperson_lefthand\": {");
+						jsonWriter.println("            \"rotation\": [0,180,5],");
+						jsonWriter.println("            \"translation\": [10,0,-10],");
+						jsonWriter.println("            \"scale\": [1.25,1.25,1.25]");
+						jsonWriter.println("        },");
+						jsonWriter.println("        \"gui\": {");
+						jsonWriter.println("            \"rotation\": [15,-25,-5],");
+						jsonWriter.println("            \"translation\": [2,3,0],");
+						jsonWriter.println("            \"scale\": [0.65,0.65,0.65]");
+						jsonWriter.println("        },");
+						jsonWriter.println("        \"fixed\": {");
+						jsonWriter.println("            \"rotation\": [0,180,0],");
+						jsonWriter.println("            \"translation\": [-2,4,-5],");
+						jsonWriter.println("            \"scale\": [0.5,0.5,0.5]");
+						jsonWriter.println("        },");
+						jsonWriter.println("        \"ground\": {");
+						jsonWriter.println("            \"rotation\": [0,0,0],");
+						jsonWriter.println("            \"translation\": [4,4,2],");
+						jsonWriter.println("            \"scale\": [0.25,0.25,0.25]");
+						jsonWriter.println("        }");
+						jsonWriter.println("    }, \"overrides\": [");
+						
+						// The next entry is part of preserving vanilla shield blocking model
+						jsonWriter.println("        { \"predicate\": { \"blocking\": 1 }, \"model\": \"item/shield_blocking\" },");
+						
+						// Now the part for the custom shield predicates...
+						for (CustomItem item : list) {
+							jsonWriter.println("        { \"predicate\": { \"blocking\": 0, \"damaged\": 0, \"damage\": "
+									+ (double) item.getItemDamage() / item.getItemType().getMaxDurability() + " }, \"model\": \"customitems/" + item.getName() + "\" },");
+							jsonWriter.println("        { \"predicate\": { \"blocking\": 1, \"damaged\": 0, \"damage\": "
+									+ (double) item.getItemDamage() / item.getItemType().getMaxDurability() + " }, \"model\": \"customitems/" + item.getName() + "_blocking\" },");
+						}
+						
+						// The next ones are required to preserve the vanilla shield models
+						jsonWriter.println("        { \"predicate\": { \"blocking\": 0, \"damaged\": 1, \"damage\": 0 }, \"model\": \"item/shield\" },");
+						jsonWriter.println("        { \"predicate\": { \"blocking\": 1, \"damaged\": 1, \"damage\": 0 }, \"model\": \"item/shield_blocking\" }");
+						
+						// Now finish the json
+						jsonWriter.println("    ]");
+						jsonWriter.println("}");
 					} else {
 						// Begin of the json file
 						jsonWriter.println("{");
