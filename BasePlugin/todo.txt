@@ -2,16 +2,16 @@ Long term:
 -Replace minecrafts enchanting and anvil system
 -Create a website generator
 -Dynamic updating of the server item set
+-Add custom arrows
+-Look into custom item attack ranges
 
 Medium term:
 -Work on automated testing
--Add villager command block help
+-Add villager command block help? (only if custom item placeholders fails)
 -Add guns
 -Add tridents (1.14 only)
--Add custom arrows
 -Add custom food
 
 Short term:
 -Add custom item placeholders to commands and substitute them right before execution
--Change colors of file chooser menu
--Add shields
+-Add a tutorial
