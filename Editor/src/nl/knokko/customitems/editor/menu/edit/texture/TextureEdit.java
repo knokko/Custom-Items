@@ -144,7 +144,8 @@ public class TextureEdit extends GuiMenu {
 				}
 			}, (File file) -> {
 				return file.getName().endsWith(".png");
-			}));
+			}, EditProps.CANCEL_BASE, EditProps.CANCEL_HOVER, EditProps.CHOOSE_BASE, EditProps.CHOOSE_HOVER, 
+					EditProps.BACKGROUND, EditProps.BACKGROUND2));
 		});
 	}
 	
