@@ -28,6 +28,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
+import java.util.Collection;
 
 import nl.knokko.customitems.editor.menu.edit.EditMenu;
 import nl.knokko.customitems.editor.menu.edit.EditProps;
@@ -87,7 +88,7 @@ public abstract class EditItemBase extends GuiMenu {
 			name = new TextEditField("", EditProps.EDIT_BASE, EditProps.EDIT_ACTIVE);
 			internalType = new ItemTypeSelect(CustomItemType.DIAMOND_HOE);
 			internalDamage = new TextEditField(
-					Short.toString(menu.getSet().nextAvailableDamage(internalType.currentType)), EditProps.EDIT_BASE,
+					Short.toString(menu.getSet().nextAvailableDamage(internalType.currentType, null)), EditProps.EDIT_BASE,
 					EditProps.EDIT_ACTIVE);
 			displayName = new TextEditField("", EditProps.EDIT_BASE, EditProps.EDIT_ACTIVE);
 			textureSelect = new TextureSelect(null);
@@ -248,6 +249,33 @@ public abstract class EditItemBase extends GuiMenu {
 				state.getWindow().setMainComponent(new SelectItemType(EditItemBase.this, (CustomItemType type) -> {
 					currentType = type;
 					setText(type.toString());
+					
+					// Check for internal item type + internal item damage conflicts
+					boolean editInternalDamage;
+					tryBlock:
+					try {
+						short currentDamage = Short.parseShort(internalDamage.getText());
+						Collection<CustomItem> allItems = menu.getSet().getBackingItems();
+						for (CustomItem item : allItems) {
+							if (previous() != item && item.getItemType() == type && item.getItemDamage() == currentDamage) {
+								editInternalDamage = true;
+								break tryBlock;
+							}
+						}
+						editInternalDamage = false;
+					} catch (NumberFormatException ex) {
+						editInternalDamage = true;
+					}
+					
+					if (editInternalDamage) {
+						short betterDamage = menu.getSet().nextAvailableDamage(type, previous());
+						if (betterDamage == -1) {
+							errorComponent.setProperties(EditProps.ERROR);
+							errorComponent.setText("There are too many items with internal item type " + type);
+						} else {
+							internalDamage.setText(betterDamage + "");
+						}
+					}
 				}, getCategory()));
 			};
 		}

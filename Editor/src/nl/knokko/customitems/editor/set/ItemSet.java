@@ -2925,10 +2925,10 @@ public class ItemSet implements ItemSetBase {
 		return blockDrops;
 	}
 
-	public short nextAvailableDamage(CustomItemType type) {
+	public short nextAvailableDamage(CustomItemType type, CustomItem exclude) {
 		boolean[] usedDamage = new boolean[type.getMaxDurability() - 1];
 		for (CustomItem item : items)
-			if (item.getItemType() == type)
+			if (item != exclude && item.getItemType() == type)
 				usedDamage[item.getItemDamage() - 1] = true;
 		for (short damage = 1; damage < type.getMaxDurability(); damage++)
 			if (!usedDamage[damage - 1])

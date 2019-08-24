@@ -96,7 +96,7 @@ public class EditItemTool extends EditItemBase {
 				internalType.currentType = CustomItemType.SHIELD;
 			else
 				throw new Error("Unsupported category for EditItemTool: " + toolCategory);
-			internalDamage.setDirectText(Short.toString(menu.getSet().nextAvailableDamage(internalType.currentType)));
+			internalDamage.setDirectText(Short.toString(menu.getSet().nextAvailableDamage(internalType.currentType, null)));
 			entityHitDurabilityLoss = new IntEditField(
 					CustomToolDurability.defaultEntityHitDurabilityLoss(internalType.currentType), 0, 
 					EditProps.EDIT_BASE, EditProps.EDIT_ACTIVE);
