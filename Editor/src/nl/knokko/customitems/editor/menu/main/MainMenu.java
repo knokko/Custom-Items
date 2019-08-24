@@ -28,6 +28,7 @@ import nl.knokko.customitems.editor.menu.edit.EditProps;
 import nl.knokko.gui.color.GuiColor;
 import nl.knokko.gui.component.menu.GuiMenu;
 import nl.knokko.gui.component.text.dynamic.DynamicTextButton;
+import nl.knokko.gui.component.text.dynamic.DynamicTextComponent;
 
 public class MainMenu extends GuiMenu {
 	
@@ -47,11 +48,11 @@ public class MainMenu extends GuiMenu {
 		addComponent(new DynamicTextButton("Exit editor", EditProps.CANCEL_BASE, EditProps.CANCEL_HOVER, () -> {
 			state.getWindow().stopRunning();
 		}), 0.3f, 0.15f, 0.7f, 0.3f);
-		
-		addComponent(new DynamicTextButton("For help, visit the discord at https://discordapp.com/invite/bmF3Zvu (Click to copy)",
-				EditProps.LABEL, EditProps.LABEL, () -> {
+
+		addComponent(new DynamicTextComponent("For help, visit the discord server:", EditProps.LABEL), 0.05f, 0.7f, 0.25f, 0.75f);
+		addComponent(new DynamicTextButton("Click here to copy the invite link", EditProps.BUTTON, EditProps.HOVER, () -> {
 					CommandBlockHelpOverview.setClipboard("https://discordapp.com/invite/bmF3Zvu");
-		}), 0.025f, 0.025f, 0.975f, 0.125f);
+		}), 0.05f, 0.65f, 0.25f, 0.7f);
 	}
 	
 	@Override
