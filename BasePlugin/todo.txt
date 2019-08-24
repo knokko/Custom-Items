@@ -11,6 +11,7 @@ Medium term:
 -Add guns
 -Add tridents (1.14 only)
 -Add custom food
+-Add player heads as custom items
 
 Short term:
 -Add custom item placeholders to commands and substitute them right before execution
