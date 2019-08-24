@@ -2619,7 +2619,7 @@ public class ItemSet implements ItemSetBase {
 					break;
 				} else {
 					if (current.getItemType() == newType && current.getItemDamage() == newDamage) {
-						return "The item " + current.getName() + " has the same internal type and damage.";
+						return "The item " + current.getName() + " has the same internal type and internal item damage.";
 					}
 				}
 			}
