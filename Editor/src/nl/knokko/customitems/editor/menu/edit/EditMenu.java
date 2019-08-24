@@ -55,6 +55,12 @@ public class EditMenu extends GuiMenu {
 		errorComponent = new DynamicTextComponent("", EditProps.ERROR);
 	}
 	
+	@Override
+	public void init() {
+		super.init();
+		errorComponent.setText("");
+	}
+	
 	public ItemSet getSet() {
 		return set;
 	}
@@ -75,32 +81,45 @@ public class EditMenu extends GuiMenu {
 	public GuiColor getBackgroundColor() {
 		return EditProps.BACKGROUND;
 	}
+	
+	protected void setError(String error) {
+		errorComponent.setProperties(EditProps.ERROR);
+		errorComponent.setText(error);
+	}
+	
+	protected void setInfo(String info) {
+		errorComponent.setProperties(EditProps.LABEL);
+		errorComponent.setText(info);
+	}
 
 	@Override
 	protected void addComponents() {
-		addComponent(errorComponent, 0.05f, 0.9f, 0.95f, 1f);
+		addComponent(errorComponent, 0.305f, 0.9f, 0.95f, 1f);
 		addComponent(new DynamicTextButton("Quit", EditProps.QUIT_BASE, EditProps.QUIT_HOVER, () -> {
 			state.getWindow().setMainComponent(MainMenu.INSTANCE);
 		}), 0.1f, 0.88f, 0.3f, 0.98f);
 		addComponent(new DynamicTextButton("Save", EditProps.SAVE_BASE, EditProps.SAVE_HOVER, () -> {
 			String error = set.save();
-			errorComponent.setText(error != null ? error : "");
+			if (error != null)
+				setError(error);
+			else
+				setInfo("Saved successfully");
 		}), 0.1f, 0.4f, 0.25f, 0.5f);
 		addComponent(new DynamicTextButton("Save and quit", EditProps.SAVE_BASE, EditProps.SAVE_HOVER, () -> {
 			String error = set.save();
 			if(error != null)
-				errorComponent.setText(error);
+				setError(error);
 			else
 				state.getWindow().setMainComponent(MainMenu.INSTANCE);
 		}), 0.1f, 0.28f, 0.35f, 0.38f);
 		addComponent(new DynamicTextButton("Export", EditProps.SAVE_BASE, EditProps.SAVE_HOVER, () -> {
 			String error = set.save();
 			if(error != null)
-				errorComponent.setText(error);
+				setError(error);
 			else {
 				error = set.export();
 				if(error != null)
-					errorComponent.setText(error);
+					setError(error);
 				else
 					state.getWindow().setMainComponent(MainMenu.INSTANCE);
 			}
@@ -108,11 +127,11 @@ public class EditMenu extends GuiMenu {
 		addComponent(new DynamicTextButton("Export for 1.14", EditProps.SAVE_BASE, EditProps.SAVE_HOVER, () -> {
 			String error = set.save();
 			if(error != null)
-				errorComponent.setText(error);
+				setError(error);
 			else {
 				error = set.export1_14();
 				if(error != null)
-					errorComponent.setText(error);
+					setError(error);
 				else
 					state.getWindow().setMainComponent(MainMenu.INSTANCE);
 			}
