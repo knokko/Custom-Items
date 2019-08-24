@@ -1090,13 +1090,67 @@ public class ItemSet implements ItemSetBase {
 	
 	public static String[] getDefaultModelShield(String textureName) {
 		return new String[] {
-				//
+				"{",
+				"    \"parent\": \"item/handheld\",",
+				"    \"textures\": {",
+				"        \"layer0\": \"customitems/" + textureName + "\"",
+				"    },",
+				"    \"display\": {",
+				"        \"thirdperson_righthand\": {",
+				"            \"rotation\": [0, -90, 0],",
+				"            \"translation\": [3, -1.5, 6],",
+				"            \"scale\": [1.25, 1.25, 1.25]",
+				"        },",
+				"        \"thirdperson_lefthand\": {",
+				"            \"rotation\": [0, -90, 0],",
+				"            \"translation\": [3, -2, 4],",
+				"            \"scale\": [1.25, 1.25, 1.25]",
+				"        },",
+				"        \"firstperson_righthand\": {",
+				"            \"rotation\": [-5, 0, -5],",
+				"            \"translation\": [-2, -5, 0],",
+				"            \"scale\": [1.35, 1.35, 1.35]",
+				"        },",
+				"        \"firstperson_lefthand\": {",
+				"            \"rotation\": [5, 0, -5],",
+				"            \"translation\": [-1.5, -5, 0],",
+				"            \"scale\": [1.35, 1.35, 1.35]",
+				"        }",
+				"    }",
+				"}"
 		};
 	}
 	
 	public static String[] getDefaultModelBlockingShield(String textureName) {
 		return new String[] {
-				//
+				"{",
+				"    \"parent\": \"item/handheld\",",
+				"    \"textures\": {",
+				"        \"layer0\": \"customitems/" + textureName + "\"",
+				"    },",
+				"    \"display\": {",
+				"        \"thirdperson_righthand\": {",
+				"            \"rotation\": [35, -45, -5],",
+				"            \"translation\": [5, 0, 1],",
+				"            \"scale\": [1.15, 1.15, 1.15]",
+				"        },",
+				"        \"thirdperson_lefthand\": {",
+				"            \"rotation\": [35, -35, -5],",
+				"            \"translation\": [3, -3, -1],",
+				"            \"scale\": [1.25, 1.25, 1.25]",
+				"        },",
+				"        \"firstperson_righthand\": {",
+				"            \"rotation\": [0, -5, 5],",
+				"            \"translation\": [-6, -0.5, 0],",
+				"            \"scale\": [1.2, 1.2, 1.2]",
+				"        },",
+				"        \"firstperson_lefthand\": {",
+				"            \"rotation\": [0, -5, 5],",
+				"            \"translation\": [-6, -2.5, 0],",
+				"            \"scale\": [1.2, 1.2, 1.2]",
+				"        }",
+				"    }",
+				"}"
 		};
 	}
 	
