@@ -44,7 +44,7 @@ public class CreateToolTest {
 		test.click("Create item");
 		test.click(toolType);
 		test.assertComponentsWithTexts("Cancel", "Create", "Name: ", "Internal item type: ",
-				"Internal item damage: ", "Display name: ", "Lore: ", "Attribute modifiers: ",
+				"INTERNAL item damage: ", "Display name: ", "Lore: ", "Attribute modifiers: ",
 				"Default enchantments: ", "Item flags: ", "Texture: ", "", "1", "Change...",
 				"None", "Allow enchanting", "Allow anvil actions", "Max uses: ", "Repair item: ",
 				"Durability loss on attack:", "Durability loss on block break:", "500", "2", "1");

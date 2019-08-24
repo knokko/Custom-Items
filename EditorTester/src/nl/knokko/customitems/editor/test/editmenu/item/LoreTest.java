@@ -51,13 +51,13 @@ public class LoreTest {
 		test.backspace(7);
 		test.type(lore2);
 		test.clickNearestImage(lore1, TextArrayEditMenu.ADD_IMAGE, 4);
-		test.delay(30);
+		test.delay(50);
 		float y1 = test.getComponentWithText(lore1).getState().getMinY();
 		if (test.getComponentWithText("").getState().getMinY() < y1) {
 			throw new TestException("The new line should be higher");
 		}
 		test.clickNearestImage(lore1, TextArrayEditMenu.DELETE_IMAGE, 6);
-		test.delay(30);
+		test.delay(50);
 		if (test.getComponentWithText(lore2).getState().getMinY() != y1){
 			throw new TestException("The minY of the second component should equal the previous minY of the first lore");
 		}
