@@ -12,7 +12,10 @@ Medium term:
 -Add tridents (1.14 only)
 -Add custom food
 -Add player heads as custom items
+-Add potion effect powers to custom items
 
 Short term:
 -Add custom item placeholders to commands and substitute them right before execution
 -Add a tutorial
+-Add a search edit field to the block drop block selection and sort them by alphabet.
+-Change the names of the attribute modifier operation buttons
