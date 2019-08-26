@@ -45,13 +45,18 @@ public class SelectDrop extends GuiMenu {
 			state.getWindow().setMainComponent(returnMenu);
 		}), 0.025f, 0.8f, 0.2f, 0.9f);
 		
+		DynamicTextButton[] itemButton = { null };
+		
 		addComponent(new DynamicTextComponent("Item to drop:", EditProps.LABEL), 0.3f, 0.7f, 0.5f, 0.8f);
 		SelectCustomItem itemSelect = new SelectCustomItem(this, (CustomItem newItem) -> {
 			selectedItem = newItem;
+			itemButton[0].setText(newItem.getName());
 		}, set);
-		addComponent(new DynamicTextButton(selectedItem == null ? "None" : selectedItem.getName(), EditProps.CHOOSE_BASE, EditProps.CHOOSE_HOVER, () -> {
+		
+		itemButton[0] = new DynamicTextButton(selectedItem == null ? "None" : selectedItem.getName(), EditProps.CHOOSE_BASE, EditProps.CHOOSE_HOVER, () -> {
 			state.getWindow().setMainComponent(itemSelect);
-		}), 0.55f, 0.7f, 0.8f, 0.8f);
+		});
+		addComponent(itemButton[0], 0.55f, 0.7f, 0.8f, 0.8f);
 		
 		addComponent(new DynamicTextComponent("Drop chance:", EditProps.LABEL), 0.3f, 0.575f, 0.5f, 0.675f);
 		IntEditField dropChance = new IntEditField(previous == null ? 100 : previous.getDropChance(), 0, 100, EditProps.EDIT_BASE, EditProps.EDIT_ACTIVE);
