@@ -27,7 +27,7 @@ public class CreateBowTest {
 		DisplayNameTest.test(test, itemName);
 		LoreTest.test(test, lore1, lore2, 4);
 		
-		AttributeModTest.test(test, "generic.movementSpeed", "offhand", "Multiply", "1.5", 
+		AttributeModTest.test(test, "generic.movementSpeed", "offhand", "Add factor", "1.5", 
 				attribute1, slot1, op1, value1, attribute2, slot2, op2, value2, 4);
 		EnchantmentsTest.test(test, enchantment1, level1, enchantment2, level2, 4);
 		CreateToolTest.attackDurabilityLoss(test, CustomItemType.BOW, attackDurLoss, 10);

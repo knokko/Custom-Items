@@ -65,7 +65,7 @@ public class EditorTestFull implements GuiTestProgram {
 		test.assertComponentsWithTexts("Back", "Create item", "Edit", "Delete", "simple_test_item");
 		CreateToolTest.create(test, "Axe", "test_aks", "simple_test_one", "1234", "Custom Item", 
 				"simple_test_item", "4", "3", "Test Test Chop", "Chop Chop akse", "generic.attackSpeed", 
-				"offhand", "Multiply", "3.14", "generic.movementSpeed", "mainhand", "Chain multiply", "1.3", 
+				"offhand", "Add factor", "3.14", "generic.movementSpeed", "mainhand", "Multiply", "1.3", 
 				"knockback", "4", "damage undead", "7");
 		CreateToolTest.create(test, "Shovel", "test_shovel", "simple_test_one", "4312", 
 				"Vanilla item with datavalue", "anvil", "2", "1", "For digging graves", "Or just normal stuff", 
