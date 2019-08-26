@@ -17,4 +17,3 @@ Medium term:
 Short term:
 -Release knokko core for more minecraft versions
 -Add custom item placeholders to commands and substitute them right before execution
--Add a tutorial
