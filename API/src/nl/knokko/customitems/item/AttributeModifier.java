@@ -92,8 +92,8 @@ public class AttributeModifier {
 	public static enum Operation {
 		
 		ADD,
-		MULTIPLY,
-		CHAIN_MULTIPLY;
+		ADD_FACTOR,
+		MULTIPLY;
 		
 		public int getOperation() {
 			return ordinal();

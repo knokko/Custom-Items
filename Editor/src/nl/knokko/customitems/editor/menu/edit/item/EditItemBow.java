@@ -41,7 +41,7 @@ import nl.knokko.gui.util.Option;
 
 public class EditItemBow extends EditItemTool {
 	
-	private static final AttributeModifier EXAMPLE_ATTRIBUTE_MODIFIER = new AttributeModifier(Attribute.MOVEMENT_SPEED, Slot.OFFHAND, Operation.MULTIPLY, 1.5);
+	private static final AttributeModifier EXAMPLE_ATTRIBUTE_MODIFIER = new AttributeModifier(Attribute.MOVEMENT_SPEED, Slot.OFFHAND, Operation.ADD_FACTOR, 1.5);
 
 	private final CustomBow previous;
 
