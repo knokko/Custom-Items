@@ -17,5 +17,3 @@ Medium term:
 Short term:
 -Add custom item placeholders to commands and substitute them right before execution
 -Add a tutorial
--Add a search edit field to the block drop block selection and sort them by alphabet.
--Change the names of the attribute modifier operation buttons
