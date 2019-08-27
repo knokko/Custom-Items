@@ -4,12 +4,13 @@ Long term:
 -Dynamic updating of the server item set
 -Add custom arrows
 -Look into custom item attack ranges
+-Look into 3d item models
 
 Medium term:
 -Work on automated testing
 -Add villager command block help? (only if custom item placeholders fails)
 -Add guns
--Add tridents (1.14 only)
+-Add tridents and other 1.14 materials, but mark them clearly
 -Add custom food
 -Add player heads as custom items
 -Add potion effect powers to custom items
@@ -17,3 +18,4 @@ Medium term:
 Short term:
 -Release knokko core for more minecraft versions
 -Add custom item placeholders to commands and substitute them right before execution
+-Make picked up custom items stack
