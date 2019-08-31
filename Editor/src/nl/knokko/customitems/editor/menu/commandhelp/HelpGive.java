@@ -53,8 +53,8 @@ public class HelpGive extends GuiMenu {
 			}, set));
 		}), 0.7f, 0.8f, 0.85f, 0.9f);
 		addComponent(new DynamicTextButton("Generate for minecraft 1.12", EditProps.BUTTON, EditProps.HOVER, () -> {
-			String command = "/give @p " + selectedItem.getItemType().getMinecraftName() + " 1 "
-					+ selectedItem.getItemDamage() + " " + selectedItem.getNBTTag12();
+			String name = selectedItem.getName();
+			String command = "/give @p <ci-material " + name + "> 1 <ci-damage " + name + "> <ci-tag " + name + ">";
 			String error = CommandBlockHelpOverview.setClipboard(command);
 			if (error == null) {
 				infoComponent.setProperties(EditProps.LABEL);
@@ -66,8 +66,8 @@ public class HelpGive extends GuiMenu {
 		}), 0.2f, 0.05f, 0.45f, 0.15f);
 		addComponent(new DynamicTextButton("Generate for minecraft 1.14", EditProps.BUTTON, EditProps.HOVER, () -> {
 			if (selectedItem.getAttributes().length > 0) {
-				String command = "/give @p " + selectedItem.getItemType().getMinecraftName()
-						+ selectedItem.getNBTTag14();
+				String name = selectedItem.getName();
+				String command = "/give @p <ci-material " + name + "><ci-tag " + name + ">";
 				String error = CommandBlockHelpOverview.setClipboard(command);
 				if (error == null) {
 					infoComponent.setProperties(EditProps.LABEL);

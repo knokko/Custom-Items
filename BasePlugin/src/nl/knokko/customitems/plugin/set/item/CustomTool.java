@@ -77,6 +77,28 @@ public class CustomTool extends CustomItem {
 	}
 	
 	@Override
+	protected String getLoreContent12() {
+		String lore = super.getLoreContent12();
+		String preLore = "\"Durability " + maxDurability + " / " + maxDurability + "\",\"\"";
+		if (lore.isEmpty()) {
+			return preLore;
+		} else {
+			return preLore + "," + lore;
+		}
+	}
+	
+	@Override
+	protected String getLoreContent14() {
+		String lore = super.getLoreContent14();
+		String preLore = "\"\\\"Durability " + maxDurability + " / " + maxDurability + "\\\"\",\"\\\"\\\"\"";
+		if (lore.isEmpty()) {
+			return preLore;
+		} else {
+			return preLore + "," + lore;
+		}
+	}
+	
+	@Override
 	public int getMaxStacksize() {
 		return 1;
 	}

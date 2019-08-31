@@ -54,15 +54,6 @@ public class CustomArmor extends CustomTool {
 	}
 	
 	@Override
-	protected String getDisplayTagContent12() {
-		if (isLeather()) {
-			return super.getDisplayTagContent12() + ",color:" + (blue + 256 * green + 65536 * red);
-		} else {
-			return super.getDisplayTagContent12();
-		}
-	}
-	
-	@Override
 	public void export(BitOutput output) {
 		
 		/* Old encoding:

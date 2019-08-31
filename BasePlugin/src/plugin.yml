@@ -1,6 +1,6 @@
 name: CustomItems
 main: nl.knokko.customitems.plugin.CustomItemsPlugin
-version: 5.5
+version: 5.7
 depend: [KnokkoCore]
 softdepend: [CrazyEnchantments]
 loadbefore: [UltraChest]

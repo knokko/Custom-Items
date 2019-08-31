@@ -13,6 +13,8 @@ import nl.knokko.gui.component.text.TextComponent;
 import nl.knokko.gui.component.text.dynamic.DynamicTextButton;
 import nl.knokko.gui.component.text.dynamic.DynamicTextComponent;
 
+import static nl.knokko.customitems.editor.menu.commandhelp.HelpSummon.getEquipmentTag;
+
 public class HelpMobSpawner extends GuiMenu {
 
 	private final ItemSet set;
@@ -109,9 +111,9 @@ public class HelpMobSpawner extends GuiMenu {
 
 		addComponent(new DynamicTextButton("Generate for minecraft 1.12", EditProps.BUTTON, EditProps.HOVER, () -> {
 			String command = "/setblock ~ ~1 ~ mob_spawner 0 replace {SpawnData:{id:skeleton,HandItems:["
-					+ getEquipmentTag12(selectedMainHand) + "," + getEquipmentTag12(selectedOffHand)
-					+ "],ArmorItems:[" + getEquipmentTag12(selectedBoots) + "," + getEquipmentTag12(selectedLeggings)
-					+ "," + getEquipmentTag12(selectedChestplate) + "," + getEquipmentTag12(selectedHelmet) + "]},Delay:2}";
+					+ getEquipmentTag(selectedMainHand) + "," + getEquipmentTag(selectedOffHand)
+					+ "],ArmorItems:[" + getEquipmentTag(selectedBoots) + "," + getEquipmentTag(selectedLeggings)
+					+ "," + getEquipmentTag(selectedChestplate) + "," + getEquipmentTag(selectedHelmet) + "]},Delay:2}";
 			String error = CommandBlockHelpOverview.setClipboard(command);
 			if (error == null) {
 				infoComponent.setProperties(EditProps.LABEL);
@@ -141,10 +143,10 @@ public class HelpMobSpawner extends GuiMenu {
 				infoComponent.setText(error);
 			} else {
 				String command = "/setblock ~ ~1 ~ spawner{SpawnData:{id:skeleton,HandItems:["
-						+ getEquipmentTag14(selectedMainHand) + "," + getEquipmentTag14(selectedOffHand)
-						+ "],ArmorItems:[" + getEquipmentTag14(selectedBoots) + "," + getEquipmentTag14(selectedLeggings)
-						+ "," + getEquipmentTag14(selectedChestplate) + ","
-						+ getEquipmentTag14(selectedHelmet) + "]},Delay:2} replace";
+						+ getEquipmentTag(selectedMainHand) + "," + getEquipmentTag(selectedOffHand)
+						+ "],ArmorItems:[" + getEquipmentTag(selectedBoots) + "," + getEquipmentTag(selectedLeggings)
+						+ "," + getEquipmentTag(selectedChestplate) + ","
+						+ getEquipmentTag(selectedHelmet) + "]},Delay:2} replace";
 				error = CommandBlockHelpOverview.setClipboard(command);
 				if (error == null) {
 					infoComponent.setProperties(EditProps.LABEL);
@@ -155,13 +157,5 @@ public class HelpMobSpawner extends GuiMenu {
 				}
 			}
 		}), 0.55f, 0.05f, 0.8f, 0.15f);
-	}
-
-	private static String getEquipmentTag12(CustomItem item) {
-		return item == null ? "{}" : item.getEquipmentTag12(1);
-	}
-
-	private static String getEquipmentTag14(CustomItem item) {
-		return item == null ? "{}" : item.getEquipmentTag14(1);
 	}
 }

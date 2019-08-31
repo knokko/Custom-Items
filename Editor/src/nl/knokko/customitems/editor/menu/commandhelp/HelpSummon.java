@@ -108,10 +108,10 @@ public class HelpSummon extends GuiMenu {
 		addComponent(bootsImage, 0.9f, 0.175f, 1f, 0.275f);
 
 		addComponent(new DynamicTextButton("Generate for minecraft 1.12", EditProps.BUTTON, EditProps.HOVER, () -> {
-			String command = "/summon zombie ~ ~1 ~ {HandItems:[" + getEquipmentTag12(selectedMainHand) + ","
-					+ getEquipmentTag12(selectedOffHand) + "],ArmorItems:[" + getEquipmentTag12(selectedBoots) + ","
-					+ getEquipmentTag12(selectedLeggings) + "," + getEquipmentTag12(selectedChestplate) + ","
-					+ getEquipmentTag12(selectedHelmet) + "]}";
+			String command = "/summon zombie ~ ~1 ~ {HandItems:[" + getEquipmentTag(selectedMainHand) + ","
+					+ getEquipmentTag(selectedOffHand) + "],ArmorItems:[" + getEquipmentTag(selectedBoots) + ","
+					+ getEquipmentTag(selectedLeggings) + "," + getEquipmentTag(selectedChestplate) + ","
+					+ getEquipmentTag(selectedHelmet) + "]}";
 			String error = CommandBlockHelpOverview.setClipboard(command);
 			if (error == null) {
 				infoComponent.setProperties(EditProps.LABEL);
@@ -140,10 +140,10 @@ public class HelpSummon extends GuiMenu {
 				infoComponent.setProperties(EditProps.ERROR);
 				infoComponent.setText(error);
 			} else {
-				String command = "/summon zombie ~ ~1 ~ {HandItems:[" + getEquipmentTag14(selectedMainHand) + ","
-						+ getEquipmentTag14(selectedOffHand) + "],ArmorItems:[" + getEquipmentTag14(selectedBoots) + ","
-						+ getEquipmentTag14(selectedLeggings) + "," + getEquipmentTag14(selectedChestplate) + ","
-						+ getEquipmentTag14(selectedHelmet) + "]}";
+				String command = "/summon zombie ~ ~1 ~ {HandItems:[" + getEquipmentTag(selectedMainHand) + ","
+						+ getEquipmentTag(selectedOffHand) + "],ArmorItems:[" + getEquipmentTag(selectedBoots) + ","
+						+ getEquipmentTag(selectedLeggings) + "," + getEquipmentTag(selectedChestplate) + ","
+						+ getEquipmentTag(selectedHelmet) + "]}";
 				error = CommandBlockHelpOverview.setClipboard(command);
 				if (error == null) {
 					infoComponent.setProperties(EditProps.LABEL);
@@ -156,11 +156,7 @@ public class HelpSummon extends GuiMenu {
 		}), 0.55f, 0.05f, 0.8f, 0.15f);
 	}
 
-	private static String getEquipmentTag12(CustomItem item) {
-		return item == null ? "{}" : item.getEquipmentTag12(1);
-	}
-
-	private static String getEquipmentTag14(CustomItem item) {
-		return item == null ? "{}" : item.getEquipmentTag14(1);
+	static String getEquipmentTag(CustomItem item) {
+		return item == null ? "{}" : "<ci-inner " + item.getName() + ">";
 	}
 }
