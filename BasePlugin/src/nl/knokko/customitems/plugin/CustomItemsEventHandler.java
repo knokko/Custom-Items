@@ -39,6 +39,7 @@ import org.bukkit.attribute.Attribute;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Arrow;
 import org.bukkit.entity.Entity;
+import org.bukkit.entity.EntityType;
 import org.bukkit.entity.HumanEntity;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
@@ -53,6 +54,7 @@ import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
 import org.bukkit.event.entity.EntityDeathEvent;
+import org.bukkit.event.entity.EntityPickupItemEvent;
 import org.bukkit.event.entity.EntityShootBowEvent;
 import org.bukkit.event.inventory.InventoryAction;
 import org.bukkit.event.inventory.InventoryClickEvent;
@@ -69,6 +71,7 @@ import org.bukkit.inventory.AnvilInventory;
 import org.bukkit.inventory.CraftingInventory;
 import org.bukkit.inventory.EntityEquipment;
 import org.bukkit.inventory.EquipmentSlot;
+import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.MerchantInventory;
 import org.bukkit.inventory.MerchantRecipe;
@@ -1181,5 +1184,44 @@ public class CustomItemsEventHandler implements Listener {
 	private static interface CustomItemSubstitutor {
 		
 		String process(CustomItem item, int amount);
+	}
+	
+	@EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
+	public void onItemPickup(EntityPickupItemEvent event) {
+		ItemStack stack = event.getItem().getItemStack();
+		if (event.getEntityType() == EntityType.PLAYER && CustomItem.isCustom(stack)) {
+			CustomItem customItem = CustomItemsPlugin.getInstance().getSet().getItem(stack);
+			if (customItem != null) {
+				int remainingAmount = stack.getAmount();
+				Player player = (Player) event.getEntity();
+				Inventory inv = player.getInventory();
+				ItemStack[] contents = inv.getContents();
+				for (ItemStack content : contents) {
+					if (customItem.is(content)) {
+						int remainingSpace = customItem.getMaxStacksize() - content.getAmount();
+						if (remainingSpace > 0) {
+							if (remainingSpace >= remainingAmount) {
+								content.setAmount(content.getAmount() + remainingAmount);
+								event.getItem().remove();
+								event.setCancelled(true);
+								return;
+							} else {
+								content.setAmount(customItem.getMaxStacksize());
+								remainingAmount -= remainingSpace;
+							}
+						}
+					}
+				}
+				
+				if (remainingAmount != stack.getAmount()) {
+					stack.setAmount(remainingAmount);
+					event.getItem().setItemStack(stack);
+					
+					// Apparently, cancelling the event is necessary because it won't let me change
+					// the picked up amount.
+					event.setCancelled(true);
+				}
+			}
+		}
 	}
 }
