@@ -74,6 +74,9 @@ public class ItemSet implements ItemSetBase {
 		customItemMap = new EnumMap<Material, Short2ObjectMap<CustomItem>>(Material.class);
 		items = new CustomItem[0];
 		recipes = new CustomRecipe[0];
+		
+		blockDropMap = new Drop[BlockType.AMOUNT][0];
+		mobDropMap = new EntityDrop[CIEntityType.AMOUNT][0];
 	}
 
 	public ItemSet(BitInput input) {
