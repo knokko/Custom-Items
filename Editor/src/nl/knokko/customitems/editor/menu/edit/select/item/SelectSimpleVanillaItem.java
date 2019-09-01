@@ -126,7 +126,7 @@ public class SelectSimpleVanillaItem extends GuiMenu {
 			int index = addNoneButton ? 1 : 0;
 			for (DynamicTextButton button : buttons) {
 				if (button.getText().contains(filterField.getText().toLowerCase())) {
-					addComponent(button, 0f, 0.9f - index * 0.1f, 1f, 1f - index * 0.1f);
+					addComponent(button, 0f, 0.9f - index * 0.1f, Math.min(1f, button.getText().length() * 0.05f), 1f - index * 0.1f);
 					index++;
 				}
 			}

@@ -88,7 +88,7 @@ public class SelectBlockType extends GuiMenu {
 					addComponent(new DynamicTextButton(block.toString(), EditProps.SELECT_BASE, EditProps.SELECT_HOVER, () -> {
 						receiver.onSelect(block);
 						state.getWindow().setMainComponent(returnMenu);
-					}), 0f, 0.9f - heightIndex * 0.1f, 1f, 1f - heightIndex * 0.1f);
+					}), 0f, 0.9f - heightIndex * 0.1f, Math.min(1f, blockName.length() * 0.05f), 1f - heightIndex * 0.1f);
 					heightIndex++;
 				}
 			}

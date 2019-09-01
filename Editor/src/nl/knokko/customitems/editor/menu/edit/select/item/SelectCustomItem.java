@@ -57,7 +57,7 @@ public class SelectCustomItem extends GuiMenu {
 			addComponent(new DynamicTextButton(item.getName(), EditProps.SAVE_BASE, EditProps.SAVE_HOVER, () -> {
 				receiver.onSelect(item);
 				state.getWindow().setMainComponent(returnMenu);
-			}), 0.35f, 0.9f - index * 0.1f, 0.7f, 1f - index * 0.1f);
+			}), 0.35f, 0.9f - index * 0.1f, 0.35f + Math.min(0.65f, item.getName().length() * 0.015f), 1f - index * 0.1f);
 			index++;
 		}
 	}
