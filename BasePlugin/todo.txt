@@ -8,13 +8,11 @@ Long term:
 
 Medium term:
 -Work on automated testing
--Add villager command block help? (only if custom item placeholders fails)
 -Add guns
 -Add tridents and other 1.14 materials, but mark them clearly
 -Add custom food
 -Add player heads as custom items
--Add potion effect powers to custom items
 
 Short term:
--Release knokko core for more minecraft versions
--Make picked up custom items stack
+-Add potion effect powers to custom items
+-Add command executions to right click custom items

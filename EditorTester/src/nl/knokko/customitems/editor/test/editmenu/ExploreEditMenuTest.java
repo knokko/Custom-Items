@@ -35,7 +35,8 @@ public class ExploreEditMenuTest {
 	public static void test(GuiTestHelper test) {
 
 		// Edit menu buttons
-		test.assertComponentsWithTexts("Quit", "Save", "Save and quit", "Export", "Textures", "Items", "Recipes");
+		test.assertComponentsWithTexts("Quit", "Save", "Save and quit", "Export for 1.12", "Textures", 
+				"Items", "Recipes", "Export for 1.13 or later");
 
 		// Go to the texture menu and check the buttons there
 		test.click("Textures");
