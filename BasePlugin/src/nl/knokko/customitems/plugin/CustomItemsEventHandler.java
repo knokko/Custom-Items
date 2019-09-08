@@ -33,9 +33,12 @@ import java.util.Set;
 import java.util.UUID;
 
 import org.bukkit.Bukkit;
+import org.bukkit.GameMode;
 import org.bukkit.Material;
 import org.bukkit.Sound;
 import org.bukkit.attribute.Attribute;
+import org.bukkit.block.Block;
+import org.bukkit.block.ShulkerBox;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Arrow;
 import org.bukkit.entity.Entity;
@@ -75,6 +78,7 @@ import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.MerchantInventory;
 import org.bukkit.inventory.MerchantRecipe;
+import org.bukkit.inventory.meta.BlockStateMeta;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.inventory.meta.Repairable;
 import org.bukkit.metadata.MetadataValue;
@@ -1221,6 +1225,24 @@ public class CustomItemsEventHandler implements Listener {
 					// the picked up amount.
 					event.setCancelled(true);
 				}
+			}
+		}
+	}
+	
+	@EventHandler
+	public void fixShulkerBoxes(BlockBreakEvent event) {
+		Block block = event.getBlock();
+		if (block.getState() instanceof ShulkerBox) {
+			if (event.getPlayer().getGameMode() != GameMode.CREATIVE) {
+				ShulkerBox shulker = (ShulkerBox) block.getState();
+				event.setDropItems(false);
+				
+				ItemStack stackToDrop = new ItemStack(block.getType());
+				ItemMeta meta = stackToDrop.getItemMeta();
+				BlockStateMeta bms = (BlockStateMeta) meta;
+				bms.setBlockState(shulker);
+				stackToDrop.setItemMeta(bms);
+				event.getBlock().getWorld().dropItemNaturally(event.getBlock().getLocation(), stackToDrop);
 			}
 		}
 	}
