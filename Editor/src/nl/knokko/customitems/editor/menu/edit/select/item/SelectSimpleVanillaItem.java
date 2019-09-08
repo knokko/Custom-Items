@@ -101,7 +101,7 @@ public class SelectSimpleVanillaItem extends GuiMenu {
 			});
 			buttons = new ArrayList<DynamicTextButton>(materials.length);
 			for (Material material : materials) {
-				buttons.add(new DynamicTextButton(material.name().toLowerCase().replace('_', ' '), EditProps.SELECT_BASE, EditProps.SELECT_HOVER, () -> {
+				buttons.add(new DynamicTextButton(material.toString(), EditProps.SELECT_BASE, EditProps.SELECT_HOVER, () -> {
 					receiver.onSelect(material);
 					state.getWindow().setMainComponent(returnMenu);
 				}));

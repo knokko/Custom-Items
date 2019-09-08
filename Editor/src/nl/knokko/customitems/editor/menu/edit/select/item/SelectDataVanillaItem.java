@@ -121,7 +121,7 @@ public class SelectDataVanillaItem extends GuiMenu {
 			});
 			buttons = new ArrayList<DynamicTextButton>(materials.length);
 			for (Material material : materials) {
-				buttons.add(new DynamicActivatableTextButton(material.name().toLowerCase().replace('_', ' '), EditProps.SELECT_BASE, EditProps.SELECT_HOVER, EditProps.SELECT_ACTIVE, () -> {
+				buttons.add(new DynamicActivatableTextButton(material.toString(), EditProps.SELECT_BASE, EditProps.SELECT_HOVER, EditProps.SELECT_ACTIVE, () -> {
 					selected = material;
 				}, () -> {
 					return selected == material;
