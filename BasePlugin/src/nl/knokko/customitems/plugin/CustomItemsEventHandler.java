@@ -1217,7 +1217,7 @@ public class CustomItemsEventHandler implements Listener {
 					stack.setAmount(remainingAmount);
 					event.getItem().setItemStack(stack);
 					
-					// Apparently, cancelling the event is necessary because it won't let me change
+					// Apparently, canceling the event is necessary because it won't let me change
 					// the picked up amount.
 					event.setCancelled(true);
 				}
