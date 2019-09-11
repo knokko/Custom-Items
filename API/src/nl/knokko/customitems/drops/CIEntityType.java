@@ -1,5 +1,7 @@
 package nl.knokko.customitems.drops;
 
+import static nl.knokko.customitems.MCVersions.*;
+
 public enum CIEntityType {
 	
 	ELDER_GUARDIAN,
@@ -53,7 +55,22 @@ public enum CIEntityType {
 	PARROT,
 	VILLAGER,
 	PLAYER,
-	NPC;
+	NPC,
+	TURTLE(VERSION1_13),
+	PHANTOM(VERSION1_13),
+	COD(VERSION1_13),
+	SALMON(VERSION1_13),
+	PUFFERFISH(VERSION1_13),
+	TROPICAL_FISH(VERSION1_13),
+	DROWNED(VERSION1_13),
+	DOLPHIN(VERSION1_13),
+	CAT(VERSION1_14),
+	PANDA(VERSION1_14),
+	PILLAGER(VERSION1_14),
+	RAVAGER(VERSION1_14),
+	TRADER_LLAMA(VERSION1_14),
+	WANDERING_TRADER(VERSION1_14),
+	FOX(VERSION1_14);
 	
 	private static final CIEntityType[] ALL_TYPES = values();
 	
@@ -74,8 +91,24 @@ public enum CIEntityType {
 		}
 	}
 	
+	public final int version;
+	
+	private CIEntityType(int mcVersion) {
+		version = mcVersion;
+	}
+	
+	private CIEntityType() {
+		this(VERSION1_12);
+	}
+	
 	@Override
 	public String toString() {
-		return name().replace('_', ' ').toLowerCase();
+		String name = name().replace('_', ' ').toLowerCase();
+		switch (version){
+		case VERSION1_12: return name;
+		case VERSION1_13: return name + " (1.13+)";
+		case VERSION1_14: return name + " (1.14+)";
+		default: throw new Error("Unknown minecraft version: " + version);
+		}
 	}
 }

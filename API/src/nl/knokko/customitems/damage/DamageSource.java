@@ -1,5 +1,7 @@
 package nl.knokko.customitems.damage;
 
+import static nl.knokko.customitems.MCVersions.*;
+
 public enum DamageSource {
 	
 	CONTACT,
@@ -28,12 +30,29 @@ public enum DamageSource {
 	CUSTOM,
 	FLY_INTO_WALL,
 	HOT_FLOOR,
-	CRAMMING;
+	CRAMMING,
+	DRYOUT(VERSION1_13);
 	
 	public static final int AMOUNT = values().length;
 	
+	public final int version;
+	
+	private DamageSource(int mcVersion) {
+		version = mcVersion;
+	}
+	
+	private DamageSource() {
+		this(VERSION1_12);
+	}
+	
 	@Override
 	public String toString() {
-		return name().toLowerCase().replace('_', ' ');
+		String name = name().replace('_', ' ').toLowerCase();
+		switch (version){
+		case VERSION1_12: return name;
+		case VERSION1_13: return name + " (1.13+)";
+		case VERSION1_14: return name + " (1.14+)";
+		default: throw new Error("Unknown minecraft version: " + version);
+		}
 	}
 }

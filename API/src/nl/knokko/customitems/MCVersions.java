@@ -1,4 +1,4 @@
-package nl.knokko.customitems.editor.set.item;
+package nl.knokko.customitems;
 
 public class MCVersions {
 	

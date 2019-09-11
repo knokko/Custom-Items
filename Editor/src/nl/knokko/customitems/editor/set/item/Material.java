@@ -23,7 +23,7 @@
  *******************************************************************************/
 package nl.knokko.customitems.editor.set.item;
 
-import static nl.knokko.customitems.editor.set.item.MCVersions.*;
+import static nl.knokko.customitems.MCVersions.*;
 
 public enum Material {
 	

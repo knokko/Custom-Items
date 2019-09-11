@@ -54,7 +54,7 @@ public class EnchantmentSelect extends GuiMenu {
 		float y = 0.9f;
 		EnchantmentType[] enchantments = EnchantmentType.values();
 		for (EnchantmentType enchantment : enchantments) {
-			addComponent(new DynamicTextButton(enchantment.getName(), EditProps.SELECT_BASE, EditProps.SELECT_HOVER, () -> {
+			addComponent(new DynamicTextButton(enchantment.toString(), EditProps.SELECT_BASE, EditProps.SELECT_HOVER, () -> {
 				receiver.onSelect(enchantment);
 				state.getWindow().setMainComponent(returnMenu);
 			}), x, y - 0.05f, x + 0.125f, y);

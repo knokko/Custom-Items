@@ -23,6 +23,8 @@
  *******************************************************************************/
 package nl.knokko.customitems.item;
 
+import static nl.knokko.customitems.MCVersions.*;
+
 public enum EnchantmentType {
 	
 	PROTECTION_ENVIRONMENTAL("protection", 0),
@@ -54,17 +56,42 @@ public enum EnchantmentType {
 	ARROW_FIRE("flame", 50),
 	ARROW_INFINITE("infinity", 51),
 	LUCK("luck_of_the_sea", 61),
-	LURE("lure", 62);
+	LURE("lure", 62),
+	LOYALTY("loyalty", 65, VERSION1_13),
+	CHANNELING("channeling", 68, VERSION1_13),
+	RIPTIDE("riptide", 67, VERSION1_13),
+	IMPALING("impaling", 66, VERSION1_13),
+	
+	// Numeric IDs seem to have been removed completely in minecraft 1.14
+	MULTSHOT("multishot", -1, VERSION1_14),
+	PIERCING("piercing", -1, VERSION1_14),
+	QUICK_CHARGE("quick_charge", -1, VERSION1_14);
 	
 	private final String niceName;
 	
+	public final int version;
 	private final int numericID;
 	private final String minecraftName;
 	
-	private EnchantmentType(String minecraftName, int numericID) {
+	private EnchantmentType(String minecraftName, int numericID, int mcVersion) {
 		niceName = name().toLowerCase().replace('_', ' ');
+		version = mcVersion;
 		this.numericID = numericID;
 		this.minecraftName = minecraftName;
+	}
+	
+	private EnchantmentType(String minecraftName, int numericID) {
+		this(minecraftName, numericID, VERSION1_12);
+	}
+	
+	@Override
+	public String toString() {
+		switch(version) {
+		case VERSION1_12: return niceName;
+		case VERSION1_13: return niceName + "(1.13+)";
+		case VERSION1_14: return niceName + "(1.14+)";
+		default: throw new Error("Unknown minecraft version: " + version);
+		}
 	}
 	
 	public String getName() {
@@ -72,6 +99,9 @@ public enum EnchantmentType {
 	}
 	
 	public int getNumericID() {
+		if (numericID == -1) {
+			throw new UnsupportedOperationException("This enchantment doesn't have a numeric ID");
+		}
 		return numericID;
 	}
 	

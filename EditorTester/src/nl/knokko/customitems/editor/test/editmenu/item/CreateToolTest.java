@@ -48,6 +48,8 @@ public class CreateToolTest {
 				"Default enchantments: ", "Item flags: ", "Texture: ", "", "1", "Change...",
 				"None", "Allow enchanting", "Allow anvil actions", "Max uses: ", "Repair item: ",
 				"Durability loss on attack:", "Durability loss on block break:", "500", "2", "1");
+		
+		
 		ItemNameTest.test(test, itemName);
 		SimpleTextureTest.test(test, textureName);
 		DisplayNameTest.test(test, itemName);
@@ -59,9 +61,12 @@ public class CreateToolTest {
 				CustomItemDamage.getDefaultAttackDamage(customItemType) + "", 
 				attribute1, slot1, op1, value1, attribute2, slot2, op2, value2, 5);
 		EnchantmentsTest.test(test, enchantment1, level1, enchantment2, level2, 5);
+		
 		toolOnly(test, customItemType, maxUses, repairItemCategory, repairItem, attackDurLoss, breakDurLoss, 6);
+
 		test.click("Create");
 		test.assertComponentsWithTexts("Create item", itemName);
+		test.assertComponentWithText("Create item");
 	}
 	
 	public static void repairItem(GuiTestHelper test, String repairItemCategory, String repairItem) {
@@ -79,9 +84,9 @@ public class CreateToolTest {
 			}
 		}
 		if (repairItemCategory.equals("Vanilla item with datavalue")) {
-			test.assertComponentWithText(repairItem + "(0)");
+			test.assertComponentWithText(repairItem.replace(' ', '_') + "(0)");
 		} else if (repairItem != null){
-			test.assertComponentWithText(repairItem);
+			test.assertComponentWithText(repairItem.replace(' ', '_'));
 		} else {
 			test.assertComponentWithText("None");
 		}
@@ -124,6 +129,7 @@ public class CreateToolTest {
 		test.uncheck("Allow anvil actions", 2);
 		test.delay(30);
 		test.check("Allow anvil actions", 2);
+	
 		maxUses(test, "500", maxUses);
 		repairItem(test, repairItemCategory, repairItem);
 		attackDurabilityLoss(test, type, attackDurLoss, numberOfEditFields);

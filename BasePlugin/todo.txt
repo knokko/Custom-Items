@@ -19,3 +19,4 @@ Short term:
 -Allow data values >= 16
 -Fix current bugs
 -Add link on editor front page to the ruby tutorial
+-Add possibility to upload item sets to some external site and download link in config
