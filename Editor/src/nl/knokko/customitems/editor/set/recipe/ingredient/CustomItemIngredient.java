@@ -87,6 +87,11 @@ public class CustomItemIngredient implements Ingredient {
 	}
 	
 	@Override
+	public String toString() {
+		return toString(null);
+	}
+	
+	@Override
 	public String[] getInfo(String emptyString) {
 		return info;
 	}

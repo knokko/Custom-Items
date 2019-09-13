@@ -90,6 +90,11 @@ public class DataVanillaIngredient implements Ingredient {
 	public String toString(String emptyString) {
 		return type.name().toLowerCase() + "(" + data + ")";
 	}
+	
+	@Override
+	public String toString() {
+		return toString(null);
+	}
 
 	@Override
 	public String[] getInfo(String emptyString) {

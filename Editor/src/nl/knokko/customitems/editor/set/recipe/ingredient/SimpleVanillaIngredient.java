@@ -79,6 +79,11 @@ public class SimpleVanillaIngredient implements Ingredient {
 	public String toString(String emptyString) {
 		return type.name().toLowerCase();
 	}
+	
+	@Override
+	public String toString() {
+		return toString(null);
+	}
 
 	@Override
 	public String[] getInfo(String emptyString) {

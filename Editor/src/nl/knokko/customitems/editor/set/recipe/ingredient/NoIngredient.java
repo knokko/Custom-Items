@@ -52,4 +52,9 @@ public class NoIngredient implements Ingredient {
 	public String toString(String emptyString) {
 		return emptyString;
 	}
+	
+	@Override
+	public String toString() {
+		return "No ingredient";
+	}
 }
