@@ -33,7 +33,10 @@ public enum DamageSource {
 	CRAMMING,
 	DRYOUT(VERSION1_13);
 	
-	public static final int AMOUNT = values().length;
+	public static final int AMOUNT_14 = values().length;
+	
+	// This is dirty, but correct as only 1 new damage source was added in mc 1.13 and no new in mc 1.14
+	public static final int AMOUNT_12 = AMOUNT_14 - 1;
 	
 	public final int version;
 	

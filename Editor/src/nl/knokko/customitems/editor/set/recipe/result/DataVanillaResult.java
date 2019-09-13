@@ -76,4 +76,8 @@ public class DataVanillaResult extends Result {
 	public Result amountClone(byte amount) {
 		return new DataVanillaResult(type, data, amount);
 	}
+	
+	public Material getType() {
+		return type;
+	}
 }

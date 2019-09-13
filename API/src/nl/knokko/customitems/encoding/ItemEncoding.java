@@ -101,4 +101,9 @@ public class ItemEncoding {
 	 * The first encoding of custom shields
 	 */
 	public static final byte ENCODING_SHIELD_6 = 17;
+	
+	/**
+	 * Added the damage resistances after minecraft 1.12
+	 */
+	public static final byte ENCODING_ARMOR_7 = 18;
 }

@@ -44,6 +44,7 @@ import javax.imageio.ImageIO;
 import javax.imageio.stream.MemoryCacheImageOutputStream;
 
 import nl.knokko.customitems.damage.DamageResistances;
+import nl.knokko.customitems.damage.DamageSource;
 import nl.knokko.customitems.drops.BlockDrop;
 import nl.knokko.customitems.drops.BlockType;
 import nl.knokko.customitems.drops.CIEntityType;
@@ -64,10 +65,14 @@ import nl.knokko.customitems.editor.set.recipe.Recipe;
 import nl.knokko.customitems.editor.set.recipe.ShapedRecipe;
 import nl.knokko.customitems.editor.set.recipe.ShapelessRecipe;
 import nl.knokko.customitems.editor.set.recipe.ingredient.CustomItemIngredient;
+import nl.knokko.customitems.editor.set.recipe.ingredient.DataVanillaIngredient;
 import nl.knokko.customitems.editor.set.recipe.ingredient.Ingredient;
 import nl.knokko.customitems.editor.set.recipe.ingredient.NoIngredient;
+import nl.knokko.customitems.editor.set.recipe.ingredient.SimpleVanillaIngredient;
 import nl.knokko.customitems.editor.set.recipe.result.CustomItemResult;
+import nl.knokko.customitems.editor.set.recipe.result.DataVanillaResult;
 import nl.knokko.customitems.editor.set.recipe.result.Result;
+import nl.knokko.customitems.editor.set.recipe.result.SimpleVanillaResult;
 import nl.knokko.customitems.encoding.ItemEncoding;
 import nl.knokko.customitems.encoding.RecipeEncoding;
 import nl.knokko.customitems.item.AttributeModifier;
@@ -86,6 +91,7 @@ import nl.knokko.util.bits.BitInput;
 import nl.knokko.util.bits.BitOutput;
 import nl.knokko.util.bits.ByteArrayBitOutput;
 
+import static nl.knokko.customitems.MCVersions.*;
 import static nl.knokko.customitems.encoding.SetEncoding.*;
 
 public class ItemSet implements ItemSetBase {
@@ -135,6 +141,8 @@ public class ItemSet implements ItemSetBase {
 			return loadArmor5(input, checkCustomModel);
 		else if (encoding == ItemEncoding.ENCODING_ARMOR_6)
 			return loadArmor6(input, checkCustomModel);
+		else if (encoding == ItemEncoding.ENCODING_ARMOR_7)
+			return loadArmor7(input, checkCustomModel);
 		else if (encoding == ItemEncoding.ENCODING_SHIELD_6)
 			return loadShield6(input, checkCustomModel);
 		throw new IllegalArgumentException("Unknown encoding: " + encoding);
@@ -783,7 +791,62 @@ public class ItemSet implements ItemSetBase {
 		int entityHitDurabilityLoss = input.readInt();
 		int blockBreakDurabilityLoss = input.readInt();
 		
-		DamageResistances resistances = new DamageResistances(input);
+		DamageResistances resistances = DamageResistances.load12(input);
+		
+		String imageName = input.readJavaString();
+		NamedImage texture = null;
+		for (NamedImage current : textures) {
+			if (current.getName().equals(imageName)) {
+				texture = current;
+				break;
+			}
+		}
+		if (texture == null)
+			throw new IllegalArgumentException("Can't find texture " + imageName);
+		byte[] customModel = loadCustomModel(input, checkCustomModel);
+		return new CustomArmor(itemType, damage, name, displayName, lore, attributes, defaultEnchantments, durability, allowEnchanting,
+				allowAnvil, repairItem, texture, red, green, blue, itemFlags, entityHitDurabilityLoss, 
+				blockBreakDurabilityLoss, resistances, customModel);
+	}
+	
+	private CustomItem loadArmor7(BitInput input, boolean checkCustomModel) {
+		CustomItemType itemType = CustomItemType.valueOf(input.readJavaString());
+		short damage = input.readShort();
+		String name = input.readJavaString();
+		String displayName = input.readJavaString();
+		String[] lore = new String[input.readByte() & 0xFF];
+		for (int index = 0; index < lore.length; index++) {
+			lore[index] = input.readJavaString();
+		}
+		AttributeModifier[] attributes = new AttributeModifier[input.readByte() & 0xFF];
+		for (int index = 0; index < attributes.length; index++)
+			attributes[index] = loadAttribute2(input);
+		Enchantment[] defaultEnchantments = new Enchantment[input.readByte() & 0xFF];
+		for (int index = 0; index < defaultEnchantments.length; index++)
+			defaultEnchantments[index] = new Enchantment(EnchantmentType.valueOf(input.readString()), input.readInt());
+		long durability = input.readLong();
+		boolean allowEnchanting = input.readBoolean();
+		boolean allowAnvil = input.readBoolean();
+		Ingredient repairItem = Recipe.loadIngredient(input, this);
+		int red;
+		int green;
+		int blue;
+		if (itemType.isLeatherArmor()) {
+			red = input.readByte() & 0xFF;
+			green = input.readByte() & 0xFF;
+			blue = input.readByte() & 0xFF;
+		} else {
+			red = 160;
+			green = 101;
+			blue = 64;
+		}
+		
+		// Don't use ItemFlag.values().length because it only had 6 flags during the version it was saved
+		boolean[] itemFlags = input.readBooleans(6);
+		int entityHitDurabilityLoss = input.readInt();
+		int blockBreakDurabilityLoss = input.readInt();
+		
+		DamageResistances resistances = DamageResistances.load14(input);
 		
 		String imageName = input.readJavaString();
 		NamedImage texture = null;
@@ -1169,10 +1232,15 @@ public class ItemSet implements ItemSetBase {
 	}
 	
 	/**
-	 * Experimental feature to export the resourcepack for minecraft 1.14 instead of minecraft 1.12
-	 * @return
+	 * Export the item set for minecraft version 1.mcVersion with the new resourcepack format
+	 * @param mcVersion The minecraft version to export for, after the 1.
+	 * @return The error message if exporting failed, or null if the item set was exported successfully
 	 */
-	public String export1_14() {
+	public String exportNew(int mcVersion) {
+		String versionError = validateExportVersion(mcVersion);
+		if (versionError != null) {
+			return versionError;
+		}
 		try {
 			File file = new File(Editor.getFolder() + "/" + fileName + ".cis");// cis stands for Custom Item Set
 			OutputStream fileOutput = Files.newOutputStream(file.toPath());
@@ -1483,8 +1551,102 @@ public class ItemSet implements ItemSetBase {
 			return ioex.getMessage();
 		}
 	}
+	
+	private int ingredientVersion(Ingredient ingredient) {
+		if (ingredient instanceof NoIngredient || ingredient instanceof CustomItemIngredient) {
+			return VERSION1_12;
+		} else if (ingredient instanceof SimpleVanillaIngredient) {
+			return ((SimpleVanillaIngredient) ingredient).getType().version;
+		} else {
+			return ((DataVanillaIngredient) ingredient).getType().version;
+		}
+	}
+	
+	private int resultVersion(Result result) {
+		if (result instanceof CustomItemResult) {
+			return VERSION1_12;
+		} else if (result instanceof SimpleVanillaResult) {
+			return ((SimpleVanillaResult) result).getType().version;
+		} else {
+			return ((DataVanillaResult) result).getType().version;
+		}
+	}
+	
+	private String validateExportVersion(int version) {
+		
+		// Reject everything from a higher minecraft version
+		for (CustomItem item : items) {
+			for (Enchantment enchant : item.getDefaultEnchantments()) {
+				if (enchant.getType().version > version) {
+					return "The item " + item.getName() + " has enchantment " + enchant.getType().getName() + ", which was added after minecraft 1." + version;
+				}
+			}
+			if (item instanceof CustomTool) {
+				CustomTool tool = (CustomTool) item;
+				if (ingredientVersion(tool.getRepairItem()) > version) {
+					return "The repair item " + tool.getRepairItem() + " for " + tool.getName() + " was added after minecraft 1." + version;
+				}
+				
+				if (item instanceof CustomArmor) {
+					CustomArmor armor = (CustomArmor) item;
+					DamageSource[] sources = DamageSource.values();
+					for (DamageSource source : sources) {
+						if (source.version > version && armor.getDamageResistances().getResistance(source) != 0) {
+							return "Armor " + item.getName() + " has a damage resistance against " + source + ", which was added after minecraft 1." + version;
+						}
+					}
+				}
+			}
+		}
+		
+		for (Recipe recipe : recipes) {
+			if (recipe instanceof ShapedRecipe) {
+				ShapedRecipe shaped = (ShapedRecipe) recipe;
+				for (Ingredient ingredient : shaped.getIngredients()) {
+					if (ingredientVersion(ingredient) > version) {
+						return "The ingredient " + ingredient + " used for " + shaped.getResult() + " was added after minecraft 1." + version;
+					}
+				}
+			} else {
+				ShapelessRecipe shapeless = (ShapelessRecipe) recipe;
+				for (Ingredient ingredient : shapeless.getIngredients()) {
+					if (ingredientVersion(ingredient) > version) {
+						return "The ingredient " + ingredient + " used for " + shapeless.getResult() + " was added after minecraft 1." + version;
+					}
+				}
+			}
+			
+			if (resultVersion(recipe.getResult()) > version) {
+				return "The crafting recipe result " + recipe.getResult() + " was added after minecraft 1." + version;
+			}
+		}
+		
+		for (BlockDrop drop : blockDrops) {
+			if (drop.getBlock().version > version) {
+				return "There is a block drop for " + drop.getBlock() + ", but this block was added after minecraft 1." + version;
+			}
+		}
+		
+		for (EntityDrop drop : mobDrops) {
+			if (drop.getEntityType().version > version) {
+				return "There is a mob drop for " + drop.getEntityType() + ", but this mob was added after minecraft 1." + version;
+			}
+		}
+		
+		return null;
+	}
 
-	public String export() {
+	/**
+	 * Export the item set for minecraft version 1.mcVersion with the old resourcepack format
+	 * @param mcVersion The minecraft version to export for, after the 1.
+	 * @return The error message if exporting failed, or null if the item set was exported successfully
+	 */
+	public String exportOld(int mcVersion) {
+		
+		String error = validateExportVersion(mcVersion);
+		if (error != null) {
+			return error;
+		}
 		try {
 			File file = new File(Editor.getFolder() + "/" + fileName + ".cis");// cis stands for Custom Item Set
 			OutputStream fileOutput = Files.newOutputStream(file.toPath());

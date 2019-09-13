@@ -21,8 +21,8 @@ public class EditDamageResistances extends GuiMenu {
 	
 	public EditDamageResistances(DamageResistances oldResistances, Runnable onCancel, Receiver onApply) {
 		DamageSource[] damageSources = DamageSource.values();
-		this.resistances = new IntEditField[DamageSource.AMOUNT];
-		for (int index = 0; index < DamageSource.AMOUNT; index++) {
+		this.resistances = new IntEditField[DamageSource.AMOUNT_14];
+		for (int index = 0; index < DamageSource.AMOUNT_14; index++) {
 			resistances[index] = new IntEditField(oldResistances.getResistance(damageSources[index]), 
 					-10000, 10100, EditProps.EDIT_BASE, EditProps.EDIT_ACTIVE);
 		}
@@ -38,7 +38,7 @@ public class EditDamageResistances extends GuiMenu {
 		DamageSource[] damageSources = DamageSource.values();
 		addComponent(new DynamicTextButton("Apply", EditProps.SAVE_BASE, EditProps.SAVE_HOVER, () -> {
 			DamageResistances newResistances = new DamageResistances();
-			for (int index = 0; index < DamageSource.AMOUNT; index++) {
+			for (int index = 0; index < DamageSource.AMOUNT_14; index++) {
 				Option.Int maybeResistance = resistances[index].getInt();
 				if (maybeResistance.hasValue()) {
 					newResistances.setResistance(damageSources[index], (short) maybeResistance.getValue());

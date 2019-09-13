@@ -170,6 +170,8 @@ public class ItemSet implements ItemSetBase {
 			return loadArmor5(input);
 		else if (encoding == ItemEncoding.ENCODING_ARMOR_6)
 			return loadArmor6(input);
+		else if (encoding == ItemEncoding.ENCODING_ARMOR_7)
+			return loadArmor7(input);
 		else if (encoding == ItemEncoding.ENCODING_SHIELD_6)
 			return loadShield6(input);
 		throw new IllegalArgumentException("Unknown encoding: " + encoding);
@@ -490,7 +492,40 @@ public class ItemSet implements ItemSetBase {
 		boolean[] itemFlags = input.readBooleans(6);
 		int entityHitDurabilityLoss = input.readInt();
 		int blockBreakDurabilityLoss = input.readInt();
-		DamageResistances damageResistances = new DamageResistances(input);
+		DamageResistances damageResistances = DamageResistances.load12(input);
+		return new CustomArmor(itemType, damage, name, displayName, lore, attributes, defaultEnchantments, durability,
+				allowEnchanting, allowAnvil, repairItem, color, itemFlags, entityHitDurabilityLoss,
+				blockBreakDurabilityLoss, damageResistances);
+	}
+	
+	private CustomItem loadArmor7(BitInput input) {
+		CustomItemType itemType = CustomItemType.valueOf(input.readJavaString());
+		short damage = input.readShort();
+		String name = input.readJavaString();
+		String displayName = input.readJavaString();
+		String[] lore = new String[input.readByte() & 0xFF];
+		for (int index = 0; index < lore.length; index++)
+			lore[index] = input.readJavaString();
+		AttributeModifier[] attributes = new AttributeModifier[input.readByte() & 0xFF];
+		for (int index = 0; index < attributes.length; index++)
+			attributes[index] = loadAttribute2(input);
+		Enchantment[] defaultEnchantments = new Enchantment[input.readByte() & 0xFF];
+		for (int index = 0; index < defaultEnchantments.length; index++)
+			defaultEnchantments[index] = new Enchantment(EnchantmentType.valueOf(input.readString()), input.readInt());
+		long durability = input.readLong();
+		boolean allowEnchanting = input.readBoolean();
+		boolean allowAnvil = input.readBoolean();
+		Ingredient repairItem = loadIngredient(input);
+		Color color;
+		if (itemType.isLeatherArmor()) {
+			color = Color.fromRGB(input.readByte() & 0xFF, input.readByte() & 0xFF, input.readByte() & 0xFF);
+		} else {
+			color = null;
+		}
+		boolean[] itemFlags = input.readBooleans(6);
+		int entityHitDurabilityLoss = input.readInt();
+		int blockBreakDurabilityLoss = input.readInt();
+		DamageResistances damageResistances = DamageResistances.load14(input);
 		return new CustomArmor(itemType, damage, name, displayName, lore, attributes, defaultEnchantments, durability,
 				allowEnchanting, allowAnvil, repairItem, color, itemFlags, entityHitDurabilityLoss,
 				blockBreakDurabilityLoss, damageResistances);
