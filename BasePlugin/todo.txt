@@ -21,3 +21,4 @@ Short term:
 -Add key shortcuts for creating crafting recipes
 -Add choice between generated and handheld item model
 -Add tridents
+-Let hoppers stack custom items automatically
