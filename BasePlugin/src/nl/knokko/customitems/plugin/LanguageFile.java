@@ -33,7 +33,7 @@ import org.bukkit.configuration.file.YamlConfiguration;
 
 public class LanguageFile {
 	
-	private static final String DEFAULT_DURABILITY_PREFIX = "Durability ";
+	private static final String DEFAULT_DURABILITY_PREFIX = "Durability";
 	
 	private static final String DEFAULT_COMMAND_USEAGE = ChatColor.YELLOW + "Use /customitems give <item name> [player name]";
 	private static final String DEFAULT_COMMAND_NO_ACCESS = ChatColor.DARK_RED + "Only operators can use this command.";

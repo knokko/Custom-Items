@@ -44,8 +44,12 @@ public class CustomTool extends CustomItem {
 	
 	private static final String DURABILITY_SPLIT = " / ";
 	
+	private static String prefix() {
+		return CustomItemsPlugin.getInstance().getLanguageFile().getDurabilityPrefix();
+	}
+	
 	protected static String createDurabilityLine(long current, long max) {
-		return CustomItemsPlugin.getInstance().getLanguageFile().getDurabilityPrefix() + " " + current + DURABILITY_SPLIT + max;
+		return prefix() + " " + current + DURABILITY_SPLIT + max;
 	}
 	
 	private static long parseDurability(String line) {
@@ -79,7 +83,7 @@ public class CustomTool extends CustomItem {
 	@Override
 	protected String getLoreContent12() {
 		String lore = super.getLoreContent12();
-		String preLore = "\"Durability " + maxDurability + " / " + maxDurability + "\",\"\"";
+		String preLore = "\"" + prefix() + " " + maxDurability + " / " + maxDurability + "\",\"\"";
 		if (lore.isEmpty()) {
 			return preLore;
 		} else {
@@ -90,7 +94,7 @@ public class CustomTool extends CustomItem {
 	@Override
 	protected String getLoreContent14() {
 		String lore = super.getLoreContent14();
-		String preLore = "\"\\\"Durability " + maxDurability + " / " + maxDurability + "\\\"\",\"\\\"\\\"\"";
+		String preLore = "\"\\\"" + prefix() + " " + maxDurability + " / " + maxDurability + "\\\"\",\"\\\"\\\"\"";
 		if (lore.isEmpty()) {
 			return preLore;
 		} else {
