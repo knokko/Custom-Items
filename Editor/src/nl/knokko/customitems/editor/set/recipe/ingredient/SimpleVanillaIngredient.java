@@ -23,24 +23,24 @@
  *******************************************************************************/
 package nl.knokko.customitems.editor.set.recipe.ingredient;
 
-import nl.knokko.customitems.editor.set.item.Material;
 import nl.knokko.customitems.encoding.RecipeEncoding;
+import nl.knokko.customitems.item.CIMaterial;
 import nl.knokko.util.bits.BitInput;
 import nl.knokko.util.bits.BitOutput;
 
 public class SimpleVanillaIngredient implements Ingredient {
 	
-	private final Material type;
+	private final CIMaterial type;
 	
 	private String[] info;
 
-	public SimpleVanillaIngredient(Material material) {
+	public SimpleVanillaIngredient(CIMaterial material) {
 		this.type = material;
 		determineInfo();
 	}
 	
 	public SimpleVanillaIngredient(BitInput input) {
-		type = Material.valueOf(input.readJavaString());
+		type = CIMaterial.valueOf(input.readJavaString());
 		determineInfo();
 	}
 	
@@ -51,7 +51,7 @@ public class SimpleVanillaIngredient implements Ingredient {
 		};
 	}
 	
-	public Material getType() {
+	public CIMaterial getType() {
 		return type;
 	}
 

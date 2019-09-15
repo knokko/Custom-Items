@@ -25,7 +25,6 @@ package nl.knokko.customitems.plugin.set.item;
 
 import java.util.List;
 
-import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
@@ -36,9 +35,11 @@ import org.bukkit.inventory.meta.ItemMeta;
 
 import com.google.common.collect.Lists;
 
+import nl.knokko.core.plugin.item.ItemHelper;
 import nl.knokko.core.plugin.item.attributes.ItemAttributes;
 import nl.knokko.core.plugin.item.attributes.ItemAttributes.Single;
 import nl.knokko.customitems.item.AttributeModifier;
+import nl.knokko.customitems.item.CIMaterial;
 import nl.knokko.customitems.item.CustomItemType;
 import nl.knokko.customitems.item.Enchantment;
 
@@ -48,7 +49,7 @@ public abstract class CustomItem extends nl.knokko.customitems.item.CustomItem {
 		return item != null && item.hasItemMeta() && item.getItemMeta().isUnbreakable() && item.getDurability() > 0;
 	}
 	
-	protected final Material material;
+	protected final CIMaterial material;
 	
 	protected final Single[] attributeModifiers;
     
@@ -56,8 +57,7 @@ public abstract class CustomItem extends nl.knokko.customitems.item.CustomItem {
     		String[] lore, AttributeModifier[] attributes, Enchantment[] defaultEnchantments, boolean[] itemFlags){
         super(itemType, itemDamage, name, displayName, lore, attributes, defaultEnchantments, itemFlags);
         
-        // Why Bukkit?
-        material = Material.getMaterial(itemType.name().replace("SHOVEL", "SPADE"));
+        material = CIMaterial.valueOf(itemType.name().replace("SHOVEL", "SPADE"));
         attributeModifiers = new Single[attributes.length];
         for (int index = 0; index < attributes.length; index++) {
         	AttributeModifier a = attributes[index];
@@ -84,7 +84,7 @@ public abstract class CustomItem extends nl.knokko.customitems.item.CustomItem {
     }
     
     public ItemStack create(int amount, List<String> lore){
-    	ItemStack item = ItemAttributes.createWithAttributes(material, amount, attributeModifiers);
+    	ItemStack item = ItemAttributes.createWithAttributes(material.name(), amount, attributeModifiers);
         item.setItemMeta(createItemMeta(item, lore));
         item.setDurability(itemDamage);
         for (Enchantment enchantment : defaultEnchantments) {
@@ -106,10 +106,10 @@ public abstract class CustomItem extends nl.knokko.customitems.item.CustomItem {
     }
     
     public boolean is(ItemStack item){
-        return item != null && item.hasItemMeta() && item.getItemMeta().isUnbreakable() && item.getType() == material && getDamage(item) == itemDamage;
+        return item != null && item.hasItemMeta() && item.getItemMeta().isUnbreakable() && ItemHelper.getMaterialName(item).equals(material.name()) && getDamage(item) == itemDamage;
     }
     
-    public Material getMaterial() {
+    public CIMaterial getMaterial() {
     	return material;
     }
     

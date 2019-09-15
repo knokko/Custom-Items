@@ -23,19 +23,21 @@
  *******************************************************************************/
 package nl.knokko.customitems.plugin.recipe.ingredient;
 
-import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
+
+import nl.knokko.core.plugin.item.ItemHelper;
+import nl.knokko.customitems.item.CIMaterial;
 
 public class NoIngredient implements Ingredient {
 
 	@Override
 	public boolean accept(ItemStack item) {
-		return item == null || item.getType() == Material.AIR;
+		return item == null || ItemHelper.getMaterialName(item).equals(CIMaterial.AIR.name());
 	}
 
 	@Override
-	public Material getType() {
-		return Material.AIR;
+	public CIMaterial getType() {
+		return CIMaterial.AIR;
 	}
 
 	@Override

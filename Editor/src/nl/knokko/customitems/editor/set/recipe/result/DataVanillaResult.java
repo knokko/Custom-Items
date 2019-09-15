@@ -23,17 +23,17 @@
  *******************************************************************************/
 package nl.knokko.customitems.editor.set.recipe.result;
 
-import nl.knokko.customitems.editor.set.item.Material;
 import nl.knokko.customitems.encoding.RecipeEncoding;
+import nl.knokko.customitems.item.CIMaterial;
 import nl.knokko.util.bits.BitInput;
 import nl.knokko.util.bits.BitOutput;
 
 public class DataVanillaResult extends Result {
 	
-	private final Material type;
+	private final CIMaterial type;
 	private final byte data;
 
-	public DataVanillaResult(Material type, byte data, byte amount) {
+	public DataVanillaResult(CIMaterial type, byte data, byte amount) {
 		super(amount);
 		this.type = type;
 		this.data = data;
@@ -42,7 +42,7 @@ public class DataVanillaResult extends Result {
 	
 	public DataVanillaResult(BitInput input) {
 		super(input);
-		type = Material.valueOf(input.readJavaString());
+		type = CIMaterial.valueOf(input.readJavaString());
 		data = (byte) input.readNumber((byte) 4, false);
 		initInfo();
 	}
@@ -77,7 +77,7 @@ public class DataVanillaResult extends Result {
 		return new DataVanillaResult(type, data, amount);
 	}
 	
-	public Material getType() {
+	public CIMaterial getType() {
 		return type;
 	}
 }

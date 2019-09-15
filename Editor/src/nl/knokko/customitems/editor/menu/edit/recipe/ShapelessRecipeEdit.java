@@ -30,10 +30,10 @@ import nl.knokko.customitems.editor.menu.edit.EditProps;
 import nl.knokko.customitems.editor.menu.edit.recipe.ingredient.ChooseIngredient;
 import nl.knokko.customitems.editor.menu.edit.recipe.ingredient.IngredientComponent;
 import nl.knokko.customitems.editor.menu.edit.recipe.result.ResultComponent;
-import nl.knokko.customitems.editor.set.item.Material;
 import nl.knokko.customitems.editor.set.recipe.ShapelessRecipe;
 import nl.knokko.customitems.editor.set.recipe.ingredient.Ingredient;
 import nl.knokko.customitems.editor.set.recipe.result.SimpleVanillaResult;
+import nl.knokko.customitems.item.CIMaterial;
 import nl.knokko.gui.color.GuiColor;
 import nl.knokko.gui.component.image.ImageButton;
 import nl.knokko.gui.component.menu.GuiMenu;
@@ -55,7 +55,7 @@ public class ShapelessRecipeEdit extends GuiMenu {
 		this.menu = menu;
 		this.previous = previous;
 		ingredients = new Ingredients();
-		result = new ResultComponent(previous != null ? previous.getResult() : new SimpleVanillaResult(Material.DIAMOND, (byte) 1), this, menu.getSet());
+		result = new ResultComponent(previous != null ? previous.getResult() : new SimpleVanillaResult(CIMaterial.DIAMOND, (byte) 1), this, menu.getSet());
 		errorComponent = new DynamicTextComponent("", EditProps.ERROR);
 	}
 

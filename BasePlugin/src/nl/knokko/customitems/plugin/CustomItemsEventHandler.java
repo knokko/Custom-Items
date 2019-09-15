@@ -34,7 +34,6 @@ import java.util.UUID;
 
 import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
-import org.bukkit.Material;
 import org.bukkit.Sound;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.block.Block;
@@ -88,6 +87,7 @@ import nl.knokko.core.plugin.CorePlugin;
 import nl.knokko.core.plugin.item.ItemHelper;
 import nl.knokko.customitems.damage.DamageSource;
 import nl.knokko.customitems.drops.Drop;
+import nl.knokko.customitems.item.CIMaterial;
 import nl.knokko.customitems.plugin.recipe.CustomRecipe;
 import nl.knokko.customitems.plugin.recipe.ShapedCustomRecipe;
 import nl.knokko.customitems.plugin.recipe.ShapelessCustomRecipe;
@@ -119,8 +119,8 @@ public class CustomItemsEventHandler implements Listener {
 				else if (custom instanceof CustomTool) {
 					CustomTool tool = (CustomTool) custom;
 					if (tool instanceof CustomHoe) {
-						Material type = event.getClickedBlock().getType();
-						if ((type == Material.DIRT || type == Material.GRASS) && tool.decreaseDurability(item, ((CustomHoe) tool).getTillDurabilityLoss())) {
+						CIMaterial type = CIMaterial.valueOf(ItemHelper.getMaterialName(event.getClickedBlock()));
+						if ((type == CIMaterial.DIRT || type == CIMaterial.GRASS) && tool.decreaseDurability(item, ((CustomHoe) tool).getTillDurabilityLoss())) {
 							playBreakSound(event.getPlayer());
 							if (event.getHand() == EquipmentSlot.HAND)
 								event.getPlayer().getInventory().setItemInMainHand(null);
@@ -239,10 +239,11 @@ public class CustomItemsEventHandler implements Listener {
 	public void onShear(PlayerShearEntityEvent event) {
 		ItemStack main = event.getPlayer().getInventory().getItemInMainHand();
 		ItemStack off = event.getPlayer().getInventory().getItemInOffHand();
-		CustomItem customMain = main.getType() == Material.SHEARS
+		CustomItem customMain = CIMaterial.valueOf(ItemHelper.getMaterialName(main)) == CIMaterial.SHEARS
 				? CustomItemsPlugin.getInstance().getSet().getItem(main)
 				: null;
-		CustomItem customOff = off.getType() == Material.SHEARS ? CustomItemsPlugin.getInstance().getSet().getItem(off)
+		CustomItem customOff = CIMaterial.valueOf(ItemHelper.getMaterialName(off)) == CIMaterial.SHEARS
+				? CustomItemsPlugin.getInstance().getSet().getItem(off)
 				: null;
 		if (customMain != null) {
 			if (customMain.forbidDefaultUse(main))
@@ -274,9 +275,7 @@ public class CustomItemsEventHandler implements Listener {
 	@EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
 	public void onBlockBreak(BlockBreakEvent event) {
 		ItemSet set = CustomItemsPlugin.getInstance().getSet();
-		
-		
-		Drop[] customDrops = set.getDrops(event.getBlock().getType());
+		Drop[] customDrops = set.getDrops(CIMaterial.valueOf(ItemHelper.getMaterialName(event.getBlock())));
 		
 		Random random = new Random();
 		boolean cancelDefaultDrops = false;
@@ -612,8 +611,8 @@ public class CustomItemsEventHandler implements Listener {
 						} else {
 							event.setResult(null);
 						}
-					} else if (contents[1] != null && contents[1].getType() != Material.AIR) {
-						if (contents[1].getType() == Material.ENCHANTED_BOOK) {
+					} else if (contents[1] != null && !ItemHelper.getMaterialName(contents[1]).equals(CIMaterial.AIR.name())) {
+						if (ItemHelper.getMaterialName(contents[1]).equals(CIMaterial.ENCHANTED_BOOK.name())) {
 							/*
 							 * Ehm... yes... I kinda forgot this works fine automatically before writing
 							 * this...
@@ -790,13 +789,13 @@ public class CustomItemsEventHandler implements Listener {
 								if (event.getAction() == InventoryAction.PICKUP_ALL) {
 
 									// We will have to do this manually...
-									if (event.getCursor() == null || event.getCursor().getType() == Material.AIR) {
+									if (event.getCursor() == null || ItemHelper.getMaterialName(event.getCursor()).equals(CIMaterial.AIR.name())) {
 										event.setCursor(recipe.getResult());
 									} else {
 										event.getCursor().setAmount(
 												event.getCursor().getAmount() + recipe.getResult().getAmount());
 									}
-									if (contents[0] != null && contents[0].getType() != Material.AIR) {
+									if (contents[0] != null && !ItemHelper.getMaterialName(contents[0]).equals(CIMaterial.AIR.name())) {
 										int newAmount = contents[0].getAmount() - recipeAmount0;
 										if (newAmount > 0) {
 											contents[0].setAmount(newAmount);
@@ -804,7 +803,7 @@ public class CustomItemsEventHandler implements Listener {
 											contents[0] = null;
 										}
 									}
-									if (contents[1] != null && contents[1].getType() != Material.AIR
+									if (contents[1] != null && !ItemHelper.getMaterialName(contents[1]).equals(CIMaterial.AIR.name())
 											&& ingredients.size() > 1 && ingredients.get(1) != null) {
 										int newAmount = contents[1].getAmount() - recipeAmount1;
 										if (newAmount > 0) {
@@ -888,12 +887,12 @@ public class CustomItemsEventHandler implements Listener {
 						ItemStack[] contents = event.getInventory().getContents();
 						ItemStack result = contents[0].clone();
 						for (int index = 1; index < contents.length; index++)
-							if (contents[index].getType() != Material.AIR && contents[index].getAmount() < minAmount)
+							if (!ItemHelper.getMaterialName(contents[index]).equals(CIMaterial.AIR.name()) && contents[index].getAmount() < minAmount)
 								minAmount = contents[index].getAmount();
 						event.setResult(Result.DENY);
 						for (int index = 1; index < contents.length; index++)
 							contents[index].setAmount(contents[index].getAmount() - minAmount);
-						event.getInventory().setItem(0, new ItemStack(Material.AIR));
+						event.getInventory().setItem(0, ItemHelper.createStack(CIMaterial.AIR.name(), 1));
 						CustomItem customResult = CustomItemsPlugin.getInstance().getSet().getItem(result);
 						int amountToGive = amountPerCraft * minAmount;
 						if (customResult != null && !customResult.canStack()) {
@@ -951,7 +950,7 @@ public class CustomItemsEventHandler implements Listener {
 				// anvil, so...
 				ItemStack cursor = event.getCursor();
 				ItemStack current = event.getCurrentItem();
-				if (event.getCurrentItem() == null || event.getCurrentItem().getType() == Material.AIR) {
+				if (event.getCurrentItem() == null || ItemHelper.getMaterialName(event.getCurrentItem()).equals(CIMaterial.AIR.name())) {
 					event.setCancelled(true);
 					Bukkit.getScheduler().scheduleSyncDelayedTask(CustomItemsPlugin.getInstance(), () -> {
 						if (event.getWhoClicked() instanceof Player) {
@@ -960,7 +959,7 @@ public class CustomItemsEventHandler implements Listener {
 							player.closeInventory();
 						}
 					});
-				} else if ((cursor == null || cursor.getType() == Material.AIR) && CustomItem.isCustom(current)) {
+				} else if ((cursor == null || ItemHelper.getMaterialName(cursor).equals(CIMaterial.AIR.name())) && CustomItem.isCustom(current)) {
 					AnvilInventory ai = (AnvilInventory) event.getInventory();
 					CustomItem custom = CustomItemsPlugin.getInstance().getSet().getItem(current);
 					ItemStack first = event.getInventory().getItem(0);
@@ -981,7 +980,7 @@ public class CustomItemsEventHandler implements Listener {
 							player.setLevel(player.getLevel() - repairCost);
 							ItemStack[] contents = ai.getContents();
 							if (custom instanceof CustomTool && contents[1] != null
-									&& contents[1].getType() != Material.AIR) {
+									&& !ItemHelper.getMaterialName(contents[1]).equals(CIMaterial.AIR.name())) {
 								CustomTool tool = (CustomTool) custom;
 								if (tool.getRepairItem().accept(contents[1])) {
 									long durability = tool.getDurability(contents[0]);
@@ -1056,11 +1055,11 @@ public class CustomItemsEventHandler implements Listener {
 		ItemStack result = inventory.getResult();
 
 		// Block vanilla recipes that attempt to use custom items
-		if (result != null && result.getType() != Material.AIR) {
+		if (result != null && !ItemHelper.getMaterialName(result).equals(CIMaterial.AIR.name())) {
 			ItemStack[] ingredients = inventory.getStorageContents();
 			for (ItemStack ingredient : ingredients) {
 				if (CustomItem.isCustom(ingredient)) {
-					inventory.setResult(new ItemStack(Material.AIR));
+					inventory.setResult(ItemHelper.createStack(CIMaterial.AIR.name(), 1));
 					break;
 				}
 			}
@@ -1072,9 +1071,6 @@ public class CustomItemsEventHandler implements Listener {
 			// Determine ingredients
 			ItemStack[] ingredients = inventory.getStorageContents();
 			ingredients = Arrays.copyOfRange(ingredients, 1, ingredients.length);
-			Material[] ingredientTypes = new Material[ingredients.length];
-			for (int index = 0; index < ingredients.length; index++)
-				ingredientTypes[index] = ingredients[index].getType();
 
 			// Shaped recipes first because they have priority
 			for (int index = 0; index < recipes.length; index++) {

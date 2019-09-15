@@ -21,11 +21,11 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  *******************************************************************************/
-package nl.knokko.customitems.editor.set.item;
+package nl.knokko.customitems.item;
 
 import static nl.knokko.customitems.MCVersions.*;
 
-public enum Material {
+public enum CIMaterial {
 	
 	AIR,
 	STONE,
@@ -1187,11 +1187,11 @@ public enum Material {
 
 	public final int version;
 	
-	Material(){
+	CIMaterial(){
 		this(VERSION1_12);
 	}
 	
-	Material(int version){
+	CIMaterial(int version){
 		this.version = version;
 	}
 	

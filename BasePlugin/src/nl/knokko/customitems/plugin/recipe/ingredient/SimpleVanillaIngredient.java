@@ -23,24 +23,26 @@
  *******************************************************************************/
 package nl.knokko.customitems.plugin.recipe.ingredient;
 
-import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
+
+import nl.knokko.core.plugin.item.ItemHelper;
+import nl.knokko.customitems.item.CIMaterial;
 
 public class SimpleVanillaIngredient implements Ingredient {
     
-    private final Material type;
+    private final CIMaterial type;
     
-    public SimpleVanillaIngredient(Material type){
+    public SimpleVanillaIngredient(CIMaterial type){
         this.type = type;
     }
 
     @Override
     public boolean accept(ItemStack item) {
-        return item != null && item.getType() == type;
+        return item != null && ItemHelper.getMaterialName(item).equals(type.name());
     }
 
 	@Override
-	public Material getType() {
+	public CIMaterial getType() {
 		return type;
 	}
 

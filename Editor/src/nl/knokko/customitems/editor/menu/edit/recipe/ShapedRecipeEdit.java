@@ -27,11 +27,11 @@ import nl.knokko.customitems.editor.menu.edit.EditMenu;
 import nl.knokko.customitems.editor.menu.edit.EditProps;
 import nl.knokko.customitems.editor.menu.edit.recipe.ingredient.IngredientComponent;
 import nl.knokko.customitems.editor.menu.edit.recipe.result.ResultComponent;
-import nl.knokko.customitems.editor.set.item.Material;
 import nl.knokko.customitems.editor.set.recipe.ShapedRecipe;
 import nl.knokko.customitems.editor.set.recipe.ingredient.Ingredient;
 import nl.knokko.customitems.editor.set.recipe.ingredient.NoIngredient;
 import nl.knokko.customitems.editor.set.recipe.result.SimpleVanillaResult;
+import nl.knokko.customitems.item.CIMaterial;
 import nl.knokko.gui.color.GuiColor;
 import nl.knokko.gui.component.menu.GuiMenu;
 import nl.knokko.gui.component.text.dynamic.DynamicTextButton;
@@ -52,7 +52,7 @@ public class ShapedRecipeEdit extends GuiMenu {
 		if (previous != null)
 			resultComponent = new ResultComponent(previous.getResult(), this, menu.getSet());
 		else
-			resultComponent = new ResultComponent(new SimpleVanillaResult(Material.IRON_INGOT, (byte) 1), this, menu.getSet());
+			resultComponent = new ResultComponent(new SimpleVanillaResult(CIMaterial.IRON_INGOT, (byte) 1), this, menu.getSet());
 		if (previous != null)
 			ingredientsComponent = new Ingredients(previous.getIngredients());
 		else

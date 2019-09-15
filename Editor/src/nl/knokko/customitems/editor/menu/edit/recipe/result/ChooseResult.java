@@ -29,11 +29,11 @@ import nl.knokko.customitems.editor.menu.edit.select.item.SelectDataVanillaItem;
 import nl.knokko.customitems.editor.menu.edit.select.item.SelectSimpleVanillaItem;
 import nl.knokko.customitems.editor.set.ItemSet;
 import nl.knokko.customitems.editor.set.item.CustomItem;
-import nl.knokko.customitems.editor.set.item.Material;
 import nl.knokko.customitems.editor.set.recipe.result.CustomItemResult;
 import nl.knokko.customitems.editor.set.recipe.result.DataVanillaResult;
 import nl.knokko.customitems.editor.set.recipe.result.Result;
 import nl.knokko.customitems.editor.set.recipe.result.SimpleVanillaResult;
+import nl.knokko.customitems.item.CIMaterial;
 import nl.knokko.gui.color.GuiColor;
 import nl.knokko.gui.component.GuiComponent;
 import nl.knokko.gui.component.menu.GuiMenu;
@@ -73,13 +73,13 @@ public class ChooseResult extends GuiMenu {
 			}, set));
 		}), 0.6f, 0.7f, 0.8f, 0.8f);
 		addComponent(new DynamicTextButton("Simple vanilla item", EditProps.BUTTON, EditProps.HOVER, () -> {
-			state.getWindow().setMainComponent(new SelectSimpleVanillaItem(this, (Material material) -> {
+			state.getWindow().setMainComponent(new SelectSimpleVanillaItem(this, (CIMaterial material) -> {
 				// Fix the amount with the Choose button
 				current = new SimpleVanillaResult(material, (byte) 1);
 			}, false));
 		}), 0.6f, 0.55f, 0.8f, 0.65f);
 		addComponent(new DynamicTextButton("Vanilla item with datavalue", EditProps.BUTTON, EditProps.HOVER, () -> {
-			state.getWindow().setMainComponent(new SelectDataVanillaItem(this, (Material material, byte data) -> {
+			state.getWindow().setMainComponent(new SelectDataVanillaItem(this, (CIMaterial material, byte data) -> {
 				// Fix the amount with the Choose button
 				current = new DataVanillaResult(material, data, (byte) 1);
 			}));

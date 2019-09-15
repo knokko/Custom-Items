@@ -23,9 +23,10 @@
  *******************************************************************************/
 package nl.knokko.customitems.plugin.recipe;
 
-import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
 
+import nl.knokko.core.plugin.item.ItemHelper;
+import nl.knokko.customitems.item.CIMaterial;
 import nl.knokko.customitems.plugin.recipe.ingredient.Ingredient;
 
 public class ShapelessCustomRecipe implements CustomRecipe {
@@ -48,7 +49,7 @@ public class ShapelessCustomRecipe implements CustomRecipe {
 		boolean[] has = new boolean[this.ingredients.length];
 		outerLoop:
 		for (ItemStack ingredient : ingredients) {
-			if (ingredient.getType() != Material.AIR) {
+			if (!ItemHelper.getMaterialName(ingredient).equals(CIMaterial.AIR.name())) {
 				for (int index = 0; index < has.length; index++) {
 					if (!has[index] && this.ingredients[index].accept(ingredient)) {
 						has[index] = true;

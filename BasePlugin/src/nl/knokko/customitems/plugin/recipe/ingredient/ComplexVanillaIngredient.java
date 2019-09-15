@@ -23,29 +23,31 @@
  *******************************************************************************/
 package nl.knokko.customitems.plugin.recipe.ingredient;
 
-import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
+
+import nl.knokko.core.plugin.item.ItemHelper;
+import nl.knokko.customitems.item.CIMaterial;
 
 public class ComplexVanillaIngredient implements Ingredient {
 	
-	public ComplexVanillaIngredient(Material type, byte data, short durability) {
+	public ComplexVanillaIngredient(CIMaterial type, byte data, short durability) {
 		this.type = type;
 		this.data = data;
 		this.durability = durability;
 	}
 	
-	private final Material type;
+	private final CIMaterial type;
 	private final byte data;
 	private final short durability;
 	
 	@Override
 	@SuppressWarnings("deprecation")
 	public boolean accept(ItemStack item) {
-		return item != null && item.getType() == type && item.getData().getData() == data && item.getDurability() == durability;
+		return item != null && ItemHelper.getMaterialName(item).equals(type.name()) && item.getData().getData() == data && item.getDurability() == durability;
 	}
 
 	@Override
-	public Material getType() {
+	public CIMaterial getType() {
 		return type;
 	}
 

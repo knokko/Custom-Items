@@ -31,7 +31,6 @@ import java.util.Map.Entry;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Color;
-import org.bukkit.Material;
 import org.bukkit.craftbukkit.libs.it.unimi.dsi.fastutil.objects.ObjectSet;
 import org.bukkit.craftbukkit.libs.it.unimi.dsi.fastutil.shorts.Short2ObjectMap;
 import org.bukkit.entity.Entity;
@@ -39,6 +38,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.material.MaterialData;
 
+import nl.knokko.core.plugin.item.ItemHelper;
 import nl.knokko.customitems.damage.DamageResistances;
 import nl.knokko.customitems.drops.*;
 import nl.knokko.customitems.encoding.ItemEncoding;
@@ -48,6 +48,7 @@ import nl.knokko.customitems.item.AttributeModifier;
 import nl.knokko.customitems.item.AttributeModifier.Attribute;
 import nl.knokko.customitems.item.AttributeModifier.Operation;
 import nl.knokko.customitems.item.AttributeModifier.Slot;
+import nl.knokko.customitems.item.CIMaterial;
 import nl.knokko.customitems.item.CustomItemType;
 import nl.knokko.customitems.item.CustomToolDurability;
 import nl.knokko.customitems.item.Enchantment;
@@ -63,7 +64,7 @@ public class ItemSet implements ItemSetBase {
 
 	private CustomRecipe[] recipes;
 
-	private final Map<Material, Short2ObjectMap<CustomItem>> customItemMap;
+	private final Map<CIMaterial, Short2ObjectMap<CustomItem>> customItemMap;
 
 	private CustomItem[] items;
 	
@@ -71,7 +72,7 @@ public class ItemSet implements ItemSetBase {
 	private EntityDrop[][] mobDropMap;
 
 	public ItemSet() {
-		customItemMap = new EnumMap<Material, Short2ObjectMap<CustomItem>>(Material.class);
+		customItemMap = new EnumMap<CIMaterial, Short2ObjectMap<CustomItem>>(CIMaterial.class);
 		items = new CustomItem[0];
 		recipes = new CustomRecipe[0];
 		
@@ -80,7 +81,7 @@ public class ItemSet implements ItemSetBase {
 	}
 
 	public ItemSet(BitInput input) {
-		customItemMap = new EnumMap<Material, Short2ObjectMap<CustomItem>>(Material.class);
+		customItemMap = new EnumMap<CIMaterial, Short2ObjectMap<CustomItem>>(CIMaterial.class);
 		byte encoding = input.readByte();
 		if (encoding == SetEncoding.ENCODING_1)
 			load1(input);
@@ -680,9 +681,9 @@ public class ItemSet implements ItemSetBase {
 		byte encoding = input.readByte();
 		byte amount = (byte) (1 + input.readNumber((byte) 6, false));
 		if (encoding == RecipeEncoding.Result.VANILLA_SIMPLE)
-			return new ItemStack(Material.valueOf(input.readJavaString()), amount);
+			return ItemHelper.createStack(input.readJavaString(), amount);
 		if (encoding == RecipeEncoding.Result.VANILLA_DATA) {
-			ItemStack stack = new ItemStack(Material.valueOf(input.readJavaString()), amount);
+			ItemStack stack = ItemHelper.createStack(input.readJavaString(), amount);
 			MaterialData data = stack.getData();
 			data.setData((byte) input.readNumber((byte) 4, false));
 			stack.setData(data);
@@ -701,9 +702,9 @@ public class ItemSet implements ItemSetBase {
 		if (encoding == RecipeEncoding.Ingredient.NONE)
 			return new NoIngredient();
 		if (encoding == RecipeEncoding.Ingredient.VANILLA_SIMPLE)
-			return new SimpleVanillaIngredient(Material.valueOf(input.readJavaString()));
+			return new SimpleVanillaIngredient(CIMaterial.valueOf(input.readJavaString()));
 		if (encoding == RecipeEncoding.Ingredient.VANILLA_DATA)
-			return new DataVanillaIngredient(Material.valueOf(input.readJavaString()),
+			return new DataVanillaIngredient(CIMaterial.valueOf(input.readJavaString()),
 					(byte) input.readNumber((byte) 4, false));
 		if (encoding == RecipeEncoding.Ingredient.VANILLA_ADVANCED_1)
 			throw new UnsupportedOperationException("Advanced vanilla ingredients are not yet supported.");
@@ -725,14 +726,10 @@ public class ItemSet implements ItemSetBase {
 	
 	private static final Drop[] NO_DROPS = {};
 	
-	public Drop[] getDrops(Material block) {
-		if (block.isBlock()) {
-			BlockType blockType = BlockType.fromBukkitMaterial(block);
-			if (blockType != null) {
-				return blockDropMap[blockType.ordinal()];
-			} else {
-				return NO_DROPS;
-			}
+	public Drop[] getDrops(CIMaterial block) {
+		BlockType blockType = BlockType.fromBukkitMaterial(block);
+		if (blockType != null) {
+			return blockDropMap[blockType.ordinal()];
 		} else {
 			return NO_DROPS;
 		}
@@ -791,8 +788,8 @@ public class ItemSet implements ItemSetBase {
 	}
 
 	public CustomItem getItem(String name) {
-		Set<Entry<Material, Short2ObjectMap<CustomItem>>> entrySet = customItemMap.entrySet();
-		for (Entry<Material, Short2ObjectMap<CustomItem>> entry : entrySet) {
+		Set<Entry<CIMaterial, Short2ObjectMap<CustomItem>>> entrySet = customItemMap.entrySet();
+		for (Entry<CIMaterial, Short2ObjectMap<CustomItem>> entry : entrySet) {
 			ObjectSet<Entry<Short, CustomItem>> set = entry.getValue().entrySet();
 			for (Entry<Short, CustomItem> innerEntry : set) {
 				if (innerEntry.getValue().getName().equals(name)) {
@@ -805,7 +802,7 @@ public class ItemSet implements ItemSetBase {
 
 	public CustomItem getItem(ItemStack item) {
 		if (item != null && item.hasItemMeta() && item.getItemMeta().isUnbreakable()) {
-			Short2ObjectMap<CustomItem> map = customItemMap.get(item.getType());
+			Short2ObjectMap<CustomItem> map = customItemMap.get(CIMaterial.valueOf(ItemHelper.getMaterialName(item)));
 			if (map != null) {
 				return map.get(item.getDurability());
 			}

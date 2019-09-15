@@ -23,16 +23,16 @@
  *******************************************************************************/
 package nl.knokko.customitems.editor.set.recipe.result;
 
-import nl.knokko.customitems.editor.set.item.Material;
 import nl.knokko.customitems.encoding.RecipeEncoding;
+import nl.knokko.customitems.item.CIMaterial;
 import nl.knokko.util.bits.BitInput;
 import nl.knokko.util.bits.BitOutput;
 
 public class SimpleVanillaResult extends Result {
 	
-	private final Material type;
+	private final CIMaterial type;
 
-	public SimpleVanillaResult(Material type, byte amount) {
+	public SimpleVanillaResult(CIMaterial type, byte amount) {
 		super(amount);
 		this.type = type;
 		initInfo();
@@ -40,7 +40,7 @@ public class SimpleVanillaResult extends Result {
 	
 	public SimpleVanillaResult(BitInput input) {
 		super(input);
-		type = Material.valueOf(input.readJavaString());
+		type = CIMaterial.valueOf(input.readJavaString());
 		initInfo();
 	}
 
@@ -72,7 +72,7 @@ public class SimpleVanillaResult extends Result {
 		return new SimpleVanillaResult(type, amount);
 	}
 	
-	public Material getType() {
+	public CIMaterial getType() {
 		return type;
 	}
 }

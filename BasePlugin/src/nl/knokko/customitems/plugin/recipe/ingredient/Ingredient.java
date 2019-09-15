@@ -23,14 +23,15 @@
  *******************************************************************************/
 package nl.knokko.customitems.plugin.recipe.ingredient;
 
-import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
+
+import nl.knokko.customitems.item.CIMaterial;
 
 public interface Ingredient {
     
     boolean accept(ItemStack item);
     
-    Material getType();
+    CIMaterial getType();
     
     /**
      * The data value of the ItemStack, use Short.MAX_VALUE to accept all

@@ -27,7 +27,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 
 import nl.knokko.customitems.editor.menu.edit.EditProps;
-import nl.knokko.customitems.editor.set.item.Material;
+import nl.knokko.customitems.item.CIMaterial;
 import nl.knokko.gui.color.GuiColor;
 import nl.knokko.gui.component.GuiComponent;
 import nl.knokko.gui.component.menu.GuiMenu;
@@ -46,7 +46,7 @@ public class SelectDataVanillaItem extends GuiMenu {
 	private final DynamicTextComponent errorComponent;
 	private final List list;
 	
-	private Material selected;
+	private CIMaterial selected;
 
 	public SelectDataVanillaItem(GuiComponent returnMenu, Receiver receiver) {
 		this.returnMenu = returnMenu;
@@ -115,12 +115,12 @@ public class SelectDataVanillaItem extends GuiMenu {
 		private ArrayList<DynamicTextButton> buttons;
 		
 		private List() {
-			Material[] materials = Material.values();
-			Arrays.sort(materials, (Material a, Material b) -> {
+			CIMaterial[] materials = CIMaterial.values();
+			Arrays.sort(materials, (CIMaterial a, CIMaterial b) -> {
 				return a.name().compareTo(b.name());
 			});
 			buttons = new ArrayList<DynamicTextButton>(materials.length);
-			for (Material material : materials) {
+			for (CIMaterial material : materials) {
 				buttons.add(new DynamicActivatableTextButton(material.toString(), EditProps.SELECT_BASE, EditProps.SELECT_HOVER, EditProps.SELECT_ACTIVE, () -> {
 					selected = material;
 				}, () -> {
@@ -158,6 +158,6 @@ public class SelectDataVanillaItem extends GuiMenu {
 	
 	public static interface Receiver {
 		
-		void onSelect(Material material, byte data);
+		void onSelect(CIMaterial material, byte data);
 	}
 }
