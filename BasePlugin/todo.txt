@@ -22,3 +22,4 @@ Short term:
 -Add choice between generated and handheld item model
 -Add tridents
 -Let hoppers stack custom items automatically
+-Handle bukkits rename from WOOD_SWORD to WOODEN_SWORD
