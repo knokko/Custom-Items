@@ -45,6 +45,7 @@ import org.bukkit.entity.EntityType;
 import org.bukkit.entity.HumanEntity;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
+import org.bukkit.entity.Projectile;
 import org.bukkit.event.Event.Result;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -58,6 +59,8 @@ import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
 import org.bukkit.event.entity.EntityDeathEvent;
 import org.bukkit.event.entity.EntityPickupItemEvent;
 import org.bukkit.event.entity.EntityShootBowEvent;
+import org.bukkit.event.entity.ProjectileHitEvent;
+import org.bukkit.event.entity.ProjectileLaunchEvent;
 import org.bukkit.event.inventory.InventoryAction;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryType.SlotType;
@@ -139,16 +142,103 @@ public class CustomItemsEventHandler implements Listener {
 
 	@EventHandler(ignoreCancelled = true)
 	public void processCustomBowDamage(EntityDamageByEntityEvent event) {
+		Bukkit.broadcastMessage("EntityDamageByEntityEvent: damager is " + event.getDamager());
 		if (event.getDamager() instanceof Arrow) {
 			List<MetadataValue> metas = event.getDamager().getMetadata("CustomBowDamageMultiplier");
 			for (MetadataValue meta : metas) {
 				event.setDamage(event.getDamage() * meta.asDouble());
 			}
 		}
+		if (isTrident(event.getDamager())) {
+			Bukkit.broadcastMessage("Hit by trident");
+			List<MetadataValue> metas = event.getDamager().getMetadata("CustomTridentDamageMultiplier");
+			for (MetadataValue meta : metas) {
+				event.setDamage(event.getDamage() * meta.asDouble());
+			}
+		}
+	}
+	
+	@EventHandler
+	public void test(ProjectileLaunchEvent event) {
+		Bukkit.broadcastMessage("proj launch event: " + event.getEntity());
+		if (isTrident(event.getEntity())) {
+			Bukkit.broadcastMessage("Throwing a trident");
+			Projectile trident = event.getEntity();
+			trident.setVelocity(trident.getVelocity().multiply(0.1));
+			trident.setGravity(false);
+			trident.setMetadata("CustomTridentDamageMultiplier", new MetadataValue() {
+
+				@Override
+				public Object value() {
+					return null;
+				}
+
+				@Override
+				public int asInt() {
+					return 0;
+				}
+
+				@Override
+				public float asFloat() {
+					return 0;
+				}
+
+				@Override
+				public double asDouble() {
+					return 24.0;
+				}
+
+				@Override
+				public long asLong() {
+					return 0;
+				}
+
+				@Override
+				public short asShort() {
+					return 0;
+				}
+
+				@Override
+				public byte asByte() {
+					return 0;
+				}
+
+				@Override
+				public boolean asBoolean() {
+					return false;
+				}
+
+				@Override
+				public String asString() {
+					return null;
+				}
+
+				@Override
+				public Plugin getOwningPlugin() {
+					return CustomItemsPlugin.getInstance();
+				}
+
+				@Override
+				public void invalidate() {
+				}
+			});
+		}
+	}
+	
+	private boolean isTrident(Entity entity) {
+		
+		// I am compiling against craftbukkit-1.12, so I can't just use instanceof or EntityType.TRIDENT
+		return entity.getClass().getSimpleName().contains("Trident");
+	}
+	
+	@EventHandler
+	public void test(ProjectileHitEvent event) {
+		Bukkit.broadcastMessage("proj hit event: " + event.getEntity());
 	}
 
 	@EventHandler(ignoreCancelled = true)
 	public void onBowShoot(EntityShootBowEvent event) {
+		Bukkit.broadcastMessage("onBowShoot: projectile is " + event.getProjectile());
 		if (CustomItem.isCustom(event.getBow())) {
 			CustomItem customItem = CustomItemsPlugin.getInstance().getSet().getItem(event.getBow());
 			if (customItem instanceof CustomBow) {

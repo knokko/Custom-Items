@@ -115,6 +115,16 @@ public abstract class CustomItem extends nl.knokko.customitems.item.CustomItem {
 			if (shield.getBlockingModel() != null) {
 				output.addByteArray(shield.getBlockingModel());
 			}
+		} else if (this instanceof CustomTrident) {
+			CustomTrident trident = (CustomTrident) this;
+			output.addBoolean(trident.customInHandModel != null);
+			if (trident.customInHandModel != null) {
+				output.addByteArray(trident.customInHandModel);
+			}
+			output.addBoolean(trident.customThrowingModel != null);
+			if (trident.customThrowingModel != null) {
+				output.addByteArray(trident.customThrowingModel);
+			}
 		}
 	}
 

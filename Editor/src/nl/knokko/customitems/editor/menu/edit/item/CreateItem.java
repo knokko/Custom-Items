@@ -51,6 +51,10 @@ public class CreateItem extends GuiMenu {
 		addComponent(new DynamicTextButton("Simple Item", EditProps.CHOOSE_BASE, EditProps.CHOOSE_HOVER, () -> {
 			state.getWindow().setMainComponent(new EditItemSimple(menu, null));
 		}), 0.5f, 0.8f, 0.7f, 0.9f);
+		addComponent(new DynamicTextButton("Trident (1.13+)", EditProps.CHOOSE_BASE, EditProps.CHOOSE_HOVER, () -> {
+			//state.getWindow().setMainComponent(component);
+			// TODO Create trident edit
+		}), 0.25f, 0.65f, 0.45f, 0.75f);
 		addComponent(new DynamicTextButton("Sword", EditProps.CHOOSE_BASE, EditProps.CHOOSE_HOVER, () -> {
 			state.getWindow().setMainComponent(new EditItemTool(menu, null, Category.SWORD));
 		}), 0.5f, 0.65f, 0.7f, 0.75f);

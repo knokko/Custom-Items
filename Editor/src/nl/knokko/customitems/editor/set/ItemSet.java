@@ -58,6 +58,7 @@ import nl.knokko.customitems.editor.set.item.CustomItem;
 import nl.knokko.customitems.editor.set.item.CustomShears;
 import nl.knokko.customitems.editor.set.item.CustomShield;
 import nl.knokko.customitems.editor.set.item.CustomTool;
+import nl.knokko.customitems.editor.set.item.CustomTrident;
 import nl.knokko.customitems.editor.set.item.NamedImage;
 import nl.knokko.customitems.editor.set.item.SimpleCustomItem;
 import nl.knokko.customitems.editor.set.item.texture.BowTextures;
@@ -145,6 +146,8 @@ public class ItemSet implements ItemSetBase {
 			return loadArmor7(input, checkCustomModel);
 		else if (encoding == ItemEncoding.ENCODING_SHIELD_6)
 			return loadShield6(input, checkCustomModel);
+		else if (encoding == ItemEncoding.ENCODING_TRIDENT_7)
+			return loadTrident7(input, checkCustomModel);
 		throw new IllegalArgumentException("Unknown encoding: " + encoding);
 	}
 	
@@ -906,6 +909,53 @@ public class ItemSet implements ItemSetBase {
 				durability, allowEnchanting, allowAnvil, repairItem, texture, itemFlags, 
 				entityHitDurabilityLoss, blockBreakDurabilityLoss, thresholdDamage, customModel, customBlockingModel);
 	}
+	
+	private CustomItem loadTrident7(BitInput input, boolean checkCustomModel) {
+		CustomItemType itemType = CustomItemType.valueOf(input.readJavaString());
+		short damage = input.readShort();
+		String name = input.readJavaString();
+		String displayName = input.readJavaString();
+		String[] lore = new String[input.readByte() & 0xFF];
+		for (int index = 0; index < lore.length; index++) {
+			lore[index] = input.readJavaString();
+		}
+		AttributeModifier[] attributes = new AttributeModifier[input.readByte() & 0xFF];
+		for (int index = 0; index < attributes.length; index++)
+			attributes[index] = loadAttribute2(input);
+		Enchantment[] defaultEnchantments = new Enchantment[input.readByte() & 0xFF];
+		for (int index = 0; index < defaultEnchantments.length; index++)
+			defaultEnchantments[index] = new Enchantment(EnchantmentType.valueOf(input.readString()), input.readInt());
+		long durability = input.readLong();
+		boolean allowEnchanting = input.readBoolean();
+		boolean allowAnvil = input.readBoolean();
+		Ingredient repairItem = Recipe.loadIngredient(input, this);
+		
+		// Use hardcoded 6 instead of variable because only 6 item flags existed in this encoding
+		boolean[] itemFlags = input.readBooleans(6);
+		int entityHitDurabilityLoss = input.readInt();
+		int blockBreakDurabilityLoss = input.readInt();
+		int throwDurabilityLoss = input.readInt();
+		double throwDamageMultiplier = input.readDouble();
+		double speedMultiplier = input.readDouble();
+		
+		String imageName = input.readJavaString();
+		NamedImage texture = null;
+		for (NamedImage current : textures) {
+			if (current.getName().equals(imageName)) {
+				texture = current;
+				break;
+			}
+		}
+		if (texture == null)
+			throw new IllegalArgumentException("Can't find texture " + imageName);
+		byte[] customModel = loadCustomModel(input, checkCustomModel);
+		byte[] customInHandModel = loadCustomModel(input, checkCustomModel);
+		byte[] customThrowingModel = loadCustomModel(input, checkCustomModel);
+		return new CustomTrident(itemType, damage, name, displayName, lore, attributes, defaultEnchantments, 
+				durability, allowEnchanting, allowAnvil, throwDamageMultiplier, speedMultiplier, repairItem, 
+				texture, itemFlags, entityHitDurabilityLoss, blockBreakDurabilityLoss, throwDurabilityLoss, 
+				customModel, customInHandModel, customThrowingModel);
+	}
 
 	private AttributeModifier loadAttribute2(BitInput input) {
 		return new AttributeModifier(Attribute.valueOf(input.readJavaString()), Slot.valueOf(input.readJavaString()),
@@ -1116,6 +1166,8 @@ public class ItemSet implements ItemSetBase {
 			return getDefaultModelBow(textureName);
 		} else if (type == CustomItemType.SHIELD) {
 			return getDefaultModelShield(textureName);
+		} else if (type == CustomItemType.TRIDENT) {
+			return getDefaultModelTrident(textureName);
 		} else {
 			String[] start = {
 			"{",
@@ -1216,6 +1268,8 @@ public class ItemSet implements ItemSetBase {
 				"}"
 		};
 	}
+	
+	// TODO Add methods for default trident models
 	
 	private static String[] chain(String[]...arrays) {
 		int length = 0;
@@ -1327,6 +1381,8 @@ public class ItemSet implements ItemSetBase {
 						}
 						jsonWriter.flush();
 					}
+				} else if (item instanceof CustomTrident) {
+					// TODO Save the custom models
 				}
 			}
 
@@ -1495,6 +1551,8 @@ public class ItemSet implements ItemSetBase {
 						// Now finish the json
 						jsonWriter.println("    ]");
 						jsonWriter.println("}");
+					} else if (entry.getKey() == CustomItemType.TRIDENT) {
+						// TODO Save the models
 					} else {
 						// Begin of the json file
 						jsonWriter.println("{");
@@ -1595,6 +1653,10 @@ public class ItemSet implements ItemSetBase {
 							return "Armor " + item.getName() + " has a damage resistance against " + source + ", which was added after minecraft 1." + version;
 						}
 					}
+				}
+				
+				if (item.getItemType().version > version) {
+					return "The item " + item.getName() + " is a " + item.getItemType() + ", which were added after minecraft 1." + version;
 				}
 			}
 		}
@@ -1733,7 +1795,7 @@ public class ItemSet implements ItemSetBase {
 						}
 						jsonWriter.flush();
 					}
-				}
+				} // TODO Don't bother custom trident models since tridents don't exist in old versions
 			}
 
 			// Map all custom items by their item type

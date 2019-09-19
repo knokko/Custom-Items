@@ -25,6 +25,8 @@ package nl.knokko.customitems.item;
 
 import static nl.knokko.customitems.item.CustomItemType.Category.*;
 
+import static nl.knokko.customitems.MCVersions.*;
+
 public enum CustomItemType {
 	
 	IRON_SHOVEL(250, SHOVEL),
@@ -78,7 +80,8 @@ public enum CustomItemType {
 	SHEARS(238, SHEAR, DEFAULT),
 	CARROT_STICK(25, CARROTSTICK),
 	SHIELD(336, Category.SHIELD),
-	ELYTRA(431, Category.ELYTRA);
+	ELYTRA(431, Category.ELYTRA),
+	TRIDENT(250, VERSION1_13, Category.TRIDENT);
 	
 	private final short maxDurability;
 	private final Category[] categories;
@@ -89,9 +92,16 @@ public enum CustomItemType {
 	private final String textureName14;
 	private final String modelName14;
 	
-	CustomItemType(int maxDurability, Category... categories){
+	public final int version;
+	
+	CustomItemType(int maxDurability, Category...categories){
+		this(maxDurability, VERSION1_12, categories);
+	}
+	
+	CustomItemType(int maxDurability, int version, Category... categories){
 		this.maxDurability = (short) maxDurability;
 		this.categories = categories;
+		this.version = version;
 		
 		String lowerCaseName = this.name().toLowerCase();
 		if (lowerCaseName.equals("carrot_stick")) {
@@ -126,7 +136,13 @@ public enum CustomItemType {
 	
 	@Override
 	public String toString() {
-		return name().charAt(0) + name().substring(1).toLowerCase().replaceAll("_", " ");
+		String niceName = name().charAt(0) + name().substring(1).toLowerCase().replaceAll("_", " ");
+		switch(version) {
+		case VERSION1_12: return niceName;
+		case VERSION1_13: return niceName + "(1.13+)";
+		case VERSION1_14: return niceName + "(1.14+)";
+		default: throw new IllegalStateException("Unknown minecraft version: " + version);
+		}
 	}
 	
 	/**
@@ -210,6 +226,7 @@ public enum CustomItemType {
 		FLINT,
 		CARROTSTICK,
 		SHIELD,
-		ELYTRA;
+		ELYTRA,
+		TRIDENT;
 	}
 }

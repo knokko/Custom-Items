@@ -106,4 +106,9 @@ public class ItemEncoding {
 	 * Added the damage resistances after minecraft 1.12
 	 */
 	public static final byte ENCODING_ARMOR_7 = 18;
+	
+	/**
+	 * The first trident encoding
+	 */
+	public static final byte ENCODING_TRIDENT_7 = 19;
 }
