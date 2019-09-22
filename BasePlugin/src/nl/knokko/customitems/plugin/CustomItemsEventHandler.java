@@ -159,11 +159,16 @@ public class CustomItemsEventHandler implements Listener {
 	}
 	
 	@EventHandler
-	public void test(ProjectileLaunchEvent event) {
+	public void processTridentThrow(ProjectileLaunchEvent event) {
 		Bukkit.broadcastMessage("proj launch event: " + event.getEntity());
 		if (isTrident(event.getEntity())) {
-			Bukkit.broadcastMessage("Throwing a trident");
+			Bukkit.broadcastMessage("Throwing a trident, shooter is " + event.getEntity().getShooter());
 			Projectile trident = event.getEntity();
+			if (trident.getShooter() instanceof Player) {
+				Player shooter = (Player) trident.getShooter();
+				Bukkit.broadcastMessage("main item is " + shooter.getInventory().getItemInMainHand());
+				Bukkit.broadcastMessage("off item is " + shooter.getInventory().getItemInOffHand());
+			}
 			trident.setVelocity(trident.getVelocity().multiply(0.1));
 			trident.setGravity(false);
 			trident.setMetadata("CustomTridentDamageMultiplier", new MetadataValue() {

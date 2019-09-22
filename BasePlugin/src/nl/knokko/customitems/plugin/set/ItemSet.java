@@ -175,6 +175,8 @@ public class ItemSet implements ItemSetBase {
 			return loadArmor7(input);
 		else if (encoding == ItemEncoding.ENCODING_SHIELD_6)
 			return loadShield6(input);
+		else if (encoding == ItemEncoding.ENCODING_TRIDENT_7)
+			return loadTrident7(input);
 		throw new IllegalArgumentException("Unknown encoding: " + encoding);
 	}
 
@@ -635,6 +637,34 @@ public class ItemSet implements ItemSetBase {
 		double durabilityThreshold = input.readDouble();
 		return new CustomShield(itemType, damage, name, displayName, lore, attributes, defaultEnchantments, durability,
 				allowEnchanting, allowAnvil, repairItem, itemFlags, entityHitDurabilityLoss, blockBreakDurabilityLoss, durabilityThreshold);
+	}
+	
+	private CustomItem loadTrident7(BitInput input) {
+		short damage = input.readShort();
+		String name = input.readJavaString();
+		String displayName = input.readJavaString();
+		String[] lore = new String[input.readByte() & 0xFF];
+		for (int index = 0; index < lore.length; index++)
+			lore[index] = input.readJavaString();
+		AttributeModifier[] attributes = new AttributeModifier[input.readByte() & 0xFF];
+		for (int index = 0; index < attributes.length; index++)
+			attributes[index] = loadAttribute2(input);
+		Enchantment[] defaultEnchantments = new Enchantment[input.readByte() & 0xFF];
+		for (int index = 0; index < defaultEnchantments.length; index++)
+			defaultEnchantments[index] = new Enchantment(EnchantmentType.valueOf(input.readString()), input.readInt());
+		long durability = input.readLong();
+		boolean allowEnchanting = input.readBoolean();
+		boolean allowAnvil = input.readBoolean();
+		Ingredient repairItem = loadIngredient(input);
+		boolean[] itemFlags = input.readBooleans(6);
+		int entityHitDurabilityLoss = input.readInt();
+		int blockBreakDurabilityLoss = input.readInt();
+		int throwDurabilityLoss = input.readInt();
+		double throwDamageMultiplier = input.readDouble();
+		double speedMultiplier = input.readDouble();
+		return new CustomTrident(damage, name, displayName, lore, attributes, defaultEnchantments, 
+				durability, allowEnchanting, allowAnvil, throwDamageMultiplier, speedMultiplier, repairItem, 
+				itemFlags, entityHitDurabilityLoss, blockBreakDurabilityLoss, throwDurabilityLoss);
 	}
 
 	private AttributeModifier loadAttribute2(BitInput input) {

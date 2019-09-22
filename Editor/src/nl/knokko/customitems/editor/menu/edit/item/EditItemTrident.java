@@ -9,12 +9,7 @@ import java.nio.file.Files;
 import nl.knokko.customitems.editor.menu.edit.EditMenu;
 import nl.knokko.customitems.editor.menu.edit.EditProps;
 import nl.knokko.customitems.editor.set.ItemSet;
-import nl.knokko.customitems.editor.set.item.CustomHoe;
 import nl.knokko.customitems.editor.set.item.CustomTrident;
-import nl.knokko.customitems.item.AttributeModifier;
-import nl.knokko.customitems.item.AttributeModifier.Attribute;
-import nl.knokko.customitems.item.AttributeModifier.Operation;
-import nl.knokko.customitems.item.AttributeModifier.Slot;
 import nl.knokko.customitems.item.CustomItemType.Category;
 import nl.knokko.gui.component.text.FloatEditField;
 import nl.knokko.gui.component.text.IntEditField;
@@ -55,10 +50,10 @@ public class EditItemTrident extends EditItemTool {
 		super.addComponents();
 		addComponent(new DynamicTextComponent("Durability loss on throwing:", EditProps.LABEL), 0.55f, 0.35f, 0.84f, 0.425f);
 		addComponent(throwDurabilityLoss, 0.85f, 0.35f, 0.9f, 0.425f);
-		addComponent(new DynamicTextComponent("Throw damage multiplier:", EditProps.LABEL), 0.6f, 0.45f, 0.84f, 0.525f);
-		addComponent(throwDamageMultiplier, 0.85f, 0.45f, 0.9f, 0.525f);
-		addComponent(new DynamicTextComponent("Throw speed multiplier:", EditProps.LABEL), 0.6f, 0.55f, 0.84f, 0.625f);
-		addComponent(throwSpeedMultiplier, 0.85f, 0.55f, 0.9f, 0.625f);
+		addComponent(new DynamicTextComponent("Throw damage multiplier:", EditProps.LABEL), 0.6f, 0.275f, 0.84f, 0.35f);
+		addComponent(throwDamageMultiplier, 0.85f, 0.275f, 0.9f, 0.35f);
+		addComponent(new DynamicTextComponent("Throw speed multiplier:", EditProps.LABEL), 0.6f, 0.2f, 0.84f, 0.275f);
+		addComponent(throwSpeedMultiplier, 0.85f, 0.2f, 0.9f, 0.275f);
 		
 		addComponent(new DynamicTextComponent("In-hand model: ", EditProps.LABEL), LABEL_X, 0.2f, LABEL_X + 0.2f, 0.25f);
 		addComponent(new DynamicTextButton("Change...", EditProps.BUTTON, EditProps.HOVER, () -> {
@@ -80,7 +75,7 @@ public class EditItemTrident extends EditItemTool {
 								}
 							}));
 		}), BUTTON_X, 0.2f, BUTTON_X + 0.1f, 0.25f);
-		addComponent(new DynamicTextComponent("Throwing model: ", EditProps.LABEL), LABEL_X, 0.2f, LABEL_X + 0.2f, 0.25f);
+		addComponent(new DynamicTextComponent("Throwing model: ", EditProps.LABEL), LABEL_X, 0.14f, LABEL_X + 0.2f, 0.19f);
 		addComponent(new DynamicTextButton("Change...", EditProps.BUTTON, EditProps.HOVER, () -> {
 			state.getWindow()
 					.setMainComponent(new EditCustomModel(ItemSet.getDefaultModelBlockingShield(textureSelect.currentTexture != null ? textureSelect.currentTexture.getName() : "TEXTURE_NAME"), this, (File file) -> {
@@ -119,7 +114,7 @@ public class EditItemTrident extends EditItemTool {
 		if (!speedMult.hasValue())
 			return "The throw speed multiplier must be a positive number";
 		return menu.getSet().addTrident(
-				new CustomTrident(internalType.currentType, damage, name.getText(), getDisplayName(),
+				new CustomTrident(damage, name.getText(), getDisplayName(),
 						lore, attributes, enchantments, maxUses, allowEnchanting.isChecked(),
 						allowAnvil.isChecked(), damageMult.getValue(), speedMult.getValue(), repairItem.getIngredient(), 
 						textureSelect.currentTexture, itemFlags, entityHitDurabilityLoss, blockBreakDurabilityLoss, 

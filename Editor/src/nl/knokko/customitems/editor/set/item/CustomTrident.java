@@ -17,13 +17,13 @@ public class CustomTrident extends CustomTool {
 	public byte[] customInHandModel;
 	public byte[] customThrowingModel;
 
-	public CustomTrident(CustomItemType itemType, short itemDamage, String name, String displayName, String[] lore,
+	public CustomTrident(short itemDamage, String name, String displayName, String[] lore,
 			AttributeModifier[] attributes, Enchantment[] defaultEnchantments, long durability, boolean allowEnchanting,
 			boolean allowAnvil, double throwDamageMultiplier, double speedMultiplier, Ingredient repairItem, 
 			NamedImage texture, boolean[] itemFlags, int entityHitDurabilityLoss, 
 			int blockBreakDurabilityLoss, int throwDurabilityLoss, byte[] customModel,
 			byte[] customInHandModel, byte[] customThrowingModel) {
-		super(itemType, itemDamage, name, displayName, lore, attributes, defaultEnchantments, durability, allowEnchanting,
+		super(CustomItemType.TRIDENT, itemDamage, name, displayName, lore, attributes, defaultEnchantments, durability, allowEnchanting,
 				allowAnvil, repairItem, texture, itemFlags, entityHitDurabilityLoss, blockBreakDurabilityLoss, customModel);
 		this.throwDamageMultiplier = throwDamageMultiplier;
 		this.speedMultiplier = speedMultiplier;
@@ -35,7 +35,6 @@ public class CustomTrident extends CustomTool {
 	@Override
 	public void export(BitOutput output) {
 		output.addByte(ItemEncoding.ENCODING_TRIDENT_7);
-		output.addJavaString(itemType.name());
 		output.addShort(itemDamage);
 		output.addJavaString(name);
 		output.addJavaString(displayName);

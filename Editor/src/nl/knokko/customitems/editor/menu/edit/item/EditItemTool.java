@@ -94,6 +94,8 @@ public class EditItemTool extends EditItemBase {
 				internalType.currentType = CustomItemType.IRON_BOOTS;
 			else if (toolCategory == Category.SHIELD)
 				internalType.currentType = CustomItemType.SHIELD;
+			else if (toolCategory == Category.TRIDENT)
+				internalType.currentType = CustomItemType.TRIDENT;
 			else
 				throw new Error("Unsupported category for EditItemTool: " + toolCategory);
 			internalDamage.setDirectText(Short.toString(menu.getSet().nextAvailableDamage(internalType.currentType, null)));

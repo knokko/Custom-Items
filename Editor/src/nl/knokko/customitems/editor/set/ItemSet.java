@@ -911,7 +911,6 @@ public class ItemSet implements ItemSetBase {
 	}
 	
 	private CustomItem loadTrident7(BitInput input, boolean checkCustomModel) {
-		CustomItemType itemType = CustomItemType.valueOf(input.readJavaString());
 		short damage = input.readShort();
 		String name = input.readJavaString();
 		String displayName = input.readJavaString();
@@ -951,7 +950,7 @@ public class ItemSet implements ItemSetBase {
 		byte[] customModel = loadCustomModel(input, checkCustomModel);
 		byte[] customInHandModel = loadCustomModel(input, checkCustomModel);
 		byte[] customThrowingModel = loadCustomModel(input, checkCustomModel);
-		return new CustomTrident(itemType, damage, name, displayName, lore, attributes, defaultEnchantments, 
+		return new CustomTrident(damage, name, displayName, lore, attributes, defaultEnchantments, 
 				durability, allowEnchanting, allowAnvil, throwDamageMultiplier, speedMultiplier, repairItem, 
 				texture, itemFlags, entityHitDurabilityLoss, blockBreakDurabilityLoss, throwDurabilityLoss, 
 				customModel, customInHandModel, customThrowingModel);
@@ -1269,7 +1268,152 @@ public class ItemSet implements ItemSetBase {
 		};
 	}
 	
-	// TODO Add methods for default trident models
+	public static String[] getDefaultModelTrident(String textureName) {
+		return new String[] {
+				"{",
+				"    \"parent\": \"item/generated\",",
+				"    \"textures\": {",
+				"        \"layer0\": \"customitems/" + textureName + "\"",
+				"    },",
+				"    \"display\": {",
+				"        \"gui\": {",
+				"            \"rotation\": [0, 0, -45],",
+				"            \"translation\": [0, 0, 0],",
+				"            \"scale\": [1, 1, 1]",
+				"        },",
+				"        \"ground\": {",
+				"            \"rotation\": [0, 0, -45],",
+				"            \"translation\": [0, 0, 0],",
+				"            \"scale\": [0.5, 0.5, 0.5]",
+				"        }",
+				"    }",
+				"}"
+		};
+	}
+	
+	public static String[] getDefaultModelTridentInHand(String textureName) {
+		return new String[] {
+				"{",
+				"    \"parent\": \"item/handheld\",",
+				"    \"textures\": {",
+				"        \"layer0\": \"customitems/" + textureName + "\"",
+				"    },",
+				"    \"display\": {",
+				"        \"thirdperson_righthand\": {",
+				"            \"rotation\": [0, 65, 0],",
+				"            \"translation\": [0, 0, 0],",
+				"            \"scale\": [0.5, 1.8, 1.0]",
+				"        },",
+				"        \"thirdperson_lefthand\": {",
+				"            \"rotation\": [0, 65, 0],",
+				"            \"translation\": [0, 0, 0],",
+				"            \"scale\": [0.5, 1.8, 1.0]",
+				"        },",
+				"        \"firstperson_righthand\": {",
+				"            \"rotation\": [-30, 100, 0],",
+				"            \"translation\": [4, 2, 0],",
+				"            \"scale\": [0.5, 1.0, 1.0]",
+				"        },",
+				"        \"firstperson_lefthand\": {",
+				"            \"rotation\": [-30, 100, 0],",
+				"            \"translation\": [4, 2, 0],",
+				"            \"scale\": [0.5, 1.0, 1.0]",
+				"        }",
+				"    }",
+				"}"
+		};
+	}
+	
+	public static String[] getDefaultModelTridentThrowing(String textureName) {
+		return new String[] {
+				"{",
+				"    \"parent\": \"item/handheld\",",
+				"    \"textures\": {",
+				"        \"layer0\": \"customitems/" + textureName + "\"",
+				"    },",
+				"    \"display\": {",
+				"        \"thirdperson_righthand\": {",
+				"            \"rotation\": [0, 90, 180],",
+				"            \"translation\": [1, -3, 2],",
+				"            \"scale\": [1, 2, 1]",
+				"        },",
+				"        \"thirdperson_lefthand\": {",
+				"            \"rotation\": [0, 90, 180],",
+				"            \"translation\": [1, -3, 2],",
+				"            \"scale\": [1, 2, 1]",
+				"        },",
+				"        \"firstperson_righthand\": {",
+				"            \"rotation\": [-20, -90, 0],",
+				"            \"translation\": [5, 2, -1],",
+				"            \"scale\": [1, 2, 1]",
+				"        },",
+				"        \"firstperson_lefthand\": {",
+				"            \"rotation\": [-20, -90, 0],",
+				"            \"translation\": [5, 2, -1],",
+				"            \"scale\": [1, 2, 1]",
+				"        }",
+				"    }",
+				"}"
+		};
+	}
+	
+	private static String[] getMinecraftModelTridentInHandBegin() {
+		return new String[] {
+				"{",
+				"    \"parent\": \"builtin/entity\",",
+				"    \"textures\": {",
+				"        \"particle\": \"item/trident\"",
+				"    },",
+				"    \"display\": {",
+				"        \"thirdperson_righthand\": {",
+				"            \"rotation\": [0, 60, 0],",
+				"            \"translation\": [11, 17, -2],",
+				"            \"scale\": [1, 1, 1]",
+				"        },",
+				"        \"thirdperson_lefthand\": {",
+				"            \"rotation\": [0, 60, 0],",
+				"            \"translation\": [3, 17, 12],",
+				"            \"scale\": [1, 1, 1]",
+				"        },",
+				"        \"firstperson_righthand\": {",
+				"            \"rotation\": [0, -90, 25],",
+				"            \"translation\": [-3, 17, 1],",
+				"            \"scale\": [1, 1, 1]",
+				"        },",
+				"        \"firstperson_lefthand\": {",
+				"            \"rotation\": [0, 90, -25],",
+				"            \"translation\": [13, 17, 1],",
+				"            \"scale\": [1, 1, 1]",
+				"        },",
+				"        \"gui\": {",
+				"            \"rotation\": [15, -25, -5],",
+				"            \"translation\": [2, 3, 0],",
+				"            \"scale\": [0.65, 0.65, 0.65]",
+				"        },",
+				"        \"fixed\": {",
+				"            \"rotation\": [0, 180, 0],",
+				"            \"translation\": [-2, 4, -5],",
+				"            \"scale\": [0.5, 0.5, 0.5]",
+				"        },",
+				"        \"ground\": {",
+				"            \"rotation\": [0, 0, 0],",
+				"            \"translation\": [4, 4, 2],",
+				"            \"scale\": [0.25, 0.25, 0.25]",
+				"        }",
+				"    },",
+				"    \"overrides\": [",
+				"        {\"predicate\": {\"throwing\": 1}, \"model\": \"item/trident_throwing\"}",
+		};
+	}
+	
+	private static String[] getMinecraftModelTridentInHandEnd() {
+		return new String[] {
+				"        {\"predicate\": {\"damaged\": 1, \"damage\": 0}, \"model\": \"item/trident_in_hand\"}",
+				"        {\"predicate\": {\"damaged\": 1, \"damage\": 0, \"throwing\": 1}, \"model\": \"item/trident_throwing\"}",
+				"    ]",
+				"}"
+		};
+	}
 	
 	private static String[] chain(String[]...arrays) {
 		int length = 0;
@@ -1382,7 +1526,35 @@ public class ItemSet implements ItemSetBase {
 						jsonWriter.flush();
 					}
 				} else if (item instanceof CustomTrident) {
-					// TODO Save the custom models
+					CustomTrident trident = (CustomTrident) item;
+					byte[] inHandModel = trident.customInHandModel;
+					entry = new ZipEntry("assets/minecraft/models/customitems/" + item.getName() + "_in_hand.json");
+					zipOutput.putNextEntry(entry);
+					if (inHandModel != null) {
+						zipOutput.write(inHandModel);
+						zipOutput.flush();
+					} else {
+						String[] modelContent = getDefaultModelTridentInHand(item.getName());
+						jsonWriter = new PrintWriter(zipOutput);
+						for (String line : modelContent) {
+							jsonWriter.println(line);
+						}
+						jsonWriter.flush();
+					}
+					byte[] throwingModel = trident.customThrowingModel;
+					entry = new ZipEntry("assets/minecraft/models/customitems/" + item.getName() + "_throwing.json");
+					zipOutput.putNextEntry(entry);
+					if (throwingModel != null) {
+						zipOutput.write(throwingModel);
+						zipOutput.flush();
+					} else {
+						String[] modelContent = getDefaultModelTridentThrowing(item.getName());
+						jsonWriter = new PrintWriter(zipOutput);
+						for (String line : modelContent) {
+							jsonWriter.println(line);
+						}
+						jsonWriter.flush();
+					}
 				}
 			}
 
@@ -1418,7 +1590,7 @@ public class ItemSet implements ItemSetBase {
 					
 					ZipEntry zipEntry = new ZipEntry("assets/minecraft/models/item/" + modelName + ".json");
 					zipOutput.putNextEntry(zipEntry);
-					PrintWriter jsonWriter = new PrintWriter(zipOutput);
+					final PrintWriter jsonWriter = new PrintWriter(zipOutput);
 
 					if (entry.getKey() == CustomItemType.BOW) {
 						// Begin of the json file
@@ -1551,8 +1723,6 @@ public class ItemSet implements ItemSetBase {
 						// Now finish the json
 						jsonWriter.println("    ]");
 						jsonWriter.println("}");
-					} else if (entry.getKey() == CustomItemType.TRIDENT) {
-						// TODO Save the models
 					} else {
 						// Begin of the json file
 						jsonWriter.println("{");
@@ -1585,6 +1755,34 @@ public class ItemSet implements ItemSetBase {
 						jsonWriter.println("}");
 					}
 					jsonWriter.flush();
+					
+					// Not part of the if-else chain above because the base item model of trident is not special
+					if (entry.getKey() == CustomItemType.TRIDENT) {
+						
+						// The beginning:
+						zipEntry = new ZipEntry("assets/minecraft/models/item/" + modelName + "_in_hand.json");
+						zipOutput.putNextEntry(zipEntry);
+						String[] begin = getMinecraftModelTridentInHandBegin();
+						
+						String[] end = getMinecraftModelTridentInHandEnd();
+						
+						for (String line : begin) {
+							jsonWriter.println(line);
+						}
+						
+						for (CustomItem item : list) {
+							jsonWriter.println("        { \"predicate\": { \"throwing\": 0, \"damaged\": 0, \"damage\": "
+									+ (double) item.getItemDamage() / item.getItemType().getMaxDurability() + " }, \"model\": \"customitems/" + item.getName() + "_in_hand\" },");
+							jsonWriter.println("        { \"predicate\": { \"throwing\": 1, \"damaged\": 0, \"damage\": "
+									+ (double) item.getItemDamage() / item.getItemType().getMaxDurability() + " }, \"model\": \"customitems/" + item.getName() + "_throwing\" },");
+						}
+						
+						for (String line : end) {
+							jsonWriter.println(line);
+						}
+						
+						jsonWriter.flush();
+					}
 					zipOutput.closeEntry();
 				}
 			}
@@ -1795,7 +1993,7 @@ public class ItemSet implements ItemSetBase {
 						}
 						jsonWriter.flush();
 					}
-				} // TODO Don't bother custom trident models since tridents don't exist in old versions
+				} // Don't bother custom trident models since tridents don't exist in old versions
 			}
 
 			// Map all custom items by their item type
@@ -2592,6 +2790,22 @@ public class ItemSet implements ItemSetBase {
 		}
 		return addTool(hoe, false);
 	}
+	
+	public String addTrident(CustomTrident trident, boolean checkClass) {
+		if (!bypassChecks()) {
+			if (trident == null)
+				return "Can't add null items";
+			if (checkClass && trident.getClass() != CustomTrident.class)
+				return "Use the appropriate method for that class";
+			if (trident.throwDurabilityLoss < 0)
+				return "The throw durability loss must be a positive integer";
+			if (trident.throwDamageMultiplier < 0)
+				return "The throw damage multiplier must be a positive number";
+			if (trident.speedMultiplier < 0)
+				return "The speed multiplier must be a positive number";
+		}
+		return addTool(trident, false);
+	}
 
 	/**
 	 * Attempts to change the specified tool in this item set. If the tool can be
@@ -2690,6 +2904,41 @@ public class ItemSet implements ItemSetBase {
 				entityHitDurabilityLoss, blockBreakDurabilityLoss, newCustomModel, false);
 		if (error == null) {
 			hoe.setTillDurabilityLoss(tillDurabilityLoss);
+			return null;
+		} else {
+			return error;
+		}
+	}
+	
+	public String changeTrident(CustomTrident trident, CustomItemType newType, short newDamage, 
+			String newName, String newDisplayName, String[] newLore, AttributeModifier[] newAttributes, 
+			Enchantment[] newEnchantments, boolean allowEnchanting, boolean allowAnvil, 
+			double throwDamageMultiplier, double throwSpeedMultiplier, Ingredient repairItem, 
+			long newDurability, NamedImage newImage, boolean[] itemFlags, int entityHitDurabilityLoss, 
+			int blockBreakDurabilityLoss, int throwDurabilityLoss, byte[] newCustomModel, 
+			byte[] newCustomInHandModel, byte[] newCustomThrowingModel, boolean checkClass) {
+		if (!bypassChecks()) {
+			if (trident == null)
+				return "Can't change null items";
+			if (checkClass && trident.getClass() != CustomTrident.class)
+				return "Use the appropriate method for that class";
+			if (throwDurabilityLoss < 0)
+				return "The throw durability loss must be a positive integer";
+			if (throwDamageMultiplier < 0)
+				return "The throw damage multiplier must be a positive number";
+			if (throwSpeedMultiplier < 0)
+				return "The speed multiplier must be a positive number";
+		}
+		
+		String error = changeTool(trident, newType, newDamage, newName, newDisplayName, newLore, newAttributes,
+				newEnchantments, allowEnchanting, allowAnvil, repairItem, newDurability, newImage, itemFlags,
+				entityHitDurabilityLoss, blockBreakDurabilityLoss, newCustomModel, false);
+		if (error == null) {
+			trident.throwDurabilityLoss = throwDurabilityLoss;
+			trident.throwDamageMultiplier = throwDamageMultiplier;
+			trident.speedMultiplier = throwSpeedMultiplier;
+			trident.customInHandModel = newCustomInHandModel;
+			trident.customThrowingModel = newCustomThrowingModel;
 			return null;
 		} else {
 			return error;

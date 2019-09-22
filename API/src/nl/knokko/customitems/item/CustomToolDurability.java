@@ -29,7 +29,7 @@ public class CustomToolDurability {
 	
 	public static int defaultEntityHitDurabilityLoss(CustomItemType itemType) {
 		Category toolCategory = itemType.getMainCategory();
-		if (toolCategory == Category.SWORD) return 1;
+		if (toolCategory == Category.SWORD || toolCategory == Category.TRIDENT) return 1;
 		else if (toolCategory == Category.PICKAXE || toolCategory == Category.AXE
 				|| toolCategory == Category.SHOVEL) return 2;
 		return 0;
@@ -37,7 +37,7 @@ public class CustomToolDurability {
 	
 	public static int defaultBlockBreakDurabilityLoss(CustomItemType itemType) {
 		Category toolCategory = itemType.getMainCategory();
-		if (toolCategory == Category.SWORD) return 2;
+		if (toolCategory == Category.SWORD || toolCategory == Category.TRIDENT) return 2;
 		else if (toolCategory == Category.PICKAXE || toolCategory == Category.AXE
 				|| toolCategory == Category.SHOVEL) return 1;
 		return 0;
