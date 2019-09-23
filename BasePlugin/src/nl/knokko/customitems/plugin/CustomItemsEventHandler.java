@@ -102,6 +102,7 @@ import nl.knokko.customitems.plugin.set.item.CustomItem;
 import nl.knokko.customitems.plugin.set.item.CustomShears;
 import nl.knokko.customitems.plugin.set.item.CustomShield;
 import nl.knokko.customitems.plugin.set.item.CustomTool;
+import nl.knokko.customitems.plugin.set.item.CustomTrident;
 
 import static org.bukkit.enchantments.Enchantment.*;
 
@@ -139,10 +140,18 @@ public class CustomItemsEventHandler implements Listener {
 	public static void playBreakSound(Player player) {
 		player.playSound(player.getLocation(), Sound.ENTITY_ITEM_BREAK, 1, 1);
 	}
+	
+	@EventHandler
+	public void breakCustomTridents(ProjectileHitEvent event) {
+		if (isTrident(event.getEntity())) {
+			if (event.getEntity().hasMetadata("CustomTridentBreak")) {
+				event.getEntity().remove();
+			}
+		}
+	}
 
 	@EventHandler(ignoreCancelled = true)
-	public void processCustomBowDamage(EntityDamageByEntityEvent event) {
-		Bukkit.broadcastMessage("EntityDamageByEntityEvent: damager is " + event.getDamager());
+	public void processCustomProjectileDamage(EntityDamageByEntityEvent event) {
 		if (event.getDamager() instanceof Arrow) {
 			List<MetadataValue> metas = event.getDamager().getMetadata("CustomBowDamageMultiplier");
 			for (MetadataValue meta : metas) {
@@ -150,7 +159,6 @@ public class CustomItemsEventHandler implements Listener {
 			}
 		}
 		if (isTrident(event.getDamager())) {
-			Bukkit.broadcastMessage("Hit by trident");
 			List<MetadataValue> metas = event.getDamager().getMetadata("CustomTridentDamageMultiplier");
 			for (MetadataValue meta : metas) {
 				event.setDamage(event.getDamage() * meta.asDouble());
@@ -158,75 +166,156 @@ public class CustomItemsEventHandler implements Listener {
 		}
 	}
 	
+	private static final MetadataValue TRIDENT_BREAK_META = new MetadataValue() {
+
+		@Override
+		public Object value() {
+			return null;
+		}
+
+		@Override
+		public int asInt() {
+			return 0;
+		}
+
+		@Override
+		public float asFloat() {
+			return 0;
+		}
+
+		@Override
+		public double asDouble() {
+			return 0;
+		}
+
+		@Override
+		public long asLong() {
+			return 0;
+		}
+
+		@Override
+		public short asShort() {
+			return 0;
+		}
+
+		@Override
+		public byte asByte() {
+			return 0;
+		}
+
+		@Override
+		public boolean asBoolean() {
+			return false;
+		}
+
+		@Override
+		public String asString() {
+			return null;
+		}
+
+		@Override
+		public Plugin getOwningPlugin() {
+			return CustomItemsPlugin.getInstance();
+		}
+
+		@Override
+		public void invalidate() {}
+		
+	};
+	
 	@EventHandler
-	public void processTridentThrow(ProjectileLaunchEvent event) {
-		Bukkit.broadcastMessage("proj launch event: " + event.getEntity());
+	public void processCustomTridentThrow(ProjectileLaunchEvent event) {
 		if (isTrident(event.getEntity())) {
-			Bukkit.broadcastMessage("Throwing a trident, shooter is " + event.getEntity().getShooter());
 			Projectile trident = event.getEntity();
 			if (trident.getShooter() instanceof Player) {
+				CustomTrident customTrident = null;
 				Player shooter = (Player) trident.getShooter();
-				Bukkit.broadcastMessage("main item is " + shooter.getInventory().getItemInMainHand());
-				Bukkit.broadcastMessage("off item is " + shooter.getInventory().getItemInOffHand());
+				ItemStack main = shooter.getInventory().getItemInMainHand();
+				ItemStack off = shooter.getInventory().getItemInOffHand();
+				ItemSet set = CustomItemsPlugin.getInstance().getSet();
+				if (main != null && ItemHelper.getMaterialName(main).equals(CIMaterial.TRIDENT.name())) {
+					if (CustomItem.isCustom(main)) {
+						CustomItem customMain = set.getItem(main);
+						if (customMain instanceof CustomTrident) {
+							customTrident = (CustomTrident) customMain;
+							if (customTrident.decreaseDurability(main, customTrident.throwDurabilityLoss)) {
+								trident.setMetadata("CustomTridentBreak", TRIDENT_BREAK_META);
+							}
+						}
+					}
+				} else if (off != null && ItemHelper.getMaterialName(off).equals(CIMaterial.TRIDENT.name())) {
+					if (CustomItem.isCustom(off)) {
+						CustomItem customOff = set.getItem(off);
+						if (customOff instanceof CustomTrident) {
+							customTrident = (CustomTrident) customOff;
+							if (customTrident.decreaseDurability(off, customTrident.throwDurabilityLoss)) {
+								trident.setMetadata("CustomTridentBreak", TRIDENT_BREAK_META);
+							}
+						}
+					}
+				}
+				
+				if (customTrident != null) {
+					trident.setVelocity(trident.getVelocity().multiply(customTrident.throwSpeedMultiplier));
+					double throwDamageMultiplier = customTrident.throwDamageMultiplier;
+					trident.setMetadata("CustomTridentDamageMultiplier", new MetadataValue() {
+
+						@Override
+						public Object value() {
+							return null;
+						}
+
+						@Override
+						public int asInt() {
+							return 0;
+						}
+
+						@Override
+						public float asFloat() {
+							return 0;
+						}
+
+						@Override
+						public double asDouble() {
+							return throwDamageMultiplier;
+						}
+
+						@Override
+						public long asLong() {
+							return 0;
+						}
+
+						@Override
+						public short asShort() {
+							return 0;
+						}
+
+						@Override
+						public byte asByte() {
+							return 0;
+						}
+
+						@Override
+						public boolean asBoolean() {
+							return false;
+						}
+
+						@Override
+						public String asString() {
+							return null;
+						}
+
+						@Override
+						public Plugin getOwningPlugin() {
+							return CustomItemsPlugin.getInstance();
+						}
+
+						@Override
+						public void invalidate() {
+						}
+					});
+				}
 			}
-			trident.setVelocity(trident.getVelocity().multiply(0.1));
-			trident.setGravity(false);
-			trident.setMetadata("CustomTridentDamageMultiplier", new MetadataValue() {
-
-				@Override
-				public Object value() {
-					return null;
-				}
-
-				@Override
-				public int asInt() {
-					return 0;
-				}
-
-				@Override
-				public float asFloat() {
-					return 0;
-				}
-
-				@Override
-				public double asDouble() {
-					return 24.0;
-				}
-
-				@Override
-				public long asLong() {
-					return 0;
-				}
-
-				@Override
-				public short asShort() {
-					return 0;
-				}
-
-				@Override
-				public byte asByte() {
-					return 0;
-				}
-
-				@Override
-				public boolean asBoolean() {
-					return false;
-				}
-
-				@Override
-				public String asString() {
-					return null;
-				}
-
-				@Override
-				public Plugin getOwningPlugin() {
-					return CustomItemsPlugin.getInstance();
-				}
-
-				@Override
-				public void invalidate() {
-				}
-			});
 		}
 	}
 	
@@ -235,15 +324,9 @@ public class CustomItemsEventHandler implements Listener {
 		// I am compiling against craftbukkit-1.12, so I can't just use instanceof or EntityType.TRIDENT
 		return entity.getClass().getSimpleName().contains("Trident");
 	}
-	
-	@EventHandler
-	public void test(ProjectileHitEvent event) {
-		Bukkit.broadcastMessage("proj hit event: " + event.getEntity());
-	}
 
 	@EventHandler(ignoreCancelled = true)
 	public void onBowShoot(EntityShootBowEvent event) {
-		Bukkit.broadcastMessage("onBowShoot: projectile is " + event.getProjectile());
 		if (CustomItem.isCustom(event.getBow())) {
 			CustomItem customItem = CustomItemsPlugin.getInstance().getSet().getItem(event.getBow());
 			if (customItem instanceof CustomBow) {

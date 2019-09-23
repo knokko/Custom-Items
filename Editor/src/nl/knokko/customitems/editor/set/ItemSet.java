@@ -1402,13 +1402,13 @@ public class ItemSet implements ItemSetBase {
 				"        }",
 				"    },",
 				"    \"overrides\": [",
-				"        {\"predicate\": {\"throwing\": 1}, \"model\": \"item/trident_throwing\"}",
+				"        {\"predicate\": {\"throwing\": 1}, \"model\": \"item/trident_throwing\"},",
 		};
 	}
 	
 	private static String[] getMinecraftModelTridentInHandEnd() {
 		return new String[] {
-				"        {\"predicate\": {\"damaged\": 1, \"damage\": 0}, \"model\": \"item/trident_in_hand\"}",
+				"        {\"predicate\": {\"damaged\": 1, \"damage\": 0}, \"model\": \"item/trident_in_hand\"},",
 				"        {\"predicate\": {\"damaged\": 1, \"damage\": 0, \"throwing\": 1}, \"model\": \"item/trident_throwing\"}",
 				"    ]",
 				"}"
@@ -1518,7 +1518,7 @@ public class ItemSet implements ItemSetBase {
 						zipOutput.write(blockingModel);
 						zipOutput.flush();
 					} else {
-						String[] modelContent = getDefaultModelBlockingShield(item.getName());
+						String[] modelContent = getDefaultModelBlockingShield(item.getTexture().getName());
 						jsonWriter = new PrintWriter(zipOutput);
 						for (String line : modelContent) {
 							jsonWriter.println(line);
@@ -1534,7 +1534,7 @@ public class ItemSet implements ItemSetBase {
 						zipOutput.write(inHandModel);
 						zipOutput.flush();
 					} else {
-						String[] modelContent = getDefaultModelTridentInHand(item.getName());
+						String[] modelContent = getDefaultModelTridentInHand(item.getTexture().getName());
 						jsonWriter = new PrintWriter(zipOutput);
 						for (String line : modelContent) {
 							jsonWriter.println(line);
@@ -1548,7 +1548,7 @@ public class ItemSet implements ItemSetBase {
 						zipOutput.write(throwingModel);
 						zipOutput.flush();
 					} else {
-						String[] modelContent = getDefaultModelTridentThrowing(item.getName());
+						String[] modelContent = getDefaultModelTridentThrowing(item.getTexture().getName());
 						jsonWriter = new PrintWriter(zipOutput);
 						for (String line : modelContent) {
 							jsonWriter.println(line);
