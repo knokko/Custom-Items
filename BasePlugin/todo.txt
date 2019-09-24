@@ -16,7 +16,6 @@ Medium term:
 
 Short term:
 -Add link on editor front page to the ruby tutorial
--Also create a txt file containing only alphabetic characters that can be used instead of the .cis file
 -Add possibility to copy default models
 -Add key shortcuts for creating crafting recipes
 -Add choice between generated and handheld item model
