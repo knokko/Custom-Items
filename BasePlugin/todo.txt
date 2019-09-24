@@ -21,5 +21,4 @@ Short term:
 -Add key shortcuts for creating crafting recipes
 -Add choice between generated and handheld item model
 -Let hoppers stack custom items automatically
--Handle bukkits rename from WOOD_SWORD to WOODEN_SWORD (and probably gold)
 -Look into crossbow anvil issues
