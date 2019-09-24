@@ -23,8 +23,9 @@
  *******************************************************************************/
 package nl.knokko.customitems.plugin;
 
+import java.io.DataInputStream;
 import java.io.File;
-import java.io.FileInputStream;
+import java.nio.file.Files;
 import java.util.logging.Level;
 
 import org.bukkit.Bukkit;
@@ -34,7 +35,7 @@ import nl.knokko.customitems.plugin.command.CommandCustomItems;
 import nl.knokko.customitems.plugin.multisupport.crazyenchantments.CrazyEnchantmentsSupport;
 import nl.knokko.customitems.plugin.set.ItemSet;
 import nl.knokko.util.bits.BitInput;
-import nl.knokko.util.bits.BitInputStream;
+import nl.knokko.util.bits.ByteArrayBitInput;
 
 public class CustomItemsPlugin extends JavaPlugin {
 
@@ -69,24 +70,71 @@ public class CustomItemsPlugin extends JavaPlugin {
 		instance = null;
 		super.onDisable();
 	}
+	
+	private void loadSet(File file) {
+		try {
+			if (file.length() < 1_000_000_000) {
+				byte[] bytes = new byte[(int) file.length()];
+				DataInputStream fileInput = new DataInputStream(Files.newInputStream(file.toPath()));
+				fileInput.readFully(bytes);
+				fileInput.close();
+				if (file.getName().endsWith(".cis")) {
+					BitInput input = new ByteArrayBitInput(bytes);
+					set = new ItemSet(input);
+					input.terminate();
+				} else {
+					int counter = 0;
+					for (byte b : bytes) {
+						if (b >= 'a' && b < ('a' + 16)) {
+							counter++;
+						}
+					}
+					
+					int byteSize = counter / 2;
+					if (byteSize * 2 != counter) {
+						Bukkit.getLogger().log(Level.SEVERE, "The item set " + file + " had an odd number of alphabetic characters, which is not allowed!");
+						set = new ItemSet();
+						return;
+					}
+					byte[] dataBytes = new byte[byteSize];
+					int textIndex = 0;
+					for (int dataIndex = 0; dataIndex < byteSize; dataIndex++) {
+						int firstPart = bytes[textIndex++];
+						while (firstPart < 'a' || firstPart >= 'a' + 16) {
+							firstPart = bytes[textIndex++];
+						}
+						firstPart -= 'a';
+						int secondPart = bytes[textIndex++];
+						while (secondPart < 'a' || secondPart >= 'a' + 16) {
+							secondPart = bytes[textIndex++];
+						}
+						secondPart -= 'a';
+						dataBytes[dataIndex] = (byte) (firstPart + 16 * secondPart);
+					}
+					BitInput input = new ByteArrayBitInput(dataBytes);
+					set = new ItemSet(input);
+					input.terminate();
+				}
+			} else {
+				Bukkit.getLogger().log(Level.SEVERE, "The custom item set " + file + " is too big");
+				set = new ItemSet();
+			}
+		} catch (Exception ex) {
+			Bukkit.getLogger().log(Level.SEVERE, "Failed to load the custom item set " + file, ex);
+			set = new ItemSet();
+		}
+	}
 
 	private void loadSet() {
 		File folder = getDataFolder();
 		folder.mkdirs();
 		File[] files = folder.listFiles((File file, String name) -> {
-			return name.endsWith(".cis");
+			return name.endsWith(".cis") || name.endsWith(".txt");
 		});
 		if (files != null) {
 			if (files.length == 1) {
 				File file = files[0];
-				try {
-					BitInput input = new BitInputStream(new FileInputStream(file));
-					set = new ItemSet(input);
-					input.terminate();
-				} catch (Exception ex) {
-					Bukkit.getLogger().log(Level.SEVERE, "Failed to load the custom item set " + file, ex);
-					set = new ItemSet();
-				}
+				loadSet(file);
 			} else if (files.length == 0) {
 				Bukkit.getLogger().log(Level.WARNING,
 						"No custom item set could be found in the Custom Items plugin data folder. It should contain a single file that ends with .cis");
@@ -95,14 +143,7 @@ public class CustomItemsPlugin extends JavaPlugin {
 				File file = files[0];
 				Bukkit.getLogger()
 						.warning("Multiple custom item sets were found, so the item set " + file + " will be loaded.");
-				try {
-					BitInput input = new BitInputStream(new FileInputStream(file));
-					set = new ItemSet(input);
-					input.terminate();
-				} catch (Exception ex) {
-					Bukkit.getLogger().log(Level.SEVERE, "Failed to load the custom item set " + file, ex);
-					set = new ItemSet();
-				}
+				loadSet(file);
 			}
 		} else {
 			Bukkit.getLogger().warning("Something is wrong with the Custom Items Plug-in data folder");

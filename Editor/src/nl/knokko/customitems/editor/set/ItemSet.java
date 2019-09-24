@@ -1440,14 +1440,25 @@ public class ItemSet implements ItemSetBase {
 			return versionError;
 		}
 		try {
+			
+			// See exportOld for explanation
 			File file = new File(Editor.getFolder() + "/" + fileName + ".cis");// cis stands for Custom Item Set
 			OutputStream fileOutput = Files.newOutputStream(file.toPath());
 			ByteArrayBitOutput output = new ByteArrayBitOutput();
 			export3(output);
 			output.terminate();
-			fileOutput.write(output.getBytes());
+			
+			byte[] bytes = output.getBytes();
+			fileOutput.write(bytes);
 			fileOutput.flush();
 			fileOutput.close();
+			
+			byte[] textyBytes = createTextyBytes(bytes);
+			fileOutput = Files.newOutputStream(new File(Editor.getFolder() + "/" + fileName + ".txt").toPath());
+			fileOutput.write(textyBytes);
+			fileOutput.flush();
+			fileOutput.close();
+			
 			ZipOutputStream zipOutput = new ZipOutputStream(
 					new FileOutputStream(new File(Editor.getFolder() + "/" + fileName + ".zip")));
 
@@ -1895,6 +1906,28 @@ public class ItemSet implements ItemSetBase {
 		
 		return null;
 	}
+	
+	private byte[] createTextyBytes(byte[] bytes) {
+		byte[] textBytes = new byte[2 * bytes.length + 2 * bytes.length / 50];
+		int textIndex = 0;
+		int textCounter = 0;
+		byte charCodeA = (byte) 'a';
+		byte charCodeSR = (byte) '\r';
+		byte charCodeSN = (byte) '\n';
+		for (byte data : bytes) {
+			int value = data & 0xFF;
+			textBytes[textIndex++] = (byte) (charCodeA + value % 16);
+			textBytes[textIndex++] = (byte) (charCodeA + value / 16);
+					
+			textCounter++;
+			if (textCounter == 50) {
+				textCounter = 0;
+				textBytes[textIndex++] = charCodeSR;
+				textBytes[textIndex++] = charCodeSN;
+			}
+		}
+		return textBytes;
+	}
 
 	/**
 	 * Export the item set for minecraft version 1.mcVersion with the old resourcepack format
@@ -1908,14 +1941,35 @@ public class ItemSet implements ItemSetBase {
 			return error;
 		}
 		try {
-			File file = new File(Editor.getFolder() + "/" + fileName + ".cis");// cis stands for Custom Item Set
-			OutputStream fileOutput = Files.newOutputStream(file.toPath());
 			ByteArrayBitOutput output = new ByteArrayBitOutput();
 			export3(output);
 			output.terminate();
-			fileOutput.write(output.getBytes());
+			
+			byte[] bytes = output.getBytes();
+			
+			// Write the .cis file, which stands for Custom Item Set
+			File file = new File(Editor.getFolder() + "/" + fileName + ".cis");
+			OutputStream fileOutput = Files.newOutputStream(file.toPath());
+			fileOutput.write(bytes);
 			fileOutput.flush();
 			fileOutput.close();
+			
+			/*
+			 * Write the .txt file, which can be used as alternative for the .cis file.
+			 * It has a bigger file size and will be a bit slower to read, but it is useful
+			 * for servers hosts like Aternos that do not allow users to upload (binary files).
+			 * 
+			 * It will only use alphabetic characters, which makes it possible to copy the data
+			 * as text (although it still won't be readable by humans).
+			 */
+			byte[] textBytes = createTextyBytes(bytes);
+			File textFile = new File(Editor.getFolder() + "/" + fileName + ".txt");
+			fileOutput = Files.newOutputStream(textFile.toPath());
+			fileOutput.write(textBytes);
+			fileOutput.flush();
+			fileOutput.close();
+			
+			// Write the .zip file, which is the resourcepack
 			ZipOutputStream zipOutput = new ZipOutputStream(
 					new FileOutputStream(new File(Editor.getFolder() + "/" + fileName + ".zip")));
 
