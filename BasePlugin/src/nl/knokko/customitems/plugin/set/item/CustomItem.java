@@ -35,6 +35,7 @@ import org.bukkit.inventory.meta.ItemMeta;
 
 import com.google.common.collect.Lists;
 
+import nl.knokko.core.plugin.CorePlugin;
 import nl.knokko.core.plugin.item.ItemHelper;
 import nl.knokko.core.plugin.item.attributes.ItemAttributes;
 import nl.knokko.core.plugin.item.attributes.ItemAttributes.Single;
@@ -57,7 +58,16 @@ public abstract class CustomItem extends nl.knokko.customitems.item.CustomItem {
     		String[] lore, AttributeModifier[] attributes, Enchantment[] defaultEnchantments, boolean[] itemFlags){
         super(itemType, itemDamage, name, displayName, lore, attributes, defaultEnchantments, itemFlags);
         
-        material = CIMaterial.valueOf(itemType.name().replace("SHOVEL", "SPADE"));
+        String materialName = itemType.name();
+        
+        // This method distinguishes minecraft 1.12 and before from minecraft 1.13 and later
+        // That is what we need here, because Bukkit renamed all WOOD_* tools to WOODEN_* tools
+        if (CorePlugin.useNewCommands()) {
+        	materialName = materialName.replace("WOOD", "WOODEN").replace("GOLD", "GOLDEN");
+        } else {
+        	materialName = materialName.replace("SHOVEL", "SPADE");
+        }
+        material = CIMaterial.valueOf(materialName);
         attributeModifiers = new Single[attributes.length];
         for (int index = 0; index < attributes.length; index++) {
         	AttributeModifier a = attributes[index];
