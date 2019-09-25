@@ -23,6 +23,11 @@
  *******************************************************************************/
 package nl.knokko.customitems.editor.menu.main;
 
+import java.awt.Desktop;
+import java.net.MalformedURLException;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.net.URL;
 import nl.knokko.customitems.editor.menu.commandhelp.CommandBlockHelpOverview;
 import nl.knokko.customitems.editor.menu.edit.EditProps;
 import nl.knokko.gui.color.GuiColor;
@@ -50,13 +55,54 @@ public class MainMenu extends GuiMenu {
 		}), 0.3f, 0.15f, 0.7f, 0.3f);
 
 		addComponent(new DynamicTextComponent("For help, visit the discord server:", EditProps.LABEL), 0.05f, 0.7f, 0.25f, 0.75f);
-		addComponent(new DynamicTextButton("Click here to copy the invite link", EditProps.BUTTON, EditProps.HOVER, () -> {
+		addComponent(new DynamicTextButton("Copy invite link", EditProps.BUTTON, EditProps.HOVER, () -> {
 					CommandBlockHelpOverview.setClipboard("https://discordapp.com/invite/bmF3Zvu");
-		}), 0.05f, 0.65f, 0.25f, 0.7f);
+		}), 0.05f, 0.65f, 0.145f, 0.7f);
+		addComponent(new DynamicTextButton("Open invite link", EditProps.BUTTON, EditProps.HOVER, () -> {
+				URL url = null;
+				try {
+					url = new URL("https://discordapp.com/invite/bmF3Zvu");
+				} catch (MalformedURLException e) {
+					e.printStackTrace();
+				}
+				openWebpage(url);
+		}), 0.155f, 0.65f, 0.25f, 0.7f);
+		addComponent(new DynamicTextComponent("Or read the tutorial:", EditProps.LABEL), 0.05f, 0.59f, 0.18f, 0.64f);
+		addComponent(new DynamicTextButton("Click here to open the tutorial", EditProps.BUTTON, EditProps.HOVER, () -> {
+				URL url = null;
+				try {
+					url = new URL("https://knokko.github.io/custom%20items/tutorials/basic%20tools.html");
+				} catch (MalformedURLException e) {
+					e.printStackTrace();
+				}
+				openWebpage(url);
+		}), 0.05f, 0.53f, 0.25f, 0.58f);
 	}
 	
 	@Override
 	public GuiColor getBackgroundColor() {
 		return EditProps.BACKGROUND;
+	}
+	
+	public static boolean openWebpage(URI uri) {
+	    Desktop desktop = Desktop.isDesktopSupported() ? Desktop.getDesktop() : null;
+	    if (desktop != null && desktop.isSupported(Desktop.Action.BROWSE)) {
+	        try {
+	            desktop.browse(uri);
+	            return true;
+	        } catch (Exception e) {
+	            e.printStackTrace();
+	        }
+	    }
+	    return false;
+	}
+
+	public static boolean openWebpage(URL url) {
+	    try {
+	        return openWebpage(url.toURI());
+	    } catch (URISyntaxException e) {
+	        e.printStackTrace();
+	    }
+	    return false;
 	}
 }
