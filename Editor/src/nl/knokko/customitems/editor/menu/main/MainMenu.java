@@ -55,10 +55,10 @@ public class MainMenu extends GuiMenu {
 		}), 0.3f, 0.15f, 0.7f, 0.3f);
 
 		addComponent(new DynamicTextComponent("For help, visit the discord server:", EditProps.LABEL), 0.05f, 0.7f, 0.25f, 0.75f);
-		addComponent(new DynamicTextButton("Click here to copy the invite link", EditProps.BUTTON, EditProps.HOVER, () -> {
+		addComponent(new DynamicTextButton("Copy invite link", EditProps.BUTTON, EditProps.HOVER, () -> {
 					CommandBlockHelpOverview.setClipboard("https://discordapp.com/invite/bmF3Zvu");
-		}), 0.05f, 0.65f, 0.25f, 0.7f);
-		addComponent(new DynamicTextButton("Click here to open the invite link", EditProps.BUTTON, EditProps.HOVER, () -> {
+		}), 0.05f, 0.65f, 0.145f, 0.7f);
+		addComponent(new DynamicTextButton("Open invite link", EditProps.BUTTON, EditProps.HOVER, () -> {
 				URL url = null;
 				try {
 					url = new URL("https://discordapp.com/invite/bmF3Zvu");
@@ -66,7 +66,8 @@ public class MainMenu extends GuiMenu {
 					e.printStackTrace();
 				}
 				openWebpage(url);
-		}), 0.05f, 0.59f, 0.25f, 0.64f);
+		}), 0.155f, 0.65f, 0.25f, 0.7f);
+		addComponent(new DynamicTextComponent("Or read the tutorial:", EditProps.LABEL), 0.05f, 0.59f, 0.18f, 0.64f);
 		addComponent(new DynamicTextButton("Click here to open the tutorial", EditProps.BUTTON, EditProps.HOVER, () -> {
 				URL url = null;
 				try {
