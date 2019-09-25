@@ -13,9 +13,9 @@ Medium term:
 -Add player heads as custom items
 -Add potion effect powers to custom items
 -Add command executions to right click custom items
+-Look into anvil bug and see if it reappears when the MC version updates
 
 Short term:
--Add link on editor front page to the ruby tutorial
 -Add possibility to copy default models
 -Add key shortcuts for creating crafting recipes
 -Add choice between generated and handheld item model
