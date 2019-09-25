@@ -20,4 +20,3 @@ Short term:
 -Add key shortcuts for creating crafting recipes
 -Add choice between generated and handheld item model
 -Let hoppers stack custom items automatically
--Look into crossbow anvil issues
