@@ -44,13 +44,13 @@ public class EditCustomModel extends GuiMenu {
 			}, EditProps.CANCEL_BASE, EditProps.CANCEL_HOVER, EditProps.CHOOSE_BASE, EditProps.CHOOSE_HOVER, 
 					EditProps.BACKGROUND, EditProps.BACKGROUND2));
 		}), 0.225f, 0.8f, 0.4f, 0.9f);
-		addComponent(new DynamicTextButton("Copy Defualt Model", EditProps.BUTTON, EditProps.HOVER, () ->  {
+		addComponent(new DynamicTextButton("Copy Default Model", EditProps.BUTTON, EditProps.HOVER, () ->  {
 			String result = "";
 			for (String content: exampleContent) {
 				result += content + "\n";
 			}
 			CommandBlockHelpOverview.setClipboard(result);
-		}), 0.425f, 0.8f, 0.6f, 0.9f);
+		}), 0.425f, 0.8f, 0.7f, 0.9f);
 	}
 	
 	@Override
