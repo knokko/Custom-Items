@@ -37,7 +37,7 @@ BasePlugin relies on CraftBukkit (obviously), SharedCode (the javaproject within
 It also has Crazy Enchantments as an optional dependency (you can download its plug-in jar, the same one as you would put in your plug-ins folder, and add that to your build path). Adding that to your buildpath is necessary to have proper support for the hellforged enchantment of that plug-in. If you don't need that support, you can leave it out and ignore all compile errors it gives. The multisupport is made such that the classes that import anything of it will only be loaded if Crazy Enchantments is actually installed on the server (reflection is used to accomplish it).
 
 ### Editor
-Editor relies on , BitHelper and Gui (code is on github.com/knokko/Gui).
+Editor relies on SharedCode, BitHelper and Gui (code is on github.com/knokko/Gui).
 
 ### EditorTester
 EditorTester relies on SharedCode, BitHelper, Editor, Gui, GuiTester (code is on github.com/knokko/SafeGuiTester) and jnativehook (see instructions on github.com/kwhat/jnativehook).
