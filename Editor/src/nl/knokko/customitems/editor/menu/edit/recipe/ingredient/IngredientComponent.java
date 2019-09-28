@@ -24,9 +24,17 @@
 package nl.knokko.customitems.editor.menu.edit.recipe.ingredient;
 
 import nl.knokko.customitems.editor.menu.edit.EditProps;
+import nl.knokko.customitems.editor.menu.edit.select.item.SelectCustomItem;
+import nl.knokko.customitems.editor.menu.edit.select.item.SelectDataVanillaItem;
+import nl.knokko.customitems.editor.menu.edit.select.item.SelectSimpleVanillaItem;
 import nl.knokko.customitems.editor.set.ItemSet;
+import nl.knokko.customitems.editor.set.item.CustomItem;
+import nl.knokko.customitems.editor.set.recipe.ingredient.CustomItemIngredient;
+import nl.knokko.customitems.editor.set.recipe.ingredient.DataVanillaIngredient;
 import nl.knokko.customitems.editor.set.recipe.ingredient.Ingredient;
 import nl.knokko.customitems.editor.set.recipe.ingredient.NoIngredient;
+import nl.knokko.customitems.editor.set.recipe.ingredient.SimpleVanillaIngredient;
+import nl.knokko.customitems.item.CIMaterial;
 import nl.knokko.gui.component.GuiComponent;
 import nl.knokko.gui.component.text.dynamic.DynamicTextButton;
 
@@ -35,6 +43,7 @@ public class IngredientComponent extends DynamicTextButton {
 	private Ingredient current;
 	private final GuiComponent menu;
 	private final String emptyText;
+	private ItemSet set;
 
 	public IngredientComponent(String emptyText, Ingredient original, GuiComponent menu, ItemSet set) {
 		super(original.toString(emptyText), EditProps.BUTTON, EditProps.HOVER, null);
@@ -44,6 +53,7 @@ public class IngredientComponent extends DynamicTextButton {
 		current = original;
 		this.emptyText = emptyText;
 		this.menu = menu;
+		this.set = set;
 	}
 	
 	public IngredientComponent(String emptyText, GuiComponent menu, ItemSet set) {
@@ -61,5 +71,26 @@ public class IngredientComponent extends DynamicTextButton {
 	
 	public GuiComponent getMenu() {
 		return menu;
+	}
+	
+	@Override
+	public void keyPressed(char character) {
+		if (state.isMouseOver()) {
+			if (character == 'v') {
+				state.getWindow().setMainComponent(new SelectSimpleVanillaItem(getMenu(), (CIMaterial material) -> {
+					IngredientComponent.this.setIngredient(new SimpleVanillaIngredient(material));
+					//the SelectSimpleVanillaItem will go to the returnGui automatically
+				},false));
+			} else if (character == 'c') {
+				state.getWindow().setMainComponent(new SelectCustomItem(getMenu(), (CustomItem item) -> {
+					IngredientComponent.this.setIngredient(new CustomItemIngredient(item));
+					//the SelectCustomItem will go the the returnGui automatically
+				}, set));
+			} else if (character == 'd') {
+				state.getWindow().setMainComponent(new SelectDataVanillaItem(getMenu(), (CIMaterial material, byte data) -> {
+					IngredientComponent.this.setIngredient(new DataVanillaIngredient(material, data));
+				}));
+			}
+		}
 	}
 }
