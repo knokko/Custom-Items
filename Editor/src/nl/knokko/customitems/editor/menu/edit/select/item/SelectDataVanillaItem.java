@@ -56,6 +56,12 @@ public class SelectDataVanillaItem extends GuiMenu {
 		this.errorComponent = new DynamicTextComponent("", EditProps.ERROR);
 		this.list = new List();
 	}
+	
+	@Override
+	public void init() {
+		super.init();
+		filterField.setFocus();
+	}
 
 	@Override
 	protected void addComponents() {
