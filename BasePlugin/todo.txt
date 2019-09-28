@@ -19,4 +19,3 @@ Short term:
 -Add possibility to copy default models
 -Add key shortcuts for creating crafting recipes
 -Add choice between generated and handheld item model
--Let hoppers stack custom items automatically

@@ -63,6 +63,8 @@ import org.bukkit.event.entity.ProjectileHitEvent;
 import org.bukkit.event.entity.ProjectileLaunchEvent;
 import org.bukkit.event.inventory.InventoryAction;
 import org.bukkit.event.inventory.InventoryClickEvent;
+import org.bukkit.event.inventory.InventoryMoveItemEvent;
+import org.bukkit.event.inventory.InventoryPickupItemEvent;
 import org.bukkit.event.inventory.InventoryType.SlotType;
 import org.bukkit.event.inventory.PrepareAnvilEvent;
 import org.bukkit.event.inventory.PrepareItemCraftEvent;
@@ -1364,25 +1366,19 @@ public class CustomItemsEventHandler implements Listener {
 		String process(CustomItem item, int amount);
 	}
 	
-	@EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
-	public void onItemPickup(EntityPickupItemEvent event) {
-		ItemStack stack = event.getItem().getItemStack();
-		if (event.getEntityType() == EntityType.PLAYER && CustomItem.isCustom(stack)) {
+	private boolean fixCustomItemPickup(final ItemStack stack, ItemStack[] contents) {
+		if (CustomItem.isCustom(stack)) {
 			CustomItem customItem = CustomItemsPlugin.getInstance().getSet().getItem(stack);
 			if (customItem != null) {
 				int remainingAmount = stack.getAmount();
-				Player player = (Player) event.getEntity();
-				Inventory inv = player.getInventory();
-				ItemStack[] contents = inv.getContents();
 				for (ItemStack content : contents) {
 					if (customItem.is(content)) {
 						int remainingSpace = customItem.getMaxStacksize() - content.getAmount();
 						if (remainingSpace > 0) {
 							if (remainingSpace >= remainingAmount) {
 								content.setAmount(content.getAmount() + remainingAmount);
-								event.getItem().remove();
-								event.setCancelled(true);
-								return;
+								stack.setAmount(0);
+								return true;
 							} else {
 								content.setAmount(customItem.getMaxStacksize());
 								remainingAmount -= remainingSpace;
@@ -1393,13 +1389,79 @@ public class CustomItemsEventHandler implements Listener {
 				
 				if (remainingAmount != stack.getAmount()) {
 					stack.setAmount(remainingAmount);
-					event.getItem().setItemStack(stack);
 					
 					// Apparently, canceling the event is necessary because it won't let me change
 					// the picked up amount.
-					event.setCancelled(true);
+					return true;
 				}
 			}
+		}
+		
+		return false;
+	}
+	
+	@EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
+	public void onItemPickup(EntityPickupItemEvent event) {
+		ItemStack stack = event.getItem().getItemStack();
+		if (event.getEntityType() == EntityType.PLAYER) {
+			Player player = (Player) event.getEntity();
+			Inventory inv = player.getInventory();
+			ItemStack[] contents = inv.getContents();
+			int oldAmount = stack.getAmount();
+			if (fixCustomItemPickup(stack, contents)) {
+				event.setCancelled(true);
+			}
+			if (stack.getAmount() != oldAmount) {
+				if (stack.getAmount() > 0) {
+					event.getItem().setItemStack(stack);
+				} else {
+					event.getItem().remove();
+				}
+			}
+		}
+	}
+	
+	@EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
+	public void fixHopperPickup(InventoryPickupItemEvent event) {
+		ItemStack stack = event.getItem().getItemStack();
+		int oldAmount = stack.getAmount();
+		if (fixCustomItemPickup(stack, event.getInventory().getContents())) {
+			event.setCancelled(true);
+		}
+		if (oldAmount != stack.getAmount()) {
+			if (stack.getAmount() > 0) {
+				event.getItem().setItemStack(stack);
+			} else {
+				event.getItem().remove();
+			}
+		}
+	}
+	
+	@EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
+	public void fixHopperTransport(InventoryMoveItemEvent event) {
+		ItemStack stack = event.getItem();
+		ItemSet set = CustomItemsPlugin.getInstance().getSet();
+		CustomItem customStack = set.getItem(stack);
+		if (fixCustomItemPickup(stack, event.getDestination().getContents())) {
+			event.setCancelled(true);
+			Bukkit.getScheduler().scheduleSyncDelayedTask(CustomItemsPlugin.getInstance(), () -> {
+				
+				// We need to consume the transferred item from the source inventory,
+				// but without letting it enter the destination inventory because we do that manually.
+				// Simply canceling the event will not remove the item from the source inventory,
+				// so we need to do that manually as well.
+				ItemStack[] contents = event.getSource().getContents();
+				for (ItemStack content : contents) {
+					
+					// customStack can't be null because fixCustomItemPickup would have returned false then
+					if (customStack.is(content)) {
+						
+						// We rely here on the fact that hoppers won't move more than 1 item at a time
+						content.setAmount(content.getAmount() - 1);
+						break;
+					}
+				}
+			});
 		}
 	}
 	
