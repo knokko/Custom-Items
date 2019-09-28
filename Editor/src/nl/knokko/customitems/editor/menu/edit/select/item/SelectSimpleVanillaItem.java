@@ -53,6 +53,12 @@ public class SelectSimpleVanillaItem extends GuiMenu {
 		
 		filterField = new TextEditField("", EditProps.EDIT_BASE, EditProps.EDIT_ACTIVE);
 	}
+	
+	@Override
+	public void init() {
+		super.init();
+		filterField.setFocus();
+	}
 
 	@Override
 	protected void addComponents() {

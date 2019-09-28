@@ -30,8 +30,15 @@ import nl.knokko.customitems.editor.menu.edit.EditProps;
 import nl.knokko.customitems.editor.menu.edit.recipe.ingredient.ChooseIngredient;
 import nl.knokko.customitems.editor.menu.edit.recipe.ingredient.IngredientComponent;
 import nl.knokko.customitems.editor.menu.edit.recipe.result.ResultComponent;
+import nl.knokko.customitems.editor.menu.edit.select.item.SelectCustomItem;
+import nl.knokko.customitems.editor.menu.edit.select.item.SelectDataVanillaItem;
+import nl.knokko.customitems.editor.menu.edit.select.item.SelectSimpleVanillaItem;
+import nl.knokko.customitems.editor.set.item.CustomItem;
 import nl.knokko.customitems.editor.set.recipe.ShapelessRecipe;
+import nl.knokko.customitems.editor.set.recipe.ingredient.CustomItemIngredient;
+import nl.knokko.customitems.editor.set.recipe.ingredient.DataVanillaIngredient;
 import nl.knokko.customitems.editor.set.recipe.ingredient.Ingredient;
+import nl.knokko.customitems.editor.set.recipe.ingredient.SimpleVanillaIngredient;
 import nl.knokko.customitems.editor.set.recipe.result.SimpleVanillaResult;
 import nl.knokko.customitems.item.CIMaterial;
 import nl.knokko.gui.color.GuiColor;
@@ -107,6 +114,25 @@ public class ShapelessRecipeEdit extends GuiMenu {
 	@Override
 	public GuiColor getBackgroundColor() {
 		return EditProps.BACKGROUND;
+	}
+	
+	@Override
+	public void keyPressed(char character) {
+		if (character == 'v') {
+			state.getWindow().setMainComponent(new SelectSimpleVanillaItem(this, (CIMaterial material) -> {
+				ingredients.addIngredient(new SimpleVanillaIngredient(material));
+				//the SelectSimpleVanillaItem will go to the returnGui automatically
+			},false));
+		} else if (character == 'c') {
+			state.getWindow().setMainComponent(new SelectCustomItem(this, (CustomItem item) -> {
+				ingredients.addIngredient(new CustomItemIngredient(item));
+				//the SelectCustomItem will go the the returnGui automatically
+			}, menu.getSet()));
+		} else if (character == 'd') {
+			state.getWindow().setMainComponent(new SelectDataVanillaItem(this, (CIMaterial material, byte data) -> {
+				ingredients.addIngredient(new DataVanillaIngredient(material, data));
+			}));
+		}
 	}
 	
 	private class Ingredients extends GuiMenu {
