@@ -2,6 +2,7 @@ package nl.knokko.customitems.editor.menu.edit.item;
 
 import java.io.File;
 
+import nl.knokko.customitems.editor.menu.commandhelp.CommandBlockHelpOverview;
 import nl.knokko.customitems.editor.menu.edit.EditProps;
 import nl.knokko.gui.color.GuiColor;
 import nl.knokko.gui.component.GuiComponent;
@@ -42,7 +43,14 @@ public class EditCustomModel extends GuiMenu {
 				return file.getName().endsWith(".json");
 			}, EditProps.CANCEL_BASE, EditProps.CANCEL_HOVER, EditProps.CHOOSE_BASE, EditProps.CHOOSE_HOVER, 
 					EditProps.BACKGROUND, EditProps.BACKGROUND2));
-		}), 0.025f, 0.05f, 0.2f, 0.15f);
+		}), 0.225f, 0.8f, 0.4f, 0.9f);
+		addComponent(new DynamicTextButton("Copy Defualt Model", EditProps.BUTTON, EditProps.HOVER, () ->  {
+			String result = "";
+			for (String content: exampleContent) {
+				result += content + "\n";
+			}
+			CommandBlockHelpOverview.setClipboard(result);
+		}), 0.425f, 0.8f, 0.6f, 0.9f);
 	}
 	
 	@Override
