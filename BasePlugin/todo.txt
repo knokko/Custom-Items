@@ -16,5 +16,4 @@ Medium term:
 -Look into anvil bug and see if it reappears when the MC version updates
 
 Short term:
--Add key shortcuts for creating crafting recipes
 -Add choice between generated and handheld item model
