@@ -1,11 +1,5 @@
 package nl.knokko.customitems.editor.menu.edit.item;
 
-import java.io.DataInputStream;
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
-import java.nio.file.Files;
-
 import nl.knokko.customitems.editor.menu.edit.EditMenu;
 import nl.knokko.customitems.editor.menu.edit.EditProps;
 import nl.knokko.customitems.editor.set.ItemSet;
@@ -58,41 +52,15 @@ public class EditItemTrident extends EditItemTool {
 		addComponent(new DynamicTextComponent("In-hand model: ", EditProps.LABEL), LABEL_X, 0.2f, LABEL_X + 0.2f, 0.25f);
 		addComponent(new DynamicTextButton("Change...", EditProps.BUTTON, EditProps.HOVER, () -> {
 			state.getWindow()
-					.setMainComponent(new EditCustomModel(ItemSet.getDefaultModelBlockingShield(textureSelect.currentTexture != null ? textureSelect.currentTexture.getName() : "TEXTURE_NAME"), this, (File file) -> {
-								try {
-									if (file.length() > 500000000) {
-										errorComponent.setText("That file is too long");
-										return;
-									}
-									byte[] result = new byte[(int) file.length()];
-									InputStream in = Files.newInputStream(file.toPath());
-									DataInputStream dataIn = new DataInputStream(in);
-									dataIn.readFully(result);
-									in.close();
-									customInHandModel = result;
-								} catch (IOException ioex) {
-									errorComponent.setText(ioex.getMessage());
-								}
+					.setMainComponent(new EditCustomModel(ItemSet.getDefaultModelBlockingShield(textureSelect.currentTexture != null ? textureSelect.currentTexture.getName() : "TEXTURE_NAME"), this, (byte[] array) -> {
+								customInHandModel = array;
 							}));
 		}), BUTTON_X, 0.2f, BUTTON_X + 0.1f, 0.25f);
 		addComponent(new DynamicTextComponent("Throwing model: ", EditProps.LABEL), LABEL_X, 0.14f, LABEL_X + 0.2f, 0.19f);
 		addComponent(new DynamicTextButton("Change...", EditProps.BUTTON, EditProps.HOVER, () -> {
 			state.getWindow()
-					.setMainComponent(new EditCustomModel(ItemSet.getDefaultModelBlockingShield(textureSelect.currentTexture != null ? textureSelect.currentTexture.getName() : "TEXTURE_NAME"), this, (File file) -> {
-								try {
-									if (file.length() > 500000000) {
-										errorComponent.setText("That file is too long");
-										return;
-									}
-									byte[] result = new byte[(int) file.length()];
-									InputStream in = Files.newInputStream(file.toPath());
-									DataInputStream dataIn = new DataInputStream(in);
-									dataIn.readFully(result);
-									in.close();
-									customThrowingModel = result;
-								} catch (IOException ioex) {
-									errorComponent.setText(ioex.getMessage());
-								}
+					.setMainComponent(new EditCustomModel(ItemSet.getDefaultModelBlockingShield(textureSelect.currentTexture != null ? textureSelect.currentTexture.getName() : "TEXTURE_NAME"), this, (byte[] array) -> {
+								customThrowingModel = array;
 							}));
 		}), BUTTON_X, 0.14f, BUTTON_X + 0.1f, 0.19f);
 	}
