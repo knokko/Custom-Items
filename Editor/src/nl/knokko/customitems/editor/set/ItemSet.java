@@ -3190,6 +3190,17 @@ public class ItemSet implements ItemSetBase {
 				if (recipe.requires(item))
 					return "At least one of your recipes has this item as an ingredient.";
 			}
+			for (CustomItem current : items) {
+				if (current instanceof CustomTool) {
+					CustomTool tool = (CustomTool) current;
+					if (tool.getRepairItem() instanceof CustomItemIngredient) {
+						CustomItemIngredient ingredient = (CustomItemIngredient) tool.getRepairItem();
+						if (ingredient.getItem() == item) {
+							return "The tool " + tool.getName() + " has this item as repair item.";
+						}
+					}
+				}
+			}
 		}
 		if (!items.remove(item)) {
 			return "This item is not in the item set";
