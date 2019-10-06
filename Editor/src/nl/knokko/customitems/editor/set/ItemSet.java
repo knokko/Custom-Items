@@ -3201,6 +3201,16 @@ public class ItemSet implements ItemSetBase {
 					}
 				}
 			}
+			for (EntityDrop drop : mobDrops) {
+				if (drop.getDrop().getItemToDrop() == item) {
+					return "There is a mob drop for " + drop.getEntityType() + " that drops this item.";
+				}
+			}
+			for (BlockDrop drop : blockDrops) {
+				if (drop.getDrop().getItemToDrop() == item) {
+					return "There is a block drop for " + drop.getBlock() + " that drops this item.";
+				}
+			}
 		}
 		if (!items.remove(item)) {
 			return "This item is not in the item set";
