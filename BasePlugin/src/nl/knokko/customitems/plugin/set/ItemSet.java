@@ -25,14 +25,13 @@ package nl.knokko.customitems.plugin.set;
 
 import java.util.Arrays;
 import java.util.EnumMap;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 import java.util.Map.Entry;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Color;
-import org.bukkit.craftbukkit.libs.it.unimi.dsi.fastutil.objects.ObjectSet;
-import org.bukkit.craftbukkit.libs.it.unimi.dsi.fastutil.shorts.Short2ObjectMap;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
@@ -64,7 +63,7 @@ public class ItemSet implements ItemSetBase {
 
 	private CustomRecipe[] recipes;
 
-	private final Map<CIMaterial, Short2ObjectMap<CustomItem>> customItemMap;
+	private final Map<CIMaterial, Map<Short, CustomItem>> customItemMap;
 
 	private CustomItem[] items;
 	
@@ -72,7 +71,7 @@ public class ItemSet implements ItemSetBase {
 	private EntityDrop[][] mobDropMap;
 
 	public ItemSet() {
-		customItemMap = new EnumMap<CIMaterial, Short2ObjectMap<CustomItem>>(CIMaterial.class);
+		customItemMap = new EnumMap<CIMaterial, Map<Short,CustomItem>>(CIMaterial.class);
 		items = new CustomItem[0];
 		recipes = new CustomRecipe[0];
 		
@@ -81,7 +80,7 @@ public class ItemSet implements ItemSetBase {
 	}
 
 	public ItemSet(BitInput input) {
-		customItemMap = new EnumMap<CIMaterial, Short2ObjectMap<CustomItem>>(CIMaterial.class);
+		customItemMap = new EnumMap<CIMaterial, Map<Short, CustomItem>>(CIMaterial.class);
 		byte encoding = input.readByte();
 		if (encoding == SetEncoding.ENCODING_1)
 			load1(input);
@@ -674,9 +673,9 @@ public class ItemSet implements ItemSetBase {
 
 	private void register(CustomItem item, int index) {
 		items[index] = item;
-		Short2ObjectMap<CustomItem> map = customItemMap.get(item.getMaterial());
+		Map<Short, CustomItem> map = customItemMap.get(item.getMaterial());
 		if (map == null) {
-			map = new org.bukkit.craftbukkit.libs.it.unimi.dsi.fastutil.shorts.Short2ObjectOpenHashMap<>();
+			map = new HashMap<>();
 			customItemMap.put(item.getMaterial(), map);
 		}
 		map.put(item.getItemDamage(), item);
@@ -818,9 +817,9 @@ public class ItemSet implements ItemSetBase {
 	}
 
 	public CustomItem getItem(String name) {
-		Set<Entry<CIMaterial, Short2ObjectMap<CustomItem>>> entrySet = customItemMap.entrySet();
-		for (Entry<CIMaterial, Short2ObjectMap<CustomItem>> entry : entrySet) {
-			ObjectSet<Entry<Short, CustomItem>> set = entry.getValue().entrySet();
+		Set<Entry<CIMaterial, Map<Short, CustomItem>>> entrySet = customItemMap.entrySet();
+		for (Entry<CIMaterial, Map<Short, CustomItem>> entry : entrySet) {
+			Set<Entry<Short, CustomItem>> set = entry.getValue().entrySet();
 			for (Entry<Short, CustomItem> innerEntry : set) {
 				if (innerEntry.getValue().getName().equals(name)) {
 					return innerEntry.getValue();
@@ -832,7 +831,7 @@ public class ItemSet implements ItemSetBase {
 
 	public CustomItem getItem(ItemStack item) {
 		if (item != null && item.hasItemMeta() && item.getItemMeta().isUnbreakable()) {
-			Short2ObjectMap<CustomItem> map = customItemMap.get(CIMaterial.valueOf(ItemHelper.getMaterialName(item)));
+			Map<Short, CustomItem> map = customItemMap.get(CIMaterial.valueOf(ItemHelper.getMaterialName(item)));
 			if (map != null) {
 				return map.get(item.getDurability());
 			}
