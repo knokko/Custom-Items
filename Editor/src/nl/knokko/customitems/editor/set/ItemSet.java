@@ -174,13 +174,7 @@ public class ItemSet implements ItemSetBase {
 		}
 		AttributeModifier[] attributes = new AttributeModifier[0];
 		String imageName = input.readJavaString();
-		NamedImage texture = null;
-		for (NamedImage current : textures) {
-			if (current.getName().equals(imageName)) {
-				texture = current;
-				break;
-			}
-		}
+		NamedImage texture = getTextureByName(imageName);
 		if (texture == null)
 			throw new IllegalArgumentException("Can't find texture " + imageName);
 		
@@ -202,13 +196,7 @@ public class ItemSet implements ItemSetBase {
 		for (int index = 0; index < attributes.length; index++)
 			attributes[index] = loadAttribute2(input);
 		String imageName = input.readJavaString();
-		NamedImage texture = null;
-		for (NamedImage current : textures) {
-			if (current.getName().equals(imageName)) {
-				texture = current;
-				break;
-			}
-		}
+		NamedImage texture = getTextureByName(imageName);
 		if (texture == null)
 			throw new IllegalArgumentException("Can't find texture " + imageName);
 		byte[] customModel = loadCustomModel(input, checkCustomModel);
@@ -232,13 +220,7 @@ public class ItemSet implements ItemSetBase {
 		for (int index = 0; index < defaultEnchantments.length; index++)
 			defaultEnchantments[index] = new Enchantment(EnchantmentType.valueOf(input.readString()), input.readInt());
 		String imageName = input.readJavaString();
-		NamedImage texture = null;
-		for (NamedImage current : textures) {
-			if (current.getName().equals(imageName)) {
-				texture = current;
-				break;
-			}
-		}
+		NamedImage texture = getTextureByName(imageName);
 		if (texture == null)
 			throw new IllegalArgumentException("Can't find texture " + imageName);
 		byte[] customModel = loadCustomModel(input, checkCustomModel);
@@ -263,13 +245,7 @@ public class ItemSet implements ItemSetBase {
 			defaultEnchantments[index] = new Enchantment(EnchantmentType.valueOf(input.readString()), input.readInt());
 		byte maxStacksize = input.readByte();
 		String imageName = input.readJavaString();
-		NamedImage texture = null;
-		for (NamedImage current : textures) {
-			if (current.getName().equals(imageName)) {
-				texture = current;
-				break;
-			}
-		}
+		NamedImage texture = getTextureByName(imageName);
 		if (texture == null)
 			throw new IllegalArgumentException("Can't find texture " + imageName);
 		byte[] customModel = loadCustomModel(input, checkCustomModel);
@@ -298,13 +274,7 @@ public class ItemSet implements ItemSetBase {
 		boolean[] itemFlags = input.readBooleans(6);
 		
 		String imageName = input.readJavaString();
-		NamedImage texture = null;
-		for (NamedImage current : textures) {
-			if (current.getName().equals(imageName)) {
-				texture = current;
-				break;
-			}
-		}
+		NamedImage texture = getTextureByName(imageName);
 		if (texture == null)
 			throw new IllegalArgumentException("Can't find texture " + imageName);
 		byte[] customModel = loadCustomModel(input, checkCustomModel);
@@ -328,13 +298,7 @@ public class ItemSet implements ItemSetBase {
 		boolean allowEnchanting = input.readBoolean();
 		boolean allowAnvil = input.readBoolean();
 		String imageName = input.readJavaString();
-		NamedImage texture = null;
-		for (NamedImage current : textures) {
-			if (current.getName().equals(imageName)) {
-				texture = current;
-				break;
-			}
-		}
+		NamedImage texture = getTextureByName(imageName);
 		if (texture == null)
 			throw new IllegalArgumentException("Can't find texture " + imageName);
 		byte[] customModel = loadCustomModel(input, checkCustomModel);
@@ -361,13 +325,7 @@ public class ItemSet implements ItemSetBase {
 		boolean allowAnvil = input.readBoolean();
 		Ingredient repairItem = Recipe.loadIngredient(input, this);
 		String imageName = input.readJavaString();
-		NamedImage texture = null;
-		for (NamedImage current : textures) {
-			if (current.getName().equals(imageName)) {
-				texture = current;
-				break;
-			}
-		}
+		NamedImage texture = getTextureByName(imageName);
 		if (texture == null)
 			throw new IllegalArgumentException("Can't find texture " + imageName);
 		byte[] customModel = loadCustomModel(input, checkCustomModel);
@@ -397,13 +355,7 @@ public class ItemSet implements ItemSetBase {
 		boolean allowAnvil = input.readBoolean();
 		Ingredient repairItem = Recipe.loadIngredient(input, this);
 		String imageName = input.readJavaString();
-		NamedImage texture = null;
-		for (NamedImage current : textures) {
-			if (current.getName().equals(imageName)) {
-				texture = current;
-				break;
-			}
-		}
+		NamedImage texture = getTextureByName(imageName);
 		if (texture == null)
 			throw new IllegalArgumentException("Can't find texture " + imageName);
 		byte[] customModel = loadCustomModel(input, checkCustomModel);
@@ -439,13 +391,7 @@ public class ItemSet implements ItemSetBase {
 		int blockBreakDurabilityLoss = input.readInt();
 		
 		String imageName = input.readJavaString();
-		NamedImage texture = null;
-		for (NamedImage current : textures) {
-			if (current.getName().equals(imageName)) {
-				texture = current;
-				break;
-			}
-		}
+		NamedImage texture = getTextureByName(imageName);
 		if (texture == null)
 			throw new IllegalArgumentException("Can't find texture " + imageName);
 		byte[] customModel = loadCustomModel(input, checkCustomModel);
@@ -481,13 +427,7 @@ public class ItemSet implements ItemSetBase {
 		int tillDurabilityLoss = input.readInt();
 		
 		String imageName = input.readJavaString();
-		NamedImage texture = null;
-		for (NamedImage current : textures) {
-			if (current.getName().equals(imageName)) {
-				texture = current;
-				break;
-			}
-		}
+		NamedImage texture = getTextureByName(imageName);
 		if (texture == null)
 			throw new IllegalArgumentException("Can't find texture " + imageName);
 		byte[] customModel = loadCustomModel(input, checkCustomModel);
@@ -523,13 +463,7 @@ public class ItemSet implements ItemSetBase {
 		int shearDurabilityLoss = input.readInt();
 		
 		String imageName = input.readJavaString();
-		NamedImage texture = null;
-		for (NamedImage current : textures) {
-			if (current.getName().equals(imageName)) {
-				texture = current;
-				break;
-			}
-		}
+		NamedImage texture = getTextureByName(imageName);
 		if (texture == null)
 			throw new IllegalArgumentException("Can't find texture " + imageName);
 		byte[] customModel = loadCustomModel(input, checkCustomModel);
@@ -558,13 +492,7 @@ public class ItemSet implements ItemSetBase {
 		boolean allowAnvil = input.readBoolean();
 		Ingredient repairItem = Recipe.loadIngredient(input, this);
 		String imageName = input.readJavaString();
-		NamedImage texture = null;
-		for (NamedImage current : textures) {
-			if (current.getName().equals(imageName)) {
-				texture = current;
-				break;
-			}
-		}
+		NamedImage texture = getTextureByName(imageName);
 		if (texture == null)
 			throw new IllegalArgumentException("Can't find texture " + imageName);
 		byte[] customModel = loadCustomModel(input, checkCustomModel);
@@ -596,13 +524,7 @@ public class ItemSet implements ItemSetBase {
 		boolean allowAnvil = input.readBoolean();
 		Ingredient repairItem = Recipe.loadIngredient(input, this);
 		String imageName = input.readJavaString();
-		NamedImage texture = null;
-		for (NamedImage current : textures) {
-			if (current.getName().equals(imageName)) {
-				texture = current;
-				break;
-			}
-		}
+		NamedImage texture = getTextureByName(imageName);
 		if (texture == null)
 			throw new IllegalArgumentException("Can't find texture " + imageName);
 		byte[] customModel = loadCustomModel(input, checkCustomModel);
@@ -641,13 +563,7 @@ public class ItemSet implements ItemSetBase {
 		int shootDurabilityLoss = input.readInt();
 		
 		String imageName = input.readJavaString();
-		NamedImage texture = null;
-		for (NamedImage current : textures) {
-			if (current.getName().equals(imageName)) {
-				texture = current;
-				break;
-			}
-		}
+		NamedImage texture = getTextureByName(imageName);
 		if (texture == null)
 			throw new IllegalArgumentException("Can't find texture " + imageName);
 		byte[] customModel = loadCustomModel(input, checkCustomModel);
@@ -689,13 +605,7 @@ public class ItemSet implements ItemSetBase {
 			blue = 64;
 		}
 		String imageName = input.readJavaString();
-		NamedImage texture = null;
-		for (NamedImage current : textures) {
-			if (current.getName().equals(imageName)) {
-				texture = current;
-				break;
-			}
-		}
+		NamedImage texture = getTextureByName(imageName);
 		if (texture == null)
 			throw new IllegalArgumentException("Can't find texture " + imageName);
 		byte[] customModel = loadCustomModel(input, checkCustomModel);
@@ -742,13 +652,7 @@ public class ItemSet implements ItemSetBase {
 		int blockBreakDurabilityLoss = input.readInt();
 		
 		String imageName = input.readJavaString();
-		NamedImage texture = null;
-		for (NamedImage current : textures) {
-			if (current.getName().equals(imageName)) {
-				texture = current;
-				break;
-			}
-		}
+		NamedImage texture = getTextureByName(imageName);
 		if (texture == null)
 			throw new IllegalArgumentException("Can't find texture " + imageName);
 		byte[] customModel = loadCustomModel(input, checkCustomModel);
@@ -797,13 +701,7 @@ public class ItemSet implements ItemSetBase {
 		DamageResistances resistances = DamageResistances.load12(input);
 		
 		String imageName = input.readJavaString();
-		NamedImage texture = null;
-		for (NamedImage current : textures) {
-			if (current.getName().equals(imageName)) {
-				texture = current;
-				break;
-			}
-		}
+		NamedImage texture = getTextureByName(imageName);
 		if (texture == null)
 			throw new IllegalArgumentException("Can't find texture " + imageName);
 		byte[] customModel = loadCustomModel(input, checkCustomModel);
@@ -852,13 +750,7 @@ public class ItemSet implements ItemSetBase {
 		DamageResistances resistances = DamageResistances.load14(input);
 		
 		String imageName = input.readJavaString();
-		NamedImage texture = null;
-		for (NamedImage current : textures) {
-			if (current.getName().equals(imageName)) {
-				texture = current;
-				break;
-			}
-		}
+		NamedImage texture = getTextureByName(imageName);
 		if (texture == null)
 			throw new IllegalArgumentException("Can't find texture " + imageName);
 		byte[] customModel = loadCustomModel(input, checkCustomModel);
@@ -894,13 +786,7 @@ public class ItemSet implements ItemSetBase {
 		double thresholdDamage = input.readDouble();
 		
 		String imageName = input.readJavaString();
-		NamedImage texture = null;
-		for (NamedImage current : textures) {
-			if (current.getName().equals(imageName)) {
-				texture = current;
-				break;
-			}
-		}
+		NamedImage texture = getTextureByName(imageName);
 		if (texture == null)
 			throw new IllegalArgumentException("Can't find texture " + imageName);
 		byte[] customModel = loadCustomModel(input, checkCustomModel);
@@ -938,13 +824,7 @@ public class ItemSet implements ItemSetBase {
 		double speedMultiplier = input.readDouble();
 		
 		String imageName = input.readJavaString();
-		NamedImage texture = null;
-		for (NamedImage current : textures) {
-			if (current.getName().equals(imageName)) {
-				texture = current;
-				break;
-			}
-		}
+		NamedImage texture = getTextureByName(imageName);
 		if (texture == null)
 			throw new IllegalArgumentException("Can't find texture " + imageName);
 		byte[] customModel = loadCustomModel(input, checkCustomModel);
@@ -3490,5 +3370,22 @@ public class ItemSet implements ItemSetBase {
 			if (item.getName().equals(name))
 				return item;
 		return null;
+	}
+	
+	public NamedImage getTextureByName(String name) {
+		for (NamedImage texture : textures) {
+			if (texture.getName().equals(name)) {
+				return texture;
+			}
+		}
+		return null;
+	}
+	
+	public boolean hasCustomItem(String name) {
+		return getCustomItemByName(name) != null;
+	}
+	
+	public boolean hasTexture(String name) {
+		return getTextureByName(name) != null;
 	}
 }

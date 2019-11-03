@@ -146,12 +146,9 @@ public class CombineMenu extends GuiMenu {
 				for (NamedImage texture : secundaryTextures) {
 					
 					// Do not tolerate multiple textures with the same name
-					String name = texture.getName();
-					for (NamedImage primaryTexture : primaryTextures) {
-						if (primaryTexture.getName().equals(name)) {
-							errorComponent.setText("Both item sets have a texture with name " + name);
-							return;
-						}
+					if (primarySet.hasTexture(texture.getName())) {
+						errorComponent.setText("Both item sets have a texture with name " + texture.getName());
+						return;
 					}
 					primaryTextures.add(texture);
 				}
@@ -168,11 +165,9 @@ public class CombineMenu extends GuiMenu {
 					
 					// Do not tolerate multiple items with the same name
 					String name = item.getName();
-					for (CustomItem primaryItem : primaryItems) {
-						if (primaryItem.getName().equals(name)) {
-							errorComponent.setText("Both item sets have an item with name " + name);
-							return;
-						}
+					if (primarySet.hasCustomItem(item.getName())) {
+						errorComponent.setText("Both item sets have an item with name " + name);
+						return;
 					}
 					
 					// If there will be multiple items with the same internal item type and damage

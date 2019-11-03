@@ -43,15 +43,11 @@ public class CustomItemIngredient implements Ingredient {
 	
 	public CustomItemIngredient(BitInput input, ItemSet set) {
 		String name = input.readJavaString();
-		Collection<CustomItem> items = set.getBackingItems();
-		for (CustomItem item : items) {
-			if(item.getName().equals(name)) {
-				this.item = item;
-				determineInfo();
-				return;
-			}
-		}
-		throw new IllegalArgumentException("There is no custom item with name " + name);
+		
+		this.item = set.getCustomItemByName(name);
+		if (this.item == null)
+			throw new IllegalArgumentException("There is no custom item with name " + name);
+		determineInfo();
 	}
 	
 	private void determineInfo() {

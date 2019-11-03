@@ -23,8 +23,6 @@
  *******************************************************************************/
 package nl.knokko.customitems.editor.set.recipe.result;
 
-import java.util.Collection;
-
 import nl.knokko.customitems.editor.set.ItemSet;
 import nl.knokko.customitems.editor.set.item.CustomItem;
 import nl.knokko.customitems.encoding.RecipeEncoding;
@@ -44,15 +42,12 @@ public class CustomItemResult extends Result {
 	public CustomItemResult(BitInput input, ItemSet set) {
 		super(input);
 		String name = input.readJavaString();
-		Collection<CustomItem> items = set.getBackingItems();
-		for (CustomItem item : items) {
-			if (item.getName().equals(name)) {
-				this.item = item;
-				initInfo();
-				return;
-			}
-		}
-		throw new IllegalArgumentException("There is no item with name " + name);
+		this.item = set.getCustomItemByName(name);
+		
+		if (this.item == null)
+			throw new IllegalArgumentException("There is no item with name " + name);
+		
+		this.initInfo();
 	}
 	
 	public CustomItem getItem() {
