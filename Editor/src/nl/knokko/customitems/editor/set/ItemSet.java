@@ -62,6 +62,7 @@ import nl.knokko.customitems.editor.set.item.CustomTrident;
 import nl.knokko.customitems.editor.set.item.NamedImage;
 import nl.knokko.customitems.editor.set.item.SimpleCustomItem;
 import nl.knokko.customitems.editor.set.item.texture.BowTextures;
+import nl.knokko.customitems.editor.set.projectile.ProjectileCover;
 import nl.knokko.customitems.editor.set.recipe.Recipe;
 import nl.knokko.customitems.editor.set.recipe.ShapedRecipe;
 import nl.knokko.customitems.editor.set.recipe.ShapelessRecipe;
@@ -853,6 +854,7 @@ public class ItemSet implements ItemSetBase {
 	private Collection<Recipe> recipes;
 	private Collection<BlockDrop> blockDrops;
 	private Collection<EntityDrop> mobDrops;
+	private Collection<ProjectileCover> projectileCovers;
 
 	public ItemSet(String fileName) {
 		this.fileName = fileName;
@@ -861,6 +863,7 @@ public class ItemSet implements ItemSetBase {
 		recipes = new ArrayList<>();
 		blockDrops = new ArrayList<>();
 		mobDrops = new ArrayList<>();
+		projectileCovers = new ArrayList<>();
 	}
 
 	public ItemSet(String fileName, BitInput input) {
@@ -915,6 +918,9 @@ public class ItemSet implements ItemSetBase {
 		// Drops (there are no drops in this encoding)
 		blockDrops = new ArrayList<>();
 		mobDrops = new ArrayList<>();
+		
+		// Projectile covers (there are no projectile covers in this encoding)
+		projectileCovers = new ArrayList<>();
 	}
 
 	private void load2(BitInput input) {
@@ -948,6 +954,9 @@ public class ItemSet implements ItemSetBase {
 		// Drops (there are no drops in this encoding)
 		blockDrops = new ArrayList<>();
 		mobDrops = new ArrayList<>();
+		
+		// Projectile covers (there are no projectile covers in this encoding)
+		projectileCovers = new ArrayList<>();
 	}
 	
 	private void load3(BitInput input) {
@@ -988,6 +997,9 @@ public class ItemSet implements ItemSetBase {
 		mobDrops = new ArrayList<>(numMobDrops);
 		for (int counter = 0; counter < numMobDrops; counter++)
 			mobDrops.add(EntityDrop.load(input, this));
+		
+		// Projectile covers (there are no projectile covers in this encoding)
+		projectileCovers = new ArrayList<>();
 	}
 	
 	private void load4(BitInput input) {
@@ -1028,6 +1040,9 @@ public class ItemSet implements ItemSetBase {
 		mobDrops = new ArrayList<>(numMobDrops);
 		for (int counter = 0; counter < numMobDrops; counter++)
 			mobDrops.add(EntityDrop.load(input, this));
+		
+		// Projectile covers (there are no projectile covers in this encoding)
+		projectileCovers = new ArrayList<>();
 	}
 
 	/**
@@ -1295,7 +1310,7 @@ public class ItemSet implements ItemSetBase {
 		};
 	}
 	
-	private static String[] chain(String[]...arrays) {
+	public static String[] chain(String[]...arrays) {
 		int length = 0;
 		for (String[] array : arrays) {
 			length += array.length;

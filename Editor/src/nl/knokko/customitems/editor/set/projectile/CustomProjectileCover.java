@@ -1,0 +1,38 @@
+package nl.knokko.customitems.editor.set.projectile;
+
+import java.io.IOException;
+import java.util.zip.ZipOutputStream;
+
+import nl.knokko.customitems.item.CustomItemType;
+import nl.knokko.util.bits.BitInput;
+import nl.knokko.util.bits.BitOutput;
+
+public class CustomProjectileCover extends ProjectileCover {
+	
+	private byte[] model;
+
+	public CustomProjectileCover(CustomItemType type, short itemDamage, String name, byte[] model) {
+		super(type, itemDamage, name);
+		this.model = model;
+	}
+	
+	CustomProjectileCover(BitInput input){
+		super(input);
+		model = input.readByteArray();
+	}
+
+	@Override
+	protected byte getID() {
+		return ID_CUSTOM;
+	}
+
+	@Override
+	protected void saveData(BitOutput output) {
+		output.addByteArray(model);
+	}
+
+	@Override
+	protected void writeModel(ZipOutputStream output) throws IOException {
+		output.write(model);
+	}
+}
