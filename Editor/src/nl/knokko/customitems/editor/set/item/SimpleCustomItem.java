@@ -23,6 +23,9 @@
  *******************************************************************************/
 package nl.knokko.customitems.editor.set.item;
 
+import java.util.List;
+
+import nl.knokko.customitems.effect.PotionEffect;
 import nl.knokko.customitems.encoding.ItemEncoding;
 import nl.knokko.customitems.item.AttributeModifier;
 import nl.knokko.customitems.item.CustomItemType;
@@ -35,9 +38,9 @@ public class SimpleCustomItem extends CustomItem {
 
 	public SimpleCustomItem(CustomItemType itemType, short itemDamage, String name, String displayName, String[] lore,
 			AttributeModifier[] attributes, Enchantment[] defaultEnchantments, int maxStacksize, 
-			NamedImage texture, boolean[] itemFlags, byte[] customModel) {
+			NamedImage texture, boolean[] itemFlags, byte[] customModel, List<PotionEffect> playerEffects, List<PotionEffect> targetEffects) {
 		super(itemType, itemDamage, name, displayName, lore, attributes, defaultEnchantments, texture, 
-				itemFlags, customModel);
+				itemFlags, customModel, playerEffects, targetEffects);
 		this.maxStacksize = maxStacksize;
 	}
 	

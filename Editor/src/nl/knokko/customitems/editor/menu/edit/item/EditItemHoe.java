@@ -56,7 +56,7 @@ public class EditItemHoe extends EditItemTool {
 				new CustomHoe(internalType.currentType, damage, name.getText(), getDisplayName(),
 						lore, attributes, enchantments, maxUses, allowEnchanting.isChecked(),
 						allowAnvil.isChecked(), repairItem.getIngredient(), textureSelect.currentTexture, itemFlags,
-						entityHitDurabilityLoss, blockBreakDurabilityLoss, durLoss.getValue(), customModel),
+						entityHitDurabilityLoss, blockBreakDurabilityLoss, durLoss.getValue(), customModel, playerEffects, targetEffects),
 						true);
 	}
 	

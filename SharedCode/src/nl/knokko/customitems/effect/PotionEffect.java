@@ -5,7 +5,7 @@ public class PotionEffect {
 	protected int level;
 	protected EffectType effect;
 	
-	PotionEffect(EffectType effect, int duration, int level) {
+	public PotionEffect(EffectType effect, int duration, int level) {
 		this.effect = effect;
 		this.duration = duration;
 		this.level = level;

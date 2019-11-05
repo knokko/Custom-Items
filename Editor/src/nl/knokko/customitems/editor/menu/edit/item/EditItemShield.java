@@ -52,7 +52,7 @@ public class EditItemShield extends EditItemTool {
 				new CustomShield(internalType.currentType, damage, name.getText(), getDisplayName(),
 						lore, attributes, enchantments, maxUses, allowEnchanting.isChecked(),
 						allowAnvil.isChecked(), repairItem.getIngredient(), textureSelect.currentTexture, itemFlags,
-						entityHitDurabilityLoss, blockBreakDurabilityLoss, thresholdDamage.getValue(), customModel, customBlockingModel),
+						entityHitDurabilityLoss, blockBreakDurabilityLoss, thresholdDamage.getValue(), customModel, customBlockingModel, playerEffects, targetEffects),
 						true);
 	}
 	

@@ -1,6 +1,9 @@
 package nl.knokko.customitems.editor.set.item;
 
+import java.util.List;
+
 import nl.knokko.customitems.editor.set.recipe.ingredient.Ingredient;
+import nl.knokko.customitems.effect.PotionEffect;
 import nl.knokko.customitems.encoding.ItemEncoding;
 import nl.knokko.customitems.item.AttributeModifier;
 import nl.knokko.customitems.item.CustomItemType;
@@ -22,9 +25,9 @@ public class CustomTrident extends CustomTool {
 			boolean allowAnvil, double throwDamageMultiplier, double speedMultiplier, Ingredient repairItem, 
 			NamedImage texture, boolean[] itemFlags, int entityHitDurabilityLoss, 
 			int blockBreakDurabilityLoss, int throwDurabilityLoss, byte[] customModel,
-			byte[] customInHandModel, byte[] customThrowingModel) {
+			byte[] customInHandModel, byte[] customThrowingModel, List<PotionEffect> playerEffects, List<PotionEffect> targetEffects) {
 		super(CustomItemType.TRIDENT, itemDamage, name, displayName, lore, attributes, defaultEnchantments, durability, allowEnchanting,
-				allowAnvil, repairItem, texture, itemFlags, entityHitDurabilityLoss, blockBreakDurabilityLoss, customModel);
+				allowAnvil, repairItem, texture, itemFlags, entityHitDurabilityLoss, blockBreakDurabilityLoss, customModel, playerEffects, targetEffects);
 		this.throwDamageMultiplier = throwDamageMultiplier;
 		this.speedMultiplier = speedMultiplier;
 		this.throwDurabilityLoss = throwDurabilityLoss;

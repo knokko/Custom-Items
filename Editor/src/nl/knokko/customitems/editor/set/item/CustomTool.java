@@ -23,7 +23,10 @@
  *******************************************************************************/
 package nl.knokko.customitems.editor.set.item;
 
+import java.util.List;
+
 import nl.knokko.customitems.editor.set.recipe.ingredient.Ingredient;
+import nl.knokko.customitems.effect.PotionEffect;
 import nl.knokko.customitems.encoding.ItemEncoding;
 import nl.knokko.customitems.item.AttributeModifier;
 import nl.knokko.customitems.item.CustomItemType;
@@ -45,9 +48,9 @@ public class CustomTool extends CustomItem {
 	public CustomTool(CustomItemType itemType, short itemDamage, String name, String displayName, String[] lore,
 			AttributeModifier[] attributes, Enchantment[] defaultEnchantments, long durability, boolean allowEnchanting, boolean allowAnvil, 
 			Ingredient repairItem, NamedImage texture, boolean[] itemFlags, int entityHitDurabilityLoss,
-			int blockBreakDurabilityLoss, byte[] customModel) {
+			int blockBreakDurabilityLoss, byte[] customModel, List<PotionEffect> playerEffects, List<PotionEffect> targetEffects) {
 		super(itemType, itemDamage, name, displayName, lore, attributes, defaultEnchantments, texture, 
-				itemFlags, customModel);
+				itemFlags, customModel, playerEffects, targetEffects);
 		this.durability = durability;
 		this.allowEnchanting = allowEnchanting;
 		this.allowAnvil = allowAnvil;

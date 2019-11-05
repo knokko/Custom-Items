@@ -23,6 +23,9 @@
  *******************************************************************************/
 package nl.knokko.customitems.editor.set.item;
 
+import java.util.List;
+
+import nl.knokko.customitems.effect.PotionEffect;
 import nl.knokko.customitems.item.AttributeModifier;
 import nl.knokko.customitems.item.CustomItemType;
 import nl.knokko.customitems.item.Enchantment;
@@ -35,8 +38,8 @@ public abstract class CustomItem extends nl.knokko.customitems.item.CustomItem {
 
 	public CustomItem(CustomItemType itemType, short itemDamage, String name, String displayName, String[] lore,
 			AttributeModifier[] attributes, Enchantment[] defaultEnchantments, NamedImage texture,
-			boolean[] itemFlags, byte[] customModel) {
-		super(itemType, itemDamage, name, displayName, lore, attributes, defaultEnchantments, itemFlags);
+			boolean[] itemFlags, byte[] customModel, List<PotionEffect> playerEffects, List<PotionEffect> targetEffects) {
+		super(itemType, itemDamage, name, displayName, lore, attributes, defaultEnchantments, itemFlags, playerEffects, targetEffects);
 		this.texture = texture;
 		this.customModel = customModel;
 	}

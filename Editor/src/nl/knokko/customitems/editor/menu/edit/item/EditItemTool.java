@@ -144,7 +144,7 @@ public class EditItemTool extends EditItemBase {
 				new CustomTool(internalType.currentType, damage, name.getText(), getDisplayName(),
 						lore, attributes, enchantments, maxUses, allowEnchanting.isChecked(),
 						allowAnvil.isChecked(), repairItem.getIngredient(), textureSelect.currentTexture, itemFlags,
-						entityHitDurabilityLoss, blockBreakDurabilityLoss, customModel),
+						entityHitDurabilityLoss, blockBreakDurabilityLoss, customModel, playerEffects, targetEffects),
 						true);
 	}
 

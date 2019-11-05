@@ -1,6 +1,9 @@
 package nl.knokko.customitems.editor.set.item;
 
+import java.util.List;
+
 import nl.knokko.customitems.editor.set.recipe.ingredient.Ingredient;
+import nl.knokko.customitems.effect.PotionEffect;
 import nl.knokko.customitems.encoding.ItemEncoding;
 import nl.knokko.customitems.item.AttributeModifier;
 import nl.knokko.customitems.item.CustomItemType;
@@ -17,9 +20,9 @@ public class CustomShield extends CustomTool {
 			AttributeModifier[] attributes, Enchantment[] defaultEnchantments, long durability, boolean allowEnchanting,
 			boolean allowAnvil, Ingredient repairItem, NamedImage texture, boolean[] itemFlags,
 			int entityHitDurabilityLoss, int blockBreakDurabilityLoss, double thresholdDamage, 
-			byte[] customModel, byte[] customBlockingModel) {
+			byte[] customModel, byte[] customBlockingModel, List<PotionEffect> playerEffects, List<PotionEffect> targetEffects) {
 		super(itemType, itemDamage, name, displayName, lore, attributes, defaultEnchantments, durability, allowEnchanting,
-				allowAnvil, repairItem, texture, itemFlags, entityHitDurabilityLoss, blockBreakDurabilityLoss, customModel);
+				allowAnvil, repairItem, texture, itemFlags, entityHitDurabilityLoss, blockBreakDurabilityLoss, customModel, playerEffects, targetEffects);
 		this.thresholdDamage = thresholdDamage;
 		this.customBlockingModel = customBlockingModel;
 	}

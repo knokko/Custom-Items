@@ -170,7 +170,7 @@ public class EditItemArmor extends EditItemTool {
 						lore, attributes, enchantments, maxUses, allowEnchanting.isChecked(),
 						allowAnvil.isChecked(), repairItem.getIngredient(), textureSelect.currentTexture,
 						redValue, greenValue, blueValue, itemFlags, entityHitDurabilityLoss, 
-						blockBreakDurabilityLoss, damageResistances, customModel),
+						blockBreakDurabilityLoss, damageResistances, customModel, playerEffects, targetEffects),
 						true);
 	}
 	
