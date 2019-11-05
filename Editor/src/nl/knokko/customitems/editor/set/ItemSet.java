@@ -3593,6 +3593,27 @@ public class ItemSet implements ItemSetBase {
 		}
 		return addProjectileCover(cover);
 	}
+	
+	/**
+	 * Attempts to remove the given projectile cover from this item set. If it can be removed, it will be
+	 * removed and this method will return null.
+	 * If it can't be removed (for instance because it is still in use), this method will return the reason
+	 * it can't be removed.
+	 * @param cover The projectile cover to remove
+	 * @return null if the projectile cover was removed, or the reason it can't be removed
+	 */
+	public String removeProjectileCover(ProjectileCover cover) {
+		if (!bypassChecks()) {
+			if (cover == null)
+				return "Can't delete null";
+			// TODO Check if no wand is currently using this projectile cover
+			// Note that this can only be done after wands/guns have been added
+		}
+		if (!projectileCovers.remove(cover) && !bypassChecks())
+			return "The given projectile cover wasn't in the list of projectile covers";
+		else
+			return null;
+	}
 
 	/**
 	 * Do not modify this collection directly!
@@ -3635,6 +3656,14 @@ public class ItemSet implements ItemSetBase {
 	 */
 	public Collection<BlockDrop> getBackingBlockDrops(){
 		return blockDrops;
+	}
+	
+	/**
+	 * Do not modify this collection directly!
+	 * @return The projectile cover collection of this ItemSet
+	 */
+	public Collection<ProjectileCover> getBackingProjectileCovers(){
+		return projectileCovers;
 	}
 
 	public short nextAvailableDamage(CustomItemType type, CustomItem exclude) {
