@@ -33,6 +33,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
+import nl.knokko.customitems.effect.PotionEffect;
 import nl.knokko.customitems.item.AttributeModifier;
 import nl.knokko.customitems.item.CustomItemType;
 import nl.knokko.customitems.item.Enchantment;
@@ -70,8 +71,8 @@ public class CustomTool extends CustomItem {
 
 	public CustomTool(CustomItemType itemType, short itemDamage, String name, String displayName, String[] lore, 
 			AttributeModifier[] attributes, Enchantment[] defaultEnchantments, long maxDurability, boolean allowEnchanting, boolean allowAnvil, 
-			Ingredient repairItem, boolean[] itemFlags, int entityHitDurabilityLoss, int blockBreakDurabilityLoss) {
-		super(itemType, itemDamage, name, displayName, lore, attributes, defaultEnchantments, itemFlags);
+			Ingredient repairItem, boolean[] itemFlags, int entityHitDurabilityLoss, int blockBreakDurabilityLoss, List<PotionEffect> playerEffects, List<PotionEffect> targetEffects) {
+		super(itemType, itemDamage, name, displayName, lore, attributes, defaultEnchantments, itemFlags, playerEffects, targetEffects);
 		this.maxDurability = maxDurability;
 		this.allowEnchanting = allowEnchanting;
 		this.allowAnvil = allowAnvil;

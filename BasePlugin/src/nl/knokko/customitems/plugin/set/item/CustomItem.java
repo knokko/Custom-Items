@@ -43,6 +43,7 @@ import nl.knokko.customitems.item.AttributeModifier;
 import nl.knokko.customitems.item.CIMaterial;
 import nl.knokko.customitems.item.CustomItemType;
 import nl.knokko.customitems.item.Enchantment;
+import nl.knokko.customitems.effect.PotionEffect;
 
 public abstract class CustomItem extends nl.knokko.customitems.item.CustomItem {
 	
@@ -55,8 +56,8 @@ public abstract class CustomItem extends nl.knokko.customitems.item.CustomItem {
 	protected final Single[] attributeModifiers;
     
     public CustomItem(CustomItemType itemType, short itemDamage, String name, String displayName, 
-    		String[] lore, AttributeModifier[] attributes, Enchantment[] defaultEnchantments, boolean[] itemFlags){
-        super(itemType, itemDamage, name, displayName, lore, attributes, defaultEnchantments, itemFlags);
+    		String[] lore, AttributeModifier[] attributes, Enchantment[] defaultEnchantments, boolean[] itemFlags, List<PotionEffect> playerEffects, List<PotionEffect> targetEffects){
+        super(itemType, itemDamage, name, displayName, lore, attributes, defaultEnchantments, itemFlags, playerEffects, targetEffects);
         
         String materialName = itemType.name();
         

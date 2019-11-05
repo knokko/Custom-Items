@@ -22,6 +22,9 @@
  * THE SOFTWARE.
  *******************************************************************************/
 package nl.knokko.customitems.item;
+import java.util.List;
+
+import nl.knokko.customitems.effect.PotionEffect;
 
 public abstract class CustomItem {
 	
@@ -38,8 +41,12 @@ public abstract class CustomItem {
     protected Enchantment[] defaultEnchantments;
     protected boolean[] itemFlags;
     
+    protected List<PotionEffect> playerEffects;
+    protected List<PotionEffect> targetEffects;
+    
     public CustomItem(CustomItemType itemType, short itemDamage, String name, String displayName, 
-    		String[] lore, AttributeModifier[] attributes, Enchantment[] defaultEnchantments, boolean[] itemFlags){
+    		String[] lore, AttributeModifier[] attributes, Enchantment[] defaultEnchantments, boolean[] itemFlags, 
+    		List<PotionEffect> playerEffects, List<PotionEffect> targetEffects){
         this.itemType = itemType;
         this.itemDamage = itemDamage;
         if (name == null) throw new NullPointerException("name");
@@ -49,6 +56,8 @@ public abstract class CustomItem {
         this.attributes = attributes;
         this.defaultEnchantments = defaultEnchantments;
         this.itemFlags = itemFlags;
+        this.playerEffects = playerEffects;
+        this.targetEffects = targetEffects;
     }
     
     public final String getNBTTag12() {
@@ -250,5 +259,13 @@ public abstract class CustomItem {
     
     public boolean[] getItemFlags() {
     	return itemFlags;
+    }
+    
+    public List<PotionEffect> getPlayerEffects () {
+    	return playerEffects;
+    }
+    
+    public List<PotionEffect> getTargetEffects () {
+    	return targetEffects;
     }
 }

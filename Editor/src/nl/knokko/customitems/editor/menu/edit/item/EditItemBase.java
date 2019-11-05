@@ -24,6 +24,7 @@
 package nl.knokko.customitems.editor.menu.edit.item;
 
 import java.util.Collection;
+
 import nl.knokko.customitems.editor.menu.edit.EditMenu;
 import nl.knokko.customitems.editor.menu.edit.EditProps;
 import nl.knokko.customitems.editor.menu.edit.item.attribute.AttributesOverview;
@@ -49,7 +50,7 @@ public abstract class EditItemBase extends GuiMenu {
 
 	private static final AttributeModifier[] DEFAULT_ATTRIBUTES = {};
 	private static final Enchantment[] DEFAULT_ENCHANTMENTS = {};
-
+	
 	protected final EditMenu menu;
 
 	protected TextEditField name;

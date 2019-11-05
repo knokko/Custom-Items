@@ -23,6 +23,7 @@
  *******************************************************************************/
 package nl.knokko.customitems.plugin.set;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.EnumMap;
 import java.util.HashMap;
@@ -58,6 +59,7 @@ import nl.knokko.customitems.plugin.recipe.*;
 import nl.knokko.customitems.plugin.recipe.ingredient.*;
 import nl.knokko.customitems.plugin.set.item.*;
 import nl.knokko.util.bits.BitInput;
+import nl.knokko.customitems.effect.PotionEffect;
 
 public class ItemSet implements ItemSetBase {
 
@@ -189,7 +191,7 @@ public class ItemSet implements ItemSetBase {
 			lore[index] = input.readJavaString();
 		AttributeModifier[] attributes = new AttributeModifier[0];
 		return new SimpleCustomItem(itemType, damage, name, displayName, lore, attributes, new Enchantment[0], 64,
-				ItemFlag.getDefaultValues());
+				ItemFlag.getDefaultValues(), new ArrayList<PotionEffect>(), new ArrayList<PotionEffect>());
 	}
 
 	private CustomItem loadSimpleItem2(BitInput input) {
@@ -204,7 +206,7 @@ public class ItemSet implements ItemSetBase {
 		for (int index = 0; index < attributes.length; index++)
 			attributes[index] = loadAttribute2(input);
 		return new SimpleCustomItem(itemType, damage, name, displayName, lore, attributes, new Enchantment[0], 64,
-				ItemFlag.getDefaultValues());
+				ItemFlag.getDefaultValues(), new ArrayList<PotionEffect>(), new ArrayList<PotionEffect>());
 	}
 
 	private CustomItem loadSimpleItem3(BitInput input) {
@@ -222,7 +224,7 @@ public class ItemSet implements ItemSetBase {
 		for (int index = 0; index < defaultEnchantments.length; index++)
 			defaultEnchantments[index] = new Enchantment(EnchantmentType.valueOf(input.readString()), input.readInt());
 		return new SimpleCustomItem(itemType, damage, name, displayName, lore, attributes, defaultEnchantments, 64,
-				ItemFlag.getDefaultValues());
+				ItemFlag.getDefaultValues(), new ArrayList<PotionEffect>(), new ArrayList<PotionEffect>());
 	}
 
 	private CustomItem loadSimpleItem4(BitInput input) {
@@ -241,7 +243,7 @@ public class ItemSet implements ItemSetBase {
 			defaultEnchantments[index] = new Enchantment(EnchantmentType.valueOf(input.readString()), input.readInt());
 		int stackSize = input.readByte();
 		return new SimpleCustomItem(itemType, damage, name, displayName, lore, attributes, defaultEnchantments,
-				stackSize, ItemFlag.getDefaultValues());
+				stackSize, ItemFlag.getDefaultValues(), new ArrayList<PotionEffect>(), new ArrayList<PotionEffect>());
 	}
 
 	private CustomItem loadSimpleItem5(BitInput input) {
@@ -261,7 +263,7 @@ public class ItemSet implements ItemSetBase {
 		int stackSize = input.readByte();
 		boolean[] itemFlags = input.readBooleans(6);
 		return new SimpleCustomItem(itemType, damage, name, displayName, lore, attributes, defaultEnchantments,
-				stackSize, itemFlags);
+				stackSize, itemFlags, new ArrayList<PotionEffect>(), new ArrayList<PotionEffect>());
 	}
 
 	private CustomItem loadTool2(BitInput input) {
@@ -281,7 +283,7 @@ public class ItemSet implements ItemSetBase {
 		return new CustomTool(itemType, damage, name, displayName, lore, attributes, new Enchantment[0], durability,
 				allowEnchanting, allowAnvil, new NoIngredient(), ItemFlag.getDefaultValues(),
 				CustomToolDurability.defaultEntityHitDurabilityLoss(itemType),
-				CustomToolDurability.defaultBlockBreakDurabilityLoss(itemType));
+				CustomToolDurability.defaultBlockBreakDurabilityLoss(itemType), new ArrayList<PotionEffect>(), new ArrayList<PotionEffect>());
 	}
 
 	private CustomItem loadTool3(BitInput input) {
@@ -302,7 +304,7 @@ public class ItemSet implements ItemSetBase {
 		return new CustomTool(itemType, damage, name, displayName, lore, attributes, new Enchantment[0], durability,
 				allowEnchanting, allowAnvil, repairItem, ItemFlag.getDefaultValues(),
 				CustomToolDurability.defaultEntityHitDurabilityLoss(itemType),
-				CustomToolDurability.defaultBlockBreakDurabilityLoss(itemType));
+				CustomToolDurability.defaultBlockBreakDurabilityLoss(itemType), new ArrayList<PotionEffect>(), new ArrayList<PotionEffect>());
 	}
 
 	private CustomItem loadTool4(BitInput input) {
@@ -326,7 +328,7 @@ public class ItemSet implements ItemSetBase {
 		return new CustomTool(itemType, damage, name, displayName, lore, attributes, defaultEnchantments, durability,
 				allowEnchanting, allowAnvil, repairItem, ItemFlag.getDefaultValues(),
 				CustomToolDurability.defaultEntityHitDurabilityLoss(itemType),
-				CustomToolDurability.defaultBlockBreakDurabilityLoss(itemType));
+				CustomToolDurability.defaultBlockBreakDurabilityLoss(itemType), new ArrayList<PotionEffect>(), new ArrayList<PotionEffect>());
 	}
 
 	private CustomItem loadTool5(BitInput input) {
@@ -351,7 +353,7 @@ public class ItemSet implements ItemSetBase {
 		int entityHitDurabilityLoss = input.readInt();
 		int blockBreakDurabilityLoss = input.readInt();
 		return new CustomTool(itemType, damage, name, displayName, lore, attributes, defaultEnchantments, durability,
-				allowEnchanting, allowAnvil, repairItem, itemFlags, entityHitDurabilityLoss, blockBreakDurabilityLoss);
+				allowEnchanting, allowAnvil, repairItem, itemFlags, entityHitDurabilityLoss, blockBreakDurabilityLoss, new ArrayList<PotionEffect>(), new ArrayList<PotionEffect>());
 	}
 	
 	private CustomItem loadHoe5(BitInput input) {
@@ -377,7 +379,7 @@ public class ItemSet implements ItemSetBase {
 		int blockBreakDurabilityLoss = input.readInt();
 		int tillDurabilityLoss = input.readInt();
 		return new CustomHoe(itemType, damage, name, displayName, lore, attributes, defaultEnchantments, durability,
-				allowEnchanting, allowAnvil, repairItem, itemFlags, entityHitDurabilityLoss, blockBreakDurabilityLoss, tillDurabilityLoss);
+				allowEnchanting, allowAnvil, repairItem, itemFlags, entityHitDurabilityLoss, blockBreakDurabilityLoss, tillDurabilityLoss, new ArrayList<PotionEffect>(), new ArrayList<PotionEffect>());
 	}
 	
 	private CustomItem loadShear5(BitInput input) {
@@ -403,7 +405,7 @@ public class ItemSet implements ItemSetBase {
 		int blockBreakDurabilityLoss = input.readInt();
 		int shearDurabilityLoss = input.readInt();
 		return new CustomShears(itemType, damage, name, displayName, lore, attributes, defaultEnchantments, durability,
-				allowEnchanting, allowAnvil, repairItem, itemFlags, entityHitDurabilityLoss, blockBreakDurabilityLoss, shearDurabilityLoss);
+				allowEnchanting, allowAnvil, repairItem, itemFlags, entityHitDurabilityLoss, blockBreakDurabilityLoss, shearDurabilityLoss, new ArrayList<PotionEffect>(), new ArrayList<PotionEffect>());
 	}
 
 	private CustomItem loadArmor4(BitInput input) {
@@ -432,7 +434,7 @@ public class ItemSet implements ItemSetBase {
 		}
 		return new CustomArmor(itemType, damage, name, displayName, lore, attributes, defaultEnchantments, durability,
 				allowEnchanting, allowAnvil, repairItem, color, ItemFlag.getDefaultValues(), 0, 0,
-				new DamageResistances());
+				new DamageResistances(), new ArrayList<PotionEffect>(), new ArrayList<PotionEffect>());
 	}
 
 	private CustomItem loadArmor5(BitInput input) {
@@ -464,7 +466,7 @@ public class ItemSet implements ItemSetBase {
 		int blockBreakDurabilityLoss = input.readInt();
 		return new CustomArmor(itemType, damage, name, displayName, lore, attributes, defaultEnchantments, durability,
 				allowEnchanting, allowAnvil, repairItem, color, itemFlags, entityHitDurabilityLoss,
-				blockBreakDurabilityLoss, new DamageResistances());
+				blockBreakDurabilityLoss, new DamageResistances(), new ArrayList<PotionEffect>(), new ArrayList<PotionEffect>());
 	}
 
 	private CustomItem loadArmor6(BitInput input) {
@@ -497,7 +499,7 @@ public class ItemSet implements ItemSetBase {
 		DamageResistances damageResistances = DamageResistances.load12(input);
 		return new CustomArmor(itemType, damage, name, displayName, lore, attributes, defaultEnchantments, durability,
 				allowEnchanting, allowAnvil, repairItem, color, itemFlags, entityHitDurabilityLoss,
-				blockBreakDurabilityLoss, damageResistances);
+				blockBreakDurabilityLoss, damageResistances, new ArrayList<PotionEffect>(), new ArrayList<PotionEffect>());
 	}
 	
 	private CustomItem loadArmor7(BitInput input) {
@@ -530,7 +532,7 @@ public class ItemSet implements ItemSetBase {
 		DamageResistances damageResistances = DamageResistances.load14(input);
 		return new CustomArmor(itemType, damage, name, displayName, lore, attributes, defaultEnchantments, durability,
 				allowEnchanting, allowAnvil, repairItem, color, itemFlags, entityHitDurabilityLoss,
-				blockBreakDurabilityLoss, damageResistances);
+				blockBreakDurabilityLoss, damageResistances, new ArrayList<PotionEffect>(), new ArrayList<PotionEffect>());
 	}
 
 	private CustomBow loadBow3(BitInput input) {
@@ -553,7 +555,7 @@ public class ItemSet implements ItemSetBase {
 		Ingredient repairItem = loadIngredient(input);
 		return new CustomBow(damage, name, displayName, lore, attributes, new Enchantment[0], durability,
 				damageMultiplier, speedMultiplier, knockbackStrength, gravity, allowEnchanting, allowAnvil, repairItem,
-				ItemFlag.getDefaultValues(), 0, 0, 1);
+				ItemFlag.getDefaultValues(), 0, 0, 1, new ArrayList<PotionEffect>(), new ArrayList<PotionEffect>());
 	}
 
 	private CustomBow loadBow4(BitInput input) {
@@ -579,7 +581,7 @@ public class ItemSet implements ItemSetBase {
 		Ingredient repairItem = loadIngredient(input);
 		return new CustomBow(damage, name, displayName, lore, attributes, defaultEnchantments, durability,
 				damageMultiplier, speedMultiplier, knockbackStrength, gravity, allowEnchanting, allowAnvil, repairItem,
-				ItemFlag.getDefaultValues(), 0, 0, 1);
+				ItemFlag.getDefaultValues(), 0, 0, 1, new ArrayList<PotionEffect>(), new ArrayList<PotionEffect>());
 	}
 
 	private CustomBow loadBow5(BitInput input) {
@@ -609,7 +611,7 @@ public class ItemSet implements ItemSetBase {
 		int shootDurabilityLoss = input.readInt();
 		return new CustomBow(damage, name, displayName, lore, attributes, defaultEnchantments, durability,
 				damageMultiplier, speedMultiplier, knockbackStrength, gravity, allowEnchanting, allowAnvil, repairItem,
-				itemFlags, entityHitDurabilityLoss, blockBreakDurabilityLoss, shootDurabilityLoss);
+				itemFlags, entityHitDurabilityLoss, blockBreakDurabilityLoss, shootDurabilityLoss, new ArrayList<PotionEffect>(), new ArrayList<PotionEffect>());
 	}
 	
 	private CustomItem loadShield6(BitInput input) {
@@ -635,7 +637,7 @@ public class ItemSet implements ItemSetBase {
 		int blockBreakDurabilityLoss = input.readInt();
 		double durabilityThreshold = input.readDouble();
 		return new CustomShield(itemType, damage, name, displayName, lore, attributes, defaultEnchantments, durability,
-				allowEnchanting, allowAnvil, repairItem, itemFlags, entityHitDurabilityLoss, blockBreakDurabilityLoss, durabilityThreshold);
+				allowEnchanting, allowAnvil, repairItem, itemFlags, entityHitDurabilityLoss, blockBreakDurabilityLoss, durabilityThreshold, new ArrayList<PotionEffect>(), new ArrayList<PotionEffect>());
 	}
 	
 	private CustomItem loadTrident7(BitInput input) {
@@ -663,7 +665,7 @@ public class ItemSet implements ItemSetBase {
 		double speedMultiplier = input.readDouble();
 		return new CustomTrident(damage, name, displayName, lore, attributes, defaultEnchantments, 
 				durability, allowEnchanting, allowAnvil, throwDamageMultiplier, speedMultiplier, repairItem, 
-				itemFlags, entityHitDurabilityLoss, blockBreakDurabilityLoss, throwDurabilityLoss);
+				itemFlags, entityHitDurabilityLoss, blockBreakDurabilityLoss, throwDurabilityLoss, new ArrayList<PotionEffect>(), new ArrayList<PotionEffect>());
 	}
 
 	private AttributeModifier loadAttribute2(BitInput input) {

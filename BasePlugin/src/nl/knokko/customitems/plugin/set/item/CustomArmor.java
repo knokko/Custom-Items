@@ -31,6 +31,7 @@ import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.inventory.meta.LeatherArmorMeta;
 
 import nl.knokko.customitems.damage.DamageResistances;
+import nl.knokko.customitems.effect.PotionEffect;
 import nl.knokko.customitems.item.AttributeModifier;
 import nl.knokko.customitems.item.CustomItemType;
 import nl.knokko.customitems.item.Enchantment;
@@ -45,9 +46,9 @@ public class CustomArmor extends CustomTool {
 	public CustomArmor(CustomItemType itemType, short itemDamage, String name, String displayName, String[] lore,
 			AttributeModifier[] attributes, Enchantment[] defaultEnchantments, long maxDurability,
 			boolean allowEnchanting, boolean allowAnvil, Ingredient repairItem, Color color, boolean[] itemFlags,
-			int entityHitDurabilityLoss, int blockBreakDurabilityLoss, DamageResistances damageResistances) {
+			int entityHitDurabilityLoss, int blockBreakDurabilityLoss, DamageResistances damageResistances, List<PotionEffect> playerEffects, List<PotionEffect> targetEffects) {
 		super(itemType, itemDamage, name, displayName, lore, attributes, defaultEnchantments, maxDurability,
-				allowEnchanting, allowAnvil, repairItem, itemFlags, entityHitDurabilityLoss, blockBreakDurabilityLoss);
+				allowEnchanting, allowAnvil, repairItem, itemFlags, entityHitDurabilityLoss, blockBreakDurabilityLoss, playerEffects, targetEffects);
 		this.color = color;
 		this.damageResistances = damageResistances;
 	}
