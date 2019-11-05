@@ -167,7 +167,7 @@ public class EditItemTool extends EditItemBase {
 				getDisplayName(), lore, attributes, enchantments, allowEnchanting.isChecked(),
 				allowAnvil.isChecked(), repairItem.getIngredient(), maxUses, textureSelect.currentTexture,
 				itemFlags, entityHitDurabilityLoss, blockBreakDurabilityLoss, customModel,
-				true);
+				playerEffects, targetEffects, true);
 	}
 
 	@Override

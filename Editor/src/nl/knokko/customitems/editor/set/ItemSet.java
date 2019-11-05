@@ -2661,7 +2661,7 @@ public class ItemSet implements ItemSetBase {
 			Enchantment[] newEnchantments, boolean allowEnchanting, boolean allowAnvil, 
 			Ingredient repairItem, long newDurability, NamedImage newTexture, int newRed, int newGreen, 
 			int newBlue, boolean[] itemFlags, int entityHitDurabilityLoss, int blockBreakDurabilityLoss, 
-			DamageResistances resistances, byte[] newCustomModel, boolean checkClass) {
+			DamageResistances resistances, byte[] newCustomModel, List<PotionEffect> playerEffects, List<PotionEffect> targetEffects, boolean checkClass) {
 		if (!bypassChecks()) {
 			if (armor == null)
 				return "Can't change bows that do not exist";
@@ -2678,7 +2678,7 @@ public class ItemSet implements ItemSetBase {
 		}
 		String error = changeTool(armor, newType, newDamage, newName, newDisplayName, newLore, newAttributes, newEnchantments,
 				allowEnchanting, allowAnvil, repairItem, newDurability, newTexture, itemFlags,
-				entityHitDurabilityLoss, blockBreakDurabilityLoss, newCustomModel, false);
+				entityHitDurabilityLoss, blockBreakDurabilityLoss, newCustomModel, playerEffects, targetEffects, false);
 		if (error == null) {
 			armor.setRed(newRed);
 			armor.setGreen(newGreen);
@@ -2722,7 +2722,7 @@ public class ItemSet implements ItemSetBase {
 			int newKnockbackStrength, boolean useGravity, boolean allowEnchanting, boolean allowAnvil,
 			Ingredient repairItem, long newDurability, BowTextures newTextures, boolean[] itemFlags,
 			int entityHitDurabilityLoss, int blockBreakDurabilityLoss, int shootDurabilityLoss,
-			byte[] newCustomModel, boolean checkClass) {
+			byte[] newCustomModel, List<PotionEffect> playerEffects, List<PotionEffect> targetEffects, boolean checkClass) {
 		if (!bypassChecks()) {
 			if (bow == null)
 				return "Can't change bows that do not exist";
@@ -2740,7 +2740,7 @@ public class ItemSet implements ItemSetBase {
 		}
 		String error = changeTool(bow, CustomItemType.BOW, newDamage, newName, newDisplayName, newLore, newAttributes, newEnchantments,
 				allowEnchanting, allowAnvil, repairItem, newDurability, newTextures, itemFlags,
-				entityHitDurabilityLoss, blockBreakDurabilityLoss, newCustomModel, false);
+				entityHitDurabilityLoss, blockBreakDurabilityLoss, newCustomModel, playerEffects, targetEffects, false);
 		if (error == null) {
 			bow.setDamageMultiplier(newDamageMultiplier);
 			bow.setSpeedMultiplier(newSpeedMultiplier);
@@ -2773,7 +2773,7 @@ public class ItemSet implements ItemSetBase {
 			Enchantment[] newEnchantments, boolean allowEnchanting, boolean allowAnvil, 
 			Ingredient repairItem, long newDurability, NamedImage newImage, boolean[] itemFlags, 
 			int entityHitDurabilityLoss, int blockBreakDurabilityLoss, double thresholdDamage,
-			byte[] newCustomModel, byte[] newCustomBlockingModel, boolean checkClass) {
+			byte[] newCustomModel, byte[] newCustomBlockingModel, List<PotionEffect> playerEffects, List<PotionEffect> targetEffects, boolean checkClass) {
 		if (!bypassChecks()) {
 			if (shield == null)
 				return "Can't change null items";
@@ -2787,7 +2787,7 @@ public class ItemSet implements ItemSetBase {
 		}
 		String error = changeTool(shield, newType, newDamage, newName, newDisplayName, newLore, newAttributes,
 				newEnchantments, allowEnchanting, allowAnvil, repairItem, newDurability, newImage, itemFlags,
-				entityHitDurabilityLoss, blockBreakDurabilityLoss, newCustomModel, false);
+				entityHitDurabilityLoss, blockBreakDurabilityLoss, newCustomModel, playerEffects, targetEffects, false);
 		if (error != null) {
 			return error;
 		} else {
@@ -2885,7 +2885,7 @@ public class ItemSet implements ItemSetBase {
 			String newDisplayName, String[] newLore, AttributeModifier[] newAttributes, Enchantment[] newEnchantments, boolean allowEnchanting,
 			boolean allowAnvil, Ingredient repairItem, long newDurability, NamedImage newImage, 
 			boolean[] itemFlags, int entityHitDurabilityLoss, int blockBreakDurabilityLoss,
-			byte[] newCustomModel, boolean checkClass) {
+			byte[] newCustomModel, List<PotionEffect> playerEffects, List<PotionEffect> targetEffects, boolean checkClass) {
 		if (!bypassChecks()) {
 			if (checkClass && item.getClass() != CustomTool.class)
 				return "Use the appropriate method to change this class";
@@ -2903,7 +2903,7 @@ public class ItemSet implements ItemSetBase {
 		}
 		String error = changeItem(item, newType, newDamage, newName, newDisplayName, newLore, newAttributes, 
 				newEnchantments, newImage, itemFlags, newCustomModel,
-				false);
+				playerEffects, targetEffects, false);
 		if (error == null) {
 			item.setAllowEnchanting(allowEnchanting);
 			item.setAllowAnvilActions(allowAnvil);
@@ -2921,7 +2921,7 @@ public class ItemSet implements ItemSetBase {
 			String newDisplayName, String[] newLore, AttributeModifier[] newAttributes, Enchantment[] newEnchantments, boolean allowEnchanting,
 			boolean allowAnvil, Ingredient repairItem, long newDurability, NamedImage newImage, 
 			boolean[] itemFlags, int entityHitDurabilityLoss, int blockBreakDurabilityLoss, int shearDurabilityLoss,
-			byte[] newCustomModel, boolean checkClass) {
+			byte[] newCustomModel, List<PotionEffect> playerEffects, List<PotionEffect> targetEffects, boolean checkClass) {
 		if (!bypassChecks()) {
 			if (shearDurabilityLoss < 0) {
 				return "The shear durability loss must be positive";
@@ -2932,7 +2932,7 @@ public class ItemSet implements ItemSetBase {
 		}
 		String error = changeTool(shears, newType, newDamage, newName, newDisplayName, newLore, newAttributes,
 				newEnchantments, allowEnchanting, allowAnvil, repairItem, newDurability, newImage, itemFlags,
-				entityHitDurabilityLoss, blockBreakDurabilityLoss, newCustomModel, false);
+				entityHitDurabilityLoss, blockBreakDurabilityLoss, newCustomModel, playerEffects, targetEffects, false);
 		if (error == null) {
 			shears.setShearDurabilityLoss(shearDurabilityLoss);
 			return null;
@@ -2945,7 +2945,7 @@ public class ItemSet implements ItemSetBase {
 			String newDisplayName, String[] newLore, AttributeModifier[] newAttributes, Enchantment[] newEnchantments, boolean allowEnchanting,
 			boolean allowAnvil, Ingredient repairItem, long newDurability, NamedImage newImage, 
 			boolean[] itemFlags, int entityHitDurabilityLoss, int blockBreakDurabilityLoss, int tillDurabilityLoss,
-			byte[] newCustomModel, boolean checkClass) {
+			byte[] newCustomModel, List<PotionEffect> playerEffects, List<PotionEffect> targetEffects, boolean checkClass) {
 		if (!bypassChecks()) {
 			if (tillDurabilityLoss < 0) {
 				return "The till durability loss must be positive";
@@ -2956,7 +2956,7 @@ public class ItemSet implements ItemSetBase {
 		}
 		String error = changeTool(hoe, newType, newDamage, newName, newDisplayName, newLore, newAttributes,
 				newEnchantments, allowEnchanting, allowAnvil, repairItem, newDurability, newImage, itemFlags,
-				entityHitDurabilityLoss, blockBreakDurabilityLoss, newCustomModel, false);
+				entityHitDurabilityLoss, blockBreakDurabilityLoss, newCustomModel, playerEffects, targetEffects, false);
 		if (error == null) {
 			hoe.setTillDurabilityLoss(tillDurabilityLoss);
 			return null;
@@ -2971,7 +2971,7 @@ public class ItemSet implements ItemSetBase {
 			double throwDamageMultiplier, double throwSpeedMultiplier, Ingredient repairItem, 
 			long newDurability, NamedImage newImage, boolean[] itemFlags, int entityHitDurabilityLoss, 
 			int blockBreakDurabilityLoss, int throwDurabilityLoss, byte[] newCustomModel, 
-			byte[] newCustomInHandModel, byte[] newCustomThrowingModel, boolean checkClass) {
+			byte[] newCustomInHandModel, byte[] newCustomThrowingModel, List<PotionEffect> playerEffects, List<PotionEffect> targetEffects, boolean checkClass) {
 		if (!bypassChecks()) {
 			if (trident == null)
 				return "Can't change null items";
@@ -2987,7 +2987,7 @@ public class ItemSet implements ItemSetBase {
 		
 		String error = changeTool(trident, newType, newDamage, newName, newDisplayName, newLore, newAttributes,
 				newEnchantments, allowEnchanting, allowAnvil, repairItem, newDurability, newImage, itemFlags,
-				entityHitDurabilityLoss, blockBreakDurabilityLoss, newCustomModel, false);
+				entityHitDurabilityLoss, blockBreakDurabilityLoss, newCustomModel, playerEffects, targetEffects, false);
 		if (error == null) {
 			trident.throwDurabilityLoss = throwDurabilityLoss;
 			trident.throwDamageMultiplier = throwDamageMultiplier;
@@ -3067,7 +3067,7 @@ public class ItemSet implements ItemSetBase {
 	public String changeSimpleItem(SimpleCustomItem item, CustomItemType newType, short newDamage, String newName,
 			String newDisplayName, String[] newLore, AttributeModifier[] newAttributes, 
 			Enchantment[] newEnchantments, NamedImage newImage, int newStacksize, boolean[] newItemFlags, 
-			byte[] newCustomModel, boolean checkClass) {
+			byte[] newCustomModel, List<PotionEffect> playerEffects, List<PotionEffect> targetEffects, boolean checkClass) {
 		if (!bypassChecks()) {
 			if (checkClass && item.getClass() != SimpleCustomItem.class)
 				return "Use the right method for the class";
@@ -3075,7 +3075,7 @@ public class ItemSet implements ItemSetBase {
 				return "The maximum stacksize (" + newStacksize + ") is out of range";
 		}
 		String error = changeItem(item, newType, newDamage, newName, newDisplayName, newLore, newAttributes,
-				newEnchantments, newImage, newItemFlags, newCustomModel, false);
+				newEnchantments, newImage, newItemFlags, newCustomModel, playerEffects, targetEffects, false);
 		if (error == null) {
 			item.setMaxStacksize(newStacksize);
 		}
@@ -3101,7 +3101,7 @@ public class ItemSet implements ItemSetBase {
 	public String changeItem(CustomItem item, CustomItemType newType, short newDamage, String newName,
 			String newDisplayName, String[] newLore, AttributeModifier[] newAttributes, 
 			Enchantment[] newEnchantments, NamedImage newImage, boolean[] itemFlags,
-			byte[] newCustomModel, boolean checkClass) {
+			byte[] newCustomModel, List<PotionEffect> playerEffects, List<PotionEffect> targetEffects, boolean checkClass) {
 		if (!bypassChecks()) {
 			if (item == null)
 				return "Can't change null items";
@@ -3141,6 +3141,16 @@ public class ItemSet implements ItemSetBase {
 					return "An enchantment has no type";
 				}
 			}
+			for (PotionEffect effect : playerEffects) {
+				if (effect.getEffect() == null) {
+					return "A player on-hit effect has no status effect";
+				}
+			}
+			for (PotionEffect effect : targetEffects) {
+				if (effect.getEffect() == null) {
+					return "A target on-hit effect has no status effect";
+				}
+			}
 			for (CustomItem current : items) {
 				if (current == item) {
 					has = true;
@@ -3170,6 +3180,8 @@ public class ItemSet implements ItemSetBase {
 		item.setTexture(newImage);
 		item.setItemFlags(itemFlags);
 		item.setCustomModel(newCustomModel);
+		item.setPlayerEffects(playerEffects);
+		item.setTargetEffects(targetEffects);
 		return null;
 	}
 

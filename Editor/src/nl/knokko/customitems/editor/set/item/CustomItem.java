@@ -99,6 +99,14 @@ public abstract class CustomItem extends nl.knokko.customitems.item.CustomItem {
 	public void setCustomModel(byte[] content) {
 		customModel = content;
 	}
+	
+	public void setPlayerEffects(List<PotionEffect> playerEffects) {
+		this.playerEffects = playerEffects;
+	}
+	
+	public void setTargetEffects(List<PotionEffect> targetEffects) {
+		this.targetEffects = targetEffects;
+	}
 
 	public final void save1(BitOutput output) {
 		export(output);
