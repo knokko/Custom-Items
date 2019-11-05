@@ -37,4 +37,9 @@ public class SetEncoding {
 	 * Add custom item models
 	 */
 	public static final byte ENCODING_4 = 3;
+	
+	/**
+	 * Add projectile covers
+	 */
+	public static final byte ENCODING_5 = 4;
 }

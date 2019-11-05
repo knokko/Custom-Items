@@ -14,10 +14,10 @@ import nl.knokko.util.bits.BitOutput;
 
 public class SphereProjectileCover extends ProjectileCover {
 	
-	private NamedImage texture;
+	public NamedImage texture;
 	
-	private int slotsPerAxis;
-	private double scale;
+	public int slotsPerAxis;
+	public double scale;
 	
 	public SphereProjectileCover(CustomItemType type, short itemDamage, String name, 
 			NamedImage texture, int slotsPerAxis, double scale) {
@@ -47,7 +47,7 @@ public class SphereProjectileCover extends ProjectileCover {
 	}
 
 	@Override
-	protected void writeModel(ZipOutputStream output) throws IOException {
+	public void writeModel(ZipOutputStream output) throws IOException {
 		String[] model = createBulletModel(texture.getName(), slotsPerAxis, scale);
 		
 		PrintWriter jsonWriter = new PrintWriter(output);

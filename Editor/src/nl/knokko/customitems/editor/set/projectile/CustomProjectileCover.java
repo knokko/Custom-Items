@@ -9,7 +9,7 @@ import nl.knokko.util.bits.BitOutput;
 
 public class CustomProjectileCover extends ProjectileCover {
 	
-	private byte[] model;
+	public byte[] model;
 
 	public CustomProjectileCover(CustomItemType type, short itemDamage, String name, byte[] model) {
 		super(type, itemDamage, name);
@@ -32,7 +32,7 @@ public class CustomProjectileCover extends ProjectileCover {
 	}
 
 	@Override
-	protected void writeModel(ZipOutputStream output) throws IOException {
+	public void writeModel(ZipOutputStream output) throws IOException {
 		output.write(model);
 	}
 }

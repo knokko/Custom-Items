@@ -23,8 +23,6 @@
  *******************************************************************************/
 package nl.knokko.customitems.editor.set.recipe.ingredient;
 
-import java.util.Collection;
-
 import nl.knokko.customitems.editor.set.ItemSet;
 import nl.knokko.customitems.editor.set.item.CustomItem;
 import nl.knokko.customitems.encoding.RecipeEncoding;

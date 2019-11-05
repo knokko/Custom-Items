@@ -62,7 +62,9 @@ import nl.knokko.customitems.editor.set.item.CustomTrident;
 import nl.knokko.customitems.editor.set.item.NamedImage;
 import nl.knokko.customitems.editor.set.item.SimpleCustomItem;
 import nl.knokko.customitems.editor.set.item.texture.BowTextures;
+import nl.knokko.customitems.editor.set.projectile.CustomProjectileCover;
 import nl.knokko.customitems.editor.set.projectile.ProjectileCover;
+import nl.knokko.customitems.editor.set.projectile.SphereProjectileCover;
 import nl.knokko.customitems.editor.set.recipe.Recipe;
 import nl.knokko.customitems.editor.set.recipe.ShapedRecipe;
 import nl.knokko.customitems.editor.set.recipe.ShapelessRecipe;
@@ -79,6 +81,7 @@ import nl.knokko.customitems.encoding.ItemEncoding;
 import nl.knokko.customitems.encoding.RecipeEncoding;
 import nl.knokko.customitems.item.AttributeModifier;
 import nl.knokko.customitems.item.CustomItemType;
+import nl.knokko.customitems.item.CustomItemType.Category;
 import nl.knokko.customitems.item.CustomToolDurability;
 import nl.knokko.customitems.item.Enchantment;
 import nl.knokko.customitems.item.EnchantmentType;
@@ -877,11 +880,15 @@ public class ItemSet implements ItemSetBase {
 			load3(input);
 		else if (encoding == ENCODING_4)
 			load4(input);
+		else if (encoding == ENCODING_5)
+			load5(input);
 		else
 			throw new IllegalArgumentException("Unknown encoding: " + encoding);
 	}
 
 	private String checkName(String name) {
+		if (name == null)
+			return "The name can't be null";
 		if (name.isEmpty())
 			return "You can't leave the name empty.";
 		for (int index = 0; index < name.length(); index++) {
@@ -1043,6 +1050,52 @@ public class ItemSet implements ItemSetBase {
 		
 		// Projectile covers (there are no projectile covers in this encoding)
 		projectileCovers = new ArrayList<>();
+	}
+	
+	private void load5(BitInput input) {
+		// Textures
+		int textureAmount = input.readInt();
+		// System.out.println("amount of textures is " + textureAmount);
+		textures = new ArrayList<NamedImage>(textureAmount);
+		for (int counter = 0; counter < textureAmount; counter++) {
+			byte textureType = input.readByte();
+			if (textureType == NamedImage.ENCODING_BOW)
+				textures.add(new BowTextures(input));
+			else if (textureType == NamedImage.ENCODING_SIMPLE)
+				textures.add(new NamedImage(input));
+			else
+				throw new IllegalArgumentException("Unknown texture encoding: " + textureType);
+		}
+		// System.out.println("textures are " + textures);
+		// Items
+		int itemAmount = input.readInt();
+		// System.out.println("amount of items is " + itemAmount);
+		items = new ArrayList<CustomItem>(itemAmount);
+		for (int counter = 0; counter < itemAmount; counter++)
+			items.add(loadItem(input, true));
+
+		// Recipes
+		int recipeAmount = input.readInt();
+		recipes = new ArrayList<Recipe>(recipeAmount);
+		for (int counter = 0; counter < recipeAmount; counter++)
+			recipes.add(loadRecipe(input));
+		
+		// Drops
+		int numBlockDrops = input.readInt();
+		blockDrops = new ArrayList<>(numBlockDrops);
+		for (int counter = 0; counter < numBlockDrops; counter++)
+			blockDrops.add(BlockDrop.load(input, this));
+		
+		int numMobDrops = input.readInt();
+		mobDrops = new ArrayList<>(numMobDrops);
+		for (int counter = 0; counter < numMobDrops; counter++)
+			mobDrops.add(EntityDrop.load(input, this));
+		
+		// Projectile covers
+		int numProjectileCovers = input.readInt();
+		projectileCovers = new ArrayList<>(numProjectileCovers);
+		for (int counter = 0; counter < numProjectileCovers; counter++)
+			projectileCovers.add(ProjectileCover.fromBits(input, this));
 	}
 
 	/**
@@ -1944,26 +1997,46 @@ public class ItemSet implements ItemSetBase {
 					}
 				} // Don't bother custom trident models since tridents don't exist in old versions
 			}
+			
+			// Projectile covers
+			for (ProjectileCover cover : projectileCovers) {
+				ZipEntry entry = new ZipEntry("assets/minecraft/models/customprojectiles/" + cover.name + ".json");
+				zipOutput.putNextEntry(entry);
+				cover.writeModel(zipOutput);
+				zipOutput.flush();
+			}
 
 			// Map all custom items by their item type
-			Map<CustomItemType, List<CustomItem>> itemMap = new EnumMap<CustomItemType, List<CustomItem>>(
+			Map<CustomItemType, List<ItemDamageClaim>> itemMap = new EnumMap<CustomItemType, List<ItemDamageClaim>>(
 					CustomItemType.class);
+			
+			// Add the custom items to the map
 			for (CustomItem item : items) {
-				List<CustomItem> list = itemMap.get(item.getItemType());
+				List<ItemDamageClaim> list = itemMap.get(item.getItemType());
 				if (list == null) {
-					list = new ArrayList<CustomItem>();
+					list = new ArrayList<>();
 					itemMap.put(item.getItemType(), list);
 				}
 				list.add(item);
 			}
+			
+			// Add the projectile covers to the map
+			for (ProjectileCover cover : projectileCovers) {
+				List<ItemDamageClaim> list = itemMap.get(cover.getItemType());
+				if (list == null) {
+					list = new ArrayList<>();
+					itemMap.put(cover.getItemType(), list);
+				}
+				list.add(cover);
+			}
 
 			// Now create the item model files for those models
-			Set<Entry<CustomItemType, List<CustomItem>>> entrySet = itemMap.entrySet();
-			for (Entry<CustomItemType, List<CustomItem>> entry : entrySet) {
-				List<CustomItem> list = entry.getValue();
+			Set<Entry<CustomItemType, List<ItemDamageClaim>>> entrySet = itemMap.entrySet();
+			for (Entry<CustomItemType, List<ItemDamageClaim>> entry : entrySet) {
+				List<ItemDamageClaim> list = entry.getValue();
 				if (list != null) {
 					// The items with low damage should come first
-					list.sort((CustomItem a, CustomItem b) -> {
+					list.sort((ItemDamageClaim a, ItemDamageClaim b) -> {
 						if (a.getItemDamage() > b.getItemDamage())
 							return 1;
 						if (a.getItemDamage() < b.getItemDamage())
@@ -2020,11 +2093,11 @@ public class ItemSet implements ItemSetBase {
 								+ "pull" + Q + ": 0.9 }, " + Q + "model" + Q + ": " + Q + "item/bow_pulling_2" + Q
 								+ "},");
 
-						for (CustomItem item : list) {
+						for (ItemDamageClaim item : list) {
 							jsonWriter.println("        { " + Q + "predicate" + Q + ": {" + Q + "damaged" + Q + ": 0, "
 									+ Q + "damage" + Q + ": "
 									+ (double) item.getItemDamage() / item.getItemType().getMaxDurability() + "}, " + Q
-									+ "model" + Q + ": " + Q + "customitems/" + item.getName() + Q + "},");
+									+ "model" + Q + ": " + Q + item.getResourcePath() + Q + "},");
 							List<BowTextures.Entry> pullTextures = ((CustomBow) item).getTexture().getPullTextures();
 							int counter = 0;
 							for (BowTextures.Entry pullTexture : pullTextures) {
@@ -2032,7 +2105,7 @@ public class ItemSet implements ItemSetBase {
 										+ ": 0, " + Q + "damage" + Q + ": "
 										+ (double) item.getItemDamage() / item.getItemType().getMaxDurability() + ", "
 										+ Q + "pulling" + Q + ": 1, " + Q + "pull" + Q + ": " + pullTexture.getPull()
-										+ "}, " + Q + "model" + Q + ": " + Q + "customitems/" + item.getName()
+										+ "}, " + Q + "model" + Q + ": " + Q + item.getResourcePath()
 										+ "_pulling_" + counter++ + Q + "},");
 							}
 						}
@@ -2092,11 +2165,11 @@ public class ItemSet implements ItemSetBase {
 						jsonWriter.println("        { \"predicate\": { \"blocking\": 1 }, \"model\": \"item/shield_blocking\" },");
 						
 						// Now the part for the custom shield predicates...
-						for (CustomItem item : list) {
+						for (ItemDamageClaim item : list) {
 							jsonWriter.println("        { \"predicate\": { \"blocking\": 0, \"damaged\": 0, \"damage\": "
-									+ (double) item.getItemDamage() / item.getItemType().getMaxDurability() + " }, \"model\": \"customitems/" + item.getName() + "\" },");
+									+ (double) item.getItemDamage() / item.getItemType().getMaxDurability() + " }, \"model\": \"" + item.getResourcePath() + "\" },");
 							jsonWriter.println("        { \"predicate\": { \"blocking\": 1, \"damaged\": 0, \"damage\": "
-									+ (double) item.getItemDamage() / item.getItemType().getMaxDurability() + " }, \"model\": \"customitems/" + item.getName() + "_blocking\" },");
+									+ (double) item.getItemDamage() / item.getItemType().getMaxDurability() + " }, \"model\": \"" + item.getResourcePath() + "_blocking\" },");
 						}
 						
 						// The next ones are required to preserve the vanilla shield models
@@ -2124,11 +2197,11 @@ public class ItemSet implements ItemSetBase {
 						jsonWriter.println("    " + Q + "overrides" + Q + ": [");
 
 						// Now the interesting part
-						for (CustomItem item : list) {
+						for (ItemDamageClaim item : list) {
 							jsonWriter.println("        { " + Q + "predicate" + Q + ": {" + Q + "damaged" + Q + ": 0, "
 									+ Q + "damage" + Q + ": "
 									+ (double) item.getItemDamage() / item.getItemType().getMaxDurability() + "}, " + Q
-									+ "model" + Q + ": " + Q + "customitems/" + item.getName() + Q + "},");
+									+ "model" + Q + ": " + Q + item.getResourcePath() + Q + "},");
 						}
 
 						// End of the json file
@@ -2212,7 +2285,7 @@ public class ItemSet implements ItemSetBase {
 			File file = new File(Editor.getFolder() + "/" + fileName + ".cisb");// cisb stands for Custom Item Set
 																				// Builder
 			ByteArrayBitOutput output = new ByteArrayBitOutput();
-			save4(output);
+			save5(output);
 			output.terminate();
 			byte[] bytes = output.getBytes();
 			OutputStream mainOutput = Files.newOutputStream(file.toPath());
@@ -2337,6 +2410,7 @@ public class ItemSet implements ItemSetBase {
 	}
 	
 	// Use CustomItem.save2 instead of CustomItem.save1
+	@SuppressWarnings("unused")
 	private void save4(BitOutput output) {
 		output.addByte(ENCODING_4);
 		output.addInt(textures.size());
@@ -2377,6 +2451,52 @@ public class ItemSet implements ItemSetBase {
 		for (EntityDrop drop : mobDrops)
 			drop.save(output);
 	}
+	
+	// Add projectile covers
+	private void save5(BitOutput output) {
+		output.addByte(ENCODING_5);
+		output.addInt(textures.size());
+		for (NamedImage texture : textures) {
+			if (texture instanceof BowTextures)
+				output.addByte(NamedImage.ENCODING_BOW);
+			else
+				output.addByte(NamedImage.ENCODING_SIMPLE);
+			texture.save(output);
+		}
+		output.addInt(items.size());
+
+		// Save the normal items before the tools so that tools can use normal items as
+		// repair item
+		List<CustomItem> sorted = new ArrayList<CustomItem>(items.size());
+		for (CustomItem item : items) {
+			if (!(item instanceof CustomTool)) {
+				sorted.add(item);
+			}
+		}
+		for (CustomItem item : items) {
+			if (item instanceof CustomTool) {
+				sorted.add(item);
+			}
+		}
+		for (CustomItem item : sorted)
+			item.save2(output);
+
+		output.addInt(recipes.size());
+		for (Recipe recipe : recipes)
+			recipe.save(output);
+		
+		output.addInt(blockDrops.size());
+		for (BlockDrop drop : blockDrops)
+			drop.save(output);
+		
+		output.addInt(mobDrops.size());
+		for (EntityDrop drop : mobDrops)
+			drop.save(output);
+		
+		output.addInt(projectileCovers.size());
+		for (ProjectileCover cover : projectileCovers)
+			cover.toBits(output);
+	}
 
 	/**
 	 * Attempts to add the specified texture to this item set. If the texture can be
@@ -2396,9 +2516,8 @@ public class ItemSet implements ItemSetBase {
 			String nameError = checkName(texture.getName());
 			if (nameError != null)
 				return nameError;
-			for (NamedImage current : textures)
-				if (current.getName().equals(texture.getName()))
-					return "There is already a texture with that name";
+			if (hasTexture(texture.getName()))
+				return "There is already a texture with that name";
 		}
 		textures.add(texture);
 		return null;
@@ -2419,19 +2538,17 @@ public class ItemSet implements ItemSetBase {
 		if (!bypassChecks()) {
 			if (texture == null)
 				return "Can't change null textures";
+			if (checkClass && texture.getClass() != NamedImage.class)
+				return "Use the appropriate method for the class of that texture";
 			String nameError = checkName(newName);
 			if (nameError != null)
 				return nameError;
+			NamedImage sameName = getTextureByName(newName);
+			if (sameName != null && sameName != texture)
+				return "Another texture with that name already exists";
 			if (newImage == null)
 				return "You need to select an image";
-			boolean has = false;
-			for (NamedImage current : textures) {
-				if (current == texture)
-					has = true;
-				else if (current.getName().equals(texture.getName()))
-					return "Another texture has that name already";
-			}
-			if (!has)
+			if (!textures.contains(texture))
 				return "The previous texture is not in the list!";
 		}
 		texture.setName(newName);
@@ -2558,7 +2675,7 @@ public class ItemSet implements ItemSetBase {
 			DamageResistances resistances, byte[] newCustomModel, boolean checkClass) {
 		if (!bypassChecks()) {
 			if (armor == null)
-				return "Can't change bows that do not exist";
+				return "Can't change armor pieces that do not exist";
 			if (checkClass && armor.getClass() != CustomArmor.class)
 				return "Use the appropriate method for the class";
 			if (armor.getRed() < 0 || armor.getRed() > 255)
@@ -2929,12 +3046,11 @@ public class ItemSet implements ItemSetBase {
 					return "An enchantment has no type";
 				}
 			}
-			for (CustomItem current : items) {
+			for (CustomItem current : items)
 				if (current.getName().equals(item.getName()))
 					return "There is already a custom item with that name";
-				if (current.getItemType() == item.getItemType() && current.getItemDamage() == item.getItemDamage())
-					return "There is already a custom item with the same item type and damage";
-			}
+			if (!isItemDamageTypeFree(item.getItemType(), item.getItemDamage(), item))
+				return "There is already a custom item or projectile cover with the same internal item type and damage";
 		}
 		items.add(item);
 		return null;
@@ -3004,7 +3120,9 @@ public class ItemSet implements ItemSetBase {
 			String nameError = checkName(newName);
 			if (nameError != null)
 				return nameError;
-			boolean has = false;
+			CustomItem sameName = getCustomItemByName(newName);
+			if (sameName != null && sameName != item)
+				return "There is already another item with that name";
 			if (newImage == null)
 				return "Every item needs a texture";
 			if (newAttributes == null)
@@ -3035,23 +3153,11 @@ public class ItemSet implements ItemSetBase {
 					return "An enchantment has no type";
 				}
 			}
-			for (CustomItem current : items) {
-				if (current == item) {
-					has = true;
-					break;
-				} else {
-					if (current.getItemType() == newType && current.getItemDamage() == newDamage) {
-						return "The item " + current.getName() + " has the same internal type and internal item damage.";
-					}
-				}
-			}
-			if (!has)
+			if (!items.contains(item))
 				return "There is no previous item!";
-			has = false;
-			for (NamedImage texture : textures)
-				if (texture == newImage)
-					has = true;
-			if (!has)
+			if (!isItemDamageTypeFree(newType, newDamage, item))
+				return "There is another custom item or projectile cover with the same internal item type and damage";
+			if (!textures.contains(newImage))
 				return "The specified texture is not in the texture list!";
 		}
 		item.setItemType(newType);
@@ -3260,14 +3366,7 @@ public class ItemSet implements ItemSetBase {
 		if (!bypassChecks()) {
 			if (old == null)
 				return "The old blockDrop is null";
-			boolean has = false;
-			for (BlockDrop existing : blockDrops) {
-				if (existing == old) {
-					has = true;
-					break;
-				}
-			}
-			if (!has) {
+			if (!blockDrops.contains(old)) {
 				return "The old blockDrop was not in this item set";
 			}
 			if (newBlock == null)
@@ -3323,6 +3422,176 @@ public class ItemSet implements ItemSetBase {
 		if (!mobDrops.remove(drop) && !bypassChecks()) {
 			throw new IllegalArgumentException("The drop " + drop + " was not in the mob drop list!");
 		}
+	}
+	
+	private String addProjectileCover(ProjectileCover cover) {
+		if (!bypassChecks()) {
+			if (cover == null)
+				return "The projectile cover can't be null";
+			String nameError = checkName(cover.name);
+			if (nameError != null)
+				return nameError;
+			if (cover.itemType == null)
+				return "The internal item type can't be null";
+			if (!cover.itemType.canServe(Category.PROJECTILE_COVER))
+				return "The selected internal item type can't be used as projectile cover";
+			if (cover.itemDamage <= 0)
+				return "The internal item damage must be positive";
+			if (cover.itemDamage > cover.itemType.getMaxDurability())
+				return "The internal item damage can't be greater than the maximum durability " + cover.itemType.getMaxDurability();
+			if (!isItemDamageTypeFree(cover.itemType, cover.itemDamage, cover))
+				return "There is already a custom item or projectile cover with the same internal item type and damage";
+			if (hasProjectileCover(cover.name))
+				return "There is already a projectile cover with that name";
+			if (projectileCovers.contains(cover))
+				return "That projectile cover is already in the list of projectile covers";
+		}
+		projectileCovers.add(cover);
+		return null;
+	}
+	
+	private String changeProjectileCover(ProjectileCover original, CustomItemType newType, short newDamage,
+			String newName) {
+		if (!bypassChecks()) {
+			if (original == null)
+				return "Can't change null projectile covers";
+			if (!projectileCovers.contains(original))
+				return "The projectile cover to change is not in the list of projectile covers";
+			if (newType == null)
+				return "The internal item type can't be null";
+			if (!newType.canServe(Category.PROJECTILE_COVER))
+				return "This internal item type can't be used as projectile cover";
+			if (newDamage <= 0)
+				return "The internal item damage must be a positive integer";
+			if (newDamage > newType.getMaxDurability())
+				return "The internal item damage can't be greater than the maximum durability " + newType.getMaxDurability();
+			String nameError = checkName(newName);
+			if (nameError != null)
+				return nameError;
+			ProjectileCover sameName = getProjectileCoverByName(newName);
+			if (sameName != null && sameName != original)
+				return "There is another projectile cover with that name";
+		}
+		
+		original.itemType = newType;
+		original.itemDamage = newDamage;
+		original.name = newName;
+		return null;
+	}
+	
+	/**
+	 * Attempts to change the properties of the given sphere projectile cover to the given values.
+	 * If the given values are valid, the properties of the given projectile cover will be set to those
+	 * values.
+	 * If not, the projectile cover will not be changed and a human-readable reason why the values are
+	 * invalid will be returned.
+	 * @param original The old projectile cover
+	 * @param newType The new internal item type
+	 * @param newDamage The new internal item damage
+	 * @param newName The new name
+	 * @param newTexture The new texture
+	 * @param newSlotsPerAxis The new value for the slotsPerAxis field
+	 * @param newScale The new scale
+	 * @return null if the cover was changed successfully, or the reason it wasn't
+	 */
+	public String changeSphereProjectileCover(SphereProjectileCover original, CustomItemType newType, 
+			short newDamage, String newName, NamedImage newTexture, int newSlotsPerAxis, double newScale) {
+		
+		if (!bypassChecks()) {
+			if (newTexture == null)
+				return "You must select a texture";
+			if (!textures.contains(newTexture))
+				return "The selected texture is not in the list of textures";
+			if (newSlotsPerAxis <= 0)
+				return "The slots per axis must be a positive integer";
+			if (newSlotsPerAxis > 50)
+				return "The slots per axis can't be larger than 50";
+			if (!(newScale > 0))
+				return "The scale must be greater than zero";
+		}
+		
+		String error = changeProjectileCover(original, newType, newDamage, newName);
+		if (error == null) {
+			original.texture = newTexture;
+			original.slotsPerAxis = newSlotsPerAxis;
+			original.scale = newScale;
+		}
+		return error;
+	}
+	
+	/**
+	 * Attempts to add the given projectile cover to this item set. 
+	 * If the given cover can be added, it will be added and this method will return null.
+	 * If the given cover can't be added, it won't be added and this method will return a String
+	 * containing a human-readable message why it couldn't be added.
+	 * @param cover The projectile cover to add to this item set
+	 * @return null if added successfully, or the reason it was not added successfully
+	 */
+	public String addSphereProjectileCover(SphereProjectileCover cover) {
+		if (!bypassChecks()) {
+			if (cover == null)
+				return "Can't add null covers";
+			if (cover.texture == null)
+				return "You must select a texture";
+			if (!textures.contains(cover.texture))
+				return "The selected texture is not in the textures list";
+			
+			// This is NOT equivalent to <= 0.0 because this also handles NaN
+			if (!(cover.scale > 0.0))
+				return "The scale must be greater than 0";
+			
+			if (cover.slotsPerAxis <= 0)
+				return "The slots per axis must be a positive integer";
+			if (cover.slotsPerAxis > 50)
+				return "The slots per axis must not be larger than 50 (would get expensive)";
+		}
+		return addProjectileCover(cover);
+	}
+	
+	/**
+	 * Attempts to change the properties of the given custom projectile cover to the given values. If those
+	 * values are valid, the properties of the projectile cover will be changed to those values and this
+	 * method will return null.
+	 * If not, the projectile cover won't be changed and a human-readable reason why they aren't valid
+	 * will be returned.
+	 * @param original The projectile cover to change
+	 * @param newType The new internal item type
+	 * @param newDamage The new internal item damage
+	 * @param newName The new name
+	 * @param newModel The new item model
+	 * @return null if the projectile cover was changed successfully, or the reason it wasn't
+	 */
+	public String changeCustomProjectileCover(CustomProjectileCover original, CustomItemType newType, 
+			short newDamage, String newName, byte[] newModel) {
+		
+		if (!bypassChecks()) {
+			if (newModel == null)
+				return "You must select a model";
+		}
+		
+		String error = changeProjectileCover(original, newType, newDamage, newName);
+		if (error == null) {
+			original.model = newModel;
+		}
+		return error;
+	}
+	
+	/**
+	 * Attempts to add the given projectile cover to this item set. 
+	 * If the given cover can be added, it will be added and this method will return null.
+	 * If the given cover can't be added, it won't be added and this method will return a String
+	 * containing a human-readable message why it couldn't be added.
+	 * @param cover The projectile cover to add to this item set
+	 * @return null if added successfully, or the reason it was not added successfully
+	 */
+	public String addCustomProjectileCover(CustomProjectileCover cover) {
+		if (!bypassChecks()) {
+			if (cover == null)
+				return "Can't add null covers";
+			if (cover.model == null)
+				return "You must select a model";
+		}
+		return addProjectileCover(cover);
 	}
 
 	/**
@@ -3396,11 +3665,32 @@ public class ItemSet implements ItemSetBase {
 		return null;
 	}
 	
+	public ProjectileCover getProjectileCoverByName(String name) {
+		for (ProjectileCover cover : projectileCovers)
+			if (cover.name.equals(name))
+				return cover;
+		return null;
+	}
+	
 	public boolean hasCustomItem(String name) {
 		return getCustomItemByName(name) != null;
 	}
 	
 	public boolean hasTexture(String name) {
 		return getTextureByName(name) != null;
+	}
+	
+	public boolean hasProjectileCover(String name) {
+		return getProjectileCoverByName(name) != null;
+	}
+	
+	private boolean isItemDamageTypeFree(CustomItemType type, short damage, ItemDamageClaim exclude) {
+		for (CustomItem item : items)
+			if (item != exclude && item.getItemType() == type && item.getItemDamage() == damage)
+				return false;
+		for (ProjectileCover cover : projectileCovers)
+			if (cover != exclude && cover.getItemType() == type && cover.getItemDamage() == damage)
+				return false;
+		return true;
 	}
 }

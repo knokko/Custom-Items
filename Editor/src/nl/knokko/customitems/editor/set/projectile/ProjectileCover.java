@@ -3,12 +3,13 @@ package nl.knokko.customitems.editor.set.projectile;
 import java.io.IOException;
 import java.util.zip.ZipOutputStream;
 
+import nl.knokko.customitems.editor.set.ItemDamageClaim;
 import nl.knokko.customitems.editor.set.ItemSet;
 import nl.knokko.customitems.item.CustomItemType;
 import nl.knokko.util.bits.BitInput;
 import nl.knokko.util.bits.BitOutput;
 
-public abstract class ProjectileCover {
+public abstract class ProjectileCover implements ItemDamageClaim {
 	
 	static final byte ID_SPHERE = 0;
 	static final byte ID_CUSTOM = 1;
@@ -25,10 +26,10 @@ public abstract class ProjectileCover {
 		}
 	}
 	
-	protected CustomItemType itemType;
-    protected short itemDamage;
+	public CustomItemType itemType;
+    public short itemDamage;
     
-    protected String name;
+    public String name;
     
     ProjectileCover(CustomItemType type, short itemDamage, String name){
     	this.itemType = type;
@@ -42,6 +43,21 @@ public abstract class ProjectileCover {
 		this.itemDamage = input.readShort();
 		
 		this.name = input.readString();
+    }
+    
+    @Override
+    public CustomItemType getItemType() {
+    	return itemType;
+    }
+    
+    @Override
+    public short getItemDamage() {
+    	return itemDamage;
+    }
+    
+    @Override
+    public String getResourcePath() {
+    	return "customprojectiles/" + name;
     }
 	
 	public final void toBits(BitOutput output) {
@@ -59,5 +75,5 @@ public abstract class ProjectileCover {
 	
 	protected abstract void saveData(BitOutput output);
 	
-	protected abstract void writeModel(ZipOutputStream output) throws IOException;
+	public abstract void writeModel(ZipOutputStream output) throws IOException;
 }

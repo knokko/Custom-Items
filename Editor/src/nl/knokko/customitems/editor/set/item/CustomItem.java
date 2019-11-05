@@ -23,12 +23,13 @@
  *******************************************************************************/
 package nl.knokko.customitems.editor.set.item;
 
+import nl.knokko.customitems.editor.set.ItemDamageClaim;
 import nl.knokko.customitems.item.AttributeModifier;
 import nl.knokko.customitems.item.CustomItemType;
 import nl.knokko.customitems.item.Enchantment;
 import nl.knokko.util.bits.BitOutput;
 
-public abstract class CustomItem extends nl.knokko.customitems.item.CustomItem {
+public abstract class CustomItem extends nl.knokko.customitems.item.CustomItem implements ItemDamageClaim {
 
 	protected NamedImage texture;
 	protected byte[] customModel;
@@ -95,6 +96,11 @@ public abstract class CustomItem extends nl.knokko.customitems.item.CustomItem {
 	
 	public void setCustomModel(byte[] content) {
 		customModel = content;
+	}
+	
+	@Override
+	public String getResourcePath() {
+		return "customitems/" + name;
 	}
 
 	public final void save1(BitOutput output) {
