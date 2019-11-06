@@ -44,9 +44,10 @@ public abstract class CustomItem {
     protected List<PotionEffect> playerEffects;
     protected List<PotionEffect> targetEffects;
     
+    protected String[] commands;
     public CustomItem(CustomItemType itemType, short itemDamage, String name, String displayName, 
     		String[] lore, AttributeModifier[] attributes, Enchantment[] defaultEnchantments, boolean[] itemFlags, 
-    		List<PotionEffect> playerEffects, List<PotionEffect> targetEffects){
+    		List<PotionEffect> playerEffects, List<PotionEffect> targetEffects, String[] commands){
         this.itemType = itemType;
         this.itemDamage = itemDamage;
         if (name == null) throw new NullPointerException("name");
@@ -58,6 +59,7 @@ public abstract class CustomItem {
         this.itemFlags = itemFlags;
         this.playerEffects = playerEffects;
         this.targetEffects = targetEffects;
+        this.commands = commands;
     }
     
     public final String getNBTTag12() {
@@ -267,5 +269,9 @@ public abstract class CustomItem {
     
     public List<PotionEffect> getTargetEffects () {
     	return targetEffects;
+    }
+    
+    public String[] getCommands() {
+    	return commands;
     }
 }

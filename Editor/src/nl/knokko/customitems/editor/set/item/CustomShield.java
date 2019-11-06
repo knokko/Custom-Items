@@ -20,9 +20,9 @@ public class CustomShield extends CustomTool {
 			AttributeModifier[] attributes, Enchantment[] defaultEnchantments, long durability, boolean allowEnchanting,
 			boolean allowAnvil, Ingredient repairItem, NamedImage texture, boolean[] itemFlags,
 			int entityHitDurabilityLoss, int blockBreakDurabilityLoss, double thresholdDamage, 
-			byte[] customModel, byte[] customBlockingModel, List<PotionEffect> playerEffects, List<PotionEffect> targetEffects) {
+			byte[] customModel, byte[] customBlockingModel, List<PotionEffect> playerEffects, List<PotionEffect> targetEffects, String[] commands) {
 		super(itemType, itemDamage, name, displayName, lore, attributes, defaultEnchantments, durability, allowEnchanting,
-				allowAnvil, repairItem, texture, itemFlags, entityHitDurabilityLoss, blockBreakDurabilityLoss, customModel, playerEffects, targetEffects);
+				allowAnvil, repairItem, texture, itemFlags, entityHitDurabilityLoss, blockBreakDurabilityLoss, customModel, playerEffects, targetEffects, commands);
 		this.thresholdDamage = thresholdDamage;
 		this.customBlockingModel = customBlockingModel;
 	}

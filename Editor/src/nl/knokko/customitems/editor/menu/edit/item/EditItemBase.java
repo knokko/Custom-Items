@@ -72,6 +72,7 @@ public abstract class EditItemBase extends GuiMenu {
 	protected byte[] customModel;
 	protected List<PotionEffect> playerEffects;
 	protected List<PotionEffect> targetEffects;
+	protected String[] commands;
 
 	public EditItemBase(EditMenu menu, CustomItem previous) {
 		this.menu = menu;
@@ -89,6 +90,7 @@ public abstract class EditItemBase extends GuiMenu {
 			customModel = previous.getCustomModel();
 			playerEffects = previous.getPlayerEffects();
 			targetEffects = previous.getTargetEffects();
+			commands = previous.getCommands();
 		} else {
 			name = new TextEditField("", EditProps.EDIT_BASE, EditProps.EDIT_ACTIVE);
 			internalType = new ItemTypeSelect(CustomItemType.DIAMOND_HOE);
@@ -104,6 +106,7 @@ public abstract class EditItemBase extends GuiMenu {
 			customModel = null;
 			playerEffects = DEFAULT_PLAYER_EFFECTS;
 			targetEffects = DEFAULT_TARGET_EFFECTS;
+			commands = new String[] {};
 		}
 	}
 
@@ -135,6 +138,7 @@ public abstract class EditItemBase extends GuiMenu {
 		addComponent(new DynamicTextComponent("Texture: ", EditProps.LABEL), LABEL_X, 0.32f, LABEL_X + 0.125f, 0.37f);
 		addComponent(new DynamicTextComponent("On-Hit Player effects: ", EditProps.LABEL), LABEL_X, 0.2f, LABEL_X + 0.2f, 0.25f);
 		addComponent(new DynamicTextComponent("On-Hit Target effects: ", EditProps.LABEL), LABEL_X, 0.14f, LABEL_X + 0.2f, 0.19f);
+		addComponent(new DynamicTextComponent("Commands: ", EditProps.LABEL), LABEL_X, 0.08f, LABEL_X + 0.125f, 0.13f);
 		
 		// I might add custom bow models later, but I leave it out for now
 		if (!(this instanceof EditItemBow)) {
@@ -169,6 +173,7 @@ public abstract class EditItemBase extends GuiMenu {
 		addAttributesComponent();
 		addEnchantmentsComponent();
 		addEffectsComponent();
+		addCommandsComponent();
 		addComponent(new DynamicTextButton("Change...", EditProps.BUTTON, EditProps.HOVER, () -> {
 			state.getWindow().setMainComponent(new ItemFlagMenu(this, itemFlags));
 		}), BUTTON_X, 0.38f, BUTTON_X + 0.1f, 0.43f);
@@ -348,6 +353,17 @@ public abstract class EditItemBase extends GuiMenu {
 						this.targetEffects = targetEffects;
 				}));
 		}), BUTTON_X, 0.14f, BUTTON_X + 0.1f, 0.19f);
+	}
+	
+	private void addCommandsComponent() {
+		addComponent(new DynamicTextButton("Change...", EditProps.BUTTON, EditProps.HOVER, () -> {
+			state.getWindow().setMainComponent(new TextArrayEditMenu(EditItemBase.this, (String[] newCommands) -> {
+				commands = newCommands;
+				for (int index = 0; index < commands.length; index++)
+					commands[index] = commands[index].replaceAll("&", "§");
+			}, EditProps.BACKGROUND, EditProps.CANCEL_BASE, EditProps.CANCEL_HOVER, EditProps.SAVE_BASE,
+					EditProps.SAVE_HOVER, EditProps.EDIT_BASE, EditProps.EDIT_ACTIVE, commands));
+		}), BUTTON_X, 0.08f, BUTTON_X + 0.1f, 0.13f);
 	}
 	protected abstract CustomItemType.Category getCategory();
 

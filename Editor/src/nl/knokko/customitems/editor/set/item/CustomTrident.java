@@ -25,9 +25,9 @@ public class CustomTrident extends CustomTool {
 			boolean allowAnvil, double throwDamageMultiplier, double speedMultiplier, Ingredient repairItem, 
 			NamedImage texture, boolean[] itemFlags, int entityHitDurabilityLoss, 
 			int blockBreakDurabilityLoss, int throwDurabilityLoss, byte[] customModel,
-			byte[] customInHandModel, byte[] customThrowingModel, List<PotionEffect> playerEffects, List<PotionEffect> targetEffects) {
+			byte[] customInHandModel, byte[] customThrowingModel, List<PotionEffect> playerEffects, List<PotionEffect> targetEffects, String[] commands) {
 		super(CustomItemType.TRIDENT, itemDamage, name, displayName, lore, attributes, defaultEnchantments, durability, allowEnchanting,
-				allowAnvil, repairItem, texture, itemFlags, entityHitDurabilityLoss, blockBreakDurabilityLoss, customModel, playerEffects, targetEffects);
+				allowAnvil, repairItem, texture, itemFlags, entityHitDurabilityLoss, blockBreakDurabilityLoss, customModel, playerEffects, targetEffects, commands);
 		this.throwDamageMultiplier = throwDamageMultiplier;
 		this.speedMultiplier = speedMultiplier;
 		this.throwDurabilityLoss = throwDurabilityLoss;

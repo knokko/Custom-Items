@@ -38,9 +38,9 @@ public class SimpleCustomItem extends CustomItem {
 
 	public SimpleCustomItem(CustomItemType itemType, short itemDamage, String name, String displayName, String[] lore,
 			AttributeModifier[] attributes, Enchantment[] defaultEnchantments, int maxStacksize, 
-			NamedImage texture, boolean[] itemFlags, byte[] customModel, List<PotionEffect> playerEffects, List<PotionEffect> targetEffects) {
+			NamedImage texture, boolean[] itemFlags, byte[] customModel, List<PotionEffect> playerEffects, List<PotionEffect> targetEffects, String[] commands) {
 		super(itemType, itemDamage, name, displayName, lore, attributes, defaultEnchantments, texture, 
-				itemFlags, customModel, playerEffects, targetEffects);
+				itemFlags, customModel, playerEffects, targetEffects, commands);
 		this.maxStacksize = maxStacksize;
 	}
 	

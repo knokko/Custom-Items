@@ -35,8 +35,9 @@ public class SimpleCustomItem extends CustomItem {
 	private int stackSize;
 
 	public SimpleCustomItem(CustomItemType itemType, short itemDamage, String name, String displayName, String[] lore,
-			AttributeModifier[] attributes, Enchantment[] defaultEnchantments, int stackSize, boolean[] itemFlags, List<PotionEffect> playerEffects, List<PotionEffect> targetEffects) {
-		super(itemType, itemDamage, name, displayName, lore, attributes, defaultEnchantments, itemFlags, playerEffects, targetEffects);
+			AttributeModifier[] attributes, Enchantment[] defaultEnchantments, int stackSize, boolean[] itemFlags, 
+			List<PotionEffect> playerEffects, List<PotionEffect> targetEffects, String[] commands) {
+		super(itemType, itemDamage, name, displayName, lore, attributes, defaultEnchantments, itemFlags, playerEffects, targetEffects, commands);
 		this.stackSize = stackSize;
 	}
 	

@@ -72,7 +72,7 @@ public class EditItemSimple extends EditItemBase {
 		if (!stackSize.hasValue()) return "The max stacksize should be an integer at least 1 and at most 64";
 		return menu.getSet().addSimpleItem(new SimpleCustomItem(internalType.currentType, damage, name.getText(), 
 				getDisplayName(), lore, attributes, enchantments, stackSize.getValue(), 
-				textureSelect.currentTexture, itemFlags, customModel, playerEffects, targetEffects));
+				textureSelect.currentTexture, itemFlags, customModel, playerEffects, targetEffects, commands));
 	}
 
 	@Override
@@ -81,7 +81,7 @@ public class EditItemSimple extends EditItemBase {
 		if (!stackSize.hasValue()) return "The max stacksize should be an integer at least 1 and at most 64";
 		return menu.getSet().changeSimpleItem(previous, internalType.currentType, damage, name.getText(), 
 				getDisplayName(), lore, attributes, enchantments, textureSelect.currentTexture, 
-				stackSize.getValue(), itemFlags, customModel, playerEffects, targetEffects, true);
+				stackSize.getValue(), itemFlags, customModel, playerEffects, targetEffects, commands, true);
 	}
 
 	@Override

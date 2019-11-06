@@ -52,8 +52,8 @@ public class EditItemShield extends EditItemTool {
 				new CustomShield(internalType.currentType, damage, name.getText(), getDisplayName(),
 						lore, attributes, enchantments, maxUses, allowEnchanting.isChecked(),
 						allowAnvil.isChecked(), repairItem.getIngredient(), textureSelect.currentTexture, itemFlags,
-						entityHitDurabilityLoss, blockBreakDurabilityLoss, thresholdDamage.getValue(), customModel, customBlockingModel, playerEffects, targetEffects),
-						true);
+						entityHitDurabilityLoss, blockBreakDurabilityLoss, thresholdDamage.getValue(), customModel, 
+						customBlockingModel, playerEffects, targetEffects, commands), true);
 	}
 	
 	@Override
@@ -65,6 +65,6 @@ public class EditItemShield extends EditItemTool {
 				getDisplayName(), lore, attributes, enchantments, allowEnchanting.isChecked(),
 				allowAnvil.isChecked(), repairItem.getIngredient(), maxUses, textureSelect.currentTexture,
 				itemFlags, entityHitDurabilityLoss, blockBreakDurabilityLoss, thresholdDamage.getValue(),
-				customModel, customBlockingModel, playerEffects, targetEffects, true);
+				customModel, customBlockingModel, playerEffects, targetEffects, commands, true);
 	}
 }

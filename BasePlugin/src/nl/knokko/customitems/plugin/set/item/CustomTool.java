@@ -71,8 +71,9 @@ public class CustomTool extends CustomItem {
 
 	public CustomTool(CustomItemType itemType, short itemDamage, String name, String displayName, String[] lore, 
 			AttributeModifier[] attributes, Enchantment[] defaultEnchantments, long maxDurability, boolean allowEnchanting, boolean allowAnvil, 
-			Ingredient repairItem, boolean[] itemFlags, int entityHitDurabilityLoss, int blockBreakDurabilityLoss, List<PotionEffect> playerEffects, List<PotionEffect> targetEffects) {
-		super(itemType, itemDamage, name, displayName, lore, attributes, defaultEnchantments, itemFlags, playerEffects, targetEffects);
+			Ingredient repairItem, boolean[] itemFlags, int entityHitDurabilityLoss, int blockBreakDurabilityLoss, List<PotionEffect> playerEffects, 
+			List<PotionEffect> targetEffects, String[] commands) {
+		super(itemType, itemDamage, name, displayName, lore, attributes, defaultEnchantments, itemFlags, playerEffects, targetEffects, commands);
 		this.maxDurability = maxDurability;
 		this.allowEnchanting = allowEnchanting;
 		this.allowAnvil = allowAnvil;

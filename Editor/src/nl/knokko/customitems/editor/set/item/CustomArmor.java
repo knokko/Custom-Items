@@ -46,10 +46,10 @@ public class CustomArmor extends CustomTool {
 			AttributeModifier[] attributes, Enchantment[] defaultEnchantments, long durability, boolean allowEnchanting,
 			boolean allowAnvil, Ingredient repairItem, NamedImage texture, int red, int green, int blue, 
 			boolean[] itemFlags, int entityHitDurabilityLoss, int blockBreakDurabilityLoss,
-			DamageResistances damageResistances, byte[] customModel, List<PotionEffect> playerEffects, List<PotionEffect> targetEffects) {
+			DamageResistances damageResistances, byte[] customModel, List<PotionEffect> playerEffects, List<PotionEffect> targetEffects, String[] commands) {
 		super(itemType, itemDamage, name, displayName, lore, attributes, defaultEnchantments, durability,
 				allowEnchanting, allowAnvil, repairItem, texture, itemFlags, entityHitDurabilityLoss, 
-				blockBreakDurabilityLoss, customModel, playerEffects, targetEffects);
+				blockBreakDurabilityLoss, customModel, playerEffects, targetEffects, commands);
 		this.red = red;
 		this.green = green;
 		this.blue = blue;
