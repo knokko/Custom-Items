@@ -1516,26 +1516,45 @@ public class ItemSet implements ItemSetBase {
 					}
 				}
 			}
+			
+			// Projectile covers
+			for (ProjectileCover cover : projectileCovers) {
+				ZipEntry entry = new ZipEntry("assets/minecraft/models/customprojectiles/" + cover.name + ".json");
+				zipOutput.putNextEntry(entry);
+				cover.writeModel(zipOutput);
+				zipOutput.flush();
+			}
 
 			// Map all custom items by their item type
-			Map<CustomItemType, List<CustomItem>> itemMap = new EnumMap<CustomItemType, List<CustomItem>>(
+			Map<CustomItemType, List<ItemDamageClaim>> itemMap = new EnumMap<>(
 					CustomItemType.class);
+			
 			for (CustomItem item : items) {
-				List<CustomItem> list = itemMap.get(item.getItemType());
+				List<ItemDamageClaim> list = itemMap.get(item.getItemType());
 				if (list == null) {
-					list = new ArrayList<CustomItem>();
+					list = new ArrayList<>();
 					itemMap.put(item.getItemType(), list);
 				}
 				list.add(item);
 			}
+			
+			// Add the projectile covers to the map
+			for (ProjectileCover cover : projectileCovers) {
+				List<ItemDamageClaim> list = itemMap.get(cover.getItemType());
+				if (list == null) {
+					list = new ArrayList<>();
+					itemMap.put(cover.getItemType(), list);
+				}
+				list.add(cover);
+			}
 
 			// Now create the item model files for those models
-			Set<Entry<CustomItemType, List<CustomItem>>> entrySet = itemMap.entrySet();
-			for (Entry<CustomItemType, List<CustomItem>> entry : entrySet) {
-				List<CustomItem> list = entry.getValue();
+			Set<Entry<CustomItemType, List<ItemDamageClaim>>> entrySet = itemMap.entrySet();
+			for (Entry<CustomItemType, List<ItemDamageClaim>> entry : entrySet) {
+				List<ItemDamageClaim> list = entry.getValue();
 				if (list != null) {
 					// The items with low damage should come first
-					list.sort((CustomItem a, CustomItem b) -> {
+					list.sort((ItemDamageClaim a, ItemDamageClaim b) -> {
 						if (a.getItemDamage() > b.getItemDamage())
 							return 1;
 						if (a.getItemDamage() < b.getItemDamage())
@@ -1593,11 +1612,11 @@ public class ItemSet implements ItemSetBase {
 								+ "pull" + Q + ": 0.9 }, " + Q + "model" + Q + ": " + Q + "item/bow_pulling_2" + Q
 								+ "},");
 
-						for (CustomItem item : list) {
+						for (ItemDamageClaim item : list) {
 							jsonWriter.println("        { " + Q + "predicate" + Q + ": {" + Q + "damaged" + Q + ": 0, "
 									+ Q + "damage" + Q + ": "
 									+ (double) item.getItemDamage() / item.getItemType().getMaxDurability() + "}, " + Q
-									+ "model" + Q + ": " + Q + "customitems/" + item.getName() + Q + "},");
+									+ "model" + Q + ": " + Q + item.getResourcePath() + Q + "},");
 							List<BowTextures.Entry> pullTextures = ((CustomBow) item).getTexture().getPullTextures();
 							int counter = 0;
 							for (BowTextures.Entry pullTexture : pullTextures) {
@@ -1605,7 +1624,7 @@ public class ItemSet implements ItemSetBase {
 										+ ": 0, " + Q + "damage" + Q + ": "
 										+ (double) item.getItemDamage() / item.getItemType().getMaxDurability() + ", "
 										+ Q + "pulling" + Q + ": 1, " + Q + "pull" + Q + ": " + pullTexture.getPull()
-										+ "}, " + Q + "model" + Q + ": " + Q + "customitems/" + item.getName()
+										+ "}, " + Q + "model" + Q + ": " + Q + item.getResourcePath()
 										+ "_pulling_" + counter++ + Q + "},");
 							}
 						}
@@ -1668,11 +1687,11 @@ public class ItemSet implements ItemSetBase {
 						jsonWriter.println("        { \"predicate\": { \"blocking\": 1 }, \"model\": \"item/shield_blocking\" },");
 						
 						// Now the part for the custom shield predicates...
-						for (CustomItem item : list) {
+						for (ItemDamageClaim item : list) {
 							jsonWriter.println("        { \"predicate\": { \"blocking\": 0, \"damaged\": 0, \"damage\": "
-									+ (double) item.getItemDamage() / item.getItemType().getMaxDurability() + " }, \"model\": \"customitems/" + item.getName() + "\" },");
+									+ (double) item.getItemDamage() / item.getItemType().getMaxDurability() + " }, \"model\": \"" + item.getResourcePath() + "\" },");
 							jsonWriter.println("        { \"predicate\": { \"blocking\": 1, \"damaged\": 0, \"damage\": "
-									+ (double) item.getItemDamage() / item.getItemType().getMaxDurability() + " }, \"model\": \"customitems/" + item.getName() + "_blocking\" },");
+									+ (double) item.getItemDamage() / item.getItemType().getMaxDurability() + " }, \"model\": \"" + item.getResourcePath() + "_blocking\" },");
 						}
 						
 						// The next ones are required to preserve the vanilla shield models
@@ -1700,11 +1719,11 @@ public class ItemSet implements ItemSetBase {
 						jsonWriter.println("    " + Q + "overrides" + Q + ": [");
 
 						// Now the interesting part
-						for (CustomItem item : list) {
+						for (ItemDamageClaim item : list) {
 							jsonWriter.println("        { " + Q + "predicate" + Q + ": {" + Q + "damaged" + Q + ": 0, "
 									+ Q + "damage" + Q + ": "
 									+ (double) item.getItemDamage() / item.getItemType().getMaxDurability() + "}, " + Q
-									+ "model" + Q + ": " + Q + "customitems/" + item.getName() + Q + "},");
+									+ "model" + Q + ": " + Q + item.getResourcePath() + Q + "},");
 						}
 
 						// End of the json file
@@ -1729,11 +1748,11 @@ public class ItemSet implements ItemSetBase {
 							jsonWriter.println(line);
 						}
 						
-						for (CustomItem item : list) {
+						for (ItemDamageClaim item : list) {
 							jsonWriter.println("        { \"predicate\": { \"throwing\": 0, \"damaged\": 0, \"damage\": "
-									+ (double) item.getItemDamage() / item.getItemType().getMaxDurability() + " }, \"model\": \"customitems/" + item.getName() + "_in_hand\" },");
+									+ (double) item.getItemDamage() / item.getItemType().getMaxDurability() + " }, \"model\": \"" + item.getResourcePath() + "_in_hand\" },");
 							jsonWriter.println("        { \"predicate\": { \"throwing\": 1, \"damaged\": 0, \"damage\": "
-									+ (double) item.getItemDamage() / item.getItemType().getMaxDurability() + " }, \"model\": \"customitems/" + item.getName() + "_throwing\" },");
+									+ (double) item.getItemDamage() / item.getItemType().getMaxDurability() + " }, \"model\": \"" + item.getResourcePath() + "_throwing\" },");
 						}
 						
 						for (String line : end) {
@@ -3666,12 +3685,29 @@ public class ItemSet implements ItemSetBase {
 		return projectileCovers;
 	}
 
-	public short nextAvailableDamage(CustomItemType type, CustomItem exclude) {
+	/**
+	 * Attempts to find an available internal item damage for the given internal item type. If there is an
+	 * available internal item damage, the lowest available value will be returned. If there is no available
+	 * internal item damage, -1 will be returned.
+	 * 
+	 * The exclude parameter can be used to indicate that it is ok to have an internal item conflict with 
+	 * a single item damage claimer. This is useful to avoid conflicts with the item damage claimer for 
+	 * which you are searching a suitable internal item damage. It will be ignored if it is null.
+	 * 
+	 * @param type The item type for which an available internal item damage is requested
+	 * @param exclude An item damage claim that will be ignored/excluded in the search for a suitable
+	 * internal item damage. If it is null, no item damage claim will be excluded.
+	 * @return An available internal item damage for the given internal item type, or -1 if there is none
+	 */
+	public short nextAvailableDamage(CustomItemType type, ItemDamageClaim exclude) {
 		boolean[] usedDamage = new boolean[type.getMaxDurability() - 1];
 		for (CustomItem item : items)
 			if (item != exclude && item.getItemType() == type)
 				usedDamage[item.getItemDamage() - 1] = true;
-		for (short damage = 1; damage < type.getMaxDurability(); damage++)
+		for (ProjectileCover cover : projectileCovers)
+			if (cover != exclude && cover.getItemType() == type)
+				usedDamage[cover.getItemDamage() - 1] = true;
+		for (short damage = 1; damage <= type.getMaxDurability(); damage++)
 			if (!usedDamage[damage - 1])
 				return damage;
 		return -1;
@@ -3713,7 +3749,7 @@ public class ItemSet implements ItemSetBase {
 		return getProjectileCoverByName(name) != null;
 	}
 	
-	private boolean isItemDamageTypeFree(CustomItemType type, short damage, ItemDamageClaim exclude) {
+	public boolean isItemDamageTypeFree(CustomItemType type, short damage, ItemDamageClaim exclude) {
 		for (CustomItem item : items)
 			if (item != exclude && item.getItemType() == type && item.getItemDamage() == damage)
 				return false;
