@@ -55,7 +55,7 @@ public class EditItemHoe extends EditItemTool {
 		return menu.getSet().addHoe(
 				new CustomHoe(internalType.currentType, damage, name.getText(), getDisplayName(),
 						lore, attributes, enchantments, maxUses, allowEnchanting.isChecked(),
-						allowAnvil.isChecked(), repairItem.getIngredient(), textureSelect.currentTexture, itemFlags,
+						allowAnvil.isChecked(), repairItem.getIngredient(), textureSelect.getSelected(), itemFlags,
 						entityHitDurabilityLoss, blockBreakDurabilityLoss, durLoss.getValue(), customModel),
 						true);
 	}
@@ -67,7 +67,7 @@ public class EditItemHoe extends EditItemTool {
 			return "The shear durability loss must be a positive integer";
 		return menu.getSet().changeHoe(previous, internalType.currentType, damage, name.getText(),
 				getDisplayName(), lore, attributes, enchantments, allowEnchanting.isChecked(),
-				allowAnvil.isChecked(), repairItem.getIngredient(), maxUses, textureSelect.currentTexture,
+				allowAnvil.isChecked(), repairItem.getIngredient(), maxUses, textureSelect.getSelected(),
 				itemFlags, entityHitDurabilityLoss, blockBreakDurabilityLoss, durLoss.getValue(),
 				customModel, true);
 	}

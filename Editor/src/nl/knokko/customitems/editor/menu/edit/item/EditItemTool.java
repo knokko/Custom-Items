@@ -55,7 +55,7 @@ public class EditItemTool extends EditItemBase {
 	protected final IntEditField blockBreakDurabilityLoss;
 
 	public EditItemTool(EditMenu menu, CustomTool previous, Category toolCategory) {
-		super(menu, previous);
+		super(menu, previous, toolCategory);
 		this.previous = previous;
 		category = toolCategory;
 		if (previous != null) {
@@ -143,7 +143,7 @@ public class EditItemTool extends EditItemBase {
 		return menu.getSet().addTool(
 				new CustomTool(internalType.currentType, damage, name.getText(), getDisplayName(),
 						lore, attributes, enchantments, maxUses, allowEnchanting.isChecked(),
-						allowAnvil.isChecked(), repairItem.getIngredient(), textureSelect.currentTexture, itemFlags,
+						allowAnvil.isChecked(), repairItem.getIngredient(), textureSelect.getSelected(), itemFlags,
 						entityHitDurabilityLoss, blockBreakDurabilityLoss, customModel),
 						true);
 	}
@@ -165,7 +165,7 @@ public class EditItemTool extends EditItemBase {
 	protected String apply(short damage, long maxUses, int entityHitDurabilityLoss, int blockBreakDurabilityLoss) {
 		return menu.getSet().changeTool(previous, internalType.currentType, damage, name.getText(),
 				getDisplayName(), lore, attributes, enchantments, allowEnchanting.isChecked(),
-				allowAnvil.isChecked(), repairItem.getIngredient(), maxUses, textureSelect.currentTexture,
+				allowAnvil.isChecked(), repairItem.getIngredient(), maxUses, textureSelect.getSelected(),
 				itemFlags, entityHitDurabilityLoss, blockBreakDurabilityLoss, customModel,
 				true);
 	}

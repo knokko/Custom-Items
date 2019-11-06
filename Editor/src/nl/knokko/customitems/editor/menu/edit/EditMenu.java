@@ -26,6 +26,7 @@ package nl.knokko.customitems.editor.menu.edit;
 import nl.knokko.customitems.MCVersions;
 import nl.knokko.customitems.editor.menu.edit.drops.DropsMenu;
 import nl.knokko.customitems.editor.menu.edit.item.ItemOverview;
+import nl.knokko.customitems.editor.menu.edit.projectilecover.ProjectileCoverOverview;
 import nl.knokko.customitems.editor.menu.edit.recipe.RecipeOverview;
 import nl.knokko.customitems.editor.menu.edit.texture.TextureOverview;
 import nl.knokko.customitems.editor.menu.main.MainMenu;
@@ -45,6 +46,7 @@ public class EditMenu extends GuiMenu {
 	protected final TextureOverview textureOverview;
 	protected final RecipeOverview recipeOverview;
 	protected final DropsMenu dropsMenu;
+	protected final ProjectileCoverOverview projectileCoverOverview;
 
 	public EditMenu(ItemSet set) {
 		this.set = set;
@@ -52,6 +54,7 @@ public class EditMenu extends GuiMenu {
 		textureOverview = new TextureOverview(this);
 		recipeOverview = new RecipeOverview(this);
 		dropsMenu = new DropsMenu(this);
+		projectileCoverOverview = new ProjectileCoverOverview(this);
 		
 		errorComponent = new DynamicTextComponent("", EditProps.ERROR);
 	}
@@ -76,6 +79,10 @@ public class EditMenu extends GuiMenu {
 	
 	public RecipeOverview getRecipeOverview() {
 		return recipeOverview;
+	}
+	
+	public ProjectileCoverOverview getProjectileCoverOverview() {
+		return projectileCoverOverview;
 	}
 	
 	@Override
@@ -161,5 +168,8 @@ public class EditMenu extends GuiMenu {
 		addComponent(new DynamicTextButton("Drops", EditProps.BUTTON, EditProps.HOVER, () -> {
 			state.getWindow().setMainComponent(dropsMenu);
 		}), 0.6f, 0.3f, 0.8f, 0.4f);
+		addComponent(new DynamicTextButton("Projectile covers", EditProps.BUTTON, EditProps.HOVER, () -> {
+			state.getWindow().setMainComponent(projectileCoverOverview);
+		}), 0.6f, 0.15f, 0.975f, 0.25f);
 	}
 }

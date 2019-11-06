@@ -52,14 +52,14 @@ public class EditItemTrident extends EditItemTool {
 		addComponent(new DynamicTextComponent("In-hand model: ", EditProps.LABEL), LABEL_X, 0.2f, LABEL_X + 0.2f, 0.25f);
 		addComponent(new DynamicTextButton("Change...", EditProps.BUTTON, EditProps.HOVER, () -> {
 			state.getWindow()
-					.setMainComponent(new EditCustomModel(ItemSet.getDefaultModelBlockingShield(textureSelect.currentTexture != null ? textureSelect.currentTexture.getName() : "TEXTURE_NAME"), this, (byte[] array) -> {
+					.setMainComponent(new EditCustomModel(ItemSet.getDefaultModelBlockingShield(textureSelect.getSelected() != null ? textureSelect.getSelected().getName() : "TEXTURE_NAME"), this, (byte[] array) -> {
 								customInHandModel = array;
 							}));
 		}), BUTTON_X, 0.2f, BUTTON_X + 0.1f, 0.25f);
 		addComponent(new DynamicTextComponent("Throwing model: ", EditProps.LABEL), LABEL_X, 0.14f, LABEL_X + 0.2f, 0.19f);
 		addComponent(new DynamicTextButton("Change...", EditProps.BUTTON, EditProps.HOVER, () -> {
 			state.getWindow()
-					.setMainComponent(new EditCustomModel(ItemSet.getDefaultModelBlockingShield(textureSelect.currentTexture != null ? textureSelect.currentTexture.getName() : "TEXTURE_NAME"), this, (byte[] array) -> {
+					.setMainComponent(new EditCustomModel(ItemSet.getDefaultModelBlockingShield(textureSelect.getSelected() != null ? textureSelect.getSelected().getName() : "TEXTURE_NAME"), this, (byte[] array) -> {
 								customThrowingModel = array;
 							}));
 		}), BUTTON_X, 0.14f, BUTTON_X + 0.1f, 0.19f);
@@ -85,7 +85,7 @@ public class EditItemTrident extends EditItemTool {
 				new CustomTrident(damage, name.getText(), getDisplayName(),
 						lore, attributes, enchantments, maxUses, allowEnchanting.isChecked(),
 						allowAnvil.isChecked(), damageMult.getValue(), speedMult.getValue(), repairItem.getIngredient(), 
-						textureSelect.currentTexture, itemFlags, entityHitDurabilityLoss, blockBreakDurabilityLoss, 
+						textureSelect.getSelected(), itemFlags, entityHitDurabilityLoss, blockBreakDurabilityLoss, 
 						durLoss.getValue(), customModel, customInHandModel, customThrowingModel), true);
 	}
 	
@@ -103,7 +103,7 @@ public class EditItemTrident extends EditItemTool {
 		return menu.getSet().changeTrident(previous, internalType.currentType, damage, name.getText(),
 				getDisplayName(), lore, attributes, enchantments, allowEnchanting.isChecked(),
 				allowAnvil.isChecked(), damageMult.getValue(), speedMult.getValue(), repairItem.getIngredient(), 
-				maxUses, textureSelect.currentTexture, itemFlags, entityHitDurabilityLoss, blockBreakDurabilityLoss, 
+				maxUses, textureSelect.getSelected(), itemFlags, entityHitDurabilityLoss, blockBreakDurabilityLoss, 
 				durLoss.getValue(), customModel, customInHandModel, customThrowingModel, true);
 	}
 }

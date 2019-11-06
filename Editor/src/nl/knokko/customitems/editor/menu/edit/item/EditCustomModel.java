@@ -47,34 +47,38 @@ public class EditCustomModel extends GuiMenu {
 			receiver.readArray(array);
 			state.getWindow().setMainComponent(returnMenu);
 		}, () -> {
-			return !parent.getText().equals("handheld");
+			return exampleContent != null && !parent.getText().equals("handheld");
 		}), 0.65f, 0.025f, 0.995f, 0.125f);
 		addComponent(new DynamicTextComponent("The editor will simply put the model you choose in the resourcepack", EditProps.LABEL), 0.1f, 0.7f, 0.9f, 0.8f);
 		addComponent(new DynamicTextComponent("upon exporting, no attempt will be made to read the model json.", EditProps.LABEL), 0.1f, 0.6f, 0.85f, 0.7f);
-		addComponent(new DynamicTextComponent("The default model for this item would be:", EditProps.LABEL), 0.1f, 0.5f, 0.6f, 0.6f);
-		int index = 0;
-		for (String content : exampleContent) {
-			addComponent(new DynamicTextComponent(content, EditProps.LABEL), 0.025f, 0.40f - 0.05f * index, 0.025f + content.length() * 0.01f, 0.45f - 0.05f * index);
-			index++;
+		
+		if (exampleContent != null) {
+			addComponent(new DynamicTextComponent("The default model for this item would be:", EditProps.LABEL), 0.1f, 0.5f, 0.6f, 0.6f);
+			int index = 0;
+			for (String content : exampleContent) {
+				addComponent(new DynamicTextComponent(content, EditProps.LABEL), 0.025f, 0.40f - 0.05f * index, 0.025f + content.length() * 0.01f, 0.45f - 0.05f * index);
+				index++;
+			}
 		}
 		addComponent(new DynamicTextButton("Select file...", EditProps.CHOOSE_BASE, EditProps.CHOOSE_HOVER, () -> {
 			state.getWindow().setMainComponent(new FileChooserMenu(returnMenu, (File file) -> {
-				ByteArrayFileListener bal = new ByteArrayFileListener();
-				bal.convertFile(file);
+				receiver.readArray(new ByteArrayFileListener().convertFile(file));
 			}, (File file) -> {
 				return file.getName().endsWith(".json");
 			}, EditProps.CANCEL_BASE, EditProps.CANCEL_HOVER, EditProps.CHOOSE_BASE, EditProps.CHOOSE_HOVER, 
 					EditProps.BACKGROUND, EditProps.BACKGROUND2));
 		}), 0.2f, 0.8f, 0.375f, 0.9f);
-		addComponent(new DynamicTextButton("Copy Default Model", EditProps.BUTTON, EditProps.HOVER, () ->  {
-			String result = "";
-			for (String content: exampleContent) {
-				result += content + "\n";
-			}
-			CommandBlockHelpOverview.setClipboard(result);
-		}), 0.4f, 0.8f, 0.675f, 0.9f);
-		addComponent(new DynamicTextComponent("Default Parent:", EditProps.LABEL), 0.8f, 0.325f, 0.975f, 0.425f);
-		addComponent(parent, 0.8f, 0.2f, 0.975f, 0.3f);
+		if (exampleContent != null) {
+			addComponent(new DynamicTextButton("Copy Default Model", EditProps.BUTTON, EditProps.HOVER, () ->  {
+				String result = "";
+				for (String content: exampleContent) {
+					result += content + "\n";
+				}
+				CommandBlockHelpOverview.setClipboard(result);
+			}), 0.4f, 0.8f, 0.675f, 0.9f);
+			addComponent(new DynamicTextComponent("Default Parent:", EditProps.LABEL), 0.8f, 0.325f, 0.975f, 0.425f);
+			addComponent(parent, 0.8f, 0.2f, 0.975f, 0.3f);
+		}
 	}
 	
 	@Override

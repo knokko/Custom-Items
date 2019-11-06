@@ -23,16 +23,17 @@
  *******************************************************************************/
 package nl.knokko.customitems.editor.menu.edit.item;
 
-import java.util.Collection;
 import nl.knokko.customitems.editor.menu.edit.EditMenu;
 import nl.knokko.customitems.editor.menu.edit.EditProps;
 import nl.knokko.customitems.editor.menu.edit.item.attribute.AttributesOverview;
 import nl.knokko.customitems.editor.menu.edit.item.enchantment.EnchantmentsOverview;
+import nl.knokko.customitems.editor.set.ItemDamageClaim;
 import nl.knokko.customitems.editor.set.ItemSet;
 import nl.knokko.customitems.editor.set.item.CustomItem;
 import nl.knokko.customitems.editor.set.item.NamedImage;
 import nl.knokko.customitems.item.AttributeModifier;
 import nl.knokko.customitems.item.CustomItemType;
+import nl.knokko.customitems.item.CustomItemType.Category;
 import nl.knokko.customitems.item.Enchantment;
 import nl.knokko.customitems.item.ItemFlag;
 import nl.knokko.gui.color.GuiColor;
@@ -40,6 +41,8 @@ import nl.knokko.gui.component.menu.GuiMenu;
 import nl.knokko.gui.component.menu.TextArrayEditMenu;
 import nl.knokko.gui.component.text.dynamic.DynamicTextButton;
 import nl.knokko.gui.component.text.dynamic.DynamicTextComponent;
+import nl.knokko.gui.util.Option;
+import nl.knokko.gui.component.text.IntEditField;
 import nl.knokko.gui.component.text.TextEditField;
 
 public abstract class EditItemBase extends GuiMenu {
@@ -53,8 +56,8 @@ public abstract class EditItemBase extends GuiMenu {
 	protected final EditMenu menu;
 
 	protected TextEditField name;
-	protected ItemTypeSelect internalType;
-	protected TextEditField internalDamage;
+	protected ItemTypeSelectButton internalType;
+	protected IntEditField internalDamage;
 	protected TextEditField displayName;
 	protected String[] lore;
 	protected AttributeModifier[] attributes;
@@ -64,12 +67,12 @@ public abstract class EditItemBase extends GuiMenu {
 	protected boolean[] itemFlags;
 	protected byte[] customModel;
 
-	public EditItemBase(EditMenu menu, CustomItem previous) {
+	public EditItemBase(EditMenu menu, CustomItem previous, Category category) {
 		this.menu = menu;
 		if (previous != null) {
 			name = new TextEditField(previous.getName(), EditProps.EDIT_BASE, EditProps.EDIT_ACTIVE);
-			internalType = new ItemTypeSelect(previous.getItemType());
-			internalDamage = new TextEditField(Short.toString(previous.getItemDamage()), EditProps.EDIT_BASE,
+			internalType = new ItemTypeSelect(previous.getItemType(), category);
+			internalDamage = new IntEditField(previous.getItemDamage(), 1, EditProps.EDIT_BASE,
 					EditProps.EDIT_ACTIVE);
 			displayName = new TextEditField(previous.getDisplayName(), EditProps.EDIT_BASE, EditProps.EDIT_ACTIVE);
 			textureSelect = new TextureSelect(previous.getTexture());
@@ -80,9 +83,9 @@ public abstract class EditItemBase extends GuiMenu {
 			customModel = previous.getCustomModel();
 		} else {
 			name = new TextEditField("", EditProps.EDIT_BASE, EditProps.EDIT_ACTIVE);
-			internalType = new ItemTypeSelect(CustomItemType.DIAMOND_HOE);
-			internalDamage = new TextEditField(
-					Short.toString(menu.getSet().nextAvailableDamage(internalType.currentType, null)), EditProps.EDIT_BASE,
+			internalType = new ItemTypeSelect(CustomItemType.DIAMOND_HOE, category);
+			internalDamage = new IntEditField(
+					menu.getSet().nextAvailableDamage(internalType.currentType, null), 1, EditProps.EDIT_BASE,
 					EditProps.EDIT_ACTIVE);
 			displayName = new TextEditField("", EditProps.EDIT_BASE, EditProps.EDIT_ACTIVE);
 			textureSelect = new TextureSelect(null);
@@ -161,8 +164,9 @@ public abstract class EditItemBase extends GuiMenu {
 		// Bow models are more complex and have less priority, so leave it out for now
 		if (!(this instanceof EditItemBow)) {
 			addComponent(new DynamicTextButton("Change...", EditProps.BUTTON, EditProps.HOVER, () -> {
-				state.getWindow()
-						.setMainComponent(new EditCustomModel(ItemSet.getDefaultModel(internalType.currentType, textureSelect.currentTexture != null ? textureSelect.currentTexture.getName()
+				state.getWindow().setMainComponent(new EditCustomModel(ItemSet.getDefaultModel(
+						internalType.currentType, 
+						textureSelect.getSelected() != null ? textureSelect.getSelected().getName()
 								: "%TEXTURE_NAME%", internalType.currentType.isLeatherArmor())
 								, this, (byte[] array) -> {
 									customModel = array;
@@ -214,76 +218,54 @@ public abstract class EditItemBase extends GuiMenu {
 	protected String getDisplayName() {
 		return displayName.getText().replaceAll("&", "§");
 	}
+	
+	protected class ItemTypeSelect extends ItemTypeSelectButton {
 
-	protected class ItemTypeSelect extends DynamicTextButton {
-
-		protected CustomItemType currentType;
-
-		public ItemTypeSelect(CustomItemType initial) {
-			super(initial.toString(), EditProps.CHOOSE_BASE, EditProps.CHOOSE_HOVER, null);
-			currentType = initial;
+		public ItemTypeSelect(ItemSet set, Category category, CustomItemType preferred, ItemDamageClaim original) {
+			super(set, category, preferred, original);
+		}
+		
+		public ItemTypeSelect(CustomItemType type, Category category) {
+			super(type, category);
 		}
 
 		@Override
-		public void init() {
-			super.init();
-			clickAction = () -> {
-				state.getWindow().setMainComponent(new SelectItemType(EditItemBase.this, (CustomItemType type) -> {
-					currentType = type;
-					setText(type.toString());
-					
-					// Check for internal item type + internal item damage conflicts
-					boolean editInternalDamage;
-					tryBlock:
-					try {
-						short currentDamage = Short.parseShort(internalDamage.getText());
-						Collection<CustomItem> allItems = menu.getSet().getBackingItems();
-						for (CustomItem item : allItems) {
-							if (previous() != item && item.getItemType() == type && item.getItemDamage() == currentDamage) {
-								editInternalDamage = true;
-								break tryBlock;
-							}
-						}
-						editInternalDamage = false;
-					} catch (NumberFormatException ex) {
-						editInternalDamage = true;
-					}
-					
-					if (editInternalDamage) {
-						short betterDamage = menu.getSet().nextAvailableDamage(type, previous());
-						if (betterDamage == -1) {
-							errorComponent.setProperties(EditProps.ERROR);
-							errorComponent.setText("There are too many items with internal item type " + type);
-						} else {
-							internalDamage.setText(betterDamage + "");
-						}
-					}
-				}, getCategory()));
-			};
+		protected void setErrorText(String error) {
+			errorComponent.setProperties(EditProps.ERROR);
+			errorComponent.setText(error);
 		}
+
+		@Override
+		protected Option.Short getInternalDamage() {
+			return internalDamage.getInt().toShort();
+		}
+
+		@Override
+		protected void setInternalDamage(short newDamage) {
+			internalDamage.setText(newDamage + "");
+		}
+
+		@Override
+		protected ItemSet getSet() {
+			return menu.getSet();
+		}
+
+		@Override
+		protected ItemDamageClaim getOriginal() {
+			return previous();
+		}
+		
 	}
+	
+	protected class TextureSelect extends TextureSelectButton {
 
-	protected class TextureSelect extends DynamicTextButton {
-
-		protected NamedImage currentTexture;
-
-		private TextureSelect(NamedImage initial) {
-			super(initial != null ? initial.getName() : "None", EditProps.CHOOSE_BASE, EditProps.CHOOSE_HOVER, null);
-			currentTexture = initial;
+		public TextureSelect(NamedImage initial) {
+			super(initial, menu.getSet());
 		}
 
 		@Override
-		public void init() {
-			super.init();
-			clickAction = () -> {
-				state.getWindow()
-						.setMainComponent(new SelectTexture(menu.getSet(), EditItemBase.this, (NamedImage texture) -> {
-							return allowTexture(texture);
-						}, (NamedImage texture) -> {
-							currentTexture = texture;
-							setText(texture.getName());
-						}));
-			};
+		protected boolean allowTexture(NamedImage texture) {
+			return EditItemBase.this.allowTexture(texture);
 		}
 	}
 

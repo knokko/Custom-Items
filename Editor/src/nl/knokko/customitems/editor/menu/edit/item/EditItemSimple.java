@@ -45,7 +45,7 @@ public class EditItemSimple extends EditItemBase {
 	private final IntEditField maxStacksize;
 
 	public EditItemSimple(EditMenu menu, SimpleCustomItem previous) {
-		super(menu, previous);
+		super(menu, previous, Category.DEFAULT);
 		this.previous = previous;
 		if (previous == null) {
 			maxStacksize = new IntEditField(64, 1, 64, EditProps.EDIT_BASE, EditProps.EDIT_ACTIVE);
@@ -72,7 +72,7 @@ public class EditItemSimple extends EditItemBase {
 		if (!stackSize.hasValue()) return "The max stacksize should be an integer at least 1 and at most 64";
 		return menu.getSet().addSimpleItem(new SimpleCustomItem(internalType.currentType, damage, name.getText(), 
 				getDisplayName(), lore, attributes, enchantments, stackSize.getValue(), 
-				textureSelect.currentTexture, itemFlags, customModel));
+				textureSelect.getSelected(), itemFlags, customModel));
 	}
 
 	@Override
@@ -80,7 +80,7 @@ public class EditItemSimple extends EditItemBase {
 		Option.Int stackSize = maxStacksize.getInt();
 		if (!stackSize.hasValue()) return "The max stacksize should be an integer at least 1 and at most 64";
 		return menu.getSet().changeSimpleItem(previous, internalType.currentType, damage, name.getText(), 
-				getDisplayName(), lore, attributes, enchantments, textureSelect.currentTexture, 
+				getDisplayName(), lore, attributes, enchantments, textureSelect.getSelected(), 
 				stackSize.getValue(), itemFlags, customModel, true);
 	}
 

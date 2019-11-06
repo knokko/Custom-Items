@@ -37,7 +37,7 @@ public class EditItemShield extends EditItemTool {
 		addComponent(new DynamicTextComponent("Blocking model: ", EditProps.LABEL), LABEL_X, 0.2f, LABEL_X + 0.2f, 0.25f);
 		addComponent(new DynamicTextButton("Change...", EditProps.BUTTON, EditProps.HOVER, () -> {
 			state.getWindow()
-					.setMainComponent(new EditCustomModel(ItemSet.getDefaultModelBlockingShield(textureSelect.currentTexture != null ? textureSelect.currentTexture.getName() : "TEXTURE_NAME"), this, (byte[] array) -> {
+					.setMainComponent(new EditCustomModel(ItemSet.getDefaultModelBlockingShield(textureSelect.getSelected() != null ? textureSelect.getSelected().getName() : "TEXTURE_NAME"), this, (byte[] array) -> {
 								customBlockingModel = array;
 							}));
 		}), BUTTON_X, 0.2f, BUTTON_X + 0.1f, 0.25f);
@@ -51,7 +51,7 @@ public class EditItemShield extends EditItemTool {
 		return menu.getSet().addShield(
 				new CustomShield(internalType.currentType, damage, name.getText(), getDisplayName(),
 						lore, attributes, enchantments, maxUses, allowEnchanting.isChecked(),
-						allowAnvil.isChecked(), repairItem.getIngredient(), textureSelect.currentTexture, itemFlags,
+						allowAnvil.isChecked(), repairItem.getIngredient(), textureSelect.getSelected(), itemFlags,
 						entityHitDurabilityLoss, blockBreakDurabilityLoss, thresholdDamage.getValue(), customModel, customBlockingModel),
 						true);
 	}
@@ -63,7 +63,7 @@ public class EditItemShield extends EditItemTool {
 			return "The required damage must be a positive number";
 		return menu.getSet().changeShield(previous, internalType.currentType, damage, name.getText(),
 				getDisplayName(), lore, attributes, enchantments, allowEnchanting.isChecked(),
-				allowAnvil.isChecked(), repairItem.getIngredient(), maxUses, textureSelect.currentTexture,
+				allowAnvil.isChecked(), repairItem.getIngredient(), maxUses, textureSelect.getSelected(),
 				itemFlags, entityHitDurabilityLoss, blockBreakDurabilityLoss, thresholdDamage.getValue(),
 				customModel, customBlockingModel, true);
 	}

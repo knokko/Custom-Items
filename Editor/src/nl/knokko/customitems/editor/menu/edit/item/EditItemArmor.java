@@ -168,7 +168,7 @@ public class EditItemArmor extends EditItemTool {
 		return menu.getSet().addArmor(
 				new CustomArmor(internalType.currentType, damage, name.getText(), getDisplayName(),
 						lore, attributes, enchantments, maxUses, allowEnchanting.isChecked(),
-						allowAnvil.isChecked(), repairItem.getIngredient(), textureSelect.currentTexture,
+						allowAnvil.isChecked(), repairItem.getIngredient(), textureSelect.getSelected(),
 						redValue, greenValue, blueValue, itemFlags, entityHitDurabilityLoss, 
 						blockBreakDurabilityLoss, damageResistances, customModel),
 						true);
@@ -184,7 +184,7 @@ public class EditItemArmor extends EditItemTool {
 		if (blueValue == -1) return "The blue must be an integer at least 0 and at most 255";
 		return menu.getSet().changeArmor(previous, internalType.currentType, damage, name.getText(),
 				getDisplayName(), lore, attributes, enchantments, allowEnchanting.isChecked(),
-				allowAnvil.isChecked(), repairItem.getIngredient(), maxUses, textureSelect.currentTexture,
+				allowAnvil.isChecked(), repairItem.getIngredient(), maxUses, textureSelect.getSelected(),
 				redValue, greenValue, blueValue, itemFlags, entityHit, blockBreak, damageResistances,
 				customModel, true);
 	}
