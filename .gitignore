@@ -1,0 +1,16 @@
+Custom Items Workspace.code-workspace
+*.settings
+*.classpath
+*.project
+*.gitignore
+/.metadata/
+/BitHelper
+/Core-Plugin
+/Gui
+/SafeGuiTester
+/BasePlugin/bin
+/SharedCode/bin
+/Editor/bin
+/EditorTester/bin
+/Github.io
+*.jar

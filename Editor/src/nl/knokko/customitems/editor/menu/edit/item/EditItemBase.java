@@ -23,14 +23,19 @@
  *******************************************************************************/
 package nl.knokko.customitems.editor.menu.edit.item;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import nl.knokko.customitems.editor.menu.edit.EditMenu;
 import nl.knokko.customitems.editor.menu.edit.EditProps;
 import nl.knokko.customitems.editor.menu.edit.item.attribute.AttributesOverview;
+import nl.knokko.customitems.editor.menu.edit.item.effect.EffectsOverview;
 import nl.knokko.customitems.editor.menu.edit.item.enchantment.EnchantmentsOverview;
 import nl.knokko.customitems.editor.set.ItemDamageClaim;
 import nl.knokko.customitems.editor.set.ItemSet;
 import nl.knokko.customitems.editor.set.item.CustomItem;
 import nl.knokko.customitems.editor.set.item.NamedImage;
+import nl.knokko.customitems.effect.PotionEffect;
 import nl.knokko.customitems.item.AttributeModifier;
 import nl.knokko.customitems.item.CustomItemType;
 import nl.knokko.customitems.item.CustomItemType.Category;
@@ -52,7 +57,9 @@ public abstract class EditItemBase extends GuiMenu {
 
 	private static final AttributeModifier[] DEFAULT_ATTRIBUTES = {};
 	private static final Enchantment[] DEFAULT_ENCHANTMENTS = {};
-
+	private static final List<PotionEffect> DEFAULT_PLAYER_EFFECTS = new ArrayList<PotionEffect>();
+	private static final List<PotionEffect> DEFAULT_TARGET_EFFECTS = new ArrayList<PotionEffect>();
+	
 	protected final EditMenu menu;
 
 	protected TextEditField name;
@@ -66,6 +73,9 @@ public abstract class EditItemBase extends GuiMenu {
 	protected DynamicTextComponent errorComponent;
 	protected boolean[] itemFlags;
 	protected byte[] customModel;
+	protected List<PotionEffect> playerEffects;
+	protected List<PotionEffect> targetEffects;
+	protected String[] commands;
 
 	public EditItemBase(EditMenu menu, CustomItem previous, Category category) {
 		this.menu = menu;
@@ -81,6 +91,9 @@ public abstract class EditItemBase extends GuiMenu {
 			enchantments = previous.getDefaultEnchantments();
 			itemFlags = previous.getItemFlags();
 			customModel = previous.getCustomModel();
+			playerEffects = previous.getPlayerEffects();
+			targetEffects = previous.getTargetEffects();
+			commands = previous.getCommands();
 		} else {
 			name = new TextEditField("", EditProps.EDIT_BASE, EditProps.EDIT_ACTIVE);
 			internalType = new ItemTypeSelect(CustomItemType.DIAMOND_HOE, category);
@@ -94,6 +107,9 @@ public abstract class EditItemBase extends GuiMenu {
 			enchantments = DEFAULT_ENCHANTMENTS;
 			itemFlags = ItemFlag.getDefaultValues();
 			customModel = null;
+			playerEffects = DEFAULT_PLAYER_EFFECTS;
+			targetEffects = DEFAULT_TARGET_EFFECTS;
+			commands = new String[] {};
 		}
 	}
 
@@ -123,6 +139,9 @@ public abstract class EditItemBase extends GuiMenu {
 		addComponent(new DynamicTextComponent("Item flags: ", EditProps.LABEL), LABEL_X, 0.38f, LABEL_X + 0.135f,
 				0.43f);
 		addComponent(new DynamicTextComponent("Texture: ", EditProps.LABEL), LABEL_X, 0.32f, LABEL_X + 0.125f, 0.37f);
+		addComponent(new DynamicTextComponent("On-Hit Player effects: ", EditProps.LABEL), LABEL_X, 0.2f, LABEL_X + 0.2f, 0.25f);
+		addComponent(new DynamicTextComponent("On-Hit Target effects: ", EditProps.LABEL), LABEL_X, 0.14f, LABEL_X + 0.2f, 0.19f);
+		addComponent(new DynamicTextComponent("Commands: ", EditProps.LABEL), LABEL_X, 0.08f, LABEL_X + 0.125f, 0.13f);
 		
 		// I might add custom bow models later, but I leave it out for now
 		if (!(this instanceof EditItemBow)) {
@@ -156,6 +175,8 @@ public abstract class EditItemBase extends GuiMenu {
 		addLoreComponent();
 		addAttributesComponent();
 		addEnchantmentsComponent();
+		addEffectsComponent();
+		addCommandsComponent();
 		addComponent(new DynamicTextButton("Change...", EditProps.BUTTON, EditProps.HOVER, () -> {
 			state.getWindow().setMainComponent(new ItemFlagMenu(this, itemFlags));
 		}), BUTTON_X, 0.38f, BUTTON_X + 0.1f, 0.43f);
@@ -300,6 +321,32 @@ public abstract class EditItemBase extends GuiMenu {
 		}), BUTTON_X, 0.44f, BUTTON_X + 0.1f, 0.49f);
 	}
 
+	
+	private void addEffectsComponent() {
+		addComponent(new DynamicTextButton("Change...", EditProps.BUTTON, EditProps.HOVER, () -> {
+			state.getWindow().setMainComponent(
+					new EffectsOverview(playerEffects, EditItemBase.this, (List<PotionEffect> playerEffects) -> {
+						this.playerEffects = playerEffects;
+				}));
+		}), BUTTON_X, 0.2f, BUTTON_X + 0.1f, 0.25f);
+		addComponent(new DynamicTextButton("Change...", EditProps.BUTTON, EditProps.HOVER, () -> {
+			state.getWindow().setMainComponent(
+					new EffectsOverview(targetEffects, EditItemBase.this, (List<PotionEffect> targetEffects) -> {
+						this.targetEffects = targetEffects;
+				}));
+		}), BUTTON_X, 0.14f, BUTTON_X + 0.1f, 0.19f);
+	}
+	
+	private void addCommandsComponent() {
+		addComponent(new DynamicTextButton("Change...", EditProps.BUTTON, EditProps.HOVER, () -> {
+			state.getWindow().setMainComponent(new TextArrayEditMenu(EditItemBase.this, (String[] newCommands) -> {
+				commands = newCommands;
+				for (int index = 0; index < commands.length; index++)
+					commands[index] = commands[index].replaceAll("&", "§");
+			}, EditProps.BACKGROUND, EditProps.CANCEL_BASE, EditProps.CANCEL_HOVER, EditProps.SAVE_BASE,
+					EditProps.SAVE_HOVER, EditProps.EDIT_BASE, EditProps.EDIT_ACTIVE, commands));
+		}), BUTTON_X, 0.08f, BUTTON_X + 0.1f, 0.13f);
+	}
 	protected abstract CustomItemType.Category getCategory();
 
 	protected boolean allowTexture(NamedImage texture) {

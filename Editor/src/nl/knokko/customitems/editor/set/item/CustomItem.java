@@ -24,6 +24,9 @@
 package nl.knokko.customitems.editor.set.item;
 
 import nl.knokko.customitems.editor.set.ItemDamageClaim;
+import java.util.List;
+
+import nl.knokko.customitems.effect.PotionEffect;
 import nl.knokko.customitems.item.AttributeModifier;
 import nl.knokko.customitems.item.CustomItemType;
 import nl.knokko.customitems.item.Enchantment;
@@ -36,8 +39,8 @@ public abstract class CustomItem extends nl.knokko.customitems.item.CustomItem i
 
 	public CustomItem(CustomItemType itemType, short itemDamage, String name, String displayName, String[] lore,
 			AttributeModifier[] attributes, Enchantment[] defaultEnchantments, NamedImage texture,
-			boolean[] itemFlags, byte[] customModel) {
-		super(itemType, itemDamage, name, displayName, lore, attributes, defaultEnchantments, itemFlags);
+			boolean[] itemFlags, byte[] customModel, List<PotionEffect> playerEffects, List<PotionEffect> targetEffects, String[] commands) {
+		super(itemType, itemDamage, name, displayName, lore, attributes, defaultEnchantments, itemFlags, playerEffects, targetEffects, commands);
 		this.texture = texture;
 		this.customModel = customModel;
 	}
@@ -101,6 +104,18 @@ public abstract class CustomItem extends nl.knokko.customitems.item.CustomItem i
 	@Override
 	public String getResourcePath() {
 		return "customitems/" + name;
+	}
+
+	public void setPlayerEffects(List<PotionEffect> playerEffects) {
+		this.playerEffects = playerEffects;
+	}
+	
+	public void setTargetEffects(List<PotionEffect> targetEffects) {
+		this.targetEffects = targetEffects;
+	}
+	
+	public void setCommands(String[] commands) {
+		this.commands = commands;
 	}
 
 	public final void save1(BitOutput output) {

@@ -86,7 +86,8 @@ public class EditItemTrident extends EditItemTool {
 						lore, attributes, enchantments, maxUses, allowEnchanting.isChecked(),
 						allowAnvil.isChecked(), damageMult.getValue(), speedMult.getValue(), repairItem.getIngredient(), 
 						textureSelect.getSelected(), itemFlags, entityHitDurabilityLoss, blockBreakDurabilityLoss, 
-						durLoss.getValue(), customModel, customInHandModel, customThrowingModel), true);
+						durLoss.getValue(), customModel, customInHandModel, customThrowingModel, 
+						playerEffects, targetEffects, commands), true);
 	}
 	
 	@Override
@@ -104,6 +105,7 @@ public class EditItemTrident extends EditItemTool {
 				getDisplayName(), lore, attributes, enchantments, allowEnchanting.isChecked(),
 				allowAnvil.isChecked(), damageMult.getValue(), speedMult.getValue(), repairItem.getIngredient(), 
 				maxUses, textureSelect.getSelected(), itemFlags, entityHitDurabilityLoss, blockBreakDurabilityLoss, 
-				durLoss.getValue(), customModel, customInHandModel, customThrowingModel, true);
+				durLoss.getValue(), customModel, customInHandModel, customThrowingModel, playerEffects, 
+				targetEffects, commands, true);
 	}
 }

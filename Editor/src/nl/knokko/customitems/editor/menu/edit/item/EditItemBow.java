@@ -119,7 +119,7 @@ public class EditItemBow extends EditItemTool {
 				knockbackStrength.getValue(), gravity.isChecked(), allowEnchanting.isChecked(), 
 				allowAnvil.isChecked(), repairItem.getIngredient(),
 				(BowTextures) textureSelect.getSelected(), itemFlags, entityHitDurabilityLoss,
-				blockBreakDurabilityLoss, shootDurabilityLoss.getValue(), customModel), true);
+				blockBreakDurabilityLoss, shootDurabilityLoss.getValue(), customModel, playerEffects, targetEffects, commands), true);
 	}
 
 	@Override
@@ -137,6 +137,7 @@ public class EditItemBow extends EditItemTool {
 				knockbackStrength.getValue(), gravity.isChecked(), allowEnchanting.isChecked(), 
 				allowAnvil.isChecked(), repairItem.getIngredient(), maxUses, 
 				(BowTextures) textureSelect.getSelected(), itemFlags, entityHitDurabilityLoss,
-				blockBreakDurabilityLoss, shootDurabilityLoss.getValue(), customModel, true);
+				blockBreakDurabilityLoss, shootDurabilityLoss.getValue(), customModel, playerEffects, 
+				targetEffects, commands, true);
 	}
 }
