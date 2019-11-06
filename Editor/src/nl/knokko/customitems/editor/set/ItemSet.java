@@ -329,11 +329,13 @@ public class ItemSet implements ItemSetBase {
 		boolean[] itemFlags = input.readBooleans(6);
 		
 		List<PotionEffect> playerEffects = new ArrayList<PotionEffect>();
-		for (int index = 0; index < (input.readByte() & 0xFF); index++) {
+		int peLength = (input.readByte() & 0xFF);
+		for (int index = 0; index < peLength; index++) {
 			playerEffects.add(new PotionEffect(EffectType.valueOf(input.readJavaString()), input.readInt(), input.readInt()));
 		}
 		List<PotionEffect> targetEffects = new ArrayList<PotionEffect>();
-		for (int index = 0; index < (input.readByte() & 0xFF); index++) {
+		int teLength = (input.readByte() & 0xFF);
+		for (int index = 0; index < teLength; index++) {
 			targetEffects.add(new PotionEffect(EffectType.valueOf(input.readJavaString()), input.readInt(), input.readInt()));
 		}
 		String[] commands = new String[input.readByte() & 0xFF];
@@ -528,11 +530,13 @@ public class ItemSet implements ItemSetBase {
 		int blockBreakDurabilityLoss = input.readInt();
 		
 		List<PotionEffect> playerEffects = new ArrayList<PotionEffect>();
-		for (int index = 0; index < (input.readByte() & 0xFF); index++) {
+		int peLength = (input.readByte() & 0xFF);
+		for (int index = 0; index < peLength; index++) {
 			playerEffects.add(new PotionEffect(EffectType.valueOf(input.readJavaString()), input.readInt(), input.readInt()));
 		}
 		List<PotionEffect> targetEffects = new ArrayList<PotionEffect>();
-		for (int index = 0; index < (input.readByte() & 0xFF); index++) {
+		int teLength = (input.readByte() & 0xFF);
+		for (int index = 0; index < teLength; index++) {
 			targetEffects.add(new PotionEffect(EffectType.valueOf(input.readJavaString()), input.readInt(), input.readInt()));
 		}
 		String[] commands = new String[input.readByte() & 0xFF];
@@ -627,11 +631,13 @@ public class ItemSet implements ItemSetBase {
 		int tillDurabilityLoss = input.readInt();
 		
 		List<PotionEffect> playerEffects = new ArrayList<PotionEffect>();
-		for (int index = 0; index < (input.readByte() & 0xFF); index++) {
+		int peLength = (input.readByte() & 0xFF);
+		for (int index = 0; index < peLength; index++) {
 			playerEffects.add(new PotionEffect(EffectType.valueOf(input.readJavaString()), input.readInt(), input.readInt()));
 		}
 		List<PotionEffect> targetEffects = new ArrayList<PotionEffect>();
-		for (int index = 0; index < (input.readByte() & 0xFF); index++) {
+		int teLength = (input.readByte() & 0xFF);
+		for (int index = 0; index < teLength; index++) {
 			targetEffects.add(new PotionEffect(EffectType.valueOf(input.readJavaString()), input.readInt(), input.readInt()));
 		}
 		String[] commands = new String[input.readByte() & 0xFF];
@@ -726,11 +732,13 @@ public class ItemSet implements ItemSetBase {
 		int shearDurabilityLoss = input.readInt();
 		
 		List<PotionEffect> playerEffects = new ArrayList<PotionEffect>();
-		for (int index = 0; index < (input.readByte() & 0xFF); index++) {
+		int peLength = (input.readByte() & 0xFF);
+		for (int index = 0; index < peLength; index++) {
 			playerEffects.add(new PotionEffect(EffectType.valueOf(input.readJavaString()), input.readInt(), input.readInt()));
 		}
 		List<PotionEffect> targetEffects = new ArrayList<PotionEffect>();
-		for (int index = 0; index < (input.readByte() & 0xFF); index++) {
+		int teLength = (input.readByte() & 0xFF);
+		for (int index = 0; index < teLength; index++) {
 			targetEffects.add(new PotionEffect(EffectType.valueOf(input.readJavaString()), input.readInt(), input.readInt()));
 		}
 		String[] commands = new String[input.readByte() & 0xFF];
@@ -907,11 +915,13 @@ public class ItemSet implements ItemSetBase {
 		int shootDurabilityLoss = input.readInt();
 		
 		List<PotionEffect> playerEffects = new ArrayList<PotionEffect>();
-		for (int index = 0; index < (input.readByte() & 0xFF); index++) {
+		int peLength = (input.readByte() & 0xFF);
+		for (int index = 0; index < peLength; index++) {
 			playerEffects.add(new PotionEffect(EffectType.valueOf(input.readJavaString()), input.readInt(), input.readInt()));
 		}
 		List<PotionEffect> targetEffects = new ArrayList<PotionEffect>();
-		for (int index = 0; index < (input.readByte() & 0xFF); index++) {
+		int teLength = (input.readByte() & 0xFF);
+		for (int index = 0; index < teLength; index++) {
 			targetEffects.add(new PotionEffect(EffectType.valueOf(input.readJavaString()), input.readInt(), input.readInt()));
 		}
 		String[] commands = new String[input.readByte() & 0xFF];
@@ -1190,11 +1200,13 @@ public class ItemSet implements ItemSetBase {
 		DamageResistances resistances = DamageResistances.load14(input);
 		
 		List<PotionEffect> playerEffects = new ArrayList<PotionEffect>();
-		for (int index = 0; index < (input.readByte() & 0xFF); index++) {
+		int peLength = (input.readByte() & 0xFF);
+		for (int index = 0; index < peLength; index++) {
 			playerEffects.add(new PotionEffect(EffectType.valueOf(input.readJavaString()), input.readInt(), input.readInt()));
 		}
 		List<PotionEffect> targetEffects = new ArrayList<PotionEffect>();
-		for (int index = 0; index < (input.readByte() & 0xFF); index++) {
+		int teLength = (input.readByte() & 0xFF);
+		for (int index = 0; index < teLength; index++) {
 			targetEffects.add(new PotionEffect(EffectType.valueOf(input.readJavaString()), input.readInt(), input.readInt()));
 		}
 		String[] commands = new String[input.readByte() & 0xFF];
@@ -1289,11 +1301,13 @@ public class ItemSet implements ItemSetBase {
 		double thresholdDamage = input.readDouble();
 		
 		List<PotionEffect> playerEffects = new ArrayList<PotionEffect>();
-		for (int index = 0; index < (input.readByte() & 0xFF); index++) {
+		int peLength = (input.readByte() & 0xFF);
+		for (int index = 0; index < peLength; index++) {
 			playerEffects.add(new PotionEffect(EffectType.valueOf(input.readJavaString()), input.readInt(), input.readInt()));
 		}
 		List<PotionEffect> targetEffects = new ArrayList<PotionEffect>();
-		for (int index = 0; index < (input.readByte() & 0xFF); index++) {
+		int teLength = (input.readByte() & 0xFF);
+		for (int index = 0; index < teLength; index++) {
 			targetEffects.add(new PotionEffect(EffectType.valueOf(input.readJavaString()), input.readInt(), input.readInt()));
 		}
 		String[] commands = new String[input.readByte() & 0xFF];
@@ -1394,11 +1408,13 @@ public class ItemSet implements ItemSetBase {
 		double speedMultiplier = input.readDouble();
 		
 		List<PotionEffect> playerEffects = new ArrayList<PotionEffect>();
-		for (int index = 0; index < (input.readByte() & 0xFF); index++) {
+		int peLength = (input.readByte() & 0xFF);
+		for (int index = 0; index < peLength; index++) {
 			playerEffects.add(new PotionEffect(EffectType.valueOf(input.readJavaString()), input.readInt(), input.readInt()));
 		}
 		List<PotionEffect> targetEffects = new ArrayList<PotionEffect>();
-		for (int index = 0; index < (input.readByte() & 0xFF); index++) {
+		int teLength = (input.readByte() & 0xFF);
+		for (int index = 0; index < teLength; index++) {
 			targetEffects.add(new PotionEffect(EffectType.valueOf(input.readJavaString()), input.readInt(), input.readInt()));
 		}
 		String[] commands = new String[input.readByte() & 0xFF];
