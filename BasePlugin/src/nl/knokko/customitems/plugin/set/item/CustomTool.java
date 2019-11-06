@@ -156,6 +156,7 @@ public class CustomTool extends CustomItem {
 	
 	@Override
 	public void onEntityHit(LivingEntity attacker, ItemStack tool, Entity target) {
+		super.onEntityHit(attacker, tool, target);
 		if (entityHitDurabilityLoss != 0 && decreaseDurability(tool, entityHitDurabilityLoss)) {
 			if (attacker instanceof Player)
 				CustomItemsEventHandler.playBreakSound((Player) attacker);

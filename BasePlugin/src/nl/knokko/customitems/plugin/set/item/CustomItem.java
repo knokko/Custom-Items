@@ -23,6 +23,8 @@
  *******************************************************************************/
 package nl.knokko.customitems.plugin.set.item;
 
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 import org.bukkit.block.Block;
@@ -56,7 +58,8 @@ public abstract class CustomItem extends nl.knokko.customitems.item.CustomItem {
 	protected final Single[] attributeModifiers;
     
     public CustomItem(CustomItemType itemType, short itemDamage, String name, String displayName, 
-    		String[] lore, AttributeModifier[] attributes, Enchantment[] defaultEnchantments, boolean[] itemFlags, List<PotionEffect> playerEffects, List<PotionEffect> targetEffects, String[] commands){
+    		String[] lore, AttributeModifier[] attributes, Enchantment[] defaultEnchantments, boolean[] itemFlags, 
+    		List<PotionEffect> playerEffects, List<PotionEffect> targetEffects, String[] commands){
         super(itemType, itemDamage, name, displayName, lore, attributes, defaultEnchantments, itemFlags, playerEffects, targetEffects, commands);
         
         String materialName = itemType.name();
@@ -140,5 +143,19 @@ public abstract class CustomItem extends nl.knokko.customitems.item.CustomItem {
     
     public void onBlockBreak(Player player, ItemStack item, Block block) {}
     
-    public void onEntityHit(LivingEntity attacker, ItemStack weapon, Entity target) {}
+    public void onEntityHit(LivingEntity attacker, ItemStack weapon, Entity target) {
+    	Collection<org.bukkit.potion.PotionEffect> pe = new ArrayList<org.bukkit.potion.PotionEffect>();
+    	for (PotionEffect effect : playerEffects) {
+    		pe.add(new org.bukkit.potion.PotionEffect(org.bukkit.potion.PotionEffectType.getByName(effect.getEffect().name()), effect.getDuration() * 20, effect.getLevel() - 1));
+    	}
+    	Collection<org.bukkit.potion.PotionEffect> te = new ArrayList<org.bukkit.potion.PotionEffect>();
+    	for (PotionEffect effect : targetEffects) {
+    		te.add(new org.bukkit.potion.PotionEffect(org.bukkit.potion.PotionEffectType.getByName(effect.getEffect().name()), effect.getDuration() * 20, effect.getLevel() - 1));
+    	}
+    	attacker.addPotionEffects(pe);
+    	if (target instanceof LivingEntity) {
+    		LivingEntity t = (LivingEntity) target;
+    		t.addPotionEffects(te);
+    	}
+    }
 }
