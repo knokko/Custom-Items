@@ -91,6 +91,7 @@ import nl.knokko.customitems.item.AttributeModifier.Slot;
 import nl.knokko.util.bits.BitInput;
 import nl.knokko.util.bits.BitOutput;
 import nl.knokko.util.bits.ByteArrayBitOutput;
+import nl.knokko.customitems.effect.EffectType;
 import nl.knokko.customitems.effect.PotionEffect;
 
 import static nl.knokko.customitems.MCVersions.*;
@@ -109,47 +110,37 @@ public class ItemSet implements ItemSetBase {
 
 	private CustomItem loadItem(BitInput input, boolean checkCustomModel) {
 		byte encoding = input.readByte();
-		if (encoding == ItemEncoding.ENCODING_SIMPLE_1)
-			return loadSimpleItem1(input, checkCustomModel);
-		else if (encoding == ItemEncoding.ENCODING_SIMPLE_2)
-			return loadSimpleItem2(input, checkCustomModel);
-		else if (encoding == ItemEncoding.ENCODING_SIMPLE_3)
-			return loadSimpleItem3(input, checkCustomModel);
-		else if (encoding == ItemEncoding.ENCODING_SIMPLE_4)
-			return loadSimpleItem4(input, checkCustomModel);
-		else if (encoding == ItemEncoding.ENCODING_SIMPLE_5)
-			return loadSimpleItem5(input, checkCustomModel);
-		else if (encoding == ItemEncoding.ENCODING_TOOL_2)
-			return loadTool2(input, checkCustomModel);
-		else if (encoding == ItemEncoding.ENCODING_TOOL_3)
-			return loadTool3(input, checkCustomModel);
-		else if (encoding == ItemEncoding.ENCODING_TOOL_4)
-			return loadTool4(input, checkCustomModel);
-		else if (encoding == ItemEncoding.ENCODING_TOOL_5)
-			return loadTool5(input, checkCustomModel);
-		else if (encoding == ItemEncoding.ENCODING_HOE_5)
-			return loadHoe5(input, checkCustomModel);
-		else if (encoding == ItemEncoding.ENCODING_SHEAR_5)
-			return loadShear5(input, checkCustomModel);
-		else if (encoding == ItemEncoding.ENCODING_BOW_3)
-			return loadBow3(input, checkCustomModel);
-		else if (encoding == ItemEncoding.ENCODING_BOW_4)
-			return loadBow4(input, checkCustomModel);
-		else if (encoding == ItemEncoding.ENCODING_BOW_5)
-			return loadBow5(input, checkCustomModel);
-		else if (encoding == ItemEncoding.ENCODING_ARMOR_4)
-			return loadArmor4(input, checkCustomModel);
-		else if (encoding == ItemEncoding.ENCODING_ARMOR_5)
-			return loadArmor5(input, checkCustomModel);
-		else if (encoding == ItemEncoding.ENCODING_ARMOR_6)
-			return loadArmor6(input, checkCustomModel);
-		else if (encoding == ItemEncoding.ENCODING_ARMOR_7)
-			return loadArmor7(input, checkCustomModel);
-		else if (encoding == ItemEncoding.ENCODING_SHIELD_6)
-			return loadShield6(input, checkCustomModel);
-		else if (encoding == ItemEncoding.ENCODING_TRIDENT_7)
-			return loadTrident7(input, checkCustomModel);
-		throw new IllegalArgumentException("Unknown encoding: " + encoding);
+		switch (encoding) {
+			case ItemEncoding.ENCODING_SIMPLE_1 : return loadSimpleItem1(input, checkCustomModel);
+			case ItemEncoding.ENCODING_SIMPLE_2 : return loadSimpleItem2(input, checkCustomModel);
+			case ItemEncoding.ENCODING_SIMPLE_3 : return loadSimpleItem3(input, checkCustomModel);
+			case ItemEncoding.ENCODING_SIMPLE_4 : return loadSimpleItem4(input, checkCustomModel);
+			case ItemEncoding.ENCODING_SIMPLE_5 : return loadSimpleItem5(input, checkCustomModel);
+			case ItemEncoding.ENCODING_SIMPLE_6 : return loadSimpleItem6(input, checkCustomModel);
+			case ItemEncoding.ENCODING_TOOL_2 : return loadTool2(input, checkCustomModel);
+			case ItemEncoding.ENCODING_TOOL_3 : return loadTool3(input, checkCustomModel);
+			case ItemEncoding.ENCODING_TOOL_4 : return loadTool4(input, checkCustomModel);
+			case ItemEncoding.ENCODING_TOOL_5 : return loadTool5(input, checkCustomModel);
+			case ItemEncoding.ENCODING_TOOL_6 : return loadTool6(input, checkCustomModel);
+			case ItemEncoding.ENCODING_SHEAR_5 : return loadShear5(input, checkCustomModel);
+			case ItemEncoding.ENCODING_SHEAR_6 : return loadShear6(input, checkCustomModel);
+			case ItemEncoding.ENCODING_BOW_3 : return loadBow3(input, checkCustomModel);
+			case ItemEncoding.ENCODING_BOW_4 : return loadBow4(input, checkCustomModel);
+			case ItemEncoding.ENCODING_BOW_5 : return loadBow5(input, checkCustomModel);
+			case ItemEncoding.ENCODING_BOW_6 : return loadBow6(input, checkCustomModel);
+			case ItemEncoding.ENCODING_ARMOR_4 : return loadArmor4(input, checkCustomModel);
+			case ItemEncoding.ENCODING_ARMOR_5 : return loadArmor5(input, checkCustomModel);
+			case ItemEncoding.ENCODING_ARMOR_6 : return loadArmor6(input, checkCustomModel);
+			case ItemEncoding.ENCODING_ARMOR_7 : return loadArmor7(input, checkCustomModel);
+			case ItemEncoding.ENCODING_ARMOR_8 : return loadArmor8(input, checkCustomModel);
+			case ItemEncoding.ENCODING_SHIELD_6 : return loadShield6(input, checkCustomModel);
+			case ItemEncoding.ENCODING_SHIELD_7 : return loadShield7(input, checkCustomModel);
+			case ItemEncoding.ENCODING_TRIDENT_7 : return loadTrident7(input, checkCustomModel);
+			case ItemEncoding.ENCODING_TRIDENT_8 : return loadTrident8(input, checkCustomModel);
+			case ItemEncoding.ENCODING_HOE_5 : return loadHoe5(input, checkCustomModel);
+			case ItemEncoding.ENCODING_HOE_6 : return loadHoe6(input, checkCustomModel);
+			default : throw new IllegalArgumentException("Unknown encoding: " + encoding);
+		}
 	}
 	
 	private byte[] loadCustomModel(BitInput input, boolean check) {
@@ -246,7 +237,7 @@ public class ItemSet implements ItemSetBase {
 			throw new IllegalArgumentException("Can't find texture " + imageName);
 		byte[] customModel = loadCustomModel(input, checkCustomModel);
 		return new SimpleCustomItem(itemType, damage, name, displayName, lore, attributes, 
-				new Enchantment[0], 64, texture, ItemFlag.getDefaultValues(), customModel, 
+				defaultEnchantments, 64, texture, ItemFlag.getDefaultValues(), customModel, 
 				new ArrayList<PotionEffect>(), new ArrayList<PotionEffect>(), new String[] {});
 	}
 	
@@ -278,7 +269,7 @@ public class ItemSet implements ItemSetBase {
 			throw new IllegalArgumentException("Can't find texture " + imageName);
 		byte[] customModel = loadCustomModel(input, checkCustomModel);
 		return new SimpleCustomItem(itemType, damage, name, displayName, lore, attributes, 
-				new Enchantment[0], maxStacksize, texture, ItemFlag.getDefaultValues(), customModel, 
+				defaultEnchantments, maxStacksize, texture, ItemFlag.getDefaultValues(), customModel, 
 				new ArrayList<PotionEffect>(), new ArrayList<PotionEffect>(), new String[] {});
 	}
 	
@@ -313,8 +304,56 @@ public class ItemSet implements ItemSetBase {
 		if (texture == null)
 			throw new IllegalArgumentException("Can't find texture " + imageName);
 		byte[] customModel = loadCustomModel(input, checkCustomModel);
-		return new SimpleCustomItem(itemType, damage, name, displayName, lore, attributes, new Enchantment[0],
+		return new SimpleCustomItem(itemType, damage, name, displayName, lore, attributes, defaultEnchantments,
 				maxStacksize, texture, itemFlags, customModel, new ArrayList<PotionEffect>(), new ArrayList<PotionEffect>(), new String[] {});
+	}
+	
+	private CustomItem loadSimpleItem6(BitInput input, boolean checkCustomModel) {
+		CustomItemType itemType = CustomItemType.valueOf(input.readJavaString());
+		short damage = input.readShort();
+		String name = input.readJavaString();
+		String displayName = input.readJavaString();
+		String[] lore = new String[input.readByte() & 0xFF];
+		for (int index = 0; index < lore.length; index++) {
+			lore[index] = input.readJavaString();
+		}
+		AttributeModifier[] attributes = new AttributeModifier[input.readByte() & 0xFF];
+		for (int index = 0; index < attributes.length; index++)
+			attributes[index] = loadAttribute2(input);
+		Enchantment[] defaultEnchantments = new Enchantment[input.readByte() & 0xFF];
+		for (int index = 0; index < defaultEnchantments.length; index++)
+			defaultEnchantments[index] = new Enchantment(EnchantmentType.valueOf(input.readString()), input.readInt());
+		byte maxStacksize = input.readByte();
+		
+		// Use hardcoded 6 instead of variable because only 6 item flags existed in this encoding
+		boolean[] itemFlags = input.readBooleans(6);
+		
+		List<PotionEffect> playerEffects = new ArrayList<PotionEffect>();
+		for (int index = 0; index < (input.readByte() & 0xFF); index++) {
+			playerEffects.add(new PotionEffect(EffectType.valueOf(input.readJavaString()), input.readInt(), input.readInt()));
+		}
+		List<PotionEffect> targetEffects = new ArrayList<PotionEffect>();
+		for (int index = 0; index < (input.readByte() & 0xFF); index++) {
+			targetEffects.add(new PotionEffect(EffectType.valueOf(input.readJavaString()), input.readInt(), input.readInt()));
+		}
+		String[] commands = new String[input.readByte() & 0xFF];
+		for (int index = 0; index < commands.length; index++) {
+			commands[index] = input.readJavaString();
+		}
+		
+		String imageName = input.readJavaString();
+		NamedImage texture = null;
+		for (NamedImage current : textures) {
+			if (current.getName().equals(imageName)) {
+				texture = current;
+				break;
+			}
+		}
+		if (texture == null)
+			throw new IllegalArgumentException("Can't find texture " + imageName);
+		byte[] customModel = loadCustomModel(input, checkCustomModel);
+		return new SimpleCustomItem(itemType, damage, name, displayName, lore, attributes, defaultEnchantments,
+				maxStacksize, texture, itemFlags, customModel, playerEffects, targetEffects, commands);
 	}
 
 	private CustomItem loadTool2(BitInput input, boolean checkCustomModel) {
@@ -463,6 +502,61 @@ public class ItemSet implements ItemSetBase {
 				new ArrayList<PotionEffect>(), new ArrayList<PotionEffect>(), new String[] {});
 	}
 	
+	private CustomItem loadTool6(BitInput input, boolean checkCustomModel) {
+		CustomItemType itemType = CustomItemType.valueOf(input.readJavaString());
+		short damage = input.readShort();
+		String name = input.readJavaString();
+		String displayName = input.readJavaString();
+		String[] lore = new String[input.readByte() & 0xFF];
+		for (int index = 0; index < lore.length; index++) {
+			lore[index] = input.readJavaString();
+		}
+		AttributeModifier[] attributes = new AttributeModifier[input.readByte() & 0xFF];
+		for (int index = 0; index < attributes.length; index++)
+			attributes[index] = loadAttribute2(input);
+		Enchantment[] defaultEnchantments = new Enchantment[input.readByte() & 0xFF];
+		for (int index = 0; index < defaultEnchantments.length; index++)
+			defaultEnchantments[index] = new Enchantment(EnchantmentType.valueOf(input.readString()), input.readInt());
+		long durability = input.readLong();
+		boolean allowEnchanting = input.readBoolean();
+		boolean allowAnvil = input.readBoolean();
+		Ingredient repairItem = Recipe.loadIngredient(input, this);
+		
+		// Use hardcoded 6 instead of variable because only 6 item flags existed in this encoding
+		boolean[] itemFlags = input.readBooleans(6);
+		int entityHitDurabilityLoss = input.readInt();
+		int blockBreakDurabilityLoss = input.readInt();
+		
+		List<PotionEffect> playerEffects = new ArrayList<PotionEffect>();
+		for (int index = 0; index < (input.readByte() & 0xFF); index++) {
+			playerEffects.add(new PotionEffect(EffectType.valueOf(input.readJavaString()), input.readInt(), input.readInt()));
+		}
+		List<PotionEffect> targetEffects = new ArrayList<PotionEffect>();
+		for (int index = 0; index < (input.readByte() & 0xFF); index++) {
+			targetEffects.add(new PotionEffect(EffectType.valueOf(input.readJavaString()), input.readInt(), input.readInt()));
+		}
+		String[] commands = new String[input.readByte() & 0xFF];
+		for (int index = 0; index < commands.length; index++) {
+			commands[index] = input.readJavaString();
+		}
+		
+		String imageName = input.readJavaString();
+		NamedImage texture = null;
+		for (NamedImage current : textures) {
+			if (current.getName().equals(imageName)) {
+				texture = current;
+				break;
+			}
+		}
+		if (texture == null)
+			throw new IllegalArgumentException("Can't find texture " + imageName);
+		byte[] customModel = loadCustomModel(input, checkCustomModel);
+		return new CustomTool(itemType, damage, name, displayName, lore, attributes, defaultEnchantments, 
+				durability, allowEnchanting, allowAnvil, repairItem, texture, itemFlags, 
+				entityHitDurabilityLoss, blockBreakDurabilityLoss, customModel,
+				playerEffects, targetEffects, commands);
+	}
+	
 	private CustomItem loadHoe5(BitInput input, boolean checkCustomModel) {
 		CustomItemType itemType = CustomItemType.valueOf(input.readJavaString());
 		short damage = input.readShort();
@@ -506,6 +600,62 @@ public class ItemSet implements ItemSetBase {
 				new ArrayList<PotionEffect>(), new ArrayList<PotionEffect>(), new String[] {});
 	}
 	
+	private CustomItem loadHoe6(BitInput input, boolean checkCustomModel) {
+		CustomItemType itemType = CustomItemType.valueOf(input.readJavaString());
+		short damage = input.readShort();
+		String name = input.readJavaString();
+		String displayName = input.readJavaString();
+		String[] lore = new String[input.readByte() & 0xFF];
+		for (int index = 0; index < lore.length; index++) {
+			lore[index] = input.readJavaString();
+		}
+		AttributeModifier[] attributes = new AttributeModifier[input.readByte() & 0xFF];
+		for (int index = 0; index < attributes.length; index++)
+			attributes[index] = loadAttribute2(input);
+		Enchantment[] defaultEnchantments = new Enchantment[input.readByte() & 0xFF];
+		for (int index = 0; index < defaultEnchantments.length; index++)
+			defaultEnchantments[index] = new Enchantment(EnchantmentType.valueOf(input.readString()), input.readInt());
+		long durability = input.readLong();
+		boolean allowEnchanting = input.readBoolean();
+		boolean allowAnvil = input.readBoolean();
+		Ingredient repairItem = Recipe.loadIngredient(input, this);
+		
+		// Use hardcoded 6 instead of variable because only 6 item flags existed in this encoding
+		boolean[] itemFlags = input.readBooleans(6);
+		int entityHitDurabilityLoss = input.readInt();
+		int blockBreakDurabilityLoss = input.readInt();
+		int tillDurabilityLoss = input.readInt();
+		
+		List<PotionEffect> playerEffects = new ArrayList<PotionEffect>();
+		for (int index = 0; index < (input.readByte() & 0xFF); index++) {
+			playerEffects.add(new PotionEffect(EffectType.valueOf(input.readJavaString()), input.readInt(), input.readInt()));
+		}
+		List<PotionEffect> targetEffects = new ArrayList<PotionEffect>();
+		for (int index = 0; index < (input.readByte() & 0xFF); index++) {
+			targetEffects.add(new PotionEffect(EffectType.valueOf(input.readJavaString()), input.readInt(), input.readInt()));
+		}
+		String[] commands = new String[input.readByte() & 0xFF];
+		for (int index = 0; index < commands.length; index++) {
+			commands[index] = input.readJavaString();
+		}
+		
+		String imageName = input.readJavaString();
+		NamedImage texture = null;
+		for (NamedImage current : textures) {
+			if (current.getName().equals(imageName)) {
+				texture = current;
+				break;
+			}
+		}
+		if (texture == null)
+			throw new IllegalArgumentException("Can't find texture " + imageName);
+		byte[] customModel = loadCustomModel(input, checkCustomModel);
+		return new CustomHoe(itemType, damage, name, displayName, lore, attributes, defaultEnchantments, 
+				durability, allowEnchanting, allowAnvil, repairItem, texture, itemFlags, 
+				entityHitDurabilityLoss, blockBreakDurabilityLoss, tillDurabilityLoss, customModel, 
+				playerEffects, targetEffects, commands);
+	}
+	
 	private CustomItem loadShear5(BitInput input, boolean checkCustomModel) {
 		CustomItemType itemType = CustomItemType.valueOf(input.readJavaString());
 		short damage = input.readShort();
@@ -547,6 +697,62 @@ public class ItemSet implements ItemSetBase {
 				durability, allowEnchanting, allowAnvil, repairItem, texture, itemFlags, 
 				entityHitDurabilityLoss, blockBreakDurabilityLoss, shearDurabilityLoss, customModel, 
 				new ArrayList<PotionEffect>(), new ArrayList<PotionEffect>(), new String[] {});
+	}
+	
+	private CustomItem loadShear6(BitInput input, boolean checkCustomModel) {
+		CustomItemType itemType = CustomItemType.valueOf(input.readJavaString());
+		short damage = input.readShort();
+		String name = input.readJavaString();
+		String displayName = input.readJavaString();
+		String[] lore = new String[input.readByte() & 0xFF];
+		for (int index = 0; index < lore.length; index++) {
+			lore[index] = input.readJavaString();
+		}
+		AttributeModifier[] attributes = new AttributeModifier[input.readByte() & 0xFF];
+		for (int index = 0; index < attributes.length; index++)
+			attributes[index] = loadAttribute2(input);
+		Enchantment[] defaultEnchantments = new Enchantment[input.readByte() & 0xFF];
+		for (int index = 0; index < defaultEnchantments.length; index++)
+			defaultEnchantments[index] = new Enchantment(EnchantmentType.valueOf(input.readString()), input.readInt());
+		long durability = input.readLong();
+		boolean allowEnchanting = input.readBoolean();
+		boolean allowAnvil = input.readBoolean();
+		Ingredient repairItem = Recipe.loadIngredient(input, this);
+		
+		// Use hardcoded 6 instead of variable because only 6 item flags existed in this encoding
+		boolean[] itemFlags = input.readBooleans(6);
+		int entityHitDurabilityLoss = input.readInt();
+		int blockBreakDurabilityLoss = input.readInt();
+		int shearDurabilityLoss = input.readInt();
+		
+		List<PotionEffect> playerEffects = new ArrayList<PotionEffect>();
+		for (int index = 0; index < (input.readByte() & 0xFF); index++) {
+			playerEffects.add(new PotionEffect(EffectType.valueOf(input.readJavaString()), input.readInt(), input.readInt()));
+		}
+		List<PotionEffect> targetEffects = new ArrayList<PotionEffect>();
+		for (int index = 0; index < (input.readByte() & 0xFF); index++) {
+			targetEffects.add(new PotionEffect(EffectType.valueOf(input.readJavaString()), input.readInt(), input.readInt()));
+		}
+		String[] commands = new String[input.readByte() & 0xFF];
+		for (int index = 0; index < commands.length; index++) {
+			commands[index] = input.readJavaString();
+		}
+		
+		String imageName = input.readJavaString();
+		NamedImage texture = null;
+		for (NamedImage current : textures) {
+			if (current.getName().equals(imageName)) {
+				texture = current;
+				break;
+			}
+		}
+		if (texture == null)
+			throw new IllegalArgumentException("Can't find texture " + imageName);
+		byte[] customModel = loadCustomModel(input, checkCustomModel);
+		return new CustomShears(itemType, damage, name, displayName, lore, attributes, defaultEnchantments, 
+				durability, allowEnchanting, allowAnvil, repairItem, texture, itemFlags, 
+				entityHitDurabilityLoss, blockBreakDurabilityLoss, shearDurabilityLoss, customModel, 
+				playerEffects, targetEffects, commands);
 	}
 
 	private CustomBow loadBow3(BitInput input, boolean checkCustomModel) {
@@ -669,6 +875,66 @@ public class ItemSet implements ItemSetBase {
 				repairItem, (BowTextures) texture, itemFlags, entityHitDurabilityLoss, 
 				blockBreakDurabilityLoss, shootDurabilityLoss, customModel, 
 				new ArrayList<PotionEffect>(), new ArrayList<PotionEffect>(), new String[] {});
+	}
+	
+	private CustomBow loadBow6(BitInput input, boolean checkCustomModel) {
+		short damage = input.readShort();
+		String name = input.readJavaString();
+		String displayName = input.readJavaString();
+		String[] lore = new String[input.readByte() & 0xFF];
+		for (int index = 0; index < lore.length; index++) {
+			lore[index] = input.readJavaString();
+		}
+		AttributeModifier[] attributes = new AttributeModifier[input.readByte() & 0xFF];
+		for (int index = 0; index < attributes.length; index++)
+			attributes[index] = loadAttribute2(input);
+		Enchantment[] defaultEnchantments = new Enchantment[input.readByte() & 0xFF];
+		for (int index = 0; index < defaultEnchantments.length; index++)
+			defaultEnchantments[index] = new Enchantment(EnchantmentType.valueOf(input.readString()), input.readInt());
+		long durability = input.readLong();
+		double damageMultiplier = input.readDouble();
+		double speedMultiplier = input.readDouble();
+		int knockbackStrength = input.readInt();
+		boolean gravity = input.readBoolean();
+		boolean allowEnchanting = input.readBoolean();
+		boolean allowAnvil = input.readBoolean();
+		Ingredient repairItem = Recipe.loadIngredient(input, this);
+		
+		// Use hardcoded 6 instead of variable because only 6 item flags existed in this encoding
+		boolean[] itemFlags = input.readBooleans(6);
+		int entityHitDurabilityLoss = input.readInt();
+		int blockBreakDurabilityLoss = input.readInt();
+		int shootDurabilityLoss = input.readInt();
+		
+		List<PotionEffect> playerEffects = new ArrayList<PotionEffect>();
+		for (int index = 0; index < (input.readByte() & 0xFF); index++) {
+			playerEffects.add(new PotionEffect(EffectType.valueOf(input.readJavaString()), input.readInt(), input.readInt()));
+		}
+		List<PotionEffect> targetEffects = new ArrayList<PotionEffect>();
+		for (int index = 0; index < (input.readByte() & 0xFF); index++) {
+			targetEffects.add(new PotionEffect(EffectType.valueOf(input.readJavaString()), input.readInt(), input.readInt()));
+		}
+		String[] commands = new String[input.readByte() & 0xFF];
+		for (int index = 0; index < commands.length; index++) {
+			commands[index] = input.readJavaString();
+		}
+		
+		String imageName = input.readJavaString();
+		NamedImage texture = null;
+		for (NamedImage current : textures) {
+			if (current.getName().equals(imageName)) {
+				texture = current;
+				break;
+			}
+		}
+		if (texture == null)
+			throw new IllegalArgumentException("Can't find texture " + imageName);
+		byte[] customModel = loadCustomModel(input, checkCustomModel);
+		return new CustomBow(damage, name, displayName, lore, attributes, defaultEnchantments, durability, 
+				damageMultiplier, speedMultiplier, knockbackStrength, gravity, allowEnchanting, allowAnvil, 
+				repairItem, (BowTextures) texture, itemFlags, entityHitDurabilityLoss, 
+				blockBreakDurabilityLoss, shootDurabilityLoss, customModel, 
+				playerEffects, targetEffects, commands);
 	}
 	
 	private CustomItem loadArmor4(BitInput input, boolean checkCustomModel) {
@@ -884,6 +1150,74 @@ public class ItemSet implements ItemSetBase {
 				new ArrayList<PotionEffect>(), new String[] {});
 	}
 	
+	private CustomItem loadArmor8(BitInput input, boolean checkCustomModel) {
+		CustomItemType itemType = CustomItemType.valueOf(input.readJavaString());
+		short damage = input.readShort();
+		String name = input.readJavaString();
+		String displayName = input.readJavaString();
+		String[] lore = new String[input.readByte() & 0xFF];
+		for (int index = 0; index < lore.length; index++) {
+			lore[index] = input.readJavaString();
+		}
+		AttributeModifier[] attributes = new AttributeModifier[input.readByte() & 0xFF];
+		for (int index = 0; index < attributes.length; index++)
+			attributes[index] = loadAttribute2(input);
+		Enchantment[] defaultEnchantments = new Enchantment[input.readByte() & 0xFF];
+		for (int index = 0; index < defaultEnchantments.length; index++)
+			defaultEnchantments[index] = new Enchantment(EnchantmentType.valueOf(input.readString()), input.readInt());
+		long durability = input.readLong();
+		boolean allowEnchanting = input.readBoolean();
+		boolean allowAnvil = input.readBoolean();
+		Ingredient repairItem = Recipe.loadIngredient(input, this);
+		int red;
+		int green;
+		int blue;
+		if (itemType.isLeatherArmor()) {
+			red = input.readByte() & 0xFF;
+			green = input.readByte() & 0xFF;
+			blue = input.readByte() & 0xFF;
+		} else {
+			red = 160;
+			green = 101;
+			blue = 64;
+		}
+		
+		// Don't use ItemFlag.values().length because it only had 6 flags during the version it was saved
+		boolean[] itemFlags = input.readBooleans(6);
+		int entityHitDurabilityLoss = input.readInt();
+		int blockBreakDurabilityLoss = input.readInt();
+		
+		DamageResistances resistances = DamageResistances.load14(input);
+		
+		List<PotionEffect> playerEffects = new ArrayList<PotionEffect>();
+		for (int index = 0; index < (input.readByte() & 0xFF); index++) {
+			playerEffects.add(new PotionEffect(EffectType.valueOf(input.readJavaString()), input.readInt(), input.readInt()));
+		}
+		List<PotionEffect> targetEffects = new ArrayList<PotionEffect>();
+		for (int index = 0; index < (input.readByte() & 0xFF); index++) {
+			targetEffects.add(new PotionEffect(EffectType.valueOf(input.readJavaString()), input.readInt(), input.readInt()));
+		}
+		String[] commands = new String[input.readByte() & 0xFF];
+		for (int index = 0; index < commands.length; index++) {
+			commands[index] = input.readJavaString();
+		}
+		
+		String imageName = input.readJavaString();
+		NamedImage texture = null;
+		for (NamedImage current : textures) {
+			if (current.getName().equals(imageName)) {
+				texture = current;
+				break;
+			}
+		}
+		if (texture == null)
+			throw new IllegalArgumentException("Can't find texture " + imageName);
+		byte[] customModel = loadCustomModel(input, checkCustomModel);
+		return new CustomArmor(itemType, damage, name, displayName, lore, attributes, defaultEnchantments, durability, allowEnchanting,
+				allowAnvil, repairItem, texture, red, green, blue, itemFlags, entityHitDurabilityLoss, 
+				blockBreakDurabilityLoss, resistances, customModel, playerEffects, targetEffects, commands);
+	}
+	
 	private CustomItem loadShield6(BitInput input, boolean checkCustomModel) {
 		CustomItemType itemType = CustomItemType.valueOf(input.readJavaString());
 		short damage = input.readShort();
@@ -926,6 +1260,63 @@ public class ItemSet implements ItemSetBase {
 				durability, allowEnchanting, allowAnvil, repairItem, texture, itemFlags, 
 				entityHitDurabilityLoss, blockBreakDurabilityLoss, thresholdDamage, customModel, customBlockingModel, 
 				new ArrayList<PotionEffect>(), new ArrayList<PotionEffect>(), new String[] {});
+	}
+	
+	private CustomItem loadShield7(BitInput input, boolean checkCustomModel) {
+		CustomItemType itemType = CustomItemType.valueOf(input.readJavaString());
+		short damage = input.readShort();
+		String name = input.readJavaString();
+		String displayName = input.readJavaString();
+		String[] lore = new String[input.readByte() & 0xFF];
+		for (int index = 0; index < lore.length; index++) {
+			lore[index] = input.readJavaString();
+		}
+		AttributeModifier[] attributes = new AttributeModifier[input.readByte() & 0xFF];
+		for (int index = 0; index < attributes.length; index++)
+			attributes[index] = loadAttribute2(input);
+		Enchantment[] defaultEnchantments = new Enchantment[input.readByte() & 0xFF];
+		for (int index = 0; index < defaultEnchantments.length; index++)
+			defaultEnchantments[index] = new Enchantment(EnchantmentType.valueOf(input.readString()), input.readInt());
+		long durability = input.readLong();
+		boolean allowEnchanting = input.readBoolean();
+		boolean allowAnvil = input.readBoolean();
+		Ingredient repairItem = Recipe.loadIngredient(input, this);
+		
+		// Use hardcoded 6 instead of variable because only 6 item flags existed in this encoding
+		boolean[] itemFlags = input.readBooleans(6);
+		int entityHitDurabilityLoss = input.readInt();
+		int blockBreakDurabilityLoss = input.readInt();
+		double thresholdDamage = input.readDouble();
+		
+		List<PotionEffect> playerEffects = new ArrayList<PotionEffect>();
+		for (int index = 0; index < (input.readByte() & 0xFF); index++) {
+			playerEffects.add(new PotionEffect(EffectType.valueOf(input.readJavaString()), input.readInt(), input.readInt()));
+		}
+		List<PotionEffect> targetEffects = new ArrayList<PotionEffect>();
+		for (int index = 0; index < (input.readByte() & 0xFF); index++) {
+			targetEffects.add(new PotionEffect(EffectType.valueOf(input.readJavaString()), input.readInt(), input.readInt()));
+		}
+		String[] commands = new String[input.readByte() & 0xFF];
+		for (int index = 0; index < commands.length; index++) {
+			commands[index] = input.readJavaString();
+		}
+		
+		String imageName = input.readJavaString();
+		NamedImage texture = null;
+		for (NamedImage current : textures) {
+			if (current.getName().equals(imageName)) {
+				texture = current;
+				break;
+			}
+		}
+		if (texture == null)
+			throw new IllegalArgumentException("Can't find texture " + imageName);
+		byte[] customModel = loadCustomModel(input, checkCustomModel);
+		byte[] customBlockingModel = loadCustomModel(input, checkCustomModel);
+		return new CustomShield(itemType, damage, name, displayName, lore, attributes, defaultEnchantments, 
+				durability, allowEnchanting, allowAnvil, repairItem, texture, itemFlags, 
+				entityHitDurabilityLoss, blockBreakDurabilityLoss, thresholdDamage, customModel, customBlockingModel, 
+				playerEffects, targetEffects, commands);
 	}
 	
 	private CustomItem loadTrident7(BitInput input, boolean checkCustomModel) {
@@ -973,6 +1364,65 @@ public class ItemSet implements ItemSetBase {
 				texture, itemFlags, entityHitDurabilityLoss, blockBreakDurabilityLoss, throwDurabilityLoss, 
 				customModel, customInHandModel, customThrowingModel, new ArrayList<PotionEffect>(), 
 				new ArrayList<PotionEffect>(), new String[] {});
+	}
+	
+	private CustomItem loadTrident8(BitInput input, boolean checkCustomModel) {
+		short damage = input.readShort();
+		String name = input.readJavaString();
+		String displayName = input.readJavaString();
+		String[] lore = new String[input.readByte() & 0xFF];
+		for (int index = 0; index < lore.length; index++) {
+			lore[index] = input.readJavaString();
+		}
+		AttributeModifier[] attributes = new AttributeModifier[input.readByte() & 0xFF];
+		for (int index = 0; index < attributes.length; index++)
+			attributes[index] = loadAttribute2(input);
+		Enchantment[] defaultEnchantments = new Enchantment[input.readByte() & 0xFF];
+		for (int index = 0; index < defaultEnchantments.length; index++)
+			defaultEnchantments[index] = new Enchantment(EnchantmentType.valueOf(input.readString()), input.readInt());
+		long durability = input.readLong();
+		boolean allowEnchanting = input.readBoolean();
+		boolean allowAnvil = input.readBoolean();
+		Ingredient repairItem = Recipe.loadIngredient(input, this);
+		
+		// Use hardcoded 6 instead of variable because only 6 item flags existed in this encoding
+		boolean[] itemFlags = input.readBooleans(6);
+		int entityHitDurabilityLoss = input.readInt();
+		int blockBreakDurabilityLoss = input.readInt();
+		int throwDurabilityLoss = input.readInt();
+		double throwDamageMultiplier = input.readDouble();
+		double speedMultiplier = input.readDouble();
+		
+		List<PotionEffect> playerEffects = new ArrayList<PotionEffect>();
+		for (int index = 0; index < (input.readByte() & 0xFF); index++) {
+			playerEffects.add(new PotionEffect(EffectType.valueOf(input.readJavaString()), input.readInt(), input.readInt()));
+		}
+		List<PotionEffect> targetEffects = new ArrayList<PotionEffect>();
+		for (int index = 0; index < (input.readByte() & 0xFF); index++) {
+			targetEffects.add(new PotionEffect(EffectType.valueOf(input.readJavaString()), input.readInt(), input.readInt()));
+		}
+		String[] commands = new String[input.readByte() & 0xFF];
+		for (int index = 0; index < commands.length; index++) {
+			commands[index] = input.readJavaString();
+		}
+		
+		String imageName = input.readJavaString();
+		NamedImage texture = null;
+		for (NamedImage current : textures) {
+			if (current.getName().equals(imageName)) {
+				texture = current;
+				break;
+			}
+		}
+		if (texture == null)
+			throw new IllegalArgumentException("Can't find texture " + imageName);
+		byte[] customModel = loadCustomModel(input, checkCustomModel);
+		byte[] customInHandModel = loadCustomModel(input, checkCustomModel);
+		byte[] customThrowingModel = loadCustomModel(input, checkCustomModel);
+		return new CustomTrident(damage, name, displayName, lore, attributes, defaultEnchantments, 
+				durability, allowEnchanting, allowAnvil, throwDamageMultiplier, speedMultiplier, repairItem, 
+				texture, itemFlags, entityHitDurabilityLoss, blockBreakDurabilityLoss, throwDurabilityLoss, 
+				customModel, customInHandModel, customThrowingModel, playerEffects, targetEffects, commands);
 	}
 
 	private AttributeModifier loadAttribute2(BitInput input) {
