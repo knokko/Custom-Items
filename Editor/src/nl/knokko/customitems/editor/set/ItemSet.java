@@ -3060,6 +3060,10 @@ public class ItemSet implements ItemSetBase {
 				return "Default enchantments are null";
 			if (item.getDefaultEnchantments().length > Byte.MAX_VALUE)
 				return "Too many default enchantments";
+			if (item.getLore() == null)
+				return "The lore is null";
+			if (item.getLore().length > Byte.MAX_VALUE)
+				return "Too much lore";
 			for (Enchantment enchantment : item.getDefaultEnchantments()) {
 				if (enchantment.getType() == null) {
 					return "An enchantment has no type";
@@ -3167,6 +3171,10 @@ public class ItemSet implements ItemSetBase {
 				return "Default enchantments are null";
 			if (newEnchantments.length > Byte.MAX_VALUE)
 				return "Too many default enchantments";
+			if (newLore == null)
+				return "The lore is null";
+			if (newLore.length > Byte.MAX_VALUE)
+				return "Too much lore";
 			for (Enchantment enchantment : newEnchantments) {
 				if (enchantment.getType() == null) {
 					return "An enchantment has no type";
