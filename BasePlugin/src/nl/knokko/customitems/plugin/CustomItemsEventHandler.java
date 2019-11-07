@@ -36,7 +36,6 @@ import java.util.UUID;
 
 import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
-import org.bukkit.Server;
 import org.bukkit.Sound;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.block.Block;
@@ -152,10 +151,10 @@ public class CustomItemsEventHandler implements Listener {
 				if (custom.forbidDefaultUse(item))
 					event.setCancelled(true);
 				else {
-					Server server = Bukkit.getServer();
+					Player player = event.getPlayer();
 					String[] commands = custom.getCommands();
 					for (String command : commands) {
-						server.dispatchCommand(server.getConsoleSender(), command);
+						player.performCommand(command);
 					}
 				}
 			}
