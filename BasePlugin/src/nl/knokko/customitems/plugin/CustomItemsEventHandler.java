@@ -33,6 +33,7 @@ import java.util.Map.Entry;
 import java.util.Random;
 import java.util.Set;
 import java.util.UUID;
+import java.util.logging.Level;
 
 import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
@@ -177,16 +178,33 @@ public class CustomItemsEventHandler implements Listener {
 
 	@EventHandler(ignoreCancelled = true)
 	public void processCustomProjectileDamage(EntityDamageByEntityEvent event) {
+		CustomItemsPlugin plugin = CustomItemsPlugin.getInstance();
 		if (event.getDamager() instanceof Arrow) {
-			List<MetadataValue> metas = event.getDamager().getMetadata("CustomBowDamageMultiplier");
+			List<MetadataValue> metas = event.getDamager().getMetadata("CustomBowName");
 			for (MetadataValue meta : metas) {
-				event.setDamage(event.getDamage() * meta.asDouble());
+				if (meta.getOwningPlugin() == plugin) {
+					CustomItem shouldBeCustomBow = plugin.getSet().getCustomItemByName(meta.asString());
+					if (shouldBeCustomBow instanceof CustomBow) {
+						CustomBow customBow = (CustomBow) shouldBeCustomBow;
+						event.setDamage(event.getDamage() * customBow.getDamageMultiplier());
+					} else {
+						Bukkit.getLogger().log(Level.WARNING, "An arrow was shot with the custom bow '" + meta.asString() + "', but no such custom bow exists");
+					}
+				}
 			}
 		}
 		if (isTrident(event.getDamager())) {
-			List<MetadataValue> metas = event.getDamager().getMetadata("CustomTridentDamageMultiplier");
+			List<MetadataValue> metas = event.getDamager().getMetadata("CustomTridentName");
 			for (MetadataValue meta : metas) {
-				event.setDamage(event.getDamage() * meta.asDouble());
+				if (meta.getOwningPlugin() == plugin) {
+					CustomItem shouldBeCustomTrident = plugin.getSet().getCustomItemByName(meta.asString());
+					if (shouldBeCustomTrident instanceof CustomTrident) {
+						CustomTrident customTrident = (CustomTrident) shouldBeCustomTrident;
+						event.setDamage(event.getDamage() * customTrident.throwDamageMultiplier);
+					} else {
+						Bukkit.getLogger().log(Level.WARNING, "A custom trident with name '" + meta.asString() + "' was thrown, but no such custom trident exists");
+					}
+				}
 			}
 		}
 	}
@@ -282,8 +300,8 @@ public class CustomItemsEventHandler implements Listener {
 				
 				if (customTrident != null) {
 					trident.setVelocity(trident.getVelocity().multiply(customTrident.throwSpeedMultiplier));
-					double throwDamageMultiplier = customTrident.throwDamageMultiplier;
-					trident.setMetadata("CustomTridentDamageMultiplier", new MetadataValue() {
+					String customTridentName = customTrident.getName();
+					trident.setMetadata("CustomTridentName", new MetadataValue() {
 
 						@Override
 						public Object value() {
@@ -302,7 +320,7 @@ public class CustomItemsEventHandler implements Listener {
 
 						@Override
 						public double asDouble() {
-							return throwDamageMultiplier;
+							return 0;
 						}
 
 						@Override
@@ -327,7 +345,7 @@ public class CustomItemsEventHandler implements Listener {
 
 						@Override
 						public String asString() {
-							return null;
+							return customTridentName;
 						}
 
 						@Override
@@ -373,7 +391,8 @@ public class CustomItemsEventHandler implements Listener {
 					arrow.setKnockbackStrength(arrow.getKnockbackStrength() + bow.getKnockbackStrength());
 					arrow.setVelocity(arrow.getVelocity().multiply(bow.getSpeedMultiplier()));
 					arrow.setGravity(bow.hasGravity());
-					arrow.setMetadata("CustomBowDamageMultiplier", new MetadataValue() {
+					String customBowName = bow.getName();
+					arrow.setMetadata("CustomBowName", new MetadataValue() {
 
 						@Override
 						public Object value() {
@@ -392,7 +411,7 @@ public class CustomItemsEventHandler implements Listener {
 
 						@Override
 						public double asDouble() {
-							return bow.getDamageMultiplier();
+							return 0;
 						}
 
 						@Override
@@ -417,7 +436,7 @@ public class CustomItemsEventHandler implements Listener {
 
 						@Override
 						public String asString() {
-							return null;
+							return customBowName;
 						}
 
 						@Override
