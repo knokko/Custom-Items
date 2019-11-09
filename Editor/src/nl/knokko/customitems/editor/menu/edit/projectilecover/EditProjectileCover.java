@@ -5,7 +5,7 @@ import nl.knokko.customitems.editor.menu.edit.EditProps;
 import nl.knokko.customitems.editor.menu.edit.item.ItemTypeSelectButton;
 import nl.knokko.customitems.editor.set.ItemDamageClaim;
 import nl.knokko.customitems.editor.set.ItemSet;
-import nl.knokko.customitems.editor.set.projectile.ProjectileCover;
+import nl.knokko.customitems.editor.set.projectile.cover.ProjectileCover;
 import nl.knokko.customitems.item.CustomItemType;
 import nl.knokko.customitems.item.CustomItemType.Category;
 import nl.knokko.gui.color.GuiColor;

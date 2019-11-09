@@ -1,4 +1,4 @@
-package nl.knokko.customitems.editor.set.projectile;
+package nl.knokko.customitems.editor.set.projectile.cover;
 
 import java.io.IOException;
 import java.io.PrintWriter;
