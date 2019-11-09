@@ -186,6 +186,14 @@ public class CustomItemsEventHandler implements Listener {
 					if (shouldBeCustomBow instanceof CustomBow) {
 						CustomBow customBow = (CustomBow) shouldBeCustomBow;
 						event.setDamage(event.getDamage() * customBow.getDamageMultiplier());
+						LivingEntity target = (LivingEntity) event.getEntity();
+						if (target instanceof LivingEntity) {
+							Collection<org.bukkit.potion.PotionEffect> effects = new ArrayList<org.bukkit.potion.PotionEffect> ();
+							for (PotionEffect effect : customBow.getTargetEffects()) {
+								effects.add(new org.bukkit.potion.PotionEffect(org.bukkit.potion.PotionEffectType.getByName(effect.getEffect().name()), effect.getDuration() * 20, effect.getLevel() - 1));
+							}
+							target.addPotionEffects(effects);
+						}
 					} else {
 						Bukkit.getLogger().log(Level.WARNING, "An arrow was shot with the custom bow '" + meta.asString() + "', but no such custom bow exists");
 					}
@@ -200,6 +208,14 @@ public class CustomItemsEventHandler implements Listener {
 					if (shouldBeCustomTrident instanceof CustomTrident) {
 						CustomTrident customTrident = (CustomTrident) shouldBeCustomTrident;
 						event.setDamage(event.getDamage() * customTrident.throwDamageMultiplier);
+						LivingEntity target = (LivingEntity) event.getEntity();
+						if (target instanceof LivingEntity) {
+							Collection<org.bukkit.potion.PotionEffect> effects = new ArrayList<org.bukkit.potion.PotionEffect> ();
+							for (PotionEffect effect : customTrident.getTargetEffects()) {
+								effects.add(new org.bukkit.potion.PotionEffect(org.bukkit.potion.PotionEffectType.getByName(effect.getEffect().name()), effect.getDuration() * 20, effect.getLevel() - 1));
+							}
+							target.addPotionEffects(effects);
+						}
 					} else {
 						Bukkit.getLogger().log(Level.WARNING, "A custom trident with name '" + meta.asString() + "' was thrown, but no such custom trident exists");
 					}
@@ -280,6 +296,11 @@ public class CustomItemsEventHandler implements Listener {
 						CustomItem customMain = set.getItem(main);
 						if (customMain instanceof CustomTrident) {
 							customTrident = (CustomTrident) customMain;
+							Collection<org.bukkit.potion.PotionEffect> effects = new ArrayList<org.bukkit.potion.PotionEffect>();
+							for (PotionEffect effect : customTrident.getPlayerEffects()) {
+								effects.add(new org.bukkit.potion.PotionEffect(org.bukkit.potion.PotionEffectType.getByName(effect.getEffect().name()), effect.getDuration() * 20, effect.getLevel() - 1));
+							}
+							shooter.addPotionEffects(effects);
 							if (customTrident.decreaseDurability(main, customTrident.throwDurabilityLoss)) {
 								trident.setMetadata("CustomTridentBreak", TRIDENT_BREAK_META);
 							}
@@ -290,6 +311,11 @@ public class CustomItemsEventHandler implements Listener {
 						CustomItem customOff = set.getItem(off);
 						if (customOff instanceof CustomTrident) {
 							customTrident = (CustomTrident) customOff;
+							Collection<org.bukkit.potion.PotionEffect> effects = new ArrayList<org.bukkit.potion.PotionEffect>();
+							for (PotionEffect effect : customOff.getPlayerEffects()) {
+								effects.add(new org.bukkit.potion.PotionEffect(org.bukkit.potion.PotionEffectType.getByName(effect.getEffect().name()), effect.getDuration() * 20, effect.getLevel() - 1));
+							}
+							shooter.addPotionEffects(effects);
 							if (customTrident.decreaseDurability(off, customTrident.throwDurabilityLoss)) {
 								trident.setMetadata("CustomTridentBreak", TRIDENT_BREAK_META);
 							}
@@ -378,6 +404,11 @@ public class CustomItemsEventHandler implements Listener {
 					if (event.getEntity() instanceof Player
 							&& bow.decreaseDurability(event.getBow(), bow.getShootDurabilityLoss())) {
 						Player player = (Player) event.getEntity();
+						Collection<org.bukkit.potion.PotionEffect> effects = new ArrayList<org.bukkit.potion.PotionEffect>();
+						for (PotionEffect effect : bow.getPlayerEffects()) {
+							effects.add(new org.bukkit.potion.PotionEffect(org.bukkit.potion.PotionEffectType.getByName(effect.getEffect().name()), effect.getDuration() * 20, effect.getLevel() - 1));
+						}
+						player.addPotionEffects(effects);
 						playBreakSound(player);
 						ItemStack mainHand = player.getInventory().getItemInMainHand();
 						if (mainHand != null && CustomItemsPlugin.getInstance().getSet().getItem(mainHand) == bow) {
