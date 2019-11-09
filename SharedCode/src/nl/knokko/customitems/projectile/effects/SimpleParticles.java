@@ -1,0 +1,34 @@
+package nl.knokko.customitems.projectile.effects;
+
+import nl.knokko.customitems.particle.CIParticle;
+import nl.knokko.util.bits.BitInput;
+import nl.knokko.util.bits.BitOutput;
+
+public class SimpleParticles extends ProjectileEffect {
+	
+	public static SimpleParticles load1(BitInput input) {
+		return new SimpleParticles(CIParticle.valueOf(input.readString()), 
+				input.readFloat(), input.readFloat(), input.readInt());
+	}
+	
+	public CIParticle particle;
+	
+	public float minRadius, maxRadius;
+	
+	public int amount;
+
+	public SimpleParticles(CIParticle particle, float minRadius, float maxRadius, int amount) {
+		this.particle = particle;
+		this.minRadius = minRadius;
+		this.maxRadius = maxRadius;
+		this.amount = amount;
+	}
+
+	@Override
+	public void toBits(BitOutput output) {
+		output.addByte(ENCODING_SIMPLE_PARTICLE_1);
+		output.addString(particle.name());
+		output.addFloats(minRadius, maxRadius);
+		output.addInt(amount);
+	}
+}

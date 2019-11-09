@@ -37,8 +37,7 @@ public class ItemEncoding {
 	/**
 	 * Those tools can also have repair materials for anvil
 	 */
-	public static final byte ENCODING_TOOL_3 = 3;
-	public static final byte ENCODING_BOW_3 = 4;
+	public static final byte ENCODING_TOOL_3 = 3, ENCODING_BOW_3 = 4;
 	
 	/**
 	 * Adds support for default enchantments
@@ -115,12 +114,12 @@ public class ItemEncoding {
 	/**
 	 * Add support for commands and potion effects
 	 */
-	public static final byte ENCODING_SIMPLE_6 = 20;
-	public static final byte ENCODING_TOOL_6 = 21;
-	public static final byte ENCODING_ARMOR_8 = 22;
-	public static final byte ENCODING_BOW_6 = 23;
-	public static final byte ENCODING_SHEAR_6 = 24;
-	public static final byte ENCODING_HOE_6 = 25;
-	public static final byte ENCODING_SHIELD_7 = 26;
-	public static final byte ENCODING_TRIDENT_8 = 27;
+	public static final byte ENCODING_SIMPLE_6 = 20, ENCODING_TOOL_6 = 21, ENCODING_ARMOR_8 = 22,
+			ENCODING_BOW_6 = 23, ENCODING_SHEAR_6 = 24, ENCODING_HOE_6 = 25, ENCODING_SHIELD_7 = 26,
+			ENCODING_TRIDENT_8 = 27;
+	
+	/**
+	 * The first encoding of (custom) wands
+	 */
+	public static final byte ENCODING_WAND_8 = 28;
 }

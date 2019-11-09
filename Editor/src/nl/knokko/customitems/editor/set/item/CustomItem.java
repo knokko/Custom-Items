@@ -24,6 +24,8 @@
 package nl.knokko.customitems.editor.set.item;
 
 import nl.knokko.customitems.editor.set.ItemDamageClaim;
+import nl.knokko.customitems.editor.set.projectile.cover.ProjectileCover;
+
 import java.util.List;
 
 import nl.knokko.customitems.effect.PotionEffect;
@@ -146,6 +148,10 @@ public abstract class CustomItem extends nl.knokko.customitems.item.CustomItem i
 			if (trident.customThrowingModel != null) {
 				output.addByteArray(trident.customThrowingModel);
 			}
+		} else if (this instanceof CustomWand) {
+			CustomWand wand = (CustomWand) this;
+			ProjectileCover cover = wand.cover;
+			output.addString(cover == null ? null : cover.name);
 		}
 	}
 
