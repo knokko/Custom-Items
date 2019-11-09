@@ -31,4 +31,19 @@ public class SimpleParticles extends ProjectileEffect {
 		output.addFloats(minRadius, maxRadius);
 		output.addInt(amount);
 	}
+
+	@Override
+	public String validate() {
+		if (particle == null)
+			return "You must select a particle";
+		if (!(minRadius >= 0))
+			return "The minimum radius can't be negative";
+		if (!(maxRadius >= 0))
+			return "The maximum radius can't be negative";
+		if (minRadius > maxRadius)
+			return "The minimum radius can't be larger than the maximum radius";
+		if (amount <= 0)
+			return "The amount must be a positive integer";
+		return null;
+	}
 }

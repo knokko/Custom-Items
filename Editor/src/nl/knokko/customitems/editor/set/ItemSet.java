@@ -59,6 +59,7 @@ import nl.knokko.customitems.editor.set.item.CustomShears;
 import nl.knokko.customitems.editor.set.item.CustomShield;
 import nl.knokko.customitems.editor.set.item.CustomTool;
 import nl.knokko.customitems.editor.set.item.CustomTrident;
+import nl.knokko.customitems.editor.set.item.CustomWand;
 import nl.knokko.customitems.editor.set.item.NamedImage;
 import nl.knokko.customitems.editor.set.item.SimpleCustomItem;
 import nl.knokko.customitems.editor.set.item.texture.BowTextures;
@@ -82,11 +83,15 @@ import nl.knokko.customitems.encoding.RecipeEncoding;
 import nl.knokko.customitems.item.AttributeModifier;
 import nl.knokko.customitems.item.CustomItemType;
 import nl.knokko.customitems.item.CustomItemType.Category;
+import nl.knokko.customitems.projectile.Projectile;
+import nl.knokko.customitems.projectile.effects.ProjectileEffect;
+import nl.knokko.customitems.projectile.effects.ProjectileEffects;
 import nl.knokko.customitems.item.CustomToolDurability;
 import nl.knokko.customitems.item.Enchantment;
 import nl.knokko.customitems.item.EnchantmentType;
 import nl.knokko.customitems.item.ItemFlag;
 import nl.knokko.customitems.item.ItemSetBase;
+import nl.knokko.customitems.item.WandCharges;
 import nl.knokko.gui.keycode.KeyCode;
 import nl.knokko.gui.window.input.WindowInput;
 import nl.knokko.customitems.item.AttributeModifier.Attribute;
@@ -143,6 +148,7 @@ public class ItemSet implements ItemSetBase {
 			case ItemEncoding.ENCODING_TRIDENT_8 : return loadTrident8(input, checkCustomModel);
 			case ItemEncoding.ENCODING_HOE_5 : return loadHoe5(input, checkCustomModel);
 			case ItemEncoding.ENCODING_HOE_6 : return loadHoe6(input, checkCustomModel);
+			case ItemEncoding.ENCODING_WAND_8: return loadWand8(input);
 			default : throw new IllegalArgumentException("Unknown encoding: " + encoding);
 		}
 	}
@@ -1324,6 +1330,72 @@ public class ItemSet implements ItemSetBase {
 				texture, itemFlags, entityHitDurabilityLoss, blockBreakDurabilityLoss, throwDurabilityLoss, 
 				customModel, customInHandModel, customThrowingModel, playerEffects, targetEffects, commands);
 	}
+	
+	private CustomItem loadWand8(BitInput input) {
+		CustomItemType itemType = CustomItemType.valueOf(input.readJavaString());
+		short damage = input.readShort();
+		String name = input.readJavaString();
+		String displayName = input.readJavaString();
+		String[] lore = new String[input.readByte() & 0xFF];
+		for (int index = 0; index < lore.length; index++) {
+			lore[index] = input.readJavaString();
+		}
+		AttributeModifier[] attributes = new AttributeModifier[input.readByte() & 0xFF];
+		for (int index = 0; index < attributes.length; index++)
+			attributes[index] = loadAttribute2(input);
+		Enchantment[] defaultEnchantments = new Enchantment[input.readByte() & 0xFF];
+		for (int index = 0; index < defaultEnchantments.length; index++)
+			defaultEnchantments[index] = new Enchantment(EnchantmentType.valueOf(input.readString()), input.readInt());
+		
+		// Use hardcoded 6 instead of variable because only 6 item flags existed in this encoding
+		boolean[] itemFlags = input.readBooleans(6);
+		
+		List<PotionEffect> playerEffects = new ArrayList<PotionEffect>();
+		int peLength = (input.readByte() & 0xFF);
+		for (int index = 0; index < peLength; index++) {
+			playerEffects.add(new PotionEffect(EffectType.valueOf(input.readJavaString()), input.readInt(), input.readInt()));
+		}
+		List<PotionEffect> targetEffects = new ArrayList<PotionEffect>();
+		int teLength = (input.readByte() & 0xFF);
+		for (int index = 0; index < teLength; index++) {
+			targetEffects.add(new PotionEffect(EffectType.valueOf(input.readJavaString()), input.readInt(), input.readInt()));
+		}
+		String[] commands = new String[input.readByte() & 0xFF];
+		for (int index = 0; index < commands.length; index++) {
+			commands[index] = input.readJavaString();
+		}
+		
+		Projectile projectile = Projectile.fromBits(input);
+		int cooldown = input.readInt();
+		WandCharges charges;
+		if (input.readBoolean()) {
+			charges = WandCharges.fromBits(input);
+		} else {
+			charges = null;
+		}
+		
+		String imageName = input.readJavaString();
+		NamedImage texture = null;
+		for (NamedImage current : textures) {
+			if (current.getName().equals(imageName)) {
+				texture = current;
+				break;
+			}
+		}
+		if (texture == null)
+			throw new IllegalArgumentException("Can't find texture " + imageName);
+		byte[] customModel = loadCustomModel(input, true);
+		
+		ProjectileCover cover;
+		if (input.readBoolean()) {
+			cover = ProjectileCover.fromBits(input, this);
+		} else {
+			cover = null;
+		}
+		return new CustomWand(itemType, damage, name, displayName, lore, attributes, defaultEnchantments,
+				texture, itemFlags, customModel, playerEffects, targetEffects, commands, 
+				projectile, cover, cooldown, charges);
+	}
 
 	private AttributeModifier loadAttribute2(BitInput input) {
 		return new AttributeModifier(Attribute.valueOf(input.readJavaString()), Slot.valueOf(input.readJavaString()),
@@ -1540,7 +1612,6 @@ public class ItemSet implements ItemSetBase {
 	private void load5(BitInput input) {
 		// Textures
 		int textureAmount = input.readInt();
-		// System.out.println("amount of textures is " + textureAmount);
 		textures = new ArrayList<NamedImage>(textureAmount);
 		for (int counter = 0; counter < textureAmount; counter++) {
 			byte textureType = input.readByte();
@@ -1551,7 +1622,13 @@ public class ItemSet implements ItemSetBase {
 			else
 				throw new IllegalArgumentException("Unknown texture encoding: " + textureType);
 		}
-		// System.out.println("textures are " + textures);
+		
+		// Projectile covers
+		int numProjectileCovers = input.readInt();
+		projectileCovers = new ArrayList<>(numProjectileCovers);
+		for (int counter = 0; counter < numProjectileCovers; counter++)
+			projectileCovers.add(ProjectileCover.fromBits(input, this));
+
 		// Items
 		int itemAmount = input.readInt();
 		// System.out.println("amount of items is " + itemAmount);
@@ -1575,12 +1652,6 @@ public class ItemSet implements ItemSetBase {
 		mobDrops = new ArrayList<>(numMobDrops);
 		for (int counter = 0; counter < numMobDrops; counter++)
 			mobDrops.add(EntityDrop.load(input, this));
-		
-		// Projectile covers
-		int numProjectileCovers = input.readInt();
-		projectileCovers = new ArrayList<>(numProjectileCovers);
-		for (int counter = 0; counter < numProjectileCovers; counter++)
-			projectileCovers.add(ProjectileCover.fromBits(input, this));
 	}
 
 	/**
@@ -2967,6 +3038,11 @@ public class ItemSet implements ItemSetBase {
 				output.addByte(NamedImage.ENCODING_SIMPLE);
 			texture.save(output);
 		}
+		
+		output.addInt(projectileCovers.size());
+		for (ProjectileCover cover : projectileCovers)
+			cover.toBits(output);
+		
 		output.addInt(items.size());
 
 		// Save the normal items before the tools so that tools can use normal items as
@@ -2996,10 +3072,6 @@ public class ItemSet implements ItemSetBase {
 		output.addInt(mobDrops.size());
 		for (EntityDrop drop : mobDrops)
 			drop.save(output);
-		
-		output.addInt(projectileCovers.size());
-		for (ProjectileCover cover : projectileCovers)
-			cover.toBits(output);
 	}
 
 	/**
@@ -3337,7 +3409,7 @@ public class ItemSet implements ItemSetBase {
 			if (item.allowEnchanting() && item.getDefaultEnchantments().length > 0)
 				return "You can't allow enchanting on items that have default enchantments";
 		}
-		return addItem(item, false);
+		return addItem(item);
 	}
 	
 	public String addShears(CustomShears shears, boolean checkClass) {
@@ -3421,7 +3493,7 @@ public class ItemSet implements ItemSetBase {
 		}
 		String error = changeItem(item, newType, newDamage, newName, newDisplayName, newLore, newAttributes, 
 				newEnchantments, newImage, itemFlags, newCustomModel,
-				playerEffects, targetEffects, commands, false);
+				playerEffects, targetEffects, commands);
 		if (error == null) {
 			item.setAllowEnchanting(allowEnchanting);
 			item.setAllowAnvilActions(allowAnvil);
@@ -3518,16 +3590,119 @@ public class ItemSet implements ItemSetBase {
 			return error;
 		}
 	}
+	
+	/**
+	 * Attempts to add the given wand to this item set. If the wand was added successfully, this method will
+	 * return null. If not, the reason why the wand wasn't added will be returned.
+	 * @param wand The wand that should be added to this item set
+	 * @return null if the wand was added successfully, or the reason it wasn't
+	 */
+	public String addWand(CustomWand wand) {
+		if (!bypassChecks()) {
+			if (wand == null)
+				return "Can't add null wands";
+			String projectileError = validateProjectile(wand.projectile);
+			if (projectileError != null)
+				return projectileError;
+			if (wand.cover != null && !projectileCovers.contains(wand.cover))
+				return "The projectile cover of the wand is not in the list of projectile covers";
+			if (wand.cooldown < 1)
+				return "The cooldown must be a positive integer";
+			String chargesError = validateCharges(wand.charges);
+			if (chargesError != null)
+				return chargesError;
+		}
+		return addItem(wand);
+	}
+	
+	/**
+	 * Attempts to change the properties of the given wand to the given values.
+	 * @return null if the wand was changed successfully, or the reason it wasn't
+	 */
+	public String changeWand(CustomWand original, CustomItemType newType, short newDamage, String newName,
+			String newDisplayName, String[] newLore, AttributeModifier[] newAttributes, 
+			Enchantment[] newEnchantments, NamedImage newImage, boolean[] itemFlags,
+			byte[] newCustomModel, List<PotionEffect> playerEffects, List<PotionEffect> targetEffects, 
+			String[] commands, Projectile newProjectile, ProjectileCover newCover, int newCooldown, 
+			WandCharges newCharges) {
+		if (!bypassChecks()) {
+			if (original == null)
+				return "Can't change null items";
+			String projectileError = validateProjectile(newProjectile);
+			if (projectileError != null)
+				return projectileError;
+			if (newCover != null && !projectileCovers.contains(newCover))
+				return "The projectile cover of the wand is not in the list of projectile covers";
+			if (newCooldown < 1)
+				return "The cooldown must be a positive integer";
+			String chargesError = validateCharges(newCharges);
+			if (chargesError != null)
+				return chargesError;
+		}
+		String error = changeItem(original, newType, newDamage, newName, newDisplayName, newLore,
+				newAttributes, newEnchantments, newImage, itemFlags, newCustomModel, playerEffects,
+				targetEffects, commands);
+		if (error == null) {
+			original.projectile = newProjectile;
+			original.cover = newCover;
+			original.cooldown = newCooldown;
+			original.charges = newCharges;
+		}
+		return error;
+	}
+	
+	private String validateProjectile(Projectile projectile) {
+		if (projectile == null)
+			return "It must have a projectile";
+		
+		// This is not equivalent to damage < 0 because this also deals with NaN
+		if (!(projectile.damage >= 0))
+			return "The damage of the projectile must be at least 0.0";
+		if (projectile.damage > 0 && projectile.damageSource == null)
+			return "If the damage of the projectile is not 0, you must select a damage source";
+		if (projectile.minecraftType == null)
+			return "You must select a projectile type";
+		for (ProjectileEffects effects : projectile.inFlightEffects) {
+			if (effects.delay < 0)
+				return "At least 1 of the delays of the in flight effects is negative";
+			if (effects.period < 1)
+				return "At least 1 of the periods of the in flight effects is not positive";
+			String effectsError = validateProjectileEffects(effects.effects);
+			if (effectsError != null)
+				return effectsError;
+		}
+		return validateProjectileEffects(projectile.impactEffects);
+	}
+	
+	private String validateProjectileEffects(Collection<ProjectileEffect> effects) {
+		for (ProjectileEffect effect : effects) {
+			String error = effect.validate();
+			if (error != null)
+				return error;
+		}
+		return null;
+	}
+	
+	private String validateCharges(WandCharges charges) {
+		
+		// Note that it is allowed that the charges are null
+		if (charges != null) {
+			if (charges.maxCharges < 2)
+				return "If the wand uses charges, the number of charges must be at least 2";
+			if (charges.rechargeTime <= 0)
+				return "If the wand uses charges, the recharge time must be a positive integer";
+		}
+		
+		return null;
+	}
 
-	private String addItem(CustomItem item, boolean doClassCheck) {
+	private String addItem(CustomItem item) {
 		if (!bypassChecks()) {
 			if (item == null)
 				return "Can't add null items";
 			String nameError = checkName(item.getName());
 			if (nameError != null)
 				return nameError;
-			if (doClassCheck && item.getClass() != CustomItem.class)
-				return "Use the appropriate method for that class";
 			if (item.getTexture() == null)
 				return "Every item needs a texture";
 			if (item.getAttributes() == null)
@@ -3583,7 +3758,7 @@ public class ItemSet implements ItemSetBase {
 			if (item.getMaxStacksize() < 1 || item.getMaxStacksize() > 64)
 				return "The maximum stacksize (" + item.getMaxStacksize() + ") is out of range";
 		}
-		return addItem(item, false);
+		return addItem(item);
 	}
 	
 	public String changeSimpleItem(SimpleCustomItem item, CustomItemType newType, short newDamage, String newName,
@@ -3598,7 +3773,7 @@ public class ItemSet implements ItemSetBase {
 				return "The maximum stacksize (" + newStacksize + ") is out of range";
 		}
 		String error = changeItem(item, newType, newDamage, newName, newDisplayName, newLore, newAttributes,
-				newEnchantments, newImage, newItemFlags, newCustomModel, playerEffects, targetEffects, commands, false);
+				newEnchantments, newImage, newItemFlags, newCustomModel, playerEffects, targetEffects, commands);
 		if (error == null) {
 			item.setMaxStacksize(newStacksize);
 		}
@@ -3621,15 +3796,14 @@ public class ItemSet implements ItemSetBase {
 	 * @return null if the item was changed successfully or the reason the item
 	 *         could not be changed
 	 */
-	public String changeItem(CustomItem item, CustomItemType newType, short newDamage, String newName,
+	private String changeItem(CustomItem item, CustomItemType newType, short newDamage, String newName,
 			String newDisplayName, String[] newLore, AttributeModifier[] newAttributes, 
 			Enchantment[] newEnchantments, NamedImage newImage, boolean[] itemFlags,
-			byte[] newCustomModel, List<PotionEffect> playerEffects, List<PotionEffect> targetEffects, String[] commands, boolean checkClass) {
+			byte[] newCustomModel, List<PotionEffect> playerEffects, List<PotionEffect> targetEffects, 
+			String[] commands) {
 		if (!bypassChecks()) {
 			if (item == null)
 				return "Can't change null items";
-			if (checkClass && item.getClass() != CustomItem.class)
-				return "Use the appropriate method to change that class";
 			String nameError = checkName(newName);
 			if (nameError != null)
 				return nameError;
@@ -4137,8 +4311,16 @@ public class ItemSet implements ItemSetBase {
 		if (!bypassChecks()) {
 			if (cover == null)
 				return "Can't delete null";
-			// TODO Check if no wand is currently using this projectile cover
-			// Note that this can only be done after wands/guns have been added
+			for (CustomItem item : items) {
+				if (item instanceof CustomWand) {
+					CustomWand wand = (CustomWand) item;
+					if (wand.cover == cover) {
+						return "The wand " + wand.getName() + " is still using this projectile cover.";
+					}
+				}
+			}
+			// TODO Check if no gun is currently using this projectile cover
+			// Note that this can only be done after guns have been added
 		}
 		if (!projectileCovers.remove(cover) && !bypassChecks())
 			return "The given projectile cover wasn't in the list of projectile covers";

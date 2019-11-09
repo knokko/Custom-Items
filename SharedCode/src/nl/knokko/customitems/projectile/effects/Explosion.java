@@ -27,4 +27,11 @@ public class Explosion extends ProjectileEffect {
 		output.addBoolean(destroyBlocks);
 		output.addBoolean(setFire);
 	}
+
+	@Override
+	public String validate() {
+		if (!(power >= 0))
+			return "The explosion power can't be negative";
+		return null;
+	}
 }

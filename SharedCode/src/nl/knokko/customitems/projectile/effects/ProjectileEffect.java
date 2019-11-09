@@ -27,4 +27,11 @@ public abstract class ProjectileEffect {
 	}
 
 	public abstract void toBits(BitOutput output);
+	
+	/** 
+	 * Checks if this projectile effect has any validation errors. If so, it returns one of those validation
+	 * errors. If not, this method returns null.
+	 * @return A validation error if there are any, or null if there are none
+	 */
+	public abstract String validate();
 }
