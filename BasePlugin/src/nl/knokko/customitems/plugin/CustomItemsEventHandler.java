@@ -577,9 +577,69 @@ public class CustomItemsEventHandler implements Listener {
 
 	@EventHandler
 	public void onEntityHit(EntityDamageByEntityEvent event) {
+		LivingEntity target = (LivingEntity) event.getEntity();
+		
+		ItemStack helmet = target.getEquipment().getHelmet();
+		ItemStack chest = target.getEquipment().getChestplate();
+		ItemStack legs = target.getEquipment().getLeggings();
+		ItemStack boots = target.getEquipment().getBoots();
+		
+		if (CustomItem.isCustom(helmet)) {
+			CustomItem custom = CustomItemsPlugin.getInstance().getSet().getItem(helmet);
+			if (custom != null) {
+				Collection<org.bukkit.potion.PotionEffect> pe = new ArrayList<org.bukkit.potion.PotionEffect>();
+				
+				for (PotionEffect effect : custom.getPlayerEffects()) {
+					pe.add(new org.bukkit.potion.PotionEffect(org.bukkit.potion.PotionEffectType.getByName(effect.getEffect().name()), effect.getDuration() * 20, effect.getLevel() - 1));
+				}
+				
+				target.addPotionEffects(pe);
+			} else {
+				Bukkit.getLogger().warning("Interesting item: " + custom);
+			}
+		}
+		
+		if (CustomItem.isCustom(chest)) {
+			CustomItem custom = CustomItemsPlugin.getInstance().getSet().getItem(chest);
+			if (custom != null) {
+				Collection<org.bukkit.potion.PotionEffect> pe = new ArrayList<org.bukkit.potion.PotionEffect>();
+				for (PotionEffect effect : custom.getPlayerEffects()) {
+					pe.add(new org.bukkit.potion.PotionEffect(org.bukkit.potion.PotionEffectType.getByName(effect.getEffect().name()), effect.getDuration() * 20, effect.getLevel() - 1));
+				}
+				target.addPotionEffects(pe);
+			} else {
+				Bukkit.getLogger().warning("Interesting item: " + custom);
+			}
+		}
+		
+		if (CustomItem.isCustom(legs)) {
+			CustomItem custom = CustomItemsPlugin.getInstance().getSet().getItem(legs);
+			if (custom != null) {
+				Collection<org.bukkit.potion.PotionEffect> pe = new ArrayList<org.bukkit.potion.PotionEffect>();
+				for (PotionEffect effect : custom.getPlayerEffects()) {
+					pe.add(new org.bukkit.potion.PotionEffect(org.bukkit.potion.PotionEffectType.getByName(effect.getEffect().name()), effect.getDuration() * 20, effect.getLevel() - 1));
+				}
+				target.addPotionEffects(pe);
+			} else {
+				Bukkit.getLogger().warning("Interesting item: " + custom);
+			}
+		}
+		
+		if (CustomItem.isCustom(boots)) {
+			CustomItem custom = CustomItemsPlugin.getInstance().getSet().getItem(boots);
+			if (custom != null) {
+				Collection<org.bukkit.potion.PotionEffect> pe = new ArrayList<org.bukkit.potion.PotionEffect>();
+				for (PotionEffect effect : custom.getPlayerEffects()) {
+					pe.add(new org.bukkit.potion.PotionEffect(org.bukkit.potion.PotionEffectType.getByName(effect.getEffect().name()), effect.getDuration() * 20, effect.getLevel() - 1));
+				}
+				target.addPotionEffects(pe);
+			} else {
+				Bukkit.getLogger().warning("Interesting item: " + custom);
+			}
+		}
+		
 		if (event.getDamager() instanceof LivingEntity) {
 			LivingEntity damager = (LivingEntity) event.getDamager();
-			LivingEntity target = (LivingEntity) event.getEntity();
 			ItemStack weapon = damager.getEquipment().getItemInMainHand();
 			if (CustomItem.isCustom(weapon)) {
 				CustomItem custom = CustomItemsPlugin.getInstance().getSet().getItem(weapon);
@@ -590,82 +650,24 @@ public class CustomItemsEventHandler implements Listener {
 				}
 			}
 			
-			ItemStack helmet = target.getEquipment().getHelmet();
-			ItemStack chest = target.getEquipment().getChestplate();
-			ItemStack legs = target.getEquipment().getLeggings();
-			ItemStack boots = target.getEquipment().getBoots();
-			
-			if (CustomItem.isCustom(helmet)) {
-				CustomItem custom = CustomItemsPlugin.getInstance().getSet().getItem(helmet);
-				if (custom != null) {
-					Collection<org.bukkit.potion.PotionEffect> pe = new ArrayList<org.bukkit.potion.PotionEffect>();
-					Collection<org.bukkit.potion.PotionEffect> te = new ArrayList<org.bukkit.potion.PotionEffect>();
-					for (PotionEffect effect : custom.getPlayerEffects()) {
-						pe.add(new org.bukkit.potion.PotionEffect(org.bukkit.potion.PotionEffectType.getByName(effect.getEffect().name()), effect.getDuration() * 20, effect.getLevel() - 1));
-					}
-					for (PotionEffect effect : custom.getTargetEffects()) {
-						te.add(new org.bukkit.potion.PotionEffect(org.bukkit.potion.PotionEffectType.getByName(effect.getEffect().name()), effect.getDuration() * 20, effect.getLevel() - 1));
-					}
-					damager.addPotionEffects(te);
-					target.addPotionEffects(pe);
-				} else {
-					Bukkit.getLogger().warning("Interesting item: " + custom);
-				}
+			Collection<org.bukkit.potion.PotionEffect> te = new ArrayList<org.bukkit.potion.PotionEffect>();
+			CustomItem customHelmet = CustomItemsPlugin.getInstance().getSet().getItem(helmet);
+			CustomItem customChest = CustomItemsPlugin.getInstance().getSet().getItem(chest);
+			CustomItem customLegs = CustomItemsPlugin.getInstance().getSet().getItem(legs);
+			CustomItem customBoots = CustomItemsPlugin.getInstance().getSet().getItem(boots);
+			for (PotionEffect effect : customHelmet.getTargetEffects()) {
+				te.add(new org.bukkit.potion.PotionEffect(org.bukkit.potion.PotionEffectType.getByName(effect.getEffect().name()), effect.getDuration() * 20, effect.getLevel() - 1));
 			}
-			
-			if (CustomItem.isCustom(chest)) {
-				CustomItem custom = CustomItemsPlugin.getInstance().getSet().getItem(chest);
-				if (custom != null) {
-					Collection<org.bukkit.potion.PotionEffect> pe = new ArrayList<org.bukkit.potion.PotionEffect>();
-					Collection<org.bukkit.potion.PotionEffect> te = new ArrayList<org.bukkit.potion.PotionEffect>();
-					for (PotionEffect effect : custom.getPlayerEffects()) {
-						pe.add(new org.bukkit.potion.PotionEffect(org.bukkit.potion.PotionEffectType.getByName(effect.getEffect().name()), effect.getDuration() * 20, effect.getLevel() - 1));
-					}
-					for (PotionEffect effect : custom.getTargetEffects()) {
-						te.add(new org.bukkit.potion.PotionEffect(org.bukkit.potion.PotionEffectType.getByName(effect.getEffect().name()), effect.getDuration() * 20, effect.getLevel() - 1));
-					}
-					damager.addPotionEffects(te);
-					target.addPotionEffects(pe);
-				} else {
-					Bukkit.getLogger().warning("Interesting item: " + custom);
-				}
+			for (PotionEffect effect : customChest.getTargetEffects()) {
+				te.add(new org.bukkit.potion.PotionEffect(org.bukkit.potion.PotionEffectType.getByName(effect.getEffect().name()), effect.getDuration() * 20, effect.getLevel() - 1));
 			}
-			
-			if (CustomItem.isCustom(legs)) {
-				CustomItem custom = CustomItemsPlugin.getInstance().getSet().getItem(legs);
-				if (custom != null) {
-					Collection<org.bukkit.potion.PotionEffect> pe = new ArrayList<org.bukkit.potion.PotionEffect>();
-					Collection<org.bukkit.potion.PotionEffect> te = new ArrayList<org.bukkit.potion.PotionEffect>();
-					for (PotionEffect effect : custom.getPlayerEffects()) {
-						pe.add(new org.bukkit.potion.PotionEffect(org.bukkit.potion.PotionEffectType.getByName(effect.getEffect().name()), effect.getDuration() * 20, effect.getLevel() - 1));
-					}
-					for (PotionEffect effect : custom.getTargetEffects()) {
-						te.add(new org.bukkit.potion.PotionEffect(org.bukkit.potion.PotionEffectType.getByName(effect.getEffect().name()), effect.getDuration() * 20, effect.getLevel() - 1));
-					}
-					damager.addPotionEffects(te);
-					target.addPotionEffects(pe);
-				} else {
-					Bukkit.getLogger().warning("Interesting item: " + custom);
-				}
+			for (PotionEffect effect : customLegs.getTargetEffects()) {
+				te.add(new org.bukkit.potion.PotionEffect(org.bukkit.potion.PotionEffectType.getByName(effect.getEffect().name()), effect.getDuration() * 20, effect.getLevel() - 1));
 			}
-			
-			if (CustomItem.isCustom(boots)) {
-				CustomItem custom = CustomItemsPlugin.getInstance().getSet().getItem(boots);
-				if (custom != null) {
-					Collection<org.bukkit.potion.PotionEffect> pe = new ArrayList<org.bukkit.potion.PotionEffect>();
-					Collection<org.bukkit.potion.PotionEffect> te = new ArrayList<org.bukkit.potion.PotionEffect>();
-					for (PotionEffect effect : custom.getPlayerEffects()) {
-						pe.add(new org.bukkit.potion.PotionEffect(org.bukkit.potion.PotionEffectType.getByName(effect.getEffect().name()), effect.getDuration() * 20, effect.getLevel() - 1));
-					}
-					for (PotionEffect effect : custom.getTargetEffects()) {
-						te.add(new org.bukkit.potion.PotionEffect(org.bukkit.potion.PotionEffectType.getByName(effect.getEffect().name()), effect.getDuration() * 20, effect.getLevel() - 1));
-					}
-					damager.addPotionEffects(te);
-					target.addPotionEffects(pe);
-				} else {
-					Bukkit.getLogger().warning("Interesting item: " + custom);
-				}
+			for (PotionEffect effect : customBoots.getTargetEffects()) {
+				te.add(new org.bukkit.potion.PotionEffect(org.bukkit.potion.PotionEffectType.getByName(effect.getEffect().name()), effect.getDuration() * 20, effect.getLevel() - 1));
 			}
+			damager.addPotionEffects(te);
 		}
 	}
 	
