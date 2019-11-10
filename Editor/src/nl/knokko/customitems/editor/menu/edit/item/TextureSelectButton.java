@@ -13,6 +13,7 @@ public abstract class TextureSelectButton extends DynamicTextButton {
 	public TextureSelectButton(NamedImage initial, ItemSet set) {
 		super(initial == null ? "None" : initial.getName(), EditProps.CHOOSE_BASE, EditProps.CHOOSE_HOVER, null);
 		this.set = set;
+		this.selectedTexture = initial;
 		this.clickAction = () -> {
 			handleClick(this);
 		};
