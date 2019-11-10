@@ -49,20 +49,20 @@ public class EditItemTrident extends EditItemTool {
 		addComponent(new DynamicTextComponent("Throw speed multiplier:", EditProps.LABEL), 0.6f, 0.2f, 0.84f, 0.275f);
 		addComponent(throwSpeedMultiplier, 0.85f, 0.2f, 0.9f, 0.275f);
 		
-		addComponent(new DynamicTextComponent("In-hand model: ", EditProps.LABEL), LABEL_X, 0.2f, LABEL_X + 0.2f, 0.25f);
+		addComponent(new DynamicTextComponent("In-hand model: ", EditProps.LABEL), LABEL_X, 0.02f, LABEL_X + 0.2f, 0.07f);
 		addComponent(new DynamicTextButton("Change...", EditProps.BUTTON, EditProps.HOVER, () -> {
 			state.getWindow()
 					.setMainComponent(new EditCustomModel(ItemSet.getDefaultModelBlockingShield(textureSelect.getSelected() != null ? textureSelect.getSelected().getName() : "TEXTURE_NAME"), this, (byte[] array) -> {
 								customInHandModel = array;
 							}));
-		}), BUTTON_X, 0.2f, BUTTON_X + 0.1f, 0.25f);
-		addComponent(new DynamicTextComponent("Throwing model: ", EditProps.LABEL), LABEL_X, 0.14f, LABEL_X + 0.2f, 0.19f);
+		}), BUTTON_X, 0.02f, BUTTON_X + 0.1f, 0.07f);
+		addComponent(new DynamicTextComponent("Throwing model: ", EditProps.LABEL), LABEL_X, -0.04f, LABEL_X + 0.2f, 0.01f);
 		addComponent(new DynamicTextButton("Change...", EditProps.BUTTON, EditProps.HOVER, () -> {
 			state.getWindow()
 					.setMainComponent(new EditCustomModel(ItemSet.getDefaultModelBlockingShield(textureSelect.getSelected() != null ? textureSelect.getSelected().getName() : "TEXTURE_NAME"), this, (byte[] array) -> {
 								customThrowingModel = array;
 							}));
-		}), BUTTON_X, 0.14f, BUTTON_X + 0.1f, 0.19f);
+		}), BUTTON_X, -0.04f, BUTTON_X + 0.1f, 0.01f);
 	}
 	
 	@Override
