@@ -25,13 +25,14 @@ package nl.knokko.customitems.editor.menu.edit;
 
 import nl.knokko.customitems.MCVersions;
 import nl.knokko.customitems.editor.menu.edit.drops.DropsMenu;
-import nl.knokko.customitems.editor.menu.edit.item.ItemOverview;
-import nl.knokko.customitems.editor.menu.edit.projectile.cover.ProjectileCoverOverview;
-import nl.knokko.customitems.editor.menu.edit.recipe.RecipeOverview;
-import nl.knokko.customitems.editor.menu.edit.texture.TextureOverview;
+import nl.knokko.customitems.editor.menu.edit.item.ItemCollectionEdit;
+import nl.knokko.customitems.editor.menu.edit.projectile.cover.ProjectileCoverCollectionEdit;
+import nl.knokko.customitems.editor.menu.edit.recipe.RecipeCollectionEdit;
+import nl.knokko.customitems.editor.menu.edit.texture.TextureCollectionEdit;
 import nl.knokko.customitems.editor.menu.main.MainMenu;
 import nl.knokko.customitems.editor.set.ItemSet;
 import nl.knokko.gui.color.GuiColor;
+import nl.knokko.gui.component.GuiComponent;
 import nl.knokko.gui.component.menu.GuiMenu;
 import nl.knokko.gui.component.text.dynamic.DynamicTextButton;
 import nl.knokko.gui.component.text.dynamic.DynamicTextComponent;
@@ -42,19 +43,19 @@ public class EditMenu extends GuiMenu {
 	
 	protected final DynamicTextComponent errorComponent;
 	
-	protected final ItemOverview itemOverview;
-	protected final TextureOverview textureOverview;
-	protected final RecipeOverview recipeOverview;
-	protected final DropsMenu dropsMenu;
-	protected final ProjectileCoverOverview projectileCoverOverview;
+	protected final GuiComponent itemOverview;
+	protected final GuiComponent textureOverview;
+	protected final GuiComponent recipeOverview;
+	protected final GuiComponent dropsMenu;
+	protected final GuiComponent projectileCoverOverview;
 
 	public EditMenu(ItemSet set) {
 		this.set = set;
-		itemOverview = new ItemOverview(this);
-		textureOverview = new TextureOverview(this);
-		recipeOverview = new RecipeOverview(this);
+		itemOverview = new ItemCollectionEdit(this);
+		textureOverview = new TextureCollectionEdit(this);
+		recipeOverview = new RecipeCollectionEdit(this);
 		dropsMenu = new DropsMenu(this);
-		projectileCoverOverview = new ProjectileCoverOverview(this);
+		projectileCoverOverview = new ProjectileCoverCollectionEdit(this);
 		
 		errorComponent = new DynamicTextComponent("", EditProps.ERROR);
 	}
@@ -69,19 +70,23 @@ public class EditMenu extends GuiMenu {
 		return set;
 	}
 	
-	public ItemOverview getItemOverview() {
+	public GuiComponent getItemOverview() {
 		return itemOverview;
 	}
 	
-	public TextureOverview getTextureOverview() {
+	public GuiComponent getTextureOverview() {
 		return textureOverview;
 	}
 	
-	public RecipeOverview getRecipeOverview() {
+	public GuiComponent getRecipeOverview() {
 		return recipeOverview;
 	}
 	
-	public ProjectileCoverOverview getProjectileCoverOverview() {
+	public GuiComponent getDropsMenu() {
+		return dropsMenu;
+	}
+	
+	public GuiComponent getProjectileCoverOverview() {
 		return projectileCoverOverview;
 	}
 	
