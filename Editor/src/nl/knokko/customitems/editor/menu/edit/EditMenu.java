@@ -26,7 +26,7 @@ package nl.knokko.customitems.editor.menu.edit;
 import nl.knokko.customitems.MCVersions;
 import nl.knokko.customitems.editor.menu.edit.drops.DropsMenu;
 import nl.knokko.customitems.editor.menu.edit.item.ItemOverview;
-import nl.knokko.customitems.editor.menu.edit.projectilecover.ProjectileCoverOverview;
+import nl.knokko.customitems.editor.menu.edit.projectile.cover.ProjectileCoverOverview;
 import nl.knokko.customitems.editor.menu.edit.recipe.RecipeOverview;
 import nl.knokko.customitems.editor.menu.edit.texture.TextureOverview;
 import nl.knokko.customitems.editor.menu.main.MainMenu;

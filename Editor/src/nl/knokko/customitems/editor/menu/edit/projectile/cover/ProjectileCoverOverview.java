@@ -1,4 +1,4 @@
-package nl.knokko.customitems.editor.menu.edit.projectilecover;
+package nl.knokko.customitems.editor.menu.edit.projectile.cover;
 
 import java.util.Collection;
 
