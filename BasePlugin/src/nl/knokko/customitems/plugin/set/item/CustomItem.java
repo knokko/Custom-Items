@@ -48,114 +48,116 @@ import nl.knokko.customitems.item.Enchantment;
 import nl.knokko.customitems.effect.PotionEffect;
 
 public abstract class CustomItem extends nl.knokko.customitems.item.CustomItem {
-	
+
 	public static boolean isCustom(ItemStack item) {
 		return item != null && item.hasItemMeta() && item.getItemMeta().isUnbreakable() && item.getDurability() > 0;
 	}
-	
+
 	protected final CIMaterial material;
-	
+
 	protected final Single[] attributeModifiers;
-    
-    public CustomItem(CustomItemType itemType, short itemDamage, String name, String displayName, 
-    		String[] lore, AttributeModifier[] attributes, Enchantment[] defaultEnchantments, boolean[] itemFlags, 
-    		List<PotionEffect> playerEffects, List<PotionEffect> targetEffects, String[] commands){
-        super(itemType, itemDamage, name, displayName, lore, attributes, defaultEnchantments, itemFlags, playerEffects, targetEffects, commands);
-        
-        String materialName = itemType.name();
-        
-        // This method distinguishes minecraft 1.12 and before from minecraft 1.13 and later
-        // That is what we need here, because Bukkit renamed all WOOD_* tools to WOODEN_* tools
-        if (CorePlugin.useNewCommands()) {
-        	materialName = materialName.replace("WOOD", "WOODEN").replace("GOLD", "GOLDEN");
-        } else {
-        	materialName = materialName.replace("SHOVEL", "SPADE");
-        }
-        material = CIMaterial.valueOf(materialName);
-        attributeModifiers = new Single[attributes.length];
-        for (int index = 0; index < attributes.length; index++) {
-        	AttributeModifier a = attributes[index];
-        	attributeModifiers[index] = new Single(a.getAttribute().getName(), a.getSlot().getSlot(), a.getOperation().getOperation(), a.getValue());
-        }
-    }
-    
-    protected List<String> createLore(){
-    	return Lists.newArrayList(lore);
-    }
-    
-    protected ItemMeta createItemMeta(ItemStack item, List<String> lore) {
-    	ItemMeta meta = item.getItemMeta();
-        meta.setDisplayName(displayName);
-        meta.setLore(lore);
-        meta.setUnbreakable(true);
-        ItemFlag[] allFlags = ItemFlag.values();
-        for (int index = 0; index < allFlags.length; index++) {
-        	if (itemFlags[index]) {
-        		meta.addItemFlags(allFlags[index]);
-        	}
-        }
-        return meta;
-    }
-    
-    public ItemStack create(int amount, List<String> lore){
-    	ItemStack item = ItemAttributes.createWithAttributes(material.name(), amount, attributeModifiers);
-        item.setItemMeta(createItemMeta(item, lore));
-        item.setDurability(itemDamage);
-        for (Enchantment enchantment : defaultEnchantments) {
-        	item.addUnsafeEnchantment(org.bukkit.enchantments.Enchantment.getByName(enchantment.getType().name()), enchantment.getLevel());
-        }
-        return item;
-    }
-    
-    public ItemStack create(int amount) {
-    	return create(amount, createLore());
-    }
-    
-    public static short getDamage(ItemStack item) {
-    	return item.getDurability();
-    }
-    
-    public boolean forbidDefaultUse(ItemStack item) {
-    	return true;
-    }
-    
-    public boolean is(ItemStack item){
-        return item != null && item.hasItemMeta() && item.getItemMeta().isUnbreakable() && ItemHelper.getMaterialName(item).equals(material.name()) && getDamage(item) == itemDamage;
-    }
-    
-    public CIMaterial getMaterial() {
-    	return material;
-    }
-    
-    public boolean canStack() {
-    	return getMaxStacksize() > 1;
-    }
-    
-    public abstract int getMaxStacksize();
-    
-    public boolean allowVanillaEnchanting() {
-    	return false;
-    }
-    
-    public boolean allowAnvilActions() {
-    	return false;
-    }
-    
-    public void onBlockBreak(Player player, ItemStack item, Block block) {}
-    
-    public void onEntityHit(LivingEntity attacker, ItemStack weapon, Entity target) {
-    	Collection<org.bukkit.potion.PotionEffect> pe = new ArrayList<org.bukkit.potion.PotionEffect>();
-    	for (PotionEffect effect : playerEffects) {
-    		pe.add(new org.bukkit.potion.PotionEffect(org.bukkit.potion.PotionEffectType.getByName(effect.getEffect().name()), effect.getDuration() * 20, effect.getLevel() - 1));
-    	}
-    	Collection<org.bukkit.potion.PotionEffect> te = new ArrayList<org.bukkit.potion.PotionEffect>();
-    	for (PotionEffect effect : targetEffects) {
-    		te.add(new org.bukkit.potion.PotionEffect(org.bukkit.potion.PotionEffectType.getByName(effect.getEffect().name()), effect.getDuration() * 20, effect.getLevel() - 1));
-    	}
-    	attacker.addPotionEffects(pe);
-    	if (target instanceof LivingEntity) {
-    		LivingEntity t = (LivingEntity) target;
-    		t.addPotionEffects(te);
-    	}
-    }
+
+	public CustomItem(CustomItemType itemType, short itemDamage, String name, String displayName, 
+			String[] lore, AttributeModifier[] attributes, Enchantment[] defaultEnchantments, boolean[] itemFlags, 
+			List<PotionEffect> playerEffects, List<PotionEffect> targetEffects, String[] commands){
+		super(itemType, itemDamage, name, displayName, lore, attributes, defaultEnchantments, itemFlags, playerEffects, targetEffects, commands);
+
+		String materialName = itemType.name();
+
+		// This method distinguishes minecraft 1.12 and before from minecraft 1.13 and later
+		// That is what we need here, because Bukkit renamed all WOOD_* tools to WOODEN_* tools
+		if (CorePlugin.useNewCommands()) {
+			materialName = materialName.replace("WOOD", "WOODEN").replace("GOLD", "GOLDEN");
+		} else {
+			materialName = materialName.replace("SHOVEL", "SPADE");
+		}
+		material = CIMaterial.valueOf(materialName);
+		attributeModifiers = new Single[attributes.length];
+		for (int index = 0; index < attributes.length; index++) {
+			AttributeModifier a = attributes[index];
+			attributeModifiers[index] = new Single(a.getAttribute().getName(), a.getSlot().getSlot(), a.getOperation().getOperation(), a.getValue());
+		}
+	}
+
+	protected List<String> createLore(){
+		return Lists.newArrayList(lore);
+	}
+
+	protected ItemMeta createItemMeta(ItemStack item, List<String> lore) {
+		ItemMeta meta = item.getItemMeta();
+		meta.setDisplayName(displayName);
+		meta.setLore(lore);
+		meta.setUnbreakable(true);
+		ItemFlag[] allFlags = ItemFlag.values();
+		for (int index = 0; index < allFlags.length; index++) {
+			if (itemFlags[index]) {
+				meta.addItemFlags(allFlags[index]);
+			}
+		}
+		return meta;
+	}
+
+	public ItemStack create(int amount, List<String> lore){
+		ItemStack item = ItemAttributes.createWithAttributes(material.name(), amount, attributeModifiers);
+		item.setItemMeta(createItemMeta(item, lore));
+		item.setDurability(itemDamage);
+		for (Enchantment enchantment : defaultEnchantments) {
+			item.addUnsafeEnchantment(org.bukkit.enchantments.Enchantment.getByName(enchantment.getType().name()), enchantment.getLevel());
+		}
+		return item;
+	}
+
+	public ItemStack create(int amount) {
+		return create(amount, createLore());
+	}
+
+	public static short getDamage(ItemStack item) {
+		return item.getDurability();
+	}
+
+	public boolean forbidDefaultUse(ItemStack item) {
+		return true;
+	}
+
+	public boolean is(ItemStack item){
+		return item != null && item.hasItemMeta() && item.getItemMeta().isUnbreakable() && ItemHelper.getMaterialName(item).equals(material.name()) && getDamage(item) == itemDamage;
+	}
+
+	public CIMaterial getMaterial() {
+		return material;
+	}
+
+	public boolean canStack() {
+		return getMaxStacksize() > 1;
+	}
+
+	public abstract int getMaxStacksize();
+
+	public boolean allowVanillaEnchanting() {
+		return false;
+	}
+
+	public boolean allowAnvilActions() {
+		return false;
+	}
+
+	public void onBlockBreak(Player player, ItemStack item, Block block) {}
+
+	public void onEntityHit(LivingEntity attacker, ItemStack weapon, Entity target) {
+		if (!(this instanceof CustomBow || this instanceof CustomArmor)) {
+			Collection<org.bukkit.potion.PotionEffect> pe = new ArrayList<org.bukkit.potion.PotionEffect>();
+			for (PotionEffect effect : playerEffects) {
+				pe.add(new org.bukkit.potion.PotionEffect(org.bukkit.potion.PotionEffectType.getByName(effect.getEffect().name()), effect.getDuration() * 20, effect.getLevel() - 1));
+			}
+			Collection<org.bukkit.potion.PotionEffect> te = new ArrayList<org.bukkit.potion.PotionEffect>();
+			for (PotionEffect effect : targetEffects) {
+				te.add(new org.bukkit.potion.PotionEffect(org.bukkit.potion.PotionEffectType.getByName(effect.getEffect().name()), effect.getDuration() * 20, effect.getLevel() - 1));
+			}
+			attacker.addPotionEffects(pe);
+			if (target instanceof LivingEntity) {
+				LivingEntity t = (LivingEntity) target;
+				t.addPotionEffects(te);
+			}
+		}
+	}
 }
