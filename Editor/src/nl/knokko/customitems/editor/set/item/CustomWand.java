@@ -21,6 +21,8 @@ public class CustomWand extends CustomItem {
 	public int cooldown;
 	/** If charges is null, the wand doesn't need charges and only has to worry about its cooldown */
 	public WandCharges charges;
+	/** The amount of projectiles to shoot each time the wand is used */
+	public int amountPerShot;
 
 	public CustomWand(CustomItemType itemType, short itemDamage, String name, String displayName, String[] lore,
 			AttributeModifier[] attributes, Enchantment[] defaultEnchantments, NamedImage texture, boolean[] itemFlags,
@@ -81,5 +83,6 @@ public class CustomWand extends CustomItem {
 		if (charges != null) {
 			charges.toBits(output);
 		}
+		output.addInt(amountPerShot);
 	}
 }
