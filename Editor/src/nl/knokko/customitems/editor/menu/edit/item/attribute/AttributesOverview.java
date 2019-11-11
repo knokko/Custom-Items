@@ -26,6 +26,7 @@ package nl.knokko.customitems.editor.menu.edit.item.attribute;
 import java.util.List;
 
 import nl.knokko.customitems.editor.menu.edit.EditProps;
+import nl.knokko.customitems.editor.menu.edit.EnumSelect;
 import nl.knokko.customitems.item.AttributeModifier;
 import nl.knokko.customitems.item.AttributeModifier.Attribute;
 import nl.knokko.customitems.item.AttributeModifier.Operation;
@@ -36,9 +37,10 @@ import nl.knokko.gui.component.image.ImageButton;
 import nl.knokko.gui.component.menu.GuiMenu;
 import nl.knokko.gui.component.text.dynamic.DynamicTextButton;
 import nl.knokko.gui.component.text.dynamic.DynamicTextComponent;
-import nl.knokko.gui.component.text.TextEditField;
+import nl.knokko.gui.component.text.FloatEditField;
 import nl.knokko.gui.texture.GuiTexture;
 import nl.knokko.gui.texture.loader.GuiTextureLoader;
+import nl.knokko.gui.util.Option;
 
 public class AttributesOverview extends GuiMenu {
 	
@@ -85,10 +87,10 @@ public class AttributesOverview extends GuiMenu {
 			for (SubComponent component : components) {
 				if (component.getComponent() instanceof Entry) {
 					Entry entry = (Entry) component.getComponent();
-					try {
-						double value = Double.parseDouble(entry.valueField.getText());
-						result[index++] = new AttributeModifier(entry.attribute, entry.slot, entry.operation, value);
-					} catch (NumberFormatException ex) {
+					Option.Double maybeValue = entry.valueField.getDouble();
+					if (maybeValue.hasValue()) {
+						result[index++] = new AttributeModifier(entry.attribute, entry.slot, entry.operation, maybeValue.getValue());
+					} else {
 						errorComponent.setText("All values must be numbers");
 						return;
 					}
@@ -109,17 +111,13 @@ public class AttributesOverview extends GuiMenu {
 		private Attribute attribute;
 		private Slot slot;
 		private Operation operation;
-		private TextEditField valueField;
-		
-		private DynamicTextButton attributeButton;
-		private DynamicTextButton slotButton;
-		private DynamicTextButton operationButton;
+		private FloatEditField valueField;
 		
 		private Entry(AttributeModifier attribute) {
 			this.attribute = attribute.getAttribute();
 			this.slot = attribute.getSlot();
 			this.operation = attribute.getOperation();
-			this.valueField = new TextEditField(attribute.getValue() + "", EditProps.EDIT_BASE, EditProps.EDIT_ACTIVE);
+			this.valueField = new FloatEditField(attribute.getValue(), -Double.MAX_VALUE, EditProps.EDIT_BASE, EditProps.EDIT_ACTIVE);
 		}
 		
 		@Override
@@ -129,30 +127,21 @@ public class AttributesOverview extends GuiMenu {
 
 		@Override
 		protected void addComponents() {
-			attributeButton = new DynamicTextButton(attribute.getName(), EditProps.BUTTON, EditProps.HOVER, () -> {
-				state.getWindow().setMainComponent(new AttributeSelect((Attribute newAttribute) -> {
-					this.attribute = newAttribute;
-					attributeButton.setText(attribute.getName());
-				}, AttributesOverview.this));
-			});
-			slotButton = new DynamicTextButton(slot.getSlot(), EditProps.BUTTON, EditProps.HOVER, () -> {
-				state.getWindow().setMainComponent(new SlotSelect(AttributesOverview.this, (Slot slot) -> {
-					this.slot = slot;
-					slotButton.setText(slot.getSlot());
-				}));
-			});
-			operationButton = new DynamicTextButton(operation.toString(), EditProps.BUTTON, EditProps.HOVER, () -> {
-				state.getWindow().setMainComponent(new OperationSelect(AttributesOverview.this, (Operation operation) -> {
-					this.operation = operation;
-					operationButton.setText(operation.toString());
-				}));
-			});
+			GuiComponent attributeButton = EnumSelect.createSelectButton(Attribute.class, (Attribute newAttribute) -> {
+				this.attribute = newAttribute;
+			}, this.attribute);
+			GuiComponent slotButton = EnumSelect.createSelectButton(Slot.class, (Slot newSlot) -> {
+				this.slot = newSlot;
+			}, this.slot);
+			GuiComponent operationButton = EnumSelect.createSelectButton(Operation.class, (Operation newOperation) -> {
+				this.operation = newOperation;
+			}, operation);
 			addComponent(new ImageButton(deleteBase, deleteHover, () -> {
 				AttributesOverview.this.removeComponent(this);
 			}), 0f, 0f, 0.075f, 1f);
 			addComponent(attributeButton, 0.09f, 0f, 0.41f, 1f);
-			addComponent(slotButton, 0.425f, 0f, 0.55f, 1f);
-			addComponent(operationButton, 0.56f, 0f, 0.76f, 1f);
+			addComponent(slotButton, 0.425f, 0f, 0.6f, 1f);
+			addComponent(operationButton, 0.61f, 0f, 0.76f, 1f);
 			addComponent(new DynamicTextComponent("Value: ", EditProps.LABEL), 0.775f, 0f, 0.87f, 1f);
 			addComponent(valueField, 0.875f, 0f, 0.975f, 1f);
 		}

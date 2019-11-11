@@ -26,6 +26,7 @@ package nl.knokko.customitems.editor.menu.edit.item.enchantment;
 import java.util.List;
 
 import nl.knokko.customitems.editor.menu.edit.EditProps;
+import nl.knokko.customitems.editor.menu.edit.EnumSelect;
 import nl.knokko.customitems.item.Enchantment;
 import nl.knokko.customitems.item.EnchantmentType;
 import nl.knokko.gui.color.GuiColor;
@@ -97,7 +98,7 @@ public class EnchantmentsOverview extends GuiMenu {
 		addComponent(errorComponent, 0.05f, 0.9f, 0.95f, 1f);
 		for (int index = 0; index < current.length; index++) {
 			float y = 0.8f - index * 0.125f;
-			addComponent(new Entry(current[index]), 0.4f, y, 1f, y + 0.1f);
+			addComponent(new Entry(current[index]), 0.6f, y, 1f, y + 0.1f);
 		}
 	}
 	
@@ -106,7 +107,7 @@ public class EnchantmentsOverview extends GuiMenu {
 		private EnchantmentType type;
 		private TextEditField valueField;
 		
-		private DynamicTextButton enchantmentButton;
+		//private DynamicTextButton enchantmentButton;
 		
 		private Entry(Enchantment enchantment) {
 			this.type = enchantment.getType();
@@ -120,18 +121,14 @@ public class EnchantmentsOverview extends GuiMenu {
 
 		@Override
 		protected void addComponents() {
-			enchantmentButton = new DynamicTextButton(type.getName(), EditProps.BUTTON, EditProps.HOVER, () -> {
-				state.getWindow().setMainComponent(new EnchantmentSelect((EnchantmentType newEnchantment) -> {
-					this.type = newEnchantment;
-					enchantmentButton.setText(type.getName());
-				}, EnchantmentsOverview.this));
-			});
 			addComponent(new ImageButton(deleteBase, deleteHover, () -> {
 				EnchantmentsOverview.this.removeComponent(this);
 			}), 0f, 0f, 0.075f, 1f);
-			addComponent(enchantmentButton, 0.09f, 0f, 0.41f, 1f);
-			addComponent(new DynamicTextComponent("Level: ", EditProps.LABEL), 0.775f, 0f, 0.87f, 1f);
-			addComponent(valueField, 0.875f, 0f, 0.975f, 1f);
+			addComponent(EnumSelect.createSelectButton(EnchantmentType.class, (EnchantmentType newType) -> {
+				type = newType;
+			}, type), 0.1f, 0f, 0.5f, 1f);
+			addComponent(new DynamicTextComponent("Level: ", EditProps.LABEL), 0.6f, 0f, 0.85f, 1f);
+			addComponent(valueField, 0.86f, 0f, 0.975f, 1f);
 		}
 	}
 	

@@ -2,8 +2,8 @@ package nl.knokko.customitems.editor.menu.edit.projectile.cover;
 
 import nl.knokko.customitems.editor.menu.edit.EditMenu;
 import nl.knokko.customitems.editor.menu.edit.EditProps;
-import nl.knokko.customitems.editor.menu.edit.item.ItemTypeSelectButton;
-import nl.knokko.customitems.editor.set.ItemDamageClaim;
+import nl.knokko.customitems.editor.menu.edit.EnumSelect;
+import nl.knokko.customitems.editor.menu.edit.item.EditItemBase;
 import nl.knokko.customitems.editor.set.ItemSet;
 import nl.knokko.customitems.editor.set.projectile.cover.ProjectileCover;
 import nl.knokko.customitems.item.CustomItemType;
@@ -15,7 +15,6 @@ import nl.knokko.gui.component.text.TextEditField;
 import nl.knokko.gui.component.text.dynamic.DynamicTextButton;
 import nl.knokko.gui.component.text.dynamic.DynamicTextComponent;
 import nl.knokko.gui.util.Option;
-import nl.knokko.gui.util.Option.Short;
 
 public abstract class EditProjectileCover extends GuiMenu {
 	
@@ -24,7 +23,8 @@ public abstract class EditProjectileCover extends GuiMenu {
 	protected DynamicTextComponent errorComponent;
 	
 	protected TextEditField nameField;
-	protected ItemTypeSelect internalTypeSelect;
+	//protected ItemTypeSelect internalTypeSelect;
+	protected CustomItemType internalType;
 	protected IntEditField internalDamageField;
 	
 	public EditProjectileCover(EditMenu menu) {
@@ -43,12 +43,13 @@ public abstract class EditProjectileCover extends GuiMenu {
 		
 		if (original == null) {
 			nameField = new TextEditField("", EditProps.EDIT_BASE, EditProps.EDIT_ACTIVE);
-			internalTypeSelect = new ItemTypeSelect(menu.getSet(), Category.PROJECTILE_COVER, 
-					CustomItemType.DIAMOND_HOE, null);
-			internalDamageField = new IntEditField(menu.getSet().nextAvailableDamage(internalTypeSelect.getCurrentType(), null), 1, EditProps.EDIT_BASE, EditProps.EDIT_ACTIVE);
+			//internalTypeSelect = new ItemTypeSelect(menu.getSet(), Category.PROJECTILE_COVER, CustomItemType.DIAMOND_HOE, null);
+			internalType = EditItemBase.chooseInitialItemType(menu.getSet(), Category.PROJECTILE_COVER, CustomItemType.DIAMOND_SHOVEL, null);
+			internalDamageField = new IntEditField(menu.getSet().nextAvailableDamage(internalType, null), 1, EditProps.EDIT_BASE, EditProps.EDIT_ACTIVE);
 		} else {
 			nameField = new TextEditField(original.name, EditProps.EDIT_BASE, EditProps.EDIT_ACTIVE);
-			internalTypeSelect = new ItemTypeSelect(original.itemType, Category.PROJECTILE_COVER);
+			//internalTypeSelect = new ItemTypeSelect(original.itemType, Category.PROJECTILE_COVER);
+			internalType = original.itemType;
 			internalDamageField = new IntEditField(original.itemDamage, 1, original.itemType.getMaxDurability(), EditProps.EDIT_BASE, EditProps.EDIT_ACTIVE);
 		}
 		
@@ -56,7 +57,33 @@ public abstract class EditProjectileCover extends GuiMenu {
 		addComponent(new DynamicTextComponent("Name:", EditProps.LABEL), 0.5f, 0.8f, 0.59f, 0.9f);
 		addComponent(nameField, 0.6f, 0.81f, 0.9f, 0.89f);
 		addComponent(new DynamicTextComponent("Internal item type:", EditProps.LABEL), 0.25f, 0.7f, 0.59f, 0.8f);
-		addComponent(internalTypeSelect, 0.6f, 0.71f, 0.8f, 0.79f);
+		addComponent(EnumSelect.createSelectButton(CustomItemType.class, (CustomItemType newType) -> {
+			internalType = newType;
+			
+			// Check if we should change the internal item damage
+			Option.Short maybeInternalDamage = internalDamageField.getInt().toShort();
+			ItemSet set = menu.getSet();
+			boolean editInternalDamage;
+			
+			if (maybeInternalDamage.hasValue()) {
+				short internalDamage = maybeInternalDamage.getValue();
+				editInternalDamage = !set.isItemDamageTypeFree(newType, internalDamage, null);
+			} else {
+				editInternalDamage = true;
+			}
+			
+			if (editInternalDamage) {
+				short newDamage = set.nextAvailableDamage(newType, getOriginal());
+				if (newDamage == -1) {
+					errorComponent.setText("There is no internal item damage available for this type!");
+				} else {
+					errorComponent.setText("");
+					internalDamageField.setText(newDamage + "");
+				}
+			}
+		}, (CustomItemType option) -> {
+			return option.canServe(Category.PROJECTILE_COVER);
+		}, internalType), 0.6f, 0.71f, 0.8f, 0.79f);
 		addComponent(new DynamicTextComponent("Internal item damage:", EditProps.LABEL), 0.25f, 0.6f, 0.59f, 0.7f);
 		addComponent(internalDamageField, 0.6f, 0.61f, 0.8f, 0.69f);
 		
@@ -64,7 +91,7 @@ public abstract class EditProjectileCover extends GuiMenu {
 			addComponent(new DynamicTextButton("Create", EditProps.SAVE_BASE, EditProps.SAVE_HOVER, () -> {
 				Option.Short internalDamage = internalDamageField.getInt().toShort();
 				if (internalDamage.hasValue()) {
-					tryCreate(nameField.getText(), internalTypeSelect.getCurrentType(), internalDamage.getValue());
+					tryCreate(nameField.getText(), internalType, internalDamage.getValue());
 				} else {
 					errorComponent.setText("The internal item damage must be a positive integer");
 				}
@@ -73,7 +100,7 @@ public abstract class EditProjectileCover extends GuiMenu {
 			addComponent(new DynamicTextButton("Apply", EditProps.SAVE_BASE, EditProps.SAVE_HOVER, () -> {
 				Option.Short internalDamage = internalDamageField.getInt().toShort();
 				if (internalDamage.hasValue()) {
-					tryApply(nameField.getText(), internalTypeSelect.getCurrentType(), internalDamage.getValue());
+					tryApply(nameField.getText(), internalType, internalDamage.getValue());
 				} else {
 					errorComponent.setText("The internal item damage must be a positive integer");
 				}
@@ -97,42 +124,6 @@ public abstract class EditProjectileCover extends GuiMenu {
 			state.getWindow().setMainComponent(menu.getProjectileCoverOverview());
 		} else {
 			errorComponent.setText(error);
-		}
-	}
-	
-	protected class ItemTypeSelect extends ItemTypeSelectButton {
-
-		public ItemTypeSelect(ItemSet set, Category category, CustomItemType preferred, ItemDamageClaim original) {
-			super(set, category, preferred, original);
-		}
-		
-		public ItemTypeSelect(CustomItemType type, Category category) {
-			super(type, category);
-		}
-
-		@Override
-		protected void setErrorText(String error) {
-			errorComponent.setText(error);
-		}
-
-		@Override
-		protected Short getInternalDamage() {
-			return internalDamageField.getInt().toShort();
-		}
-
-		@Override
-		protected void setInternalDamage(short newDamage) {
-			internalDamageField.setText(newDamage + "");
-		}
-
-		@Override
-		protected ItemSet getSet() {
-			return menu.getSet();
-		}
-
-		@Override
-		protected ItemDamageClaim getOriginal() {
-			return EditProjectileCover.this.getOriginal();
 		}
 	}
 }

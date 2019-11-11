@@ -7,7 +7,7 @@ import nl.knokko.gui.component.text.dynamic.DynamicTextButton;
 
 public class EnumSelect<T extends Enum<?>> extends GuiMenu {
 	
-	public static <T extends Enum<?>> GuiComponent createSelectButton(Class<T> enumClass, Receiver<T> receiver, T current) {
+	public static <T extends Enum<?>> GuiComponent createSelectButton(Class<T> enumClass, Receiver<T> receiver, EnumFilter<T> filter, T current) {
 		String text = current == null ? "None" : current.toString();
 		return new DynamicTextButton(text, EditProps.BUTTON, EditProps.HOVER, null) {
 			
@@ -16,18 +16,24 @@ public class EnumSelect<T extends Enum<?>> extends GuiMenu {
 				state.getWindow().setMainComponent(new EnumSelect<T>(enumClass, (T newType) -> {
 					setText(newType.toString());
 					receiver.onSelect(newType);
-				}, state.getWindow().getMainComponent()));
+				}, filter, state.getWindow().getMainComponent()));
 			}
 		};
 	}
 	
+	public static <T extends Enum<?>> GuiComponent createSelectButton(Class<T> enumClass, Receiver<T> receiver, T current) {
+		return createSelectButton(enumClass, receiver, (T option) -> { return true; } , current);
+	}
+	
 	private final Class<T> enumClass;
 	private final Receiver<T> receiver;
+	private final EnumFilter<T> filter;
 	private final GuiComponent returnMenu;
 	
-	private EnumSelect(Class<T> enumClass, Receiver<T> receiver, GuiComponent returnMenu) {
+	private EnumSelect(Class<T> enumClass, Receiver<T> receiver, EnumFilter<T> filter, GuiComponent returnMenu) {
 		this.enumClass = enumClass;
 		this.receiver = receiver;
+		this.filter = filter;
 		this.returnMenu = returnMenu;
 	}
 
@@ -38,17 +44,42 @@ public class EnumSelect<T extends Enum<?>> extends GuiMenu {
 		}), 0.025f, 0.7f, 0.2f, 0.8f);
 		
 		T[] all = enumClass.getEnumConstants();
-		float x = 0.25f;
-		float y = 0.8f;
-		for (T currentType : all) {
-			addComponent(new DynamicTextButton(currentType.toString(), EditProps.CHOOSE_BASE, EditProps.CHOOSE_HOVER, () -> {
-				receiver.onSelect(currentType);
-				state.getWindow().setMainComponent(returnMenu);
-			}), x, y - 0.1f, x + 0.2f, y);
-			y -= 0.15f;
-			if (y < 0.1f) {
-				x += 0.25f;
-				y = 0.8f;
+		
+		if (all.length <= 12) {
+			
+			// If everything fits on the page, just put everything on the page
+			float x = 0.25f;
+			float y = 0.8f;
+			for (T currentType : all) {
+				if (filter.allow(currentType)) {
+					addComponent(new DynamicTextButton(currentType.toString(), EditProps.CHOOSE_BASE, EditProps.CHOOSE_HOVER, () -> {
+						receiver.onSelect(currentType);
+						state.getWindow().setMainComponent(returnMenu);
+					}), x, y - 0.1f, x + 0.2f, y);
+					y -= 0.15f;
+					if (y < 0.1f) {
+						x += 0.25f;
+						y = 0.8f;
+					}
+				}
+			}
+		} else {
+			
+			// Not everything fits, so we let the list grow down
+			float x = 0.25f;
+			float y = 0.8f;
+			for (T currentType : all) {
+				if (filter.allow(currentType)) {
+					addComponent(new DynamicTextButton(currentType.toString(), EditProps.CHOOSE_BASE, EditProps.CHOOSE_HOVER, () -> {
+						receiver.onSelect(currentType);
+						state.getWindow().setMainComponent(returnMenu);
+					}), x, y - 0.1f, x + 0.2f, y);
+					x += 0.25f;
+					if (x > 0.99f) {
+						x = 0.25f;
+						y -= 0.15f;
+					}
+				}
 			}
 		}
 	}
@@ -61,5 +92,10 @@ public class EnumSelect<T extends Enum<?>> extends GuiMenu {
 	public static interface Receiver<T> {
 		
 		void onSelect(T selected);
+	}
+	
+	public static interface EnumFilter<T> {
+		
+		boolean allow(T option);
 	}
 }

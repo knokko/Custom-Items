@@ -53,7 +53,7 @@ public class EditItemShears extends EditItemTool {
 		if (!durLoss.hasValue())
 			return "The shear durability loss must be a positive integer";
 		return menu.getSet().addShears(
-				new CustomShears(internalType.currentType, damage, name.getText(), getDisplayName(),
+				new CustomShears(internalType, damage, name.getText(), getDisplayName(),
 						lore, attributes, enchantments, maxUses, allowEnchanting.isChecked(),
 						allowAnvil.isChecked(), repairItem.getIngredient(), textureSelect.getSelected(), itemFlags,
 						entityHitDurabilityLoss, blockBreakDurabilityLoss, durLoss.getValue(), customModel, 
@@ -65,7 +65,7 @@ public class EditItemShears extends EditItemTool {
 		Option.Int durLoss = shearDurabilityLoss.getInt();
 		if (!durLoss.hasValue())
 			return "The shear durability loss must be a positive integer";
-		return menu.getSet().changeShears(previous, internalType.currentType, damage, name.getText(),
+		return menu.getSet().changeShears(previous, internalType, damage, name.getText(),
 				getDisplayName(), lore, attributes, enchantments, allowEnchanting.isChecked(),
 				allowAnvil.isChecked(), repairItem.getIngredient(), maxUses, textureSelect.getSelected(),
 				itemFlags, entityHitDurabilityLoss, blockBreakDurabilityLoss, durLoss.getValue(),

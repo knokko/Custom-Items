@@ -74,7 +74,7 @@ public class EditItemArmor extends EditItemTool {
 	protected AttributeModifier getExampleAttributeModifier() {
 		double armor;
 		Slot slot;
-		CustomItemType i = internalType.currentType;
+		CustomItemType i = internalType;
 		if (i == CustomItemType.DIAMOND_HELMET) {
 			armor = 3;
 			slot = Slot.HEAD;
@@ -166,7 +166,7 @@ public class EditItemArmor extends EditItemTool {
 		if (blueValue == -1) return "The blue must be an integer at least 0 and at most 255";
 		
 		return menu.getSet().addArmor(
-				new CustomArmor(internalType.currentType, damage, name.getText(), getDisplayName(),
+				new CustomArmor(internalType, damage, name.getText(), getDisplayName(),
 						lore, attributes, enchantments, maxUses, allowEnchanting.isChecked(),
 						allowAnvil.isChecked(), repairItem.getIngredient(), textureSelect.getSelected(),
 						redValue, greenValue, blueValue, itemFlags, entityHitDurabilityLoss, 
@@ -182,7 +182,7 @@ public class EditItemArmor extends EditItemTool {
 		if (greenValue == -1) return "The green must be an integer at least 0 and at most 255";
 		int blueValue = getColorValue(blue, DEFAULT_BLUE);
 		if (blueValue == -1) return "The blue must be an integer at least 0 and at most 255";
-		return menu.getSet().changeArmor(previous, internalType.currentType, damage, name.getText(),
+		return menu.getSet().changeArmor(previous, internalType, damage, name.getText(),
 				getDisplayName(), lore, attributes, enchantments, allowEnchanting.isChecked(),
 				allowAnvil.isChecked(), repairItem.getIngredient(), maxUses, textureSelect.getSelected(),
 				redValue, greenValue, blueValue, itemFlags, entityHit, blockBreak, damageResistances,
@@ -212,7 +212,7 @@ public class EditItemArmor extends EditItemTool {
 	}
 	
 	private boolean showColors() {
-		return internalType.currentType.isLeatherArmor();
+		return internalType.isLeatherArmor();
 	}
 	
 	private class ColorEditField extends WrapperComponent<IntEditField> {

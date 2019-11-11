@@ -4,6 +4,7 @@ import nl.knokko.customitems.drops.CIEntityType;
 import nl.knokko.customitems.drops.Drop;
 import nl.knokko.customitems.drops.EntityDrop;
 import nl.knokko.customitems.editor.menu.edit.EditProps;
+import nl.knokko.customitems.editor.menu.edit.EnumSelect;
 import nl.knokko.customitems.editor.menu.edit.drops.SelectDrop;
 import nl.knokko.customitems.editor.set.ItemSet;
 import nl.knokko.gui.color.GuiColor;
@@ -73,6 +74,7 @@ public class EditMobDrop extends GuiMenu {
 		addComponent(changeButtons[0], 0.5f, 0.7f, 0.8f, 0.8f);
 		
 		addComponent(new DynamicTextComponent("Entity:", EditProps.LABEL), 0.28f, 0.5f, 0.45f, 0.6f);
+		/*
 		SelectEntityType selectEntity = new SelectEntityType(this, (CIEntityType newType) -> {
 			selectedType = newType;
 			changeButtons[1].setText(newType.toString());
@@ -80,7 +82,10 @@ public class EditMobDrop extends GuiMenu {
 		changeButtons[1] = new DynamicTextButton(selectedType + "", EditProps.CHOOSE_BASE, EditProps.CHOOSE_HOVER, () -> {
 			state.getWindow().setMainComponent(selectEntity);
 		});
-		addComponent(changeButtons[1], 0.5f, 0.5f, 0.7f, 0.6f);
+		addComponent(changeButtons[1], 0.5f, 0.5f, 0.7f, 0.6f);*/
+		addComponent(EnumSelect.createSelectButton(CIEntityType.class, (CIEntityType newType) -> {
+			selectedType = newType;
+		}, selectedType), 0.5f, 0.5f, 0.7f, 0.6f);
 		
 		addComponent(requiresName, 0.25f, 0.35f, 0.275f, 0.375f);
 		addComponent(new DynamicTextComponent("Requires specific name", EditProps.LABEL), 0.3f, 0.3f, 0.55f, 0.4f);

@@ -70,54 +70,56 @@ public class EditItemTool extends EditItemBase {
 			allowAnvil = new CheckboxComponent(true);
 			repairItem = new IngredientComponent("None", new NoIngredient(), this, menu.getSet());
 			durability = new IntEditField(500, CustomTool.UNBREAKABLE_TOOL_DURABILITY, EditProps.EDIT_BASE, EditProps.EDIT_ACTIVE);
+			CustomItemType preferredType;
 			if (toolCategory == Category.SWORD)
-				internalType.currentType = CustomItemType.IRON_SWORD;
+				preferredType = CustomItemType.IRON_SWORD;
 			else if (toolCategory == Category.PICKAXE)
-				internalType.currentType = CustomItemType.IRON_PICKAXE;
+				preferredType = CustomItemType.IRON_PICKAXE;
 			else if (toolCategory == Category.AXE)
-				internalType.currentType = CustomItemType.IRON_AXE;
+				preferredType = CustomItemType.IRON_AXE;
 			else if (toolCategory == Category.SHOVEL)
-				internalType.currentType = CustomItemType.IRON_SHOVEL;
+				preferredType = CustomItemType.IRON_SHOVEL;
 			else if (toolCategory == Category.HOE)
-				internalType.currentType = CustomItemType.IRON_HOE;
+				preferredType = CustomItemType.IRON_HOE;
 			else if (toolCategory == Category.SHEAR)
-				internalType.currentType = CustomItemType.SHEARS;
+				preferredType = CustomItemType.SHEARS;
 			else if (toolCategory == Category.BOW)
-				internalType.currentType = CustomItemType.BOW;
+				preferredType = CustomItemType.BOW;
 			else if (toolCategory == Category.HELMET)
-				internalType.currentType = CustomItemType.IRON_HELMET;
+				preferredType = CustomItemType.IRON_HELMET;
 			else if (toolCategory == Category.CHESTPLATE)
-				internalType.currentType = CustomItemType.IRON_CHESTPLATE;
+				preferredType = CustomItemType.IRON_CHESTPLATE;
 			else if (toolCategory == Category.LEGGINGS)
-				internalType.currentType = CustomItemType.IRON_LEGGINGS;
+				preferredType = CustomItemType.IRON_LEGGINGS;
 			else if (toolCategory == Category.BOOTS)
-				internalType.currentType = CustomItemType.IRON_BOOTS;
+				preferredType = CustomItemType.IRON_BOOTS;
 			else if (toolCategory == Category.SHIELD)
-				internalType.currentType = CustomItemType.SHIELD;
+				preferredType = CustomItemType.SHIELD;
 			else if (toolCategory == Category.TRIDENT)
-				internalType.currentType = CustomItemType.TRIDENT;
+				preferredType = CustomItemType.TRIDENT;
 			else
 				throw new Error("Unsupported category for EditItemTool: " + toolCategory);
-			internalDamage.setDirectText(Short.toString(menu.getSet().nextAvailableDamage(internalType.currentType, null)));
+			internalType = chooseInitialItemType(menu.getSet(), toolCategory, preferredType, null);
+			internalDamage.setDirectText(Short.toString(menu.getSet().nextAvailableDamage(preferredType, null)));
 			entityHitDurabilityLoss = new IntEditField(
-					CustomToolDurability.defaultEntityHitDurabilityLoss(internalType.currentType), 0, 
+					CustomToolDurability.defaultEntityHitDurabilityLoss(preferredType), 0, 
 					EditProps.EDIT_BASE, EditProps.EDIT_ACTIVE);
 			blockBreakDurabilityLoss = new IntEditField(
-					CustomToolDurability.defaultBlockBreakDurabilityLoss(internalType.currentType), 0, 
+					CustomToolDurability.defaultBlockBreakDurabilityLoss(preferredType), 0, 
 					EditProps.EDIT_BASE, EditProps.EDIT_ACTIVE);
 		}
 	}
 	
 	@Override
 	protected AttributeModifier getExampleAttributeModifier() {
-		double attackDamage = CustomItemDamage.getDefaultAttackDamage(internalType.currentType);
+		double attackDamage = CustomItemDamage.getDefaultAttackDamage(internalType);
 		return new AttributeModifier(Attribute.ATTACK_DAMAGE, Slot.MAINHAND, Operation.ADD, attackDamage);
 	}
 
 	@Override
 	protected void addComponents() {
 		super.addComponents();
-		internalType.setText(internalType.currentType.toString());
+		//internalType.setText(internalType.currentType.toString());
 		addComponent(allowEnchanting, 0.75f, 0.8f, 0.775f, 0.825f);
 		addComponent(new DynamicTextComponent("Allow enchanting", EditProps.LABEL), 0.8f, 0.8f, 0.95f, 0.875f);
 		addComponent(allowAnvil, 0.75f, 0.725f, 0.775f, 0.75f);
@@ -141,7 +143,7 @@ public class EditItemTool extends EditItemBase {
 	
 	protected String create(short damage, long maxUses, int entityHitDurabilityLoss, int blockBreakDurabilityLoss) {
 		return menu.getSet().addTool(
-				new CustomTool(internalType.currentType, damage, name.getText(), getDisplayName(),
+				new CustomTool(internalType, damage, name.getText(), getDisplayName(),
 						lore, attributes, enchantments, maxUses, allowEnchanting.isChecked(),
 						allowAnvil.isChecked(), repairItem.getIngredient(), textureSelect.getSelected(), 
 						itemFlags, entityHitDurabilityLoss, blockBreakDurabilityLoss, customModel, 
@@ -163,7 +165,7 @@ public class EditItemTool extends EditItemBase {
 	}
 	
 	protected String apply(short damage, long maxUses, int entityHitDurabilityLoss, int blockBreakDurabilityLoss) {
-		return menu.getSet().changeTool(previous, internalType.currentType, damage, name.getText(),
+		return menu.getSet().changeTool(previous, internalType, damage, name.getText(),
 				getDisplayName(), lore, attributes, enchantments, allowEnchanting.isChecked(),
 				allowAnvil.isChecked(), repairItem.getIngredient(), maxUses, textureSelect.getSelected(),
 				itemFlags, entityHitDurabilityLoss, blockBreakDurabilityLoss, customModel,

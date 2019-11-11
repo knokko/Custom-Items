@@ -4,17 +4,19 @@ import java.util.ArrayList;
 import java.util.List;
 
 import nl.knokko.customitems.editor.menu.edit.EditProps;
+import nl.knokko.customitems.editor.menu.edit.EnumSelect;
 import nl.knokko.customitems.effect.EffectType;
 import nl.knokko.customitems.effect.PotionEffect;
 import nl.knokko.gui.color.GuiColor;
 import nl.knokko.gui.component.GuiComponent;
 import nl.knokko.gui.component.image.ImageButton;
 import nl.knokko.gui.component.menu.GuiMenu;
-import nl.knokko.gui.component.text.TextEditField;
+import nl.knokko.gui.component.text.IntEditField;
 import nl.knokko.gui.component.text.dynamic.DynamicTextButton;
 import nl.knokko.gui.component.text.dynamic.DynamicTextComponent;
 import nl.knokko.gui.texture.GuiTexture;
 import nl.knokko.gui.texture.loader.GuiTextureLoader;
+import nl.knokko.gui.util.Option;
 
 public class EffectsOverview extends GuiMenu {
 	
@@ -59,14 +61,13 @@ public class EffectsOverview extends GuiMenu {
 			for (SubComponent component : components) {
 				if (component.getComponent() instanceof Entry) {
 					Entry entry = (Entry) component.getComponent();
-					try {
-						int value = Integer.parseInt(entry.valueField.getText());
-						int duration = Integer.parseInt(entry.durationField.getText());
-						result.add(new PotionEffect(entry.type, duration, value));
-					} catch (NumberFormatException ex) {
+					Option.Int maybeValue = entry.valueField.getInt();
+					Option.Int maybeDuration = entry.durationField.getInt();
+					if (!maybeValue.hasValue() || !maybeDuration.hasValue()) {
 						errorComponent.setText("All levels and durations must be integers");
 						return;
 					}
+					result.add(new PotionEffect(entry.type, maybeDuration.getValue(), maybeValue.getValue()));
 				}
 			}
 			receiver.onComplete(result);
@@ -79,18 +80,16 @@ public class EffectsOverview extends GuiMenu {
 		}
 	}
 	
-private class Entry extends GuiMenu {
+	private class Entry extends GuiMenu {
 		
 		private EffectType type;
-		private TextEditField valueField;
-		private TextEditField durationField;
-		
-		private DynamicTextButton effectButton;
+		private IntEditField valueField;
+		private IntEditField durationField;
 		
 		private Entry(PotionEffect exampleEffect) {
 			this.type = exampleEffect.getEffect();
-			this.durationField = new TextEditField(exampleEffect.getDuration() + "", EditProps.EDIT_BASE, EditProps.EDIT_ACTIVE);
-			this.valueField = new TextEditField(exampleEffect.getLevel() + "", EditProps.EDIT_BASE, EditProps.EDIT_ACTIVE);
+			this.durationField = new IntEditField(exampleEffect.getDuration(), 0, EditProps.EDIT_BASE, EditProps.EDIT_ACTIVE);
+			this.valueField = new IntEditField(exampleEffect.getLevel(), 0, EditProps.EDIT_BASE, EditProps.EDIT_ACTIVE);
 		}
 		
 		@Override
@@ -100,12 +99,9 @@ private class Entry extends GuiMenu {
 
 		@Override
 		protected void addComponents() {
-			effectButton = new DynamicTextButton(type.toString(), EditProps.BUTTON, EditProps.HOVER, () -> {
-				state.getWindow().setMainComponent(new EffectSelect((EffectType newEffect) -> {
-					this.type = newEffect;
-					effectButton.setText(type.toString());
-				}, EffectsOverview.this));
-			});
+			GuiComponent effectButton = EnumSelect.createSelectButton(EffectType.class, (EffectType newEffect) -> {
+				this.type = newEffect;
+			}, type);
 			addComponent(new ImageButton(deleteBase, deleteHover, () -> {
 				EffectsOverview.this.removeComponent(this);
 			}), 0f, 0f, 0.075f, 1f);
@@ -121,5 +117,4 @@ private class Entry extends GuiMenu {
 		
 		void onComplete(List<PotionEffect> playerEffects);
 	}
-
 }

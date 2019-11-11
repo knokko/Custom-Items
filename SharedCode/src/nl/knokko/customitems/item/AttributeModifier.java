@@ -70,6 +70,11 @@ public class AttributeModifier {
 			attributeName = name;
 		}
 		
+		@Override
+		public String toString() {
+			return getName();
+		}
+		
 		public String getName() {
 			return attributeName;
 		}
@@ -83,6 +88,11 @@ public class AttributeModifier {
 		HEAD,
 		MAINHAND,
 		OFFHAND;
+		
+		@Override
+		public String toString() {
+			return toNiceString(name());
+		}
 		
 		public String getSlot() {
 			return name().toLowerCase();
@@ -101,7 +111,13 @@ public class AttributeModifier {
 		
 		@Override
 		public String toString() {
-			return Character.toUpperCase(name().charAt(0)) + name().substring(1).toLowerCase().replace('_', ' ');
+			return toNiceString(name());
 		}
+	}
+	
+	private static String toNiceString(String name) {
+		if (name.isEmpty())
+			return name;
+		return Character.toUpperCase(name.charAt(0)) + name.substring(1).toLowerCase().replace('_', ' ');
 	}
 }
