@@ -6,12 +6,12 @@ import nl.knokko.customitems.editor.menu.edit.CollectionEdit;
 import nl.knokko.customitems.editor.menu.edit.EditMenu;
 import nl.knokko.customitems.editor.menu.edit.EditProps;
 import nl.knokko.customitems.editor.set.projectile.cover.CustomProjectileCover;
-import nl.knokko.customitems.editor.set.projectile.cover.ProjectileCover;
+import nl.knokko.customitems.editor.set.projectile.cover.EditorProjectileCover;
 import nl.knokko.customitems.editor.set.projectile.cover.SphereProjectileCover;
 import nl.knokko.gui.component.GuiComponent;
 import nl.knokko.gui.component.text.dynamic.DynamicTextButton;
 
-public class ProjectileCoverCollectionEdit extends CollectionEdit<ProjectileCover> {
+public class ProjectileCoverCollectionEdit extends CollectionEdit<EditorProjectileCover> {
 	
 	private final EditMenu menu;
 
@@ -28,7 +28,7 @@ public class ProjectileCoverCollectionEdit extends CollectionEdit<ProjectileCove
 		}), 0.025f, 0.2f, 0.2f, 0.3f);
 	}
 
-	private static class ProjectileCoverActionHandler implements ActionHandler<ProjectileCover> {
+	private static class ProjectileCoverActionHandler implements ActionHandler<EditorProjectileCover> {
 		
 		private final EditMenu menu;
 		
@@ -42,17 +42,17 @@ public class ProjectileCoverCollectionEdit extends CollectionEdit<ProjectileCove
 		}
 
 		@Override
-		public BufferedImage getImage(ProjectileCover item) {
+		public BufferedImage getImage(EditorProjectileCover item) {
 			return null;
 		}
 
 		@Override
-		public String getLabel(ProjectileCover item) {
+		public String getLabel(EditorProjectileCover item) {
 			return item.name;
 		}
 
 		@Override
-		public GuiComponent createEditMenu(ProjectileCover cover, GuiComponent returnMenu) {
+		public GuiComponent createEditMenu(EditorProjectileCover cover, GuiComponent returnMenu) {
 			if (cover instanceof SphereProjectileCover) {
 				return new EditSphereProjectileCover(menu, (SphereProjectileCover) cover);
 			} else if (cover instanceof CustomProjectileCover) {
@@ -63,7 +63,7 @@ public class ProjectileCoverCollectionEdit extends CollectionEdit<ProjectileCove
 		}
 
 		@Override
-		public String deleteItem(ProjectileCover itemToDelete) {
+		public String deleteItem(EditorProjectileCover itemToDelete) {
 			return menu.getSet().removeProjectileCover(itemToDelete);
 		}
 	}

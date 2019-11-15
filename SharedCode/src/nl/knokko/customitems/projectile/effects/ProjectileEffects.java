@@ -28,9 +28,8 @@ public class ProjectileEffects {
 			int period = input.readInt();
 			int numEffects = input.readByte() & 0xFF;
 			Collection<ProjectileEffect> effects = new ArrayList<>(numEffects);
-			for (int counter = 0; counter < numEffects; counter++) {
+			for (int counter = 0; counter < numEffects; counter++)
 				effects.add(ProjectileEffect.fromBits(input));
-			}
 			return new ProjectileEffects(delay, period, effects);
 		}
 		default: throw new IllegalArgumentException("Unknown projectile effects encoding: " + encoding);

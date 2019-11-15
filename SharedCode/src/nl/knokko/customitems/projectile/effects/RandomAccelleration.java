@@ -4,7 +4,7 @@ import nl.knokko.util.bits.BitInput;
 
 public class RandomAccelleration extends ProjectileAccelleration {
 	
-	public static RandomAccelleration load1(BitInput input) {
+	static RandomAccelleration load1(BitInput input) {
 		return new RandomAccelleration(input.readFloat(), input.readFloat());
 	}
 

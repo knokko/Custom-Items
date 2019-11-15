@@ -64,7 +64,7 @@ import nl.knokko.customitems.editor.set.item.NamedImage;
 import nl.knokko.customitems.editor.set.item.SimpleCustomItem;
 import nl.knokko.customitems.editor.set.item.texture.BowTextures;
 import nl.knokko.customitems.editor.set.projectile.cover.CustomProjectileCover;
-import nl.knokko.customitems.editor.set.projectile.cover.ProjectileCover;
+import nl.knokko.customitems.editor.set.projectile.cover.EditorProjectileCover;
 import nl.knokko.customitems.editor.set.projectile.cover.SphereProjectileCover;
 import nl.knokko.customitems.editor.set.recipe.Recipe;
 import nl.knokko.customitems.editor.set.recipe.ShapedRecipe;
@@ -84,6 +84,8 @@ import nl.knokko.customitems.item.AttributeModifier;
 import nl.knokko.customitems.item.CustomItemType;
 import nl.knokko.customitems.item.CustomItemType.Category;
 import nl.knokko.customitems.projectile.Projectile;
+import nl.knokko.customitems.projectile.ProjectileCover;
+import nl.knokko.customitems.projectile.ProjectileType;
 import nl.knokko.customitems.projectile.effects.ProjectileEffect;
 import nl.knokko.customitems.projectile.effects.ProjectileEffects;
 import nl.knokko.customitems.item.CustomToolDurability;
@@ -1365,7 +1367,7 @@ public class ItemSet implements ItemSetBase {
 			commands[index] = input.readJavaString();
 		}
 		
-		Projectile projectile = Projectile.fromBits(input);
+		Projectile projectile = getProjectileByName(input.readString());
 		int cooldown = input.readInt();
 		WandCharges charges;
 		if (input.readBoolean()) {
@@ -1373,6 +1375,7 @@ public class ItemSet implements ItemSetBase {
 		} else {
 			charges = null;
 		}
+		int amountPerShot = input.readInt();
 		
 		String imageName = input.readJavaString();
 		NamedImage texture = null;
@@ -1385,16 +1388,9 @@ public class ItemSet implements ItemSetBase {
 		if (texture == null)
 			throw new IllegalArgumentException("Can't find texture " + imageName);
 		byte[] customModel = loadCustomModel(input, true);
-		
-		ProjectileCover cover;
-		if (input.readBoolean()) {
-			cover = ProjectileCover.fromBits(input, this);
-		} else {
-			cover = null;
-		}
 		return new CustomWand(itemType, damage, name, displayName, lore, attributes, defaultEnchantments,
 				texture, itemFlags, customModel, playerEffects, targetEffects, commands, 
-				projectile, cover, cooldown, charges);
+				projectile, cooldown, charges, amountPerShot);
 	}
 
 	private AttributeModifier loadAttribute2(BitInput input) {
@@ -1414,7 +1410,8 @@ public class ItemSet implements ItemSetBase {
 	private Collection<Recipe> recipes;
 	private Collection<BlockDrop> blockDrops;
 	private Collection<EntityDrop> mobDrops;
-	private Collection<ProjectileCover> projectileCovers;
+	private Collection<EditorProjectileCover> projectileCovers;
+	private Collection<Projectile> projectiles;
 
 	public ItemSet(String fileName) {
 		this.fileName = fileName;
@@ -1424,6 +1421,7 @@ public class ItemSet implements ItemSetBase {
 		blockDrops = new ArrayList<>();
 		mobDrops = new ArrayList<>();
 		projectileCovers = new ArrayList<>();
+		projectiles = new ArrayList<>();
 	}
 
 	public ItemSet(String fileName, BitInput input) {
@@ -1483,8 +1481,9 @@ public class ItemSet implements ItemSetBase {
 		blockDrops = new ArrayList<>();
 		mobDrops = new ArrayList<>();
 		
-		// Projectile covers (there are no projectile covers in this encoding)
+		// Projectiles (there are no projectiles in this encoding)
 		projectileCovers = new ArrayList<>();
+		projectiles = new ArrayList<>();
 	}
 
 	private void load2(BitInput input) {
@@ -1519,8 +1518,9 @@ public class ItemSet implements ItemSetBase {
 		blockDrops = new ArrayList<>();
 		mobDrops = new ArrayList<>();
 		
-		// Projectile covers (there are no projectile covers in this encoding)
+		// Projectiles (there are no projectiles in this encoding)
 		projectileCovers = new ArrayList<>();
+		projectiles = new ArrayList<>();
 	}
 	
 	private void load3(BitInput input) {
@@ -1562,8 +1562,9 @@ public class ItemSet implements ItemSetBase {
 		for (int counter = 0; counter < numMobDrops; counter++)
 			mobDrops.add(EntityDrop.load(input, this));
 		
-		// Projectile covers (there are no projectile covers in this encoding)
+		// Projectiles (there are no projectiles in this encoding)
 		projectileCovers = new ArrayList<>();
+		projectiles = new ArrayList<>();
 	}
 	
 	private void load4(BitInput input) {
@@ -1605,8 +1606,9 @@ public class ItemSet implements ItemSetBase {
 		for (int counter = 0; counter < numMobDrops; counter++)
 			mobDrops.add(EntityDrop.load(input, this));
 		
-		// Projectile covers (there are no projectile covers in this encoding)
+		// Projectiles (there are no projectiles in this encoding)
 		projectileCovers = new ArrayList<>();
+		projectiles = new ArrayList<>();
 	}
 	
 	private void load5(BitInput input) {
@@ -1627,7 +1629,17 @@ public class ItemSet implements ItemSetBase {
 		int numProjectileCovers = input.readInt();
 		projectileCovers = new ArrayList<>(numProjectileCovers);
 		for (int counter = 0; counter < numProjectileCovers; counter++)
-			projectileCovers.add(ProjectileCover.fromBits(input, this));
+			projectileCovers.add(EditorProjectileCover.fromBits(input, this));
+		
+		// Projectiles
+		int numProjectiles = input.readInt();
+		projectiles = new ArrayList<>(numProjectiles);
+		for (int counter = 0; counter < numProjectiles; counter++)
+			projectiles.add(Projectile.fromBits(input, this));
+		
+		// Notify the projectile effects that all projectiles have been loaded
+		for (Projectile projectile : projectiles)
+			projectile.afterProjectilesAreLoaded(this);
 
 		// Items
 		int itemAmount = input.readInt();
@@ -2074,7 +2086,7 @@ public class ItemSet implements ItemSetBase {
 			}
 			
 			// Projectile covers
-			for (ProjectileCover cover : projectileCovers) {
+			for (EditorProjectileCover cover : projectileCovers) {
 				ZipEntry entry = new ZipEntry("assets/minecraft/models/customprojectiles/" + cover.name + ".json");
 				zipOutput.putNextEntry(entry);
 				cover.writeModel(zipOutput);
@@ -2095,7 +2107,7 @@ public class ItemSet implements ItemSetBase {
 			}
 			
 			// Add the projectile covers to the map
-			for (ProjectileCover cover : projectileCovers) {
+			for (EditorProjectileCover cover : projectileCovers) {
 				List<ItemDamageClaim> list = itemMap.get(cover.getItemType());
 				if (list == null) {
 					list = new ArrayList<>();
@@ -2574,7 +2586,7 @@ public class ItemSet implements ItemSetBase {
 			}
 			
 			// Projectile covers
-			for (ProjectileCover cover : projectileCovers) {
+			for (EditorProjectileCover cover : projectileCovers) {
 				ZipEntry entry = new ZipEntry("assets/minecraft/models/customprojectiles/" + cover.name + ".json");
 				zipOutput.putNextEntry(entry);
 				cover.writeModel(zipOutput);
@@ -2596,7 +2608,7 @@ public class ItemSet implements ItemSetBase {
 			}
 			
 			// Add the projectile covers to the map
-			for (ProjectileCover cover : projectileCovers) {
+			for (EditorProjectileCover cover : projectileCovers) {
 				List<ItemDamageClaim> list = itemMap.get(cover.getItemType());
 				if (list == null) {
 					list = new ArrayList<>();
@@ -2832,6 +2844,11 @@ public class ItemSet implements ItemSetBase {
 	
 	private void export3(BitOutput output) {
 		output.addByte(ENCODING_3);
+		
+		// Projectiles
+		output.addInt(projectileCovers.size());
+		for (EditorProjectileCover cover : projectileCovers)
+			cover.export(output);
 
 		// Items
 		output.addInt(items.size());
@@ -3027,7 +3044,7 @@ public class ItemSet implements ItemSetBase {
 			drop.save(output);
 	}
 	
-	// Add projectile covers
+	// Add projectiles
 	private void save5(BitOutput output) {
 		output.addByte(ENCODING_5);
 		output.addInt(textures.size());
@@ -3040,8 +3057,12 @@ public class ItemSet implements ItemSetBase {
 		}
 		
 		output.addInt(projectileCovers.size());
-		for (ProjectileCover cover : projectileCovers)
+		for (EditorProjectileCover cover : projectileCovers)
 			cover.toBits(output);
+		
+		output.addInt(projectiles.size());
+		for (Projectile projectile : projectiles)
+			projectile.toBits(output);
 		
 		output.addInt(items.size());
 
@@ -3601,16 +3622,17 @@ public class ItemSet implements ItemSetBase {
 		if (!bypassChecks()) {
 			if (wand == null)
 				return "Can't add null wands";
-			String projectileError = validateProjectile(wand.projectile);
-			if (projectileError != null)
-				return projectileError;
-			if (wand.cover != null && !projectileCovers.contains(wand.cover))
-				return "The projectile cover of the wand is not in the list of projectile covers";
+			if (wand.projectile == null)
+				return "You need to select a projectile";
+			if (!projectiles.contains(wand.projectile))
+				return "The selected projectile is not in the list of projectiles";
 			if (wand.cooldown < 1)
 				return "The cooldown must be a positive integer";
 			String chargesError = validateCharges(wand.charges);
 			if (chargesError != null)
 				return chargesError;
+			if (wand.amountPerShot <= 0)
+				return "The amount per shot must be a positive integer";
 		}
 		return addItem(wand);
 	}
@@ -3623,30 +3645,31 @@ public class ItemSet implements ItemSetBase {
 			String newDisplayName, String[] newLore, AttributeModifier[] newAttributes, 
 			Enchantment[] newEnchantments, NamedImage newImage, boolean[] itemFlags,
 			byte[] newCustomModel, List<PotionEffect> playerEffects, List<PotionEffect> targetEffects, 
-			String[] commands, Projectile newProjectile, ProjectileCover newCover, int newCooldown, 
-			WandCharges newCharges) {
+			String[] commands, Projectile newProjectile, EditorProjectileCover newCover, int newCooldown, 
+			WandCharges newCharges, int newAmountPerShot) {
 		if (!bypassChecks()) {
 			if (original == null)
 				return "Can't change null items";
-			String projectileError = validateProjectile(newProjectile);
-			if (projectileError != null)
-				return projectileError;
-			if (newCover != null && !projectileCovers.contains(newCover))
-				return "The projectile cover of the wand is not in the list of projectile covers";
+			if (newProjectile == null)
+				return "You must select a projectile";
+			if (!projectiles.contains(newProjectile))
+				return "The selected projectile is not in the list of projectiles";
 			if (newCooldown < 1)
 				return "The cooldown must be a positive integer";
 			String chargesError = validateCharges(newCharges);
 			if (chargesError != null)
 				return chargesError;
+			if (newAmountPerShot <= 0)
+				return "The amount per shot must be a positive integer";
 		}
 		String error = changeItem(original, newType, newDamage, newName, newDisplayName, newLore,
 				newAttributes, newEnchantments, newImage, itemFlags, newCustomModel, playerEffects,
 				targetEffects, commands);
 		if (error == null) {
 			original.projectile = newProjectile;
-			original.cover = newCover;
 			original.cooldown = newCooldown;
 			original.charges = newCharges;
+			original.amountPerShot = newAmountPerShot;
 		}
 		return error;
 	}
@@ -3660,6 +3683,24 @@ public class ItemSet implements ItemSetBase {
 			return "The damage of the projectile must be at least 0.0";
 		if (projectile.damage > 0 && projectile.damageSource == null)
 			return "If the damage of the projectile is not 0, you must select a damage source";
+		
+		if (!(projectile.minLaunchAngle >= 0))
+			return "The minimum launch angle can't be negative";
+		if (!(projectile.maxLaunchAngle >= 0))
+			return "The maximum launch angle can't be negative";
+		if (projectile.minLaunchAngle > projectile.maxLaunchAngle)
+			return "The minimum launch angle can't be greater than the maximum launch angle";
+		
+		if (!(projectile.minLaunchSpeed >= 0))
+			return "The minimum launch speed can't be negative";
+		if (!(projectile.maxLaunchSpeed >= 0))
+			return "The maximum launch speed can't be negative";
+		if (projectile.minLaunchSpeed > projectile.maxLaunchSpeed)
+			return "The minimum launch speed can't be greater than the maximum launch speed";
+		
+		if (projectile.cover != null && !projectileCovers.contains(projectile.cover))
+			return "The projectile cover is not in the list of projectile covers";
+		
 		if (projectile.minecraftType == null)
 			return "You must select a projectile type";
 		for (ProjectileEffects effects : projectile.inFlightEffects) {
@@ -4129,7 +4170,7 @@ public class ItemSet implements ItemSetBase {
 		}
 	}
 	
-	private String addProjectileCover(ProjectileCover cover) {
+	private String addProjectileCover(EditorProjectileCover cover) {
 		if (!bypassChecks()) {
 			if (cover == null)
 				return "The projectile cover can't be null";
@@ -4155,7 +4196,7 @@ public class ItemSet implements ItemSetBase {
 		return null;
 	}
 	
-	private String changeProjectileCover(ProjectileCover original, CustomItemType newType, short newDamage,
+	private String changeProjectileCover(EditorProjectileCover original, CustomItemType newType, short newDamage,
 			String newName) {
 		if (!bypassChecks()) {
 			if (original == null)
@@ -4173,7 +4214,7 @@ public class ItemSet implements ItemSetBase {
 			String nameError = checkName(newName);
 			if (nameError != null)
 				return nameError;
-			ProjectileCover sameName = getProjectileCoverByName(newName);
+			EditorProjectileCover sameName = getProjectileCoverByName(newName);
 			if (sameName != null && sameName != original)
 				return "There is another projectile cover with that name";
 		}
@@ -4307,25 +4348,96 @@ public class ItemSet implements ItemSetBase {
 	 * @param cover The projectile cover to remove
 	 * @return null if the projectile cover was removed, or the reason it can't be removed
 	 */
-	public String removeProjectileCover(ProjectileCover cover) {
+	public String removeProjectileCover(EditorProjectileCover cover) {
 		if (!bypassChecks()) {
 			if (cover == null)
 				return "Can't delete null";
-			for (CustomItem item : items) {
-				if (item instanceof CustomWand) {
-					CustomWand wand = (CustomWand) item;
-					if (wand.cover == cover) {
-						return "The wand " + wand.getName() + " is still using this projectile cover.";
-					}
-				}
-			}
-			// TODO Check if no gun is currently using this projectile cover
-			// Note that this can only be done after guns have been added
+			for (Projectile projectile : projectiles)
+				if (projectile.cover == cover)
+					return "The projectile " + projectile.name + " still uses this cover";
 		}
 		if (!projectileCovers.remove(cover) && !bypassChecks())
 			return "The given projectile cover wasn't in the list of projectile covers";
 		else
 			return null;
+	}
+	
+	/**
+	 * Attempts to add the given projectile to the collection of projectiles of this item set. If the
+	 * projectile can be added, it will be added. If not, the reason will be returned as human-readable
+	 * String.
+	 * @param projectile The projectile that should be added
+	 * @return null if the projectile was added successfully, or the reason it couldn't be added
+	 */
+	public String addProjectile(Projectile projectile) {
+		if (!bypassChecks()) {
+			String error = validateProjectile(projectile);
+			if (error != null)
+				return error;
+			if (getProjectileByName(projectile.name) != null)
+				return "There is already a projectile with that name";
+		}
+		projectiles.add(projectile);
+		return null;
+	}
+	
+	/**
+	 * Attempts to change the properties of the given projectile to the given parameter values. If the
+	 * projectile was changed successfully, null will be returned. If the projectile couldn't be changed,
+	 * it won't be changed and a human-readable error message will be returned.
+	 * @return null if the projectile changed successfully, or the reason it couldn't be changed
+	 */
+	public String changeProjectile(Projectile original, String newName, float newDamage,
+			float newMinLaunchAngle, float newMaxLaunchAngle, 
+			float newMinLaunchSpeed, float newMaxLaunchSpeed, int newMaxLifeTime,
+			DamageSource newDamageSource, ProjectileType newMinecraftType, 
+			Collection<ProjectileEffects> newFlightEffects, Collection<ProjectileEffect> newImpactEffects,
+			ProjectileCover newCover) {
+		if (!bypassChecks()) {
+			String error = validateProjectile(new Projectile(newName, newDamage, 
+					newMinLaunchAngle, newMaxLaunchAngle, newMinLaunchSpeed, newMaxLaunchSpeed, newMaxLifeTime,
+					newDamageSource, newMinecraftType, newFlightEffects, newImpactEffects, newCover));
+			if (error != null)
+				return error;
+			if (!projectiles.contains(original))
+				return "The projectile to change is not in the list of projectiles";
+			Projectile sameName = getProjectileByName(newName);
+			if (sameName != null && sameName != original)
+				return "There is already a projectile with that name";
+		}
+		original.name = newName;
+		original.damage = newDamage;
+		original.minLaunchAngle = newMinLaunchAngle;
+		original.maxLaunchAngle = newMaxLaunchAngle;
+		original.minLaunchSpeed = newMinLaunchSpeed;
+		original.maxLaunchSpeed = newMaxLaunchSpeed;
+		original.maxLifeTime = newMaxLifeTime;
+		original.damageSource = newDamageSource;
+		original.minecraftType = newMinecraftType;
+		original.inFlightEffects = newFlightEffects;
+		original.impactEffects = newImpactEffects;
+		original.cover = newCover;
+		return null;
+	}
+	
+	/**
+	 * Attempts to remove the given projectile from the list of projectiles. If the projectile can be
+	 * removed, it will be removed and null will be returned. If it can't be removed, the reason will be
+	 * returned.
+	 * @param toRemove The projectile to remove from this item set
+	 * @return null if the projectile was removed, or the reason it wasn't removed
+	 */
+	public String removeProjectile(Projectile toRemove) {
+		if (!bypassChecks()) {
+			for (CustomItem item : items) {
+				if (item instanceof CustomWand && ((CustomWand) item).projectile == toRemove)
+					return "The wand " + item.getName() + " is still using this projectile";
+				// TODO Also check for guns once they are added
+			}
+		}
+		if (!projectiles.remove(toRemove) && !bypassChecks())
+			return "The projectile to remove was not in the list of projectiles";
+		return null;
 	}
 
 	/**
@@ -4375,7 +4487,7 @@ public class ItemSet implements ItemSetBase {
 	 * Do not modify this collection directly!
 	 * @return The projectile cover collection of this ItemSet
 	 */
-	public Collection<ProjectileCover> getBackingProjectileCovers(){
+	public Collection<EditorProjectileCover> getBackingProjectileCovers(){
 		return projectileCovers;
 	}
 
@@ -4398,7 +4510,7 @@ public class ItemSet implements ItemSetBase {
 		for (CustomItem item : items)
 			if (item != exclude && item.getItemType() == type)
 				usedDamage[item.getItemDamage() - 1] = true;
-		for (ProjectileCover cover : projectileCovers)
+		for (EditorProjectileCover cover : projectileCovers)
 			if (cover != exclude && cover.getItemType() == type)
 				usedDamage[cover.getItemDamage() - 1] = true;
 		for (short damage = 1; damage <= type.getMaxDurability(); damage++)
@@ -4424,8 +4536,8 @@ public class ItemSet implements ItemSetBase {
 		return null;
 	}
 	
-	public ProjectileCover getProjectileCoverByName(String name) {
-		for (ProjectileCover cover : projectileCovers)
+	public EditorProjectileCover getProjectileCoverByName(String name) {
+		for (EditorProjectileCover cover : projectileCovers)
 			if (cover.name.equals(name))
 				return cover;
 		return null;
@@ -4447,9 +4559,20 @@ public class ItemSet implements ItemSetBase {
 		for (CustomItem item : items)
 			if (item != exclude && item.getItemType() == type && item.getItemDamage() == damage)
 				return false;
-		for (ProjectileCover cover : projectileCovers)
+		for (EditorProjectileCover cover : projectileCovers)
 			if (cover != exclude && cover.getItemType() == type && cover.getItemDamage() == damage)
 				return false;
 		return true;
+	}
+	
+	public Projectile getProjectileByName(String name) {
+		for (Projectile projectile : projectiles)
+			if (projectile.name.equals(name))
+				return projectile;
+		return null;
+	}
+	
+	public boolean hasProjectile(String name) {
+		return getProjectileByName(name) != null;
 	}
 }

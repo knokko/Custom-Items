@@ -6,7 +6,7 @@ import nl.knokko.util.bits.BitOutput;
 
 public class SimpleParticles extends ProjectileEffect {
 	
-	public static SimpleParticles load1(BitInput input) {
+	static SimpleParticles load1(BitInput input) {
 		return new SimpleParticles(CIParticle.valueOf(input.readString()), 
 				input.readFloat(), input.readFloat(), input.readInt());
 	}

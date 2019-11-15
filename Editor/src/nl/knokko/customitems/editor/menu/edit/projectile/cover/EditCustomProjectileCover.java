@@ -4,7 +4,7 @@ import nl.knokko.customitems.editor.menu.edit.EditMenu;
 import nl.knokko.customitems.editor.menu.edit.EditProps;
 import nl.knokko.customitems.editor.menu.edit.item.EditCustomModel;
 import nl.knokko.customitems.editor.set.projectile.cover.CustomProjectileCover;
-import nl.knokko.customitems.editor.set.projectile.cover.ProjectileCover;
+import nl.knokko.customitems.editor.set.projectile.cover.EditorProjectileCover;
 import nl.knokko.customitems.item.CustomItemType;
 import nl.knokko.gui.component.text.dynamic.DynamicTextButton;
 import nl.knokko.gui.component.text.dynamic.DynamicTextComponent;
@@ -24,7 +24,7 @@ public class EditCustomProjectileCover extends EditProjectileCover {
 	}
 
 	@Override
-	protected ProjectileCover getOriginal() {
+	protected EditorProjectileCover getOriginal() {
 		return original;
 	}
 	

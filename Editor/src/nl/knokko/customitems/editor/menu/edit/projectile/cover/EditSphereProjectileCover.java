@@ -4,7 +4,7 @@ import nl.knokko.customitems.editor.menu.edit.EditMenu;
 import nl.knokko.customitems.editor.menu.edit.EditProps;
 import nl.knokko.customitems.editor.menu.edit.item.TextureSelectButton;
 import nl.knokko.customitems.editor.set.item.NamedImage;
-import nl.knokko.customitems.editor.set.projectile.cover.ProjectileCover;
+import nl.knokko.customitems.editor.set.projectile.cover.EditorProjectileCover;
 import nl.knokko.customitems.editor.set.projectile.cover.SphereProjectileCover;
 import nl.knokko.customitems.item.CustomItemType;
 import nl.knokko.gui.component.text.FloatEditField;
@@ -52,7 +52,7 @@ public class EditSphereProjectileCover extends EditProjectileCover {
 	}
 
 	@Override
-	protected ProjectileCover getOriginal() {
+	protected EditorProjectileCover getOriginal() {
 		return original;
 	}
 	

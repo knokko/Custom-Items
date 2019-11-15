@@ -6,15 +6,16 @@ import java.util.zip.ZipOutputStream;
 import nl.knokko.customitems.editor.set.ItemDamageClaim;
 import nl.knokko.customitems.editor.set.ItemSet;
 import nl.knokko.customitems.item.CustomItemType;
+import nl.knokko.customitems.projectile.ProjectileCover;
 import nl.knokko.util.bits.BitInput;
 import nl.knokko.util.bits.BitOutput;
 
-public abstract class ProjectileCover implements ItemDamageClaim {
+public abstract class EditorProjectileCover extends ProjectileCover implements ItemDamageClaim {
 	
 	static final byte ID_SPHERE = 0;
 	static final byte ID_CUSTOM = 1;
 	
-	public static ProjectileCover fromBits(BitInput input, ItemSet set) {
+	public static EditorProjectileCover fromBits(BitInput input, ItemSet set) {
 		byte id = input.readByte();
 		
 		if (id == ID_SPHERE) {
@@ -25,24 +26,13 @@ public abstract class ProjectileCover implements ItemDamageClaim {
 			throw new IllegalArgumentException("Unknown projectile cover id " + id);
 		}
 	}
-	
-	public CustomItemType itemType;
-    public short itemDamage;
     
-    public String name;
-    
-    ProjectileCover(CustomItemType type, short itemDamage, String name){
-    	this.itemType = type;
-    	this.itemDamage = itemDamage;
-    	this.name = name;
+    EditorProjectileCover(CustomItemType type, short itemDamage, String name){
+    	super(type, itemDamage, name);
     }
     
-    ProjectileCover(BitInput input){
-    	String itemTypeName = input.readString();
-    	this.itemType = CustomItemType.valueOf(itemTypeName);
-		this.itemDamage = input.readShort();
-		
-		this.name = input.readString();
+    EditorProjectileCover(BitInput input){
+    	super(input);
     }
     
     @Override
@@ -69,6 +59,12 @@ public abstract class ProjectileCover implements ItemDamageClaim {
 		output.addString(name);
 		
 		saveData(output);
+	}
+	
+	public final void export(BitOutput output) {
+		output.addString(itemType.name());
+		output.addShort(itemDamage);
+		output.addString(name);
 	}
 	
 	protected abstract byte getID();

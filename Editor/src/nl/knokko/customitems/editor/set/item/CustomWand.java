@@ -2,7 +2,6 @@ package nl.knokko.customitems.editor.set.item;
 
 import java.util.List;
 
-import nl.knokko.customitems.editor.set.projectile.cover.ProjectileCover;
 import nl.knokko.customitems.effect.PotionEffect;
 import nl.knokko.customitems.encoding.ItemEncoding;
 import nl.knokko.customitems.item.AttributeModifier;
@@ -15,8 +14,6 @@ import nl.knokko.util.bits.BitOutput;
 public class CustomWand extends CustomItem {
 	
 	public Projectile projectile;
-	/** If cover is null, the projectiles fired by this wand won't have a projectile cover */
-	public ProjectileCover cover;
 	
 	public int cooldown;
 	/** If charges is null, the wand doesn't need charges and only has to worry about its cooldown */
@@ -27,13 +24,13 @@ public class CustomWand extends CustomItem {
 	public CustomWand(CustomItemType itemType, short itemDamage, String name, String displayName, String[] lore,
 			AttributeModifier[] attributes, Enchantment[] defaultEnchantments, NamedImage texture, boolean[] itemFlags,
 			byte[] customModel, List<PotionEffect> playerEffects, List<PotionEffect> targetEffects, String[] commands,
-			Projectile projectile, ProjectileCover cover, int cooldown, WandCharges charges) {
+			Projectile projectile, int cooldown, WandCharges charges, int amountPerShot) {
 		super(itemType, itemDamage, name, displayName, lore, attributes, defaultEnchantments, texture, itemFlags,
 				customModel, playerEffects, targetEffects, commands);
 		this.projectile = projectile;
-		this.cover = cover;
 		this.cooldown = cooldown;
 		this.charges = charges;
+		this.amountPerShot = amountPerShot;
 	}
 
 	@Override
@@ -76,8 +73,7 @@ public class CustomWand extends CustomItem {
 			output.addJavaString(command);
 		}
 		
-		// The saving of the projectile cover will be handled in Editor/CustomItem
-		projectile.toBits(output);
+		output.addString(projectile.name);
 		output.addInt(cooldown);
 		output.addBoolean(charges != null);
 		if (charges != null) {

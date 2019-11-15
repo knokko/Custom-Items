@@ -5,7 +5,7 @@ import nl.knokko.customitems.editor.menu.edit.EditProps;
 import nl.knokko.customitems.editor.menu.edit.EnumSelect;
 import nl.knokko.customitems.editor.menu.edit.item.EditItemBase;
 import nl.knokko.customitems.editor.set.ItemSet;
-import nl.knokko.customitems.editor.set.projectile.cover.ProjectileCover;
+import nl.knokko.customitems.editor.set.projectile.cover.EditorProjectileCover;
 import nl.knokko.customitems.item.CustomItemType;
 import nl.knokko.customitems.item.CustomItemType.Category;
 import nl.knokko.gui.color.GuiColor;
@@ -37,7 +37,7 @@ public abstract class EditProjectileCover extends GuiMenu {
 			state.getWindow().setMainComponent(menu.getProjectileCoverOverview());
 		}), 0.025f, 0.7f, 0.2f, 0.8f);
 		
-		ProjectileCover original = getOriginal();
+		EditorProjectileCover original = getOriginal();
 		
 		errorComponent = new DynamicTextComponent("", EditProps.ERROR);
 		
@@ -113,7 +113,7 @@ public abstract class EditProjectileCover extends GuiMenu {
 		return EditProps.BACKGROUND;
 	}
 	
-	protected abstract ProjectileCover getOriginal();
+	protected abstract EditorProjectileCover getOriginal();
 	
 	protected abstract void tryCreate(String name, CustomItemType internalType, short internalDamage);
 	

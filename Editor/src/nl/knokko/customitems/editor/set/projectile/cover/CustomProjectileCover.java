@@ -7,7 +7,7 @@ import nl.knokko.customitems.item.CustomItemType;
 import nl.knokko.util.bits.BitInput;
 import nl.knokko.util.bits.BitOutput;
 
-public class CustomProjectileCover extends ProjectileCover {
+public class CustomProjectileCover extends EditorProjectileCover {
 	
 	public byte[] model;
 

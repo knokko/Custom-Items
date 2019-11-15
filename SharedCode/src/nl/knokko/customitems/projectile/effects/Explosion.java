@@ -5,7 +5,7 @@ import nl.knokko.util.bits.BitOutput;
 
 public class Explosion extends ProjectileEffect {
 	
-	public static Explosion load1(BitInput input) {
+	static Explosion load1(BitInput input) {
 		return new Explosion(input.readFloat(), input.readBoolean(), input.readBoolean());
 	}
 	

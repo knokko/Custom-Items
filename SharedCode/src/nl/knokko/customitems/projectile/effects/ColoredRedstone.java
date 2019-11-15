@@ -5,7 +5,7 @@ import nl.knokko.util.bits.BitOutput;
 
 public class ColoredRedstone extends ProjectileEffect {
 	
-	public static ColoredRedstone load1(BitInput input) {
+	static ColoredRedstone load1(BitInput input) {
 		return new ColoredRedstone(
 				input.readByte() & 0xFF, input.readByte() & 0xFF, input.readByte() & 0xFf,
 				input.readByte() & 0xFF, input.readByte() & 0xFF, input.readByte() & 0xFf,

@@ -12,7 +12,7 @@ import nl.knokko.customitems.item.CustomItemType;
 import nl.knokko.util.bits.BitInput;
 import nl.knokko.util.bits.BitOutput;
 
-public class SphereProjectileCover extends ProjectileCover {
+public class SphereProjectileCover extends EditorProjectileCover {
 	
 	public NamedImage texture;
 	
@@ -36,7 +36,7 @@ public class SphereProjectileCover extends ProjectileCover {
 
 	@Override
 	protected byte getID() {
-		return ProjectileCover.ID_SPHERE;
+		return EditorProjectileCover.ID_SPHERE;
 	}
 
 	@Override

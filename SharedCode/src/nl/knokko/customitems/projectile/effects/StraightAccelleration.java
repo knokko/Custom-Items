@@ -4,7 +4,7 @@ import nl.knokko.util.bits.BitInput;
 
 public class StraightAccelleration extends ProjectileAccelleration {
 	
-	public static StraightAccelleration load1(BitInput input) {
+	static StraightAccelleration load1(BitInput input) {
 		return new StraightAccelleration(input.readFloat(), input.readFloat());
 	}
 	
