@@ -4485,6 +4485,14 @@ public class ItemSet implements ItemSetBase {
 	
 	/**
 	 * Do not modify this collection directly!
+	 * @return The projectile collection of this ItemSet
+	 */
+	public Collection<Projectile> getBackingProjectiles(){
+		return projectiles;
+	}
+	
+	/**
+	 * Do not modify this collection directly!
 	 * @return The projectile cover collection of this ItemSet
 	 */
 	public Collection<EditorProjectileCover> getBackingProjectileCovers(){

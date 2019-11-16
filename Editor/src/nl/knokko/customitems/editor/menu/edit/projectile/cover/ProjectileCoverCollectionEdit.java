@@ -38,7 +38,7 @@ public class ProjectileCoverCollectionEdit extends CollectionEdit<EditorProjecti
 
 		@Override
 		public void goBack() {
-			menu.getState().getWindow().setMainComponent(menu);
+			menu.getState().getWindow().setMainComponent(menu.getProjectileMenu());
 		}
 
 		@Override
