@@ -25,6 +25,8 @@ package nl.knokko.customitems.item;
 
 import static nl.knokko.customitems.item.CustomItemType.Category.*;
 
+import nl.knokko.customitems.NameHelper;
+
 import static nl.knokko.customitems.MCVersions.*;
 
 public enum CustomItemType {
@@ -136,13 +138,7 @@ public enum CustomItemType {
 	
 	@Override
 	public String toString() {
-		String niceName = name().charAt(0) + name().substring(1).toLowerCase().replaceAll("_", " ");
-		switch(version) {
-		case VERSION1_12: return niceName;
-		case VERSION1_13: return niceName + "(1.13+)";
-		case VERSION1_14: return niceName + "(1.14+)";
-		default: throw new IllegalStateException("Unknown minecraft version: " + version);
-		}
+		return NameHelper.getNiceEnumName(name(), version);
 	}
 	
 	/**

@@ -23,6 +23,8 @@
  *******************************************************************************/
 package nl.knokko.customitems.item;
 
+import nl.knokko.customitems.NameHelper;
+
 /**
  * A ItemFlag can hide some Attributes from ItemStacks.
  * Copied straight from Bukkit, but separated from the Bukkit API to ensure that the order
@@ -62,6 +64,6 @@ public enum ItemFlag {
 	
 	@Override
 	public String toString() {
-		return name().toLowerCase().replace('_', ' ');
+		return NameHelper.getNiceEnumName(name());
 	}
 }

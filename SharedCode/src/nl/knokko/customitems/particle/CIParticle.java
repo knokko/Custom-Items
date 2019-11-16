@@ -1,6 +1,8 @@
 package nl.knokko.customitems.particle;
 
 import static nl.knokko.customitems.MCVersions.*;
+
+import nl.knokko.customitems.NameHelper;
 public enum CIParticle {
 
 	EXPLOSION_NORMAL(VERSION1_12),
@@ -80,12 +82,6 @@ public enum CIParticle {
 	
 	@Override
 	public String toString() {
-		String base = name().toLowerCase();
-		switch (mcVersion) {
-		case VERSION1_12: return base;
-		case VERSION1_13: return base + " (1.13+)";
-		case VERSION1_14: return base + " (1.14+)";
-		default: throw new Error("Unknown mc version: " + mcVersion);
-		}
+		return NameHelper.getNiceEnumName(name(), mcVersion);
 	}
 }

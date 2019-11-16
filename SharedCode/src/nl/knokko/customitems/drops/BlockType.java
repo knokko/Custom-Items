@@ -2,6 +2,8 @@ package nl.knokko.customitems.drops;
 
 import static nl.knokko.customitems.MCVersions.*;
 
+import nl.knokko.customitems.NameHelper;
+
 public enum BlockType {
 	
 	AIR,
@@ -812,12 +814,6 @@ public enum BlockType {
 	
 	@Override
 	public String toString() {
-		String niceName = name().toLowerCase().replace('_', ' ');
-		switch(version) {
-		case VERSION1_12: return niceName;
-		case VERSION1_13: return niceName + " (1.13+)";
-		case VERSION1_14: return niceName + " (1.14+)";
-		default: throw new Error("Unknown minecraft version: " + version);
-		}
+		return NameHelper.getNiceEnumName(name(), version);
 	}
 }

@@ -2,6 +2,8 @@ package nl.knokko.customitems.drops;
 
 import static nl.knokko.customitems.MCVersions.*;
 
+import nl.knokko.customitems.NameHelper;
+
 public enum CIEntityType {
 	
 	ELDER_GUARDIAN,
@@ -103,12 +105,6 @@ public enum CIEntityType {
 	
 	@Override
 	public String toString() {
-		String name = name().replace('_', ' ').toLowerCase();
-		switch (version){
-		case VERSION1_12: return name;
-		case VERSION1_13: return name + " (1.13+)";
-		case VERSION1_14: return name + " (1.14+)";
-		default: throw new Error("Unknown minecraft version: " + version);
-		}
+		return NameHelper.getNiceEnumName(name(), version);
 	}
 }

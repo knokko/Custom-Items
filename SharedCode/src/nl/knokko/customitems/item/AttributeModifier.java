@@ -23,6 +23,8 @@
  *******************************************************************************/
 package nl.knokko.customitems.item;
 
+import nl.knokko.customitems.NameHelper;
+
 public class AttributeModifier {
 	
 	private final Attribute attribute;
@@ -91,7 +93,7 @@ public class AttributeModifier {
 		
 		@Override
 		public String toString() {
-			return toNiceString(name());
+			return NameHelper.getNiceEnumName(name());
 		}
 		
 		public String getSlot() {
@@ -111,13 +113,7 @@ public class AttributeModifier {
 		
 		@Override
 		public String toString() {
-			return toNiceString(name());
+			return NameHelper.getNiceEnumName(name());
 		}
-	}
-	
-	private static String toNiceString(String name) {
-		if (name.isEmpty())
-			return name;
-		return Character.toUpperCase(name.charAt(0)) + name.substring(1).toLowerCase().replace('_', ' ');
 	}
 }

@@ -25,6 +25,8 @@ package nl.knokko.customitems.item;
 
 import static nl.knokko.customitems.MCVersions.*;
 
+import nl.knokko.customitems.NameHelper;
+
 public enum EnchantmentType {
 	
 	PROTECTION_ENVIRONMENTAL("protection", 0),
@@ -86,12 +88,7 @@ public enum EnchantmentType {
 	
 	@Override
 	public String toString() {
-		switch(version) {
-		case VERSION1_12: return niceName;
-		case VERSION1_13: return niceName + "(1.13+)";
-		case VERSION1_14: return niceName + "(1.14+)";
-		default: throw new Error("Unknown minecraft version: " + version);
-		}
+		return NameHelper.getNiceEnumName(name(), version);
 	}
 	
 	public String getName() {
