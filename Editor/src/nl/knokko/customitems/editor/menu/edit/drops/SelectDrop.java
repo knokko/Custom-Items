@@ -1,8 +1,8 @@
 package nl.knokko.customitems.editor.menu.edit.drops;
 
 import nl.knokko.customitems.drops.Drop;
+import nl.knokko.customitems.editor.menu.edit.CollectionSelect;
 import nl.knokko.customitems.editor.menu.edit.EditProps;
-import nl.knokko.customitems.editor.menu.edit.select.item.SelectCustomItem;
 import nl.knokko.customitems.editor.set.ItemSet;
 import nl.knokko.customitems.editor.set.item.CustomItem;
 import nl.knokko.gui.color.GuiColor;
@@ -45,18 +45,10 @@ public class SelectDrop extends GuiMenu {
 			state.getWindow().setMainComponent(returnMenu);
 		}), 0.025f, 0.8f, 0.2f, 0.9f);
 		
-		DynamicTextButton[] itemButton = { null };
-		
 		addComponent(new DynamicTextComponent("Item to drop:", EditProps.LABEL), 0.3f, 0.7f, 0.5f, 0.8f);
-		SelectCustomItem itemSelect = new SelectCustomItem(this, (CustomItem newItem) -> {
+		addComponent(CollectionSelect.createButton(set.getBackingItems(), (CustomItem newItem) -> {
 			selectedItem = newItem;
-			itemButton[0].setText(newItem.getName());
-		}, set);
-		
-		itemButton[0] = new DynamicTextButton(selectedItem == null ? "None" : selectedItem.getName(), EditProps.CHOOSE_BASE, EditProps.CHOOSE_HOVER, () -> {
-			state.getWindow().setMainComponent(itemSelect);
-		});
-		addComponent(itemButton[0], 0.55f, 0.7f, 0.8f, 0.8f);
+		}, (CustomItem item) -> { return item.getName(); }, selectedItem), 0.55f, 0.7f, 0.8f, 0.8f);
 		
 		addComponent(new DynamicTextComponent("Drop chance:", EditProps.LABEL), 0.3f, 0.575f, 0.5f, 0.675f);
 		IntEditField dropChance = new IntEditField(previous == null ? 100 : previous.getDropChance(), 0, 100, EditProps.EDIT_BASE, EditProps.EDIT_ACTIVE);
