@@ -17,6 +17,11 @@ public class ExecuteCommand extends ProjectileEffect {
 		this.command = command;
 		this.executor = executor;
 	}
+	
+	@Override
+	public String toString() {
+		return "/" + command;
+	}
 
 	@Override
 	public void toBits(BitOutput output) {

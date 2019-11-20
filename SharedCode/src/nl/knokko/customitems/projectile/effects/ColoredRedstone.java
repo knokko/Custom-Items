@@ -31,6 +31,11 @@ public class ColoredRedstone extends ProjectileEffect {
 		this.maxRadius = maxRadius;
 		this.amount = amount;
 	}
+	
+	@Override
+	public String toString() {
+		return "Colored redstone";
+	}
 
 	@Override
 	public void toBits(BitOutput output) {

@@ -23,6 +23,11 @@ public class SimpleParticles extends ProjectileEffect {
 		this.maxRadius = maxRadius;
 		this.amount = amount;
 	}
+	
+	@Override
+	public String toString() {
+		return particle + " particles";
+	}
 
 	@Override
 	public void toBits(BitOutput output) {

@@ -37,6 +37,11 @@ public class SubProjectiles extends ProjectileEffect {
 		this.maxAmount = maxAmount;
 		this.angleToParent = angleToParent;
 	}
+	
+	@Override
+	public String toString() {
+		return "Launch " + child.name;
+	}
 
 	@Override
 	public void toBits(BitOutput output) {

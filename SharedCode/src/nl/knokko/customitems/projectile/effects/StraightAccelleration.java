@@ -11,6 +11,11 @@ public class StraightAccelleration extends ProjectileAccelleration {
 	public StraightAccelleration(float minAccelleration, float maxAccelleration) {
 		super(minAccelleration, maxAccelleration);
 	}
+	
+	@Override
+	public String toString() {
+		return "Straight accelleration";
+	}
 
 	@Override
 	protected byte getEncoding() {

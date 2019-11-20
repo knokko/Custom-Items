@@ -11,6 +11,11 @@ public class RandomAccelleration extends ProjectileAccelleration {
 	public RandomAccelleration(float minAccelleration, float maxAccelleration) {
 		super(minAccelleration, maxAccelleration);
 	}
+	
+	@Override
+	public String toString() {
+		return "Random accelleration";
+	}
 
 	@Override
 	protected byte getEncoding() {

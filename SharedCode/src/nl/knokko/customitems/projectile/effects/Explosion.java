@@ -19,6 +19,11 @@ public class Explosion extends ProjectileEffect {
 		this.destroyBlocks = destroyBlocks;
 		this.setFire = setFire;
 	}
+	
+	@Override
+	public String toString() {
+		return "Explosion(power=" + power + ")";
+	}
 
 	@Override
 	public void toBits(BitOutput output) {
