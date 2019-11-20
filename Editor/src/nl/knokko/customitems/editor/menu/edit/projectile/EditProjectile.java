@@ -1,13 +1,24 @@
 package nl.knokko.customitems.editor.menu.edit.projectile;
 
-import nl.knokko.customitems.editor.menu.edit.EditMenu;
-import nl.knokko.customitems.editor.menu.edit.EnumSelect;
+import static nl.knokko.customitems.editor.menu.edit.EditProps.BACKGROUND;
+import static nl.knokko.customitems.editor.menu.edit.EditProps.BUTTON;
+import static nl.knokko.customitems.editor.menu.edit.EditProps.CANCEL_BASE;
+import static nl.knokko.customitems.editor.menu.edit.EditProps.CANCEL_HOVER;
+import static nl.knokko.customitems.editor.menu.edit.EditProps.EDIT_ACTIVE;
+import static nl.knokko.customitems.editor.menu.edit.EditProps.EDIT_BASE;
+import static nl.knokko.customitems.editor.menu.edit.EditProps.HOVER;
+import static nl.knokko.customitems.editor.menu.edit.EditProps.LABEL;
 
-import static nl.knokko.customitems.editor.menu.edit.EditProps.*;
+import java.util.ArrayList;
+import java.util.Collection;
 
 import nl.knokko.customitems.damage.DamageSource;
+import nl.knokko.customitems.editor.menu.edit.EditMenu;
+import nl.knokko.customitems.editor.menu.edit.EnumSelect;
+import nl.knokko.customitems.editor.menu.edit.projectile.effect.ProjectileEffectCollectionEdit;
 import nl.knokko.customitems.projectile.Projectile;
 import nl.knokko.customitems.projectile.ProjectileType;
+import nl.knokko.customitems.projectile.effects.ProjectileEffect;
 import nl.knokko.gui.color.GuiColor;
 import nl.knokko.gui.component.menu.GuiMenu;
 import nl.knokko.gui.component.text.FloatEditField;
@@ -55,6 +66,7 @@ public class EditProjectile extends GuiMenu {
 		float minLaunchAngle, maxLaunchAngle;
 		float minLaunchSpeed, maxLaunchSpeed;
 		int maxLifeTime;
+		Collection<ProjectileEffect> impactEffects;
 		
 		// Give them different values depending on whether we are editing an existing projectile or creating a new one
 		if (previous == null) {
@@ -62,9 +74,10 @@ public class EditProjectile extends GuiMenu {
 			damage = 5f;
 			minLaunchAngle = 0f;
 			maxLaunchAngle = 5f;
-			minLaunchSpeed = 0.125f;
-			maxLaunchSpeed = 0.1875f;
+			minLaunchSpeed = 0.1f;
+			maxLaunchSpeed = 0.15f;
 			maxLifeTime = 200;
+			impactEffects = new ArrayList<>(1);
 		} else {
 			name = previous.name;
 			damage = previous.damage;
@@ -73,6 +86,7 @@ public class EditProjectile extends GuiMenu {
 			minLaunchSpeed = previous.minLaunchSpeed;
 			maxLaunchSpeed = previous.maxLaunchSpeed;
 			maxLifeTime = previous.maxLifeTime;
+			impactEffects = new ArrayList<>(previous.impactEffects);
 		}
 		
 		// The edit fields
@@ -94,9 +108,9 @@ public class EditProjectile extends GuiMenu {
 		addComponent(new DynamicTextComponent("Maximum launch angle:", LABEL), LABEL_X - 0.3f, 0.56f, LABEL_X, 0.64f);
 		addComponent(maxLaunchAngleField, BUTTON_X, 0.56f, BUTTON_X + 0.15f, 0.63f);
 		addComponent(new DynamicTextComponent("Minimum launch speed:", LABEL), LABEL_X - 0.3f, 0.48f, LABEL_X, 0.56f);
-		addComponent(minLaunchSpeedField, BUTTON_X, 0.48f, BUTTON_X + 0.125f, 0.55f);
+		addComponent(minLaunchSpeedField, BUTTON_X, 0.48f, BUTTON_X + 0.1f, 0.55f);
 		addComponent(new DynamicTextComponent("Maximum launch speed:", LABEL), LABEL_X - 0.3f, 0.40f, LABEL_X, 0.48f);
-		addComponent(maxLaunchSpeedField, BUTTON_X, 0.40f, BUTTON_X + 0.125f, 0.47f);
+		addComponent(maxLaunchSpeedField, BUTTON_X, 0.40f, BUTTON_X + 0.1f, 0.47f);
 		addComponent(new DynamicTextComponent("Maximum lifetime:", LABEL), LABEL_X - 0.22f, 0.32f, LABEL_X, 0.40f);
 		addComponent(lifeTimeField, BUTTON_X, 0.32f, BUTTON_X + 0.1f, 0.39f);
 		addComponent(new DynamicTextComponent("Impact damage source:", LABEL), LABEL_X - 0.3f, 0.24f, LABEL_X, 0.32f);
@@ -115,7 +129,7 @@ public class EditProjectile extends GuiMenu {
 		}), BUTTON_X2, 0.8f, BUTTON_X2 + 0.09f, 0.87f);
 		addComponent(new DynamicTextComponent("Impact effects:", LABEL), LABEL_X2 - 0.2f, 0.72f, LABEL_X2, 0.8f);
 		addComponent(new DynamicTextButton("Change...", BUTTON, HOVER, () -> {
-			// TODO CollectionEdit for ProjectileEffect
+			state.getWindow().setMainComponent(new ProjectileEffectCollectionEdit(impactEffects, this));
 		}), BUTTON_X2, 0.72f, BUTTON_X2 + 0.09f, 0.79f);
 		addComponent(new DynamicTextComponent("Projectile cover:", LABEL), LABEL_X2 - 0.2f, 0.64f, LABEL_X2, 0.72f);
 		addComponent(new DynamicTextButton("Change...", BUTTON, HOVER, () -> {
