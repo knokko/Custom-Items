@@ -47,6 +47,23 @@ public class ProjectileEffects {
 		this.effects = effects;
 	}
 	
+	@Override
+	public String toString() {
+		return effects.size() + " projectile effects with period " + period;
+	}
+	
+	public String validate() {
+		if (delay < 0)
+			return "The time until first round must be a positive integer";
+		if (period <= 0)
+			return "The time between rounds must be a positive integer";
+		if (effects == null)
+			return "The effects per round can't be null";
+		if (effects.isEmpty())
+			return "There should be at least 1 effect per round";
+		return null;
+	}
+	
 	public void toBits(BitOutput output) {
 		output.addByte(ENCODING_1);
 		output.addInt(delay);

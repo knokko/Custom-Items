@@ -1,24 +1,21 @@
 package nl.knokko.customitems.editor.menu.edit.projectile;
 
-import static nl.knokko.customitems.editor.menu.edit.EditProps.BACKGROUND;
-import static nl.knokko.customitems.editor.menu.edit.EditProps.BUTTON;
-import static nl.knokko.customitems.editor.menu.edit.EditProps.CANCEL_BASE;
-import static nl.knokko.customitems.editor.menu.edit.EditProps.CANCEL_HOVER;
-import static nl.knokko.customitems.editor.menu.edit.EditProps.EDIT_ACTIVE;
-import static nl.knokko.customitems.editor.menu.edit.EditProps.EDIT_BASE;
-import static nl.knokko.customitems.editor.menu.edit.EditProps.HOVER;
-import static nl.knokko.customitems.editor.menu.edit.EditProps.LABEL;
+import static nl.knokko.customitems.editor.menu.edit.EditProps.*;
 
 import java.util.ArrayList;
 import java.util.Collection;
 
 import nl.knokko.customitems.damage.DamageSource;
+import nl.knokko.customitems.editor.menu.edit.CollectionSelect;
 import nl.knokko.customitems.editor.menu.edit.EditMenu;
 import nl.knokko.customitems.editor.menu.edit.EnumSelect;
 import nl.knokko.customitems.editor.menu.edit.projectile.effect.ProjectileEffectCollectionEdit;
+import nl.knokko.customitems.editor.menu.edit.projectile.effect.ProjectileEffectsCollectionEdit;
+import nl.knokko.customitems.editor.set.projectile.cover.EditorProjectileCover;
 import nl.knokko.customitems.projectile.Projectile;
 import nl.knokko.customitems.projectile.ProjectileType;
 import nl.knokko.customitems.projectile.effects.ProjectileEffect;
+import nl.knokko.customitems.projectile.effects.ProjectileEffects;
 import nl.knokko.gui.color.GuiColor;
 import nl.knokko.gui.component.menu.GuiMenu;
 import nl.knokko.gui.component.text.FloatEditField;
@@ -26,6 +23,7 @@ import nl.knokko.gui.component.text.IntEditField;
 import nl.knokko.gui.component.text.TextEditField;
 import nl.knokko.gui.component.text.dynamic.DynamicTextButton;
 import nl.knokko.gui.component.text.dynamic.DynamicTextComponent;
+import nl.knokko.gui.util.Option;
 
 public class EditProjectile extends GuiMenu {
 	
@@ -40,6 +38,7 @@ public class EditProjectile extends GuiMenu {
 	
 	private DamageSource impactDamageSource;
 	private ProjectileType minecraftType;
+	private EditorProjectileCover cover;
 
 	public EditProjectile(EditMenu menu, Projectile previous) {
 		this.menu = menu;
@@ -48,9 +47,11 @@ public class EditProjectile extends GuiMenu {
 		if (previous == null) {
 			impactDamageSource = DamageSource.PROJECTILE;
 			minecraftType = ProjectileType.SNOWBALL;
+			cover = null;
 		} else {
 			impactDamageSource = previous.damageSource;
 			minecraftType = previous.minecraftType;
+			cover = (EditorProjectileCover) previous.cover;
 		}
 	}
 
@@ -60,43 +61,57 @@ public class EditProjectile extends GuiMenu {
 			state.getWindow().setMainComponent(menu.getProjectileMenu().getProjectileOverview());
 		}), 0.025f, 0.75f, 0.15f, 0.85f);
 		
-		// The initial values of the edit fields
-		String name;
-		float damage;
-		float minLaunchAngle, maxLaunchAngle;
-		float minLaunchSpeed, maxLaunchSpeed;
-		int maxLifeTime;
-		Collection<ProjectileEffect> impactEffects;
-		
-		// Give them different values depending on whether we are editing an existing projectile or creating a new one
-		if (previous == null) {
-			name = "";
-			damage = 5f;
-			minLaunchAngle = 0f;
-			maxLaunchAngle = 5f;
-			minLaunchSpeed = 0.1f;
-			maxLaunchSpeed = 0.15f;
-			maxLifeTime = 200;
-			impactEffects = new ArrayList<>(1);
-		} else {
-			name = previous.name;
-			damage = previous.damage;
-			minLaunchAngle = previous.minLaunchAngle;
-			maxLaunchAngle = previous.maxLaunchAngle;
-			minLaunchSpeed = previous.minLaunchSpeed;
-			maxLaunchSpeed = previous.maxLaunchSpeed;
-			maxLifeTime = previous.maxLifeTime;
-			impactEffects = new ArrayList<>(previous.impactEffects);
-		}
+		DynamicTextComponent errorComponent = new DynamicTextComponent("", ERROR);
+		addComponent(errorComponent, 0.05f, 0.9f, 0.95f, 1f);
 		
 		// The edit fields
-		TextEditField nameField = new TextEditField(name, EDIT_BASE, EDIT_ACTIVE);
-		FloatEditField damageField = new FloatEditField(damage, 0f, EDIT_BASE, EDIT_ACTIVE);
-		FloatEditField minLaunchAngleField = new FloatEditField(minLaunchAngle, 0f, EDIT_BASE, EDIT_ACTIVE);
-		FloatEditField maxLaunchAngleField = new FloatEditField(maxLaunchAngle, 0f, EDIT_BASE, EDIT_ACTIVE);
-		FloatEditField minLaunchSpeedField = new FloatEditField(minLaunchSpeed, 0f, EDIT_BASE, EDIT_ACTIVE);
-		FloatEditField maxLaunchSpeedField = new FloatEditField(maxLaunchSpeed, 0f, EDIT_BASE, EDIT_ACTIVE);
-		IntEditField lifeTimeField = new IntEditField(maxLifeTime, 1, EDIT_BASE, EDIT_ACTIVE);
+		TextEditField nameField;
+		FloatEditField damageField, minLaunchAngleField, maxLaunchAngleField, 
+			minLaunchSpeedField, maxLaunchSpeedField;
+		IntEditField lifetimeField;
+		
+		// The initial values of the edit fields
+		Collection<ProjectileEffect> impactEffects;
+		Collection<ProjectileEffects> inFlightEffects;
+		{
+			String name;
+			float damage;
+			float minLaunchAngle, maxLaunchAngle;
+			float minLaunchSpeed, maxLaunchSpeed;
+			int maxLifeTime;
+			
+			// Give them different values depending on whether we are editing an existing projectile or creating a new one
+			if (previous == null) {
+				name = "";
+				damage = 5f;
+				minLaunchAngle = 0f;
+				maxLaunchAngle = 5f;
+				minLaunchSpeed = 0.1f;
+				maxLaunchSpeed = 0.15f;
+				maxLifeTime = 200;
+				impactEffects = new ArrayList<>(1);
+				inFlightEffects = new ArrayList<>(0);
+			} else {
+				name = previous.name;
+				damage = previous.damage;
+				minLaunchAngle = previous.minLaunchAngle;
+				maxLaunchAngle = previous.maxLaunchAngle;
+				minLaunchSpeed = previous.minLaunchSpeed;
+				maxLaunchSpeed = previous.maxLaunchSpeed;
+				maxLifeTime = previous.maxLifeTime;
+				impactEffects = new ArrayList<>(previous.impactEffects);
+				inFlightEffects = new ArrayList<>(previous.inFlightEffects);
+			}
+			
+			// Initialize the edit fields
+			nameField = new TextEditField(name, EDIT_BASE, EDIT_ACTIVE);
+			damageField = new FloatEditField(damage, 0f, EDIT_BASE, EDIT_ACTIVE);
+			minLaunchAngleField = new FloatEditField(minLaunchAngle, 0f, EDIT_BASE, EDIT_ACTIVE);
+			maxLaunchAngleField = new FloatEditField(maxLaunchAngle, 0f, EDIT_BASE, EDIT_ACTIVE);
+			minLaunchSpeedField = new FloatEditField(minLaunchSpeed, 0f, EDIT_BASE, EDIT_ACTIVE);
+			maxLaunchSpeedField = new FloatEditField(maxLaunchSpeed, 0f, EDIT_BASE, EDIT_ACTIVE);
+			lifetimeField = new IntEditField(maxLifeTime, 1, EDIT_BASE, EDIT_ACTIVE);
+		}
 		
 		// First column of the form
 		addComponent(new DynamicTextComponent("Name:", LABEL), LABEL_X - 0.125f, 0.8f, LABEL_X, 0.88f);
@@ -112,7 +127,7 @@ public class EditProjectile extends GuiMenu {
 		addComponent(new DynamicTextComponent("Maximum launch speed:", LABEL), LABEL_X - 0.3f, 0.40f, LABEL_X, 0.48f);
 		addComponent(maxLaunchSpeedField, BUTTON_X, 0.40f, BUTTON_X + 0.1f, 0.47f);
 		addComponent(new DynamicTextComponent("Maximum lifetime:", LABEL), LABEL_X - 0.22f, 0.32f, LABEL_X, 0.40f);
-		addComponent(lifeTimeField, BUTTON_X, 0.32f, BUTTON_X + 0.1f, 0.39f);
+		addComponent(lifetimeField, BUTTON_X, 0.32f, BUTTON_X + 0.1f, 0.39f);
 		addComponent(new DynamicTextComponent("Impact damage source:", LABEL), LABEL_X - 0.3f, 0.24f, LABEL_X, 0.32f);
 		addComponent(EnumSelect.createSelectButton(DamageSource.class, (DamageSource newImpactSource) -> {
 			impactDamageSource = newImpactSource;
@@ -125,16 +140,64 @@ public class EditProjectile extends GuiMenu {
 		// Second column of the form
 		addComponent(new DynamicTextComponent("In flight effects:", LABEL), LABEL_X2 - 0.25f, 0.8f, LABEL_X2, 0.88f);
 		addComponent(new DynamicTextButton("Change...", BUTTON, HOVER, () -> {
-			// TODO CollectionEdit for ProjectileEffectS
+			state.getWindow().setMainComponent(new ProjectileEffectsCollectionEdit(this, inFlightEffects));
 		}), BUTTON_X2, 0.8f, BUTTON_X2 + 0.09f, 0.87f);
 		addComponent(new DynamicTextComponent("Impact effects:", LABEL), LABEL_X2 - 0.2f, 0.72f, LABEL_X2, 0.8f);
 		addComponent(new DynamicTextButton("Change...", BUTTON, HOVER, () -> {
 			state.getWindow().setMainComponent(new ProjectileEffectCollectionEdit(impactEffects, this));
 		}), BUTTON_X2, 0.72f, BUTTON_X2 + 0.09f, 0.79f);
 		addComponent(new DynamicTextComponent("Projectile cover:", LABEL), LABEL_X2 - 0.2f, 0.64f, LABEL_X2, 0.72f);
-		addComponent(new DynamicTextButton("Change...", BUTTON, HOVER, () -> {
-			// TODO Projectile cover selection menu
-		}), BUTTON_X2, 0.64f, BUTTON_X2 + 0.09f, 0.71f);
+		addComponent(CollectionSelect.createButton(
+				menu.getSet().getBackingProjectileCovers(), (EditorProjectileCover newCover) -> {
+					cover = newCover;
+				}, (EditorProjectileCover coverToName) -> {
+					return coverToName.name;
+		}, cover), BUTTON_X2, 0.64f, BUTTON_X2 + 0.09f, 0.71f);
+		
+		// The Create/Apply button
+		addComponent(new DynamicTextButton(previous == null ? "Create" : "Apply", SAVE_BASE, SAVE_HOVER, () -> {
+			
+			String name = nameField.getText();
+			Option.Float damage = damageField.getFloat();
+			Option.Float minLaunchAngle = minLaunchAngleField.getFloat();
+			Option.Float maxLaunchAngle = maxLaunchAngleField.getFloat();
+			Option.Float minLaunchSpeed = minLaunchSpeedField.getFloat();
+			Option.Float maxLaunchSpeed = maxLaunchSpeedField.getFloat();
+			Option.Int lifetime = lifetimeField.getInt();
+			
+			String error = null;
+			
+			if (!damage.hasValue()) error = "The damage must be a positive number";
+			if (!minLaunchAngle.hasValue()) error = "The minimum launch angle must be a positive number";
+			if (!maxLaunchAngle.hasValue()) error = "The maximum launch angle must be a positive number";
+			if (!minLaunchSpeed.hasValue()) error = "The minimum launch speed must be a positive number";
+			if (!maxLaunchSpeed.hasValue()) error = "The maximum launch speed must be a positive number";
+			if (!lifetime.hasValue()) error = "The lifetime must be a positive integer";
+			if (impactDamageSource == null) error = "You must select an impact damage source";
+			if (minecraftType == null) error = "You must select a projectile type";
+			
+			if (error == null) {
+				if (previous == null) {
+					error = menu.getSet().addProjectile(new Projectile(name, damage.getValue(), 
+							minLaunchAngle.getValue(), maxLaunchAngle.getValue(), 
+							minLaunchSpeed.getValue(), maxLaunchSpeed.getValue(), lifetime.getValue(), 
+							impactDamageSource, minecraftType, inFlightEffects, impactEffects, cover));
+				} else {
+					error = menu.getSet().changeProjectile(previous, name, damage.getValue(), 
+							minLaunchAngle.getValue(), maxLaunchAngle.getValue(), 
+							minLaunchSpeed.getValue(), maxLaunchSpeed.getValue(), lifetime.getValue(), 
+							impactDamageSource, minecraftType, inFlightEffects, impactEffects, cover);
+				}
+				
+				if (error == null) {
+					state.getWindow().setMainComponent(menu.getProjectileMenu().getProjectileOverview());
+				} else {
+					errorComponent.setText(error);
+				}
+			} else {
+				errorComponent.setText(error);
+			}
+		}), 0.025f, 0.1f, 0.2f, 0.2f);
 	}
 	
 	@Override

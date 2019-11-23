@@ -3704,11 +3704,10 @@ public class ItemSet implements ItemSetBase {
 		if (projectile.minecraftType == null)
 			return "You must select a projectile type";
 		for (ProjectileEffects effects : projectile.inFlightEffects) {
-			if (effects.delay < 0)
-				return "At least 1 of the delays of the in flight effects is negative";
-			if (effects.period < 1)
-				return "At least 1 of the periods of the in flight effects is not positive";
-			String effectsError = validateProjectileEffects(effects.effects);
+			String effectsError = effects.validate();
+			if (effectsError != null)
+				return effectsError;
+			effectsError = validateProjectileEffects(effects.effects);
 			if (effectsError != null)
 				return effectsError;
 		}
