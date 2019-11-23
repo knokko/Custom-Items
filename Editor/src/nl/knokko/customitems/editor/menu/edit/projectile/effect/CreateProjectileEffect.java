@@ -29,10 +29,10 @@ public class CreateProjectileEffect extends GuiMenu {
 			state.getWindow().setMainComponent(new EditColoredRedstone(null, backingCollection, returnMenu));
 		}), 0.5f, 0.8f, 0.85f, 0.9f);
 		addComponent(new DynamicTextButton("Execute command", EditProps.CHOOSE_BASE, EditProps.CHOOSE_HOVER, () -> {
-			
+			state.getWindow().setMainComponent(new EditExecuteCommand(null, backingCollection, returnMenu));
 		}), 0.5f, 0.65f, 0.7f, 0.75f);
 		addComponent(new DynamicTextButton("Create explosion", EditProps.CHOOSE_BASE, EditProps.CHOOSE_HOVER, () -> {
-			
+			state.getWindow().setMainComponent(new EditExplosion(null, backingCollection, returnMenu));
 		}), 0.5f, 0.5f, 0.7f, 0.6f);
 		addComponent(new DynamicTextButton("Accellerate in random direction", EditProps.CHOOSE_BASE, EditProps.CHOOSE_HOVER, () -> {
 			

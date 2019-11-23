@@ -57,9 +57,9 @@ public class ProjectileEffectCollectionEdit extends CollectionEdit<ProjectileEff
 			if (itemToEdit instanceof ColoredRedstone) {
 				return new EditColoredRedstone((ColoredRedstone) itemToEdit, backingCollection, currentMenu);
 			} else if (itemToEdit instanceof ExecuteCommand) {
-				
+				return new EditExecuteCommand((ExecuteCommand) itemToEdit, backingCollection, currentMenu);
 			} else if (itemToEdit instanceof Explosion) {
-				
+				return new EditExplosion((Explosion) itemToEdit, backingCollection, currentMenu);
 			} else if (itemToEdit instanceof RandomAccelleration) {
 				
 			} else if (itemToEdit instanceof SimpleParticles) {
