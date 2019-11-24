@@ -5,16 +5,14 @@ import java.util.Collection;
 import static nl.knokko.customitems.editor.menu.edit.EditProps.*;
 import nl.knokko.customitems.projectile.effects.ColoredRedstone;
 import nl.knokko.customitems.projectile.effects.ProjectileEffect;
-import nl.knokko.gui.color.GuiColor;
 import nl.knokko.gui.component.GuiComponent;
-import nl.knokko.gui.component.menu.GuiMenu;
 import nl.knokko.gui.component.text.FloatEditField;
 import nl.knokko.gui.component.text.IntEditField;
 import nl.knokko.gui.component.text.dynamic.DynamicTextButton;
 import nl.knokko.gui.component.text.dynamic.DynamicTextComponent;
 import nl.knokko.gui.util.Option;
 
-public class EditColoredRedstone extends GuiMenu {
+public class EditColoredRedstone extends EditProjectileEffect {
 	
 	private static final float BUTTON_X = 0.425f;
 	private static final float LABEL_X = BUTTON_X - 0.01f;
@@ -22,24 +20,16 @@ public class EditColoredRedstone extends GuiMenu {
 	private static final float LABEL_X2 = BUTTON_X2 - 0.01f;
 	
 	private final ColoredRedstone original;
-	private final Collection<ProjectileEffect> collection;
-	private final GuiComponent returnMenu;
 
 	public EditColoredRedstone(ColoredRedstone original, Collection<ProjectileEffect> backingCollection,
 			GuiComponent returnMenu) {
+		super(backingCollection, returnMenu);
 		this.original = original;
-		this.collection = backingCollection;
-		this.returnMenu = returnMenu;
 	}
 
 	@Override
 	protected void addComponents() {
-		addComponent(new DynamicTextButton("Cancel", CANCEL_BASE, CANCEL_HOVER, () -> {
-			state.getWindow().setMainComponent(returnMenu);
-		}), 0.025f, 0.7f, 0.175f, 0.8f);
-		
-		DynamicTextComponent errorComponent = new DynamicTextComponent("", ERROR);
-		addComponent(errorComponent, 0.05f, 0.9f, 0.95f, 1f);
+		super.addComponents();
 		
 		// The edit fields
 		IntEditField minRedField, minGreenField, minBlueField, maxRedField, maxGreenField, maxBlueField, amountField;
@@ -147,7 +137,7 @@ public class EditColoredRedstone extends GuiMenu {
 			error = toAdd.validate();
 			if (error == null) {
 				if (original == null) {
-					collection.add(toAdd);
+					backingCollection.add(toAdd);
 				} else {
 					original.minRed = toAdd.minRed;
 					original.minGreen = toAdd.minGreen;
@@ -172,10 +162,5 @@ public class EditColoredRedstone extends GuiMenu {
 	
 	private static FloatEditField radiusField(float initialValue) {
 		return new FloatEditField(initialValue, 0, EDIT_BASE, EDIT_ACTIVE);
-	}
-
-	@Override
-	public GuiColor getBackgroundColor() {
-		return BACKGROUND;
 	}
 }

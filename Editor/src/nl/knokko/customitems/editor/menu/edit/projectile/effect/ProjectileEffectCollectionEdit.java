@@ -61,11 +61,11 @@ public class ProjectileEffectCollectionEdit extends CollectionEdit<ProjectileEff
 			} else if (itemToEdit instanceof Explosion) {
 				return new EditExplosion((Explosion) itemToEdit, backingCollection, currentMenu);
 			} else if (itemToEdit instanceof RandomAccelleration) {
-				
+				return new EditRandomAccelleration((RandomAccelleration) itemToEdit, backingCollection, returnMenu);
 			} else if (itemToEdit instanceof SimpleParticles) {
 				
 			} else if (itemToEdit instanceof StraightAccelleration) {
-				
+				return new EditStraightAccelleration((StraightAccelleration) itemToEdit, backingCollection, returnMenu);
 			} else if (itemToEdit instanceof SubProjectiles) {
 				
 			}

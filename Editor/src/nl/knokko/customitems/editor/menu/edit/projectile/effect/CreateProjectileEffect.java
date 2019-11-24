@@ -30,19 +30,22 @@ public class CreateProjectileEffect extends GuiMenu {
 		}), 0.5f, 0.8f, 0.85f, 0.9f);
 		addComponent(new DynamicTextButton("Execute command", EditProps.CHOOSE_BASE, EditProps.CHOOSE_HOVER, () -> {
 			state.getWindow().setMainComponent(new EditExecuteCommand(null, backingCollection, returnMenu));
-		}), 0.5f, 0.65f, 0.7f, 0.75f);
+		}), 0.5f, 0.68f, 0.7f, 0.78f);
 		addComponent(new DynamicTextButton("Create explosion", EditProps.CHOOSE_BASE, EditProps.CHOOSE_HOVER, () -> {
 			state.getWindow().setMainComponent(new EditExplosion(null, backingCollection, returnMenu));
-		}), 0.5f, 0.5f, 0.7f, 0.6f);
+		}), 0.5f, 0.56f, 0.7f, 0.66f);
 		addComponent(new DynamicTextButton("Accellerate in random direction", EditProps.CHOOSE_BASE, EditProps.CHOOSE_HOVER, () -> {
-			
-		}), 0.5f, 0.35f, 0.9f, 0.45f);
+			state.getWindow().setMainComponent(new EditRandomAccelleration(null, backingCollection, returnMenu));
+		}), 0.5f, 0.44f, 0.9f, 0.54f);
 		addComponent(new DynamicTextButton("Accellerate in move direction", EditProps.CHOOSE_BASE, EditProps.CHOOSE_HOVER, () -> {
+			state.getWindow().setMainComponent(new EditStraightAccelleration(null, backingCollection, returnMenu));
+		}), 0.5f, 0.32f, 0.9f, 0.42f);
+		addComponent(new DynamicTextButton("Spawn simple particle", EditProps.CHOOSE_BASE, EditProps.CHOOSE_HOVER, () -> {
 			
-		}), 0.5f, 0.2f, 0.9f, 0.3f);
+		}), 0.5f, 0.2f, 0.8f, 0.3f);
 		addComponent(new DynamicTextButton("Launch (another) projectile", EditProps.CHOOSE_BASE, EditProps.CHOOSE_HOVER, () -> {
 			
-		}), 0.5f, 0.05f, 0.9f, 0.15f);
+		}), 0.5f, 0.08f, 0.9f, 0.18f);
 	}
 
 	@Override

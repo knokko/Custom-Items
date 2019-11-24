@@ -6,39 +6,29 @@ import java.util.Collection;
 
 import nl.knokko.customitems.projectile.effects.Explosion;
 import nl.knokko.customitems.projectile.effects.ProjectileEffect;
-import nl.knokko.gui.color.GuiColor;
 import nl.knokko.gui.component.GuiComponent;
 import nl.knokko.gui.component.image.CheckboxComponent;
-import nl.knokko.gui.component.menu.GuiMenu;
 import nl.knokko.gui.component.text.FloatEditField;
 import nl.knokko.gui.component.text.dynamic.DynamicTextButton;
 import nl.knokko.gui.component.text.dynamic.DynamicTextComponent;
 import nl.knokko.gui.util.Option;
 
-public class EditExplosion extends GuiMenu {
+public class EditExplosion extends EditProjectileEffect {
 	
 	private static final float BUTTON_X = 0.5f;
 	private static final float LABEL_X = BUTTON_X - 0.01f;
 	
 	private final Explosion previous;
-	private final Collection<ProjectileEffect> backingCollection;
-	private final GuiComponent returnMenu;
 
 	public EditExplosion(Explosion previous, Collection<ProjectileEffect> backingCollection,
 			GuiComponent returnMenu) {
+		super(backingCollection, returnMenu);
 		this.previous = previous;
-		this.backingCollection = backingCollection;
-		this.returnMenu = returnMenu;
 	}
 
 	@Override
 	protected void addComponents() {
-		addComponent(new DynamicTextButton("Cancel", CANCEL_BASE, CANCEL_HOVER, () -> {
-			state.getWindow().setMainComponent(returnMenu);
-		}), 0.025f, 0.7f, 0.165f, 0.8f);
-		
-		DynamicTextComponent errorComponent = new DynamicTextComponent("", ERROR);
-		addComponent(errorComponent, 0.05f, 0.9f, 0.95f, 1f);
+		super.addComponents();
 		
 		FloatEditField powerField = new FloatEditField(previous == null ? 2f : previous.power, 0f, EDIT_BASE, EDIT_ACTIVE);
 		CheckboxComponent destroyBlocksBox = new CheckboxComponent(previous == null || previous.destroyBlocks);
@@ -72,10 +62,5 @@ public class EditExplosion extends GuiMenu {
 				errorComponent.setText("The power must be a positive number");
 			}
 		}), 0.025f, 0.2f, 0.175f, 0.3f);
-	}
-	
-	@Override
-	public GuiColor getBackgroundColor() {
-		return BACKGROUND;
 	}
 }
