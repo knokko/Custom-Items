@@ -3645,7 +3645,7 @@ public class ItemSet implements ItemSetBase {
 			String newDisplayName, String[] newLore, AttributeModifier[] newAttributes, 
 			Enchantment[] newEnchantments, NamedImage newImage, boolean[] itemFlags,
 			byte[] newCustomModel, List<PotionEffect> playerEffects, List<PotionEffect> targetEffects, 
-			String[] commands, Projectile newProjectile, EditorProjectileCover newCover, int newCooldown, 
+			String[] commands, Projectile newProjectile, int newCooldown, 
 			WandCharges newCharges, int newAmountPerShot) {
 		if (!bypassChecks()) {
 			if (original == null)

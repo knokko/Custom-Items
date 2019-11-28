@@ -51,9 +51,18 @@ public class CreateItem extends GuiMenu {
 		addComponent(new DynamicTextButton("Simple Item", EditProps.CHOOSE_BASE, EditProps.CHOOSE_HOVER, () -> {
 			state.getWindow().setMainComponent(new EditItemSimple(menu, null));
 		}), 0.5f, 0.8f, 0.7f, 0.9f);
+		
+		// The row for later minecraft versions
 		addComponent(new DynamicTextButton("Trident (1.13+)", EditProps.CHOOSE_BASE, EditProps.CHOOSE_HOVER, () -> {
 			state.getWindow().setMainComponent(new EditItemTrident(menu, null));
+		}), 0f, 0.65f, 0.2f, 0.75f);
+		
+		// The row for the special stuff
+		addComponent(new DynamicTextButton("Wand", EditProps.CHOOSE_BASE, EditProps.CHOOSE_HOVER, () -> {
+			state.getWindow().setMainComponent(new EditItemWand(menu, null));
 		}), 0.25f, 0.65f, 0.45f, 0.75f);
+		
+		// The row for the basic tools
 		addComponent(new DynamicTextButton("Sword", EditProps.CHOOSE_BASE, EditProps.CHOOSE_HOVER, () -> {
 			state.getWindow().setMainComponent(new EditItemTool(menu, null, Category.SWORD));
 		}), 0.5f, 0.65f, 0.7f, 0.75f);
@@ -72,6 +81,8 @@ public class CreateItem extends GuiMenu {
 		addComponent(new DynamicTextButton("Shear", EditProps.CHOOSE_BASE, EditProps.CHOOSE_HOVER, () -> {
 			state.getWindow().setMainComponent(new EditItemShears(menu, null));
 		}), 0.5f, 0.025f, 0.7f, 0.125f);
+		
+		// The row for the advanced combat stuff
 		addComponent(new DynamicTextButton("Bow", EditProps.CHOOSE_BASE, EditProps.CHOOSE_HOVER, () -> {
 			state.getWindow().setMainComponent(new EditItemBow(menu, null));
 		}), 0.75f, 0.65f, 0.95f, 0.75f);

@@ -57,6 +57,8 @@ public class ItemCollectionEdit extends CollectionEdit<CustomItem> {
 				return new EditItemTrident(menu, (CustomTrident) item);
 			else if (item instanceof CustomTool)
 				return new EditItemTool(menu, (CustomTool) item, item.getItemType().getMainCategory());
+			else if (item instanceof CustomWand)
+				return new EditItemWand(menu, (CustomWand) item);
 			else if (item instanceof SimpleCustomItem)
 				return new EditItemSimple(menu, (SimpleCustomItem) item);
 			else
