@@ -5,6 +5,7 @@ import java.util.Collection;
 
 import static nl.knokko.customitems.editor.menu.edit.EditProps.*;
 
+import nl.knokko.customitems.editor.set.ItemSet;
 import nl.knokko.customitems.projectile.effects.ProjectileEffect;
 import nl.knokko.customitems.projectile.effects.ProjectileEffects;
 import nl.knokko.gui.color.GuiColor;
@@ -20,6 +21,7 @@ public class EditProjectileEffects extends GuiMenu {
 	private static final float BUTTON_X = 0.625f;
 	private static final float LABEL_X = BUTTON_X - 0.01f;
 	
+	private final ItemSet set;
 	private final GuiComponent returnMenu;
 	private final Collection<ProjectileEffects> backingCollection;
 	private final ProjectileEffects original;
@@ -27,8 +29,9 @@ public class EditProjectileEffects extends GuiMenu {
 	
 	private Collection<ProjectileEffect> currentEffects;
 
-	public EditProjectileEffects(GuiComponent returnMenu, Collection<ProjectileEffects> backingCollection,
-			ProjectileEffects original) {
+	public EditProjectileEffects(ItemSet set, GuiComponent returnMenu, 
+			Collection<ProjectileEffects> backingCollection, ProjectileEffects original) {
+		this.set = set;
 		this.returnMenu = returnMenu;
 		this.backingCollection = backingCollection;
 		this.original = original;
@@ -70,10 +73,10 @@ public class EditProjectileEffects extends GuiMenu {
 		addComponent(periodField, BUTTON_X, 0.61f, BUTTON_X + 0.05f, 0.69f);
 		addComponent(new DynamicTextComponent("Effects each round:", LABEL), LABEL_X - 0.25f, 0.5f, LABEL_X, 0.6f);
 		addComponent(new DynamicTextButton("Change...", BUTTON, HOVER, () -> {
-			state.getWindow().setMainComponent(new ProjectileEffectCollectionEdit(currentEffects, this));
+			state.getWindow().setMainComponent(new ProjectileEffectCollectionEdit(set, currentEffects, this));
 		}), BUTTON_X, 0.5f, BUTTON_X + 0.15f, 0.6f);
 		
-		addComponent(new DynamicTextButton(original == null ? "Add" : "Apply", SAVE_BASE, SAVE_HOVER, () -> {
+		addComponent(new DynamicTextButton(original == null ? "Create" : "Apply", SAVE_BASE, SAVE_HOVER, () -> {
 			Option.Int delay = delayField.getInt();
 			Option.Int period = periodField.getInt();
 			

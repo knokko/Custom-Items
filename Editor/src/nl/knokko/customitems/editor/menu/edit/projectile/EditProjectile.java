@@ -140,11 +140,11 @@ public class EditProjectile extends GuiMenu {
 		// Second column of the form
 		addComponent(new DynamicTextComponent("In flight effects:", LABEL), LABEL_X2 - 0.25f, 0.8f, LABEL_X2, 0.88f);
 		addComponent(new DynamicTextButton("Change...", BUTTON, HOVER, () -> {
-			state.getWindow().setMainComponent(new ProjectileEffectsCollectionEdit(this, inFlightEffects));
+			state.getWindow().setMainComponent(new ProjectileEffectsCollectionEdit(menu.getSet(), this, inFlightEffects));
 		}), BUTTON_X2, 0.8f, BUTTON_X2 + 0.09f, 0.87f);
 		addComponent(new DynamicTextComponent("Impact effects:", LABEL), LABEL_X2 - 0.2f, 0.72f, LABEL_X2, 0.8f);
 		addComponent(new DynamicTextButton("Change...", BUTTON, HOVER, () -> {
-			state.getWindow().setMainComponent(new ProjectileEffectCollectionEdit(impactEffects, this));
+			state.getWindow().setMainComponent(new ProjectileEffectCollectionEdit(menu.getSet(), impactEffects, this));
 		}), BUTTON_X2, 0.72f, BUTTON_X2 + 0.09f, 0.79f);
 		addComponent(new DynamicTextComponent("Projectile cover:", LABEL), LABEL_X2 - 0.2f, 0.64f, LABEL_X2, 0.72f);
 		addComponent(CollectionSelect.createButton(

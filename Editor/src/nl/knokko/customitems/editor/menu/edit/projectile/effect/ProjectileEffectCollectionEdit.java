@@ -5,16 +5,20 @@ import java.util.Collection;
 
 import nl.knokko.customitems.editor.menu.edit.CollectionEdit;
 import nl.knokko.customitems.editor.menu.edit.EditProps;
+import nl.knokko.customitems.editor.set.ItemSet;
 import nl.knokko.customitems.projectile.effects.*;
 import nl.knokko.gui.component.GuiComponent;
 import nl.knokko.gui.component.text.dynamic.DynamicTextButton;
 
 public class ProjectileEffectCollectionEdit extends CollectionEdit<ProjectileEffect> {
 	
+	private final ItemSet set;
 	private final Collection<ProjectileEffect> collection;
 
-	public ProjectileEffectCollectionEdit(Collection<ProjectileEffect> collectionToModify, GuiComponent returnMenu) {
-		super(new ProjectileEffectActionHandler(collectionToModify, returnMenu), collectionToModify);
+	public ProjectileEffectCollectionEdit(ItemSet set, Collection<ProjectileEffect> collectionToModify, 
+			GuiComponent returnMenu) {
+		super(new ProjectileEffectActionHandler(set, collectionToModify, returnMenu), collectionToModify);
+		this.set = set;
 		this.collection = collectionToModify;
 	}
 	
@@ -22,16 +26,19 @@ public class ProjectileEffectCollectionEdit extends CollectionEdit<ProjectileEff
 	protected void addComponents() {
 		super.addComponents();
 		addComponent(new DynamicTextButton("Add", EditProps.SAVE_BASE, EditProps.SAVE_HOVER, () -> {
-			state.getWindow().setMainComponent(new CreateProjectileEffect(collection, this));
+			state.getWindow().setMainComponent(new CreateProjectileEffect(collection, set, this));
 		}), 0.025f, 0.2f, 0.15f, 0.3f);
 	}
 	
 	private static class ProjectileEffectActionHandler implements ActionHandler<ProjectileEffect> {
 		
+		private final ItemSet set;
 		private final Collection<ProjectileEffect> backingCollection;
 		private final GuiComponent returnMenu;
 		
-		private ProjectileEffectActionHandler(Collection<ProjectileEffect> backingCollection, GuiComponent returnMenu) {
+		private ProjectileEffectActionHandler(ItemSet set, Collection<ProjectileEffect> backingCollection, 
+				GuiComponent returnMenu) {
+			this.set = set;
 			this.backingCollection = backingCollection;
 			this.returnMenu = returnMenu;
 		}
@@ -63,11 +70,11 @@ public class ProjectileEffectCollectionEdit extends CollectionEdit<ProjectileEff
 			} else if (itemToEdit instanceof RandomAccelleration) {
 				return new EditRandomAccelleration((RandomAccelleration) itemToEdit, backingCollection, returnMenu);
 			} else if (itemToEdit instanceof SimpleParticles) {
-				
+				return new EditSimpleParticles((SimpleParticles) itemToEdit, backingCollection, returnMenu);
 			} else if (itemToEdit instanceof StraightAccelleration) {
 				return new EditStraightAccelleration((StraightAccelleration) itemToEdit, backingCollection, returnMenu);
 			} else if (itemToEdit instanceof SubProjectiles) {
-				
+				return new EditSubProjectiles((SubProjectiles) itemToEdit, set, backingCollection, returnMenu);
 			}
 			throw new Error("Unknown projectile effect class: " + itemToEdit.getClass());
 		}

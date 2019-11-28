@@ -3,6 +3,7 @@ package nl.knokko.customitems.editor.menu.edit.projectile.effect;
 import java.util.Collection;
 
 import nl.knokko.customitems.editor.menu.edit.EditProps;
+import nl.knokko.customitems.editor.set.ItemSet;
 import nl.knokko.customitems.projectile.effects.ProjectileEffect;
 import nl.knokko.gui.color.GuiColor;
 import nl.knokko.gui.component.GuiComponent;
@@ -12,10 +13,13 @@ import nl.knokko.gui.component.text.dynamic.DynamicTextButton;
 public class CreateProjectileEffect extends GuiMenu {
 	
 	private final Collection<ProjectileEffect> backingCollection;
+	private final ItemSet set;
 	private final GuiComponent returnMenu;
 
-	public CreateProjectileEffect(Collection<ProjectileEffect> backingCollection, GuiComponent returnMenu) {
+	public CreateProjectileEffect(Collection<ProjectileEffect> backingCollection, ItemSet set, 
+			GuiComponent returnMenu) {
 		this.backingCollection = backingCollection;
+		this.set = set;
 		this.returnMenu = returnMenu;
 	}
 
@@ -41,10 +45,10 @@ public class CreateProjectileEffect extends GuiMenu {
 			state.getWindow().setMainComponent(new EditStraightAccelleration(null, backingCollection, returnMenu));
 		}), 0.5f, 0.32f, 0.9f, 0.42f);
 		addComponent(new DynamicTextButton("Spawn simple particle", EditProps.CHOOSE_BASE, EditProps.CHOOSE_HOVER, () -> {
-			
+			state.getWindow().setMainComponent(new EditSimpleParticles(null, backingCollection, returnMenu));
 		}), 0.5f, 0.2f, 0.8f, 0.3f);
 		addComponent(new DynamicTextButton("Launch (another) projectile", EditProps.CHOOSE_BASE, EditProps.CHOOSE_HOVER, () -> {
-			
+			state.getWindow().setMainComponent(new EditSubProjectiles(null, set, backingCollection, returnMenu));
 		}), 0.5f, 0.08f, 0.9f, 0.18f);
 	}
 

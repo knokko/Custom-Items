@@ -5,16 +5,20 @@ import java.util.Collection;
 
 import nl.knokko.customitems.editor.menu.edit.CollectionEdit;
 import nl.knokko.customitems.editor.menu.edit.EditProps;
+import nl.knokko.customitems.editor.set.ItemSet;
 import nl.knokko.customitems.projectile.effects.ProjectileEffects;
 import nl.knokko.gui.component.GuiComponent;
 import nl.knokko.gui.component.text.dynamic.DynamicTextButton;
 
 public class ProjectileEffectsCollectionEdit extends CollectionEdit<ProjectileEffects> {
 	
+	private final ItemSet set;
 	private final Collection<ProjectileEffects> backingCollection;
 
-	public ProjectileEffectsCollectionEdit(GuiComponent returnMenu, Collection<ProjectileEffects> backingCollection) {
-		super(new ProjectileEffectsActionHandler(returnMenu, backingCollection), backingCollection);
+	public ProjectileEffectsCollectionEdit(ItemSet set, GuiComponent returnMenu, 
+			Collection<ProjectileEffects> backingCollection) {
+		super(new ProjectileEffectsActionHandler(set, returnMenu, backingCollection), backingCollection);
+		this.set = set;
 		this.backingCollection = backingCollection;
 	}
 	
@@ -22,16 +26,19 @@ public class ProjectileEffectsCollectionEdit extends CollectionEdit<ProjectileEf
 	protected void addComponents() {
 		super.addComponents();
 		addComponent(new DynamicTextButton("Add effects", EditProps.BUTTON, EditProps.HOVER, () -> {
-			state.getWindow().setMainComponent(new EditProjectileEffects(this, backingCollection, null));
+			state.getWindow().setMainComponent(new EditProjectileEffects(set, this, backingCollection, null));
 		}), 0.025f, 0.2f, 0.2f, 0.3f);
 	}
 	
 	private static class ProjectileEffectsActionHandler implements ActionHandler<ProjectileEffects> {
 		
+		private final ItemSet set;
 		private final GuiComponent returnMenu;
 		private final Collection<ProjectileEffects> backingCollection;
 		
-		private ProjectileEffectsActionHandler(GuiComponent returnMenu, Collection<ProjectileEffects> collection) {
+		private ProjectileEffectsActionHandler(ItemSet set, GuiComponent returnMenu, 
+				Collection<ProjectileEffects> collection) {
+			this.set = set;
 			this.returnMenu = returnMenu;
 			this.backingCollection = collection;
 		}
@@ -53,7 +60,7 @@ public class ProjectileEffectsCollectionEdit extends CollectionEdit<ProjectileEf
 
 		@Override
 		public GuiComponent createEditMenu(ProjectileEffects itemToEdit, GuiComponent returnMenu) {
-			return new EditProjectileEffects(returnMenu, backingCollection, itemToEdit);
+			return new EditProjectileEffects(set, returnMenu, backingCollection, itemToEdit);
 		}
 
 		@Override

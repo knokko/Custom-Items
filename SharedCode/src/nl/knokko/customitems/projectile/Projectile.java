@@ -93,6 +93,11 @@ public class Projectile {
 		this.impactEffects = impactEffects;
 		this.cover = cover;
 	}
+	
+	@Override
+	public String toString() {
+		return name;
+	}
 
 	public void toBits(BitOutput output) {
 		output.addByte(ENCODING_1);
