@@ -12,7 +12,7 @@ import nl.knokko.customitems.item.AttributeModifier.Operation;
 import nl.knokko.customitems.item.AttributeModifier.Slot;
 import nl.knokko.customitems.item.CustomItemType.Category;
 import nl.knokko.customitems.item.WandCharges;
-import nl.knokko.customitems.projectile.Projectile;
+import nl.knokko.customitems.projectile.CIProjectile;
 import nl.knokko.gui.component.GuiComponent;
 import nl.knokko.gui.component.WrapperComponent;
 import nl.knokko.gui.component.text.IntEditField;
@@ -33,7 +33,7 @@ public class EditItemWand extends EditItemBase {
 	private final IntEditField rechargeTimeField;
 	private final IntEditField amountField;
 	
-	private Projectile projectile;
+	private CIProjectile projectile;
 
 	public EditItemWand(EditMenu menu, CustomWand previous) {
 		super(menu, previous, Category.WAND);
@@ -53,9 +53,9 @@ public class EditItemWand extends EditItemBase {
 		super.addComponents();
 		
 		addComponent(new DynamicTextComponent("Projectile:", LABEL), LABEL_X2 - 0.15f, 0.8f, LABEL_X2, 0.85f);
-		addComponent(CollectionSelect.createButton(menu.getSet().getBackingProjectiles(), (Projectile newProjectile) -> {
+		addComponent(CollectionSelect.createButton(menu.getSet().getBackingProjectiles(), (CIProjectile newProjectile) -> {
 			projectile = newProjectile;
-		}, (Projectile toName) -> {
+		}, (CIProjectile toName) -> {
 			return toName.name;
 		}, projectile), BUTTON_X2, 0.8f, BUTTON_X2 + 0.15f, 0.85f);
 		

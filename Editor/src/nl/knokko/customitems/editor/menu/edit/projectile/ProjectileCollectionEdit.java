@@ -5,11 +5,11 @@ import java.awt.image.BufferedImage;
 import nl.knokko.customitems.editor.menu.edit.CollectionEdit;
 import nl.knokko.customitems.editor.menu.edit.EditMenu;
 import nl.knokko.customitems.editor.menu.edit.EditProps;
-import nl.knokko.customitems.projectile.Projectile;
+import nl.knokko.customitems.projectile.CIProjectile;
 import nl.knokko.gui.component.GuiComponent;
 import nl.knokko.gui.component.text.dynamic.DynamicTextButton;
 
-public class ProjectileCollectionEdit extends CollectionEdit<Projectile> {
+public class ProjectileCollectionEdit extends CollectionEdit<CIProjectile> {
 	
 	private final EditMenu menu;
 
@@ -26,7 +26,7 @@ public class ProjectileCollectionEdit extends CollectionEdit<Projectile> {
 		}), 0.025f, 0.2f, 0.2f, 0.3f);
 	}
 	
-	private static class ProjectileActionHandler implements ActionHandler<Projectile> {
+	private static class ProjectileActionHandler implements ActionHandler<CIProjectile> {
 		
 		private final EditMenu menu;
 		
@@ -40,22 +40,22 @@ public class ProjectileCollectionEdit extends CollectionEdit<Projectile> {
 		}
 
 		@Override
-		public BufferedImage getImage(Projectile item) {
+		public BufferedImage getImage(CIProjectile item) {
 			return null;
 		}
 
 		@Override
-		public String getLabel(Projectile item) {
+		public String getLabel(CIProjectile item) {
 			return item.name;
 		}
 
 		@Override
-		public GuiComponent createEditMenu(Projectile itemToEdit, GuiComponent returnMenu) {
+		public GuiComponent createEditMenu(CIProjectile itemToEdit, GuiComponent returnMenu) {
 			return new EditProjectile(menu, itemToEdit);
 		}
 
 		@Override
-		public String deleteItem(Projectile itemToDelete) {
+		public String deleteItem(CIProjectile itemToDelete) {
 			return menu.getSet().removeProjectile(itemToDelete);
 		}
 	}

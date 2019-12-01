@@ -109,6 +109,7 @@ import nl.knokko.customitems.plugin.set.item.CustomShears;
 import nl.knokko.customitems.plugin.set.item.CustomShield;
 import nl.knokko.customitems.plugin.set.item.CustomTool;
 import nl.knokko.customitems.plugin.set.item.CustomTrident;
+import nl.knokko.customitems.plugin.set.item.CustomWand;
 
 import static org.bukkit.enchantments.Enchantment.*;
 
@@ -161,6 +162,17 @@ public class CustomItemsEventHandler implements Listener {
 			}
 		}
 	}
+	
+	@EventHandler(ignoreCancelled = false)
+	public void updateGunsAndWands(PlayerInteractEvent event) {
+		if (event.getAction() == Action.RIGHT_CLICK_AIR || event.getAction() == Action.RIGHT_CLICK_BLOCK) {
+			ItemSet set = CustomItemsPlugin.getInstance().getSet();
+			
+			if (set.getItem(event.getItem()) instanceof CustomWand) {
+				CustomItemsPlugin.getInstance().getData().setShooting(event.getPlayer());
+			}
+		}
+	}
 
 	public static void playBreakSound(Player player) {
 		player.playSound(player.getLocation(), Sound.ENTITY_ITEM_BREAK, 1, 1);
@@ -176,7 +188,7 @@ public class CustomItemsEventHandler implements Listener {
 	}
 
 	@EventHandler(ignoreCancelled = true)
-	public void processCustomProjectileDamage(EntityDamageByEntityEvent event) {
+	public void processCustomBowAndTridentDamage(EntityDamageByEntityEvent event) {
 		CustomItemsPlugin plugin = CustomItemsPlugin.getInstance();
 		if (event.getDamager() instanceof Arrow) {
 			List<MetadataValue> metas = event.getDamager().getMetadata("CustomBowName");

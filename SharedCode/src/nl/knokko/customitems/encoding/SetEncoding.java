@@ -25,21 +25,28 @@ package nl.knokko.customitems.encoding;
 
 public class SetEncoding {
 	
+	/**
+	 * The first item set encoding
+	 */
 	public static final byte ENCODING_1 = 0;
+	
+	/**
+	 * Added bows
+	 */
 	public static final byte ENCODING_2 = 1;
 	
 	/**
-	 * Adds drops
+	 * Added drops
 	 */
 	public static final byte ENCODING_3 = 2;
 	
 	/**
-	 * Add custom item models
+	 * Added custom item models
 	 */
 	public static final byte ENCODING_4 = 3;
 	
 	/**
-	 * Add projectile covers
+	 * Added projectiles
 	 */
 	public static final byte ENCODING_5 = 4;
 }

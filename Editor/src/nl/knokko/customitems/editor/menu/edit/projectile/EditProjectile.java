@@ -12,7 +12,7 @@ import nl.knokko.customitems.editor.menu.edit.EnumSelect;
 import nl.knokko.customitems.editor.menu.edit.projectile.effect.ProjectileEffectCollectionEdit;
 import nl.knokko.customitems.editor.menu.edit.projectile.effect.ProjectileEffectsCollectionEdit;
 import nl.knokko.customitems.editor.set.projectile.cover.EditorProjectileCover;
-import nl.knokko.customitems.projectile.Projectile;
+import nl.knokko.customitems.projectile.CIProjectile;
 import nl.knokko.customitems.projectile.ProjectileType;
 import nl.knokko.customitems.projectile.effects.ProjectileEffect;
 import nl.knokko.customitems.projectile.effects.ProjectileEffects;
@@ -34,13 +34,13 @@ public class EditProjectile extends GuiMenu {
 	private static final float LABEL_X2 = BUTTON_X2 - 0.01f;
 	
 	private final EditMenu menu;
-	private final Projectile previous;
+	private final CIProjectile previous;
 	
 	private DamageSource impactDamageSource;
 	private ProjectileType minecraftType;
 	private EditorProjectileCover cover;
 
-	public EditProjectile(EditMenu menu, Projectile previous) {
+	public EditProjectile(EditMenu menu, CIProjectile previous) {
 		this.menu = menu;
 		this.previous = previous;
 		
@@ -178,7 +178,7 @@ public class EditProjectile extends GuiMenu {
 			
 			if (error == null) {
 				if (previous == null) {
-					error = menu.getSet().addProjectile(new Projectile(name, damage.getValue(), 
+					error = menu.getSet().addProjectile(new CIProjectile(name, damage.getValue(), 
 							minLaunchAngle.getValue(), maxLaunchAngle.getValue(), 
 							minLaunchSpeed.getValue(), maxLaunchSpeed.getValue(), lifetime.getValue(), 
 							impactDamageSource, minecraftType, inFlightEffects, impactEffects, cover));

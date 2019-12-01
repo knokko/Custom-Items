@@ -1,7 +1,7 @@
 package nl.knokko.customitems.projectile.effects;
 
 import nl.knokko.customitems.item.ItemSetBase;
-import nl.knokko.customitems.projectile.Projectile;
+import nl.knokko.customitems.projectile.CIProjectile;
 import nl.knokko.util.bits.BitInput;
 import nl.knokko.util.bits.BitOutput;
 
@@ -18,7 +18,7 @@ public class SubProjectiles extends ProjectileEffect {
 		return sub;
 	}
 	
-	public Projectile child;
+	public CIProjectile child;
 	
 	/** A bit of a hack to be able to find the child projectile */
 	private String childName;
@@ -29,7 +29,7 @@ public class SubProjectiles extends ProjectileEffect {
 	
 	public float angleToParent;
 
-	public SubProjectiles(Projectile child, boolean useParentLifeTime, 
+	public SubProjectiles(CIProjectile child, boolean useParentLifeTime, 
 			int minAmount, int maxAmount, float angleToParent) {
 		this.child = child;
 		this.useParentLifeTime = useParentLifeTime;

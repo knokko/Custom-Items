@@ -83,7 +83,7 @@ import nl.knokko.customitems.encoding.RecipeEncoding;
 import nl.knokko.customitems.item.AttributeModifier;
 import nl.knokko.customitems.item.CustomItemType;
 import nl.knokko.customitems.item.CustomItemType.Category;
-import nl.knokko.customitems.projectile.Projectile;
+import nl.knokko.customitems.projectile.CIProjectile;
 import nl.knokko.customitems.projectile.ProjectileCover;
 import nl.knokko.customitems.projectile.ProjectileType;
 import nl.knokko.customitems.projectile.effects.ProjectileEffect;
@@ -1367,7 +1367,7 @@ public class ItemSet implements ItemSetBase {
 			commands[index] = input.readJavaString();
 		}
 		
-		Projectile projectile = getProjectileByName(input.readString());
+		CIProjectile projectile = getProjectileByName(input.readString());
 		int cooldown = input.readInt();
 		WandCharges charges;
 		if (input.readBoolean()) {
@@ -1411,7 +1411,7 @@ public class ItemSet implements ItemSetBase {
 	private Collection<BlockDrop> blockDrops;
 	private Collection<EntityDrop> mobDrops;
 	private Collection<EditorProjectileCover> projectileCovers;
-	private Collection<Projectile> projectiles;
+	private Collection<CIProjectile> projectiles;
 
 	public ItemSet(String fileName) {
 		this.fileName = fileName;
@@ -1635,10 +1635,10 @@ public class ItemSet implements ItemSetBase {
 		int numProjectiles = input.readInt();
 		projectiles = new ArrayList<>(numProjectiles);
 		for (int counter = 0; counter < numProjectiles; counter++)
-			projectiles.add(Projectile.fromBits(input, this));
+			projectiles.add(CIProjectile.fromBits(input, this));
 		
 		// Notify the projectile effects that all projectiles have been loaded
-		for (Projectile projectile : projectiles)
+		for (CIProjectile projectile : projectiles)
 			projectile.afterProjectilesAreLoaded(this);
 
 		// Items
@@ -1961,7 +1961,7 @@ public class ItemSet implements ItemSetBase {
 			File file = new File(Editor.getFolder() + "/" + fileName + ".cis");// cis stands for Custom Item Set
 			OutputStream fileOutput = Files.newOutputStream(file.toPath());
 			ByteArrayBitOutput output = new ByteArrayBitOutput();
-			export3(output);
+			export5(output);
 			output.terminate();
 			
 			byte[] bytes = output.getBytes();
@@ -2477,7 +2477,7 @@ public class ItemSet implements ItemSetBase {
 		}
 		try {
 			ByteArrayBitOutput output = new ByteArrayBitOutput();
-			export3(output);
+			export5(output);
 			output.terminate();
 			
 			byte[] bytes = output.getBytes();
@@ -2840,15 +2840,45 @@ public class ItemSet implements ItemSetBase {
 		// There are no drops in this encoding
 	}
 	
-	// I wonder why there is no export2
+	// Because ENCODING_2 didn't break anything in the plug-in, it's editor-only
 	
+	@SuppressWarnings("unused")
 	private void export3(BitOutput output) {
 		output.addByte(ENCODING_3);
+
+		// Items
+		output.addInt(items.size());
+		for (CustomItem item : items)
+			item.export(output);
+
+		// Recipes
+		output.addInt(recipes.size());
+		for (Recipe recipe : recipes)
+			recipe.save(output);
+		
+		// Drops
+		output.addInt(blockDrops.size());
+		for (BlockDrop drop : blockDrops)
+			drop.save(output);
+		
+		output.addInt(mobDrops.size());
+		for (EntityDrop drop : mobDrops)
+			drop.save(output);
+	}
+	
+	// ENCODING_4 is editor-only, so it doesn't have its own export method
+	
+	private void export5(BitOutput output) {
+		output.addByte(ENCODING_5);
 		
 		// Projectiles
 		output.addInt(projectileCovers.size());
 		for (EditorProjectileCover cover : projectileCovers)
 			cover.export(output);
+		
+		output.addInt(projectiles.size());
+		for (CIProjectile projectile : projectiles)
+			projectile.toBits(output);
 
 		// Items
 		output.addInt(items.size());
@@ -3061,7 +3091,7 @@ public class ItemSet implements ItemSetBase {
 			cover.toBits(output);
 		
 		output.addInt(projectiles.size());
-		for (Projectile projectile : projectiles)
+		for (CIProjectile projectile : projectiles)
 			projectile.toBits(output);
 		
 		output.addInt(items.size());
@@ -3645,7 +3675,7 @@ public class ItemSet implements ItemSetBase {
 			String newDisplayName, String[] newLore, AttributeModifier[] newAttributes, 
 			Enchantment[] newEnchantments, NamedImage newImage, boolean[] itemFlags,
 			byte[] newCustomModel, List<PotionEffect> playerEffects, List<PotionEffect> targetEffects, 
-			String[] commands, Projectile newProjectile, int newCooldown, 
+			String[] commands, CIProjectile newProjectile, int newCooldown, 
 			WandCharges newCharges, int newAmountPerShot) {
 		if (!bypassChecks()) {
 			if (original == null)
@@ -3674,7 +3704,7 @@ public class ItemSet implements ItemSetBase {
 		return error;
 	}
 	
-	private String validateProjectile(Projectile projectile) {
+	private String validateProjectile(CIProjectile projectile) {
 		if (projectile == null)
 			return "It must have a projectile";
 		
@@ -4351,7 +4381,7 @@ public class ItemSet implements ItemSetBase {
 		if (!bypassChecks()) {
 			if (cover == null)
 				return "Can't delete null";
-			for (Projectile projectile : projectiles)
+			for (CIProjectile projectile : projectiles)
 				if (projectile.cover == cover)
 					return "The projectile " + projectile.name + " still uses this cover";
 		}
@@ -4368,7 +4398,7 @@ public class ItemSet implements ItemSetBase {
 	 * @param projectile The projectile that should be added
 	 * @return null if the projectile was added successfully, or the reason it couldn't be added
 	 */
-	public String addProjectile(Projectile projectile) {
+	public String addProjectile(CIProjectile projectile) {
 		if (!bypassChecks()) {
 			String error = validateProjectile(projectile);
 			if (error != null)
@@ -4386,21 +4416,21 @@ public class ItemSet implements ItemSetBase {
 	 * it won't be changed and a human-readable error message will be returned.
 	 * @return null if the projectile changed successfully, or the reason it couldn't be changed
 	 */
-	public String changeProjectile(Projectile original, String newName, float newDamage,
+	public String changeProjectile(CIProjectile original, String newName, float newDamage,
 			float newMinLaunchAngle, float newMaxLaunchAngle, 
 			float newMinLaunchSpeed, float newMaxLaunchSpeed, int newMaxLifeTime,
 			DamageSource newDamageSource, ProjectileType newMinecraftType, 
 			Collection<ProjectileEffects> newFlightEffects, Collection<ProjectileEffect> newImpactEffects,
 			ProjectileCover newCover) {
 		if (!bypassChecks()) {
-			String error = validateProjectile(new Projectile(newName, newDamage, 
+			String error = validateProjectile(new CIProjectile(newName, newDamage, 
 					newMinLaunchAngle, newMaxLaunchAngle, newMinLaunchSpeed, newMaxLaunchSpeed, newMaxLifeTime,
 					newDamageSource, newMinecraftType, newFlightEffects, newImpactEffects, newCover));
 			if (error != null)
 				return error;
 			if (!projectiles.contains(original))
 				return "The projectile to change is not in the list of projectiles";
-			Projectile sameName = getProjectileByName(newName);
+			CIProjectile sameName = getProjectileByName(newName);
 			if (sameName != null && sameName != original)
 				return "There is already a projectile with that name";
 		}
@@ -4426,7 +4456,7 @@ public class ItemSet implements ItemSetBase {
 	 * @param toRemove The projectile to remove from this item set
 	 * @return null if the projectile was removed, or the reason it wasn't removed
 	 */
-	public String removeProjectile(Projectile toRemove) {
+	public String removeProjectile(CIProjectile toRemove) {
 		if (!bypassChecks()) {
 			for (CustomItem item : items) {
 				if (item instanceof CustomWand && ((CustomWand) item).projectile == toRemove)
@@ -4486,7 +4516,7 @@ public class ItemSet implements ItemSetBase {
 	 * Do not modify this collection directly!
 	 * @return The projectile collection of this ItemSet
 	 */
-	public Collection<Projectile> getBackingProjectiles(){
+	public Collection<CIProjectile> getBackingProjectiles(){
 		return projectiles;
 	}
 	
@@ -4572,8 +4602,8 @@ public class ItemSet implements ItemSetBase {
 		return true;
 	}
 	
-	public Projectile getProjectileByName(String name) {
-		for (Projectile projectile : projectiles)
+	public CIProjectile getProjectileByName(String name) {
+		for (CIProjectile projectile : projectiles)
 			if (projectile.name.equals(name))
 				return projectile;
 		return null;

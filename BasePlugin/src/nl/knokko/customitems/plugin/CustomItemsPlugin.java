@@ -43,12 +43,11 @@ public class CustomItemsPlugin extends JavaPlugin {
 
 	private ItemSet set;
 	private LanguageFile languageFile;
+	private PluginData data;
+	private ProjectileManager projectileManager;
 
 	public static CustomItemsPlugin getInstance() {
 		return instance;
-	}
-
-	public CustomItemsPlugin() {
 	}
 
 	@Override
@@ -60,13 +59,18 @@ public class CustomItemsPlugin extends JavaPlugin {
 		// Load the set after creating language file instance because the set needs the
 		// durability prefix
 		loadSet();
+		data = PluginData.loadData();
+		projectileManager = new ProjectileManager();
 		getCommand("customitems").setExecutor(new CommandCustomItems(languageFile));
 		Bukkit.getPluginManager().registerEvents(new CustomItemsEventHandler(), this);
+		Bukkit.getPluginManager().registerEvents(projectileManager, this);
 		CrazyEnchantmentsSupport.onEnable();
 	}
 
 	@Override
 	public void onDisable() {
+		data.saveData();
+		projectileManager.destroyCustomProjectiles();
 		instance = null;
 		super.onDisable();
 	}
@@ -157,5 +161,13 @@ public class CustomItemsPlugin extends JavaPlugin {
 
 	public LanguageFile getLanguageFile() {
 		return languageFile;
+	}
+	
+	public PluginData getData() {
+		return data;
+	}
+	
+	public ProjectileManager getProjectileManager() {
+		return projectileManager;
 	}
 }

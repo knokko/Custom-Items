@@ -5,7 +5,7 @@ import java.util.Collection;
 
 import nl.knokko.customitems.editor.menu.edit.CollectionSelect;
 import nl.knokko.customitems.editor.set.ItemSet;
-import nl.knokko.customitems.projectile.Projectile;
+import nl.knokko.customitems.projectile.CIProjectile;
 import nl.knokko.customitems.projectile.effects.ProjectileEffect;
 import nl.knokko.customitems.projectile.effects.SubProjectiles;
 import nl.knokko.gui.component.GuiComponent;
@@ -24,7 +24,7 @@ public class EditSubProjectiles extends EditProjectileEffect {
 	private final SubProjectiles original;
 	private final ItemSet set;
 	
-	private Projectile child;
+	private CIProjectile child;
 
 	public EditSubProjectiles(SubProjectiles original, ItemSet set, Collection<ProjectileEffect> backingCollection, GuiComponent returnMenu) {
 		super(backingCollection, returnMenu);
@@ -54,9 +54,9 @@ public class EditSubProjectiles extends EditProjectileEffect {
 		addComponent(new DynamicTextComponent("Angle to parent:", LABEL), LABEL_X - 0.2f, 0.4f, LABEL_X, 0.5f);
 		addComponent(angleField, BUTTON_X, 0.41f, BUTTON_X + 0.1f, 0.49f);
 		addComponent(new DynamicTextComponent("Child projectile:", LABEL), LABEL_X - 0.2f, 0.3f, LABEL_X, 0.4f);
-		addComponent(CollectionSelect.createButton(set.getBackingProjectiles(), (Projectile newChild) -> {
+		addComponent(CollectionSelect.createButton(set.getBackingProjectiles(), (CIProjectile newChild) -> {
 			child = newChild;
-		}, (Projectile toName) -> {
+		}, (CIProjectile toName) -> {
 			return toName.name;
 		}, child), BUTTON_X, 0.31f, BUTTON_X + 0.2f, 0.39f);
 		

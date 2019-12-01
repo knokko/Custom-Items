@@ -62,6 +62,13 @@ public abstract class CustomItem {
         this.commands = commands;
     }
     
+    // For validation checks (and some other stuff), it is very important that the equals() method of custom 
+    // items only return true when `other` refers to the same object as `this`.
+    @Override
+    public final boolean equals(Object other) {
+    	return this == other;
+    }
+    
     public final String getNBTTag12() {
 		return "{" + getNBTTagContent12() + "}";
 	}

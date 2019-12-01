@@ -56,9 +56,12 @@ import nl.knokko.customitems.item.Enchantment;
 import nl.knokko.customitems.item.EnchantmentType;
 import nl.knokko.customitems.item.ItemFlag;
 import nl.knokko.customitems.item.ItemSetBase;
+import nl.knokko.customitems.item.WandCharges;
 import nl.knokko.customitems.plugin.recipe.*;
 import nl.knokko.customitems.plugin.recipe.ingredient.*;
 import nl.knokko.customitems.plugin.set.item.*;
+import nl.knokko.customitems.projectile.CIProjectile;
+import nl.knokko.customitems.projectile.ProjectileCover;
 import nl.knokko.util.bits.BitInput;
 import nl.knokko.customitems.effect.EffectType;
 import nl.knokko.customitems.effect.PotionEffect;
@@ -70,6 +73,9 @@ public class ItemSet implements ItemSetBase {
 	private final Map<CIMaterial, Map<Short, CustomItem>> customItemMap;
 
 	private CustomItem[] items;
+	
+	private ProjectileCover[] projectileCovers;
+	private CIProjectile[] projectiles;
 	
 	private Drop[][] blockDropMap;
 	private EntityDrop[][] mobDropMap;
@@ -86,12 +92,16 @@ public class ItemSet implements ItemSetBase {
 	public ItemSet(BitInput input) {
 		customItemMap = new EnumMap<CIMaterial, Map<Short, CustomItem>>(CIMaterial.class);
 		byte encoding = input.readByte();
+		
+		// Note that ENCODING_2 and ENCODING_4 are editor-only
 		if (encoding == SetEncoding.ENCODING_1)
 			load1(input);
 		else if (encoding == SetEncoding.ENCODING_3)
 			load3(input);
+		else if (encoding == SetEncoding.ENCODING_5)
+			load5(input);
 		else
-			throw new IllegalArgumentException("Unknown encoding: " + encoding);
+			throw new IllegalArgumentException("Unknown item set encoding: " + encoding);
 	}
 
 	private void load1(BitInput input) {
@@ -115,6 +125,45 @@ public class ItemSet implements ItemSetBase {
 	// Just like the ItemSet of Editor doesn't have export2, this doesn't have load2
 
 	private void load3(BitInput input) {
+		
+		// Items
+		int itemSize = input.readInt();
+		items = new CustomItem[itemSize];
+		for (int counter = 0; counter < itemSize; counter++)
+			register(loadItem(input), counter);
+
+		// Recipes
+		int recipeAmount = input.readInt();
+		recipes = new CustomRecipe[recipeAmount];
+		for (int counter = 0; counter < recipeAmount; counter++)
+			register(loadRecipe(input), counter);
+		
+		int numBlockDrops = input.readInt();
+		blockDropMap = new Drop[BlockType.AMOUNT][0];
+		for (int counter = 0; counter < numBlockDrops; counter++)
+			register(BlockDrop.load(input, this));
+		
+		int numMobDrops = input.readInt();
+		mobDropMap = new EntityDrop[CIEntityType.AMOUNT][0];
+		for (int counter = 0; counter < numMobDrops; counter++)
+			register(EntityDrop.load(input, this));
+	}
+	
+	// Since ENCODING_4 is editor-only, there is no load4 method
+	
+	private void load5(BitInput input) {
+		
+		// Projectiles
+		int numProjectileCovers = input.readInt();
+		projectileCovers = new ProjectileCover[numProjectileCovers];
+		for (int index = 0; index < numProjectileCovers; index++)
+			projectileCovers[index] = new ProjectileCover(input);
+		
+		int numProjectiles = input.readInt();
+		projectiles = new CIProjectile[numProjectiles];
+		for (int index = 0; index < numProjectiles; index++)
+			projectiles[index] = CIProjectile.fromBits(input, this);
+		
 		// Items
 		int itemSize = input.readInt();
 		items = new CustomItem[itemSize];
@@ -169,6 +218,7 @@ public class ItemSet implements ItemSetBase {
 		case ItemEncoding.ENCODING_TRIDENT_8 : return loadTrident8(input);
 		case ItemEncoding.ENCODING_HOE_5 : return loadHoe5(input);
 		case ItemEncoding.ENCODING_HOE_6 : return loadHoe6(input);
+		case ItemEncoding.ENCODING_WAND_8: return loadWand8(input);
 		default : throw new IllegalArgumentException("Unknown encoding: " + encoding);
 	}
 	}
@@ -1005,6 +1055,52 @@ public class ItemSet implements ItemSetBase {
 				itemFlags, entityHitDurabilityLoss, blockBreakDurabilityLoss, throwDurabilityLoss, 
 				playerEffects, targetEffects, commands);
 	}
+	
+	private CustomItem loadWand8(BitInput input) {
+		CustomItemType itemType = CustomItemType.valueOf(input.readJavaString());
+		short damage = input.readShort();
+		String name = input.readJavaString();
+		String displayName = input.readJavaString();
+		String[] lore = new String[input.readByte() & 0xFF];
+		for (int index = 0; index < lore.length; index++)
+			lore[index] = input.readJavaString();
+		AttributeModifier[] attributes = new AttributeModifier[input.readByte() & 0xFF];
+		for (int index = 0; index < attributes.length; index++)
+			attributes[index] = loadAttribute2(input);
+		Enchantment[] defaultEnchantments = new Enchantment[input.readByte() & 0xFF];
+		for (int index = 0; index < defaultEnchantments.length; index++)
+			defaultEnchantments[index] = new Enchantment(EnchantmentType.valueOf(input.readString()), input.readInt());
+		boolean[] itemFlags = input.readBooleans(6);
+		List<PotionEffect> playerEffects = new ArrayList<PotionEffect>();
+		int peLength = (input.readByte() & 0xFF);
+		for (int index = 0; index < peLength; index++) {
+			playerEffects.add(new PotionEffect(EffectType.valueOf(input.readJavaString()), input.readInt(), input.readInt()));
+		}
+		List<PotionEffect> targetEffects = new ArrayList<PotionEffect>();
+		int teLength = (input.readByte() & 0xFF);
+		for (int index = 0; index < teLength; index++) {
+			targetEffects.add(new PotionEffect(EffectType.valueOf(input.readJavaString()), input.readInt(), input.readInt()));
+		}
+		String[] commands = new String[input.readByte() & 0xFF];
+		for (int index = 0; index < commands.length; index++) {
+			commands[index] = input.readJavaString();
+		}
+		
+		String projectileName = input.readString();
+		int cooldown = input.readInt();
+		WandCharges charges;
+		if (input.readBoolean())
+			charges = WandCharges.fromBits(input);
+		else
+			charges = null;
+		int amountPerShot = input.readInt();
+		
+		CIProjectile projectile = getProjectileByName(projectileName);
+		
+		return new CustomWand(itemType, damage, name, displayName, lore, attributes, defaultEnchantments,
+				itemFlags, playerEffects, targetEffects, commands,
+				projectile, cooldown, charges, amountPerShot);
+	}
 
 	private AttributeModifier loadAttribute2(BitInput input) {
 		return new AttributeModifier(Attribute.valueOf(input.readJavaString()), Slot.valueOf(input.readJavaString()),
@@ -1191,5 +1287,21 @@ public class ItemSet implements ItemSetBase {
 	@Override
 	public CustomItem getCustomItemByName(String name) {
 		return getItem(name);
+	}
+
+	@Override
+	public CIProjectile getProjectileByName(String name) {
+		for (CIProjectile projectile : projectiles)
+			if (projectile.name.equals(name))
+				return projectile;
+		return null;
+	}
+
+	@Override
+	public ProjectileCover getProjectileCoverByName(String name) {
+		for (ProjectileCover cover : projectileCovers)
+			if (cover.name.equals(name))
+				return cover;
+		return null;
 	}
 }

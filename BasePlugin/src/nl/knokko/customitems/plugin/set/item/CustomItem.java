@@ -53,6 +53,20 @@ public abstract class CustomItem extends nl.knokko.customitems.item.CustomItem {
 		return item != null && item.hasItemMeta() && item.getItemMeta().isUnbreakable() && item.getDurability() > 0;
 	}
 	
+	public static CIMaterial getMaterial(CustomItemType itemType) {
+		String materialName = itemType.name();
+        
+        // This method distinguishes minecraft 1.12 and before from minecraft 1.13 and later
+        // That is what we need here, because Bukkit renamed all WOOD_* tools to WOODEN_* tools
+        if (CorePlugin.useNewCommands()) {
+        	materialName = materialName.replace("WOOD", "WOODEN").replace("GOLD", "GOLDEN");
+        } else {
+        	materialName = materialName.replace("SHOVEL", "SPADE");
+        }
+        
+        return CIMaterial.valueOf(materialName);
+	}
+	
 	protected final CIMaterial material;
 	
 	protected final Single[] attributeModifiers;
@@ -62,16 +76,8 @@ public abstract class CustomItem extends nl.knokko.customitems.item.CustomItem {
     		List<PotionEffect> playerEffects, List<PotionEffect> targetEffects, String[] commands){
         super(itemType, itemDamage, name, displayName, lore, attributes, defaultEnchantments, itemFlags, playerEffects, targetEffects, commands);
         
-        String materialName = itemType.name();
+        material = getMaterial(itemType);
         
-        // This method distinguishes minecraft 1.12 and before from minecraft 1.13 and later
-        // That is what we need here, because Bukkit renamed all WOOD_* tools to WOODEN_* tools
-        if (CorePlugin.useNewCommands()) {
-        	materialName = materialName.replace("WOOD", "WOODEN").replace("GOLD", "GOLDEN");
-        } else {
-        	materialName = materialName.replace("SHOVEL", "SPADE");
-        }
-        material = CIMaterial.valueOf(materialName);
         attributeModifiers = new Single[attributes.length];
         for (int index = 0; index < attributes.length; index++) {
         	AttributeModifier a = attributes[index];

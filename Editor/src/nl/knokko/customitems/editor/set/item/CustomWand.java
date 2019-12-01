@@ -8,12 +8,12 @@ import nl.knokko.customitems.item.AttributeModifier;
 import nl.knokko.customitems.item.CustomItemType;
 import nl.knokko.customitems.item.Enchantment;
 import nl.knokko.customitems.item.WandCharges;
-import nl.knokko.customitems.projectile.Projectile;
+import nl.knokko.customitems.projectile.CIProjectile;
 import nl.knokko.util.bits.BitOutput;
 
 public class CustomWand extends CustomItem {
 	
-	public Projectile projectile;
+	public CIProjectile projectile;
 	
 	public int cooldown;
 	/** If charges is null, the wand doesn't need charges and only has to worry about its cooldown */
@@ -24,7 +24,7 @@ public class CustomWand extends CustomItem {
 	public CustomWand(CustomItemType itemType, short itemDamage, String name, String displayName, String[] lore,
 			AttributeModifier[] attributes, Enchantment[] defaultEnchantments, NamedImage texture, boolean[] itemFlags,
 			byte[] customModel, List<PotionEffect> playerEffects, List<PotionEffect> targetEffects, String[] commands,
-			Projectile projectile, int cooldown, WandCharges charges, int amountPerShot) {
+			CIProjectile projectile, int cooldown, WandCharges charges, int amountPerShot) {
 		super(itemType, itemDamage, name, displayName, lore, attributes, defaultEnchantments, texture, itemFlags,
 				customModel, playerEffects, targetEffects, commands);
 		this.projectile = projectile;

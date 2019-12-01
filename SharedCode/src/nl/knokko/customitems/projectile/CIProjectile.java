@@ -10,11 +10,11 @@ import nl.knokko.customitems.projectile.effects.ProjectileEffects;
 import nl.knokko.util.bits.BitInput;
 import nl.knokko.util.bits.BitOutput;
 
-public class Projectile {
+public class CIProjectile {
 	
 	private static final byte ENCODING_1 = 0;
 	
-	public static Projectile fromBits(BitInput input, ItemSetBase set) {
+	public static CIProjectile fromBits(BitInput input, ItemSetBase set) {
 		byte encoding = input.readByte();
 		switch (encoding) {
 		case ENCODING_1: return load1(input, set);
@@ -22,7 +22,7 @@ public class Projectile {
 		}
 	}
 	
-	private static Projectile load1(BitInput input, ItemSetBase set) {
+	private static CIProjectile load1(BitInput input, ItemSetBase set) {
 		String name = input.readString();
 		float damage = input.readFloat();
 		float minLaunchAngle = input.readFloat();
@@ -47,7 +47,7 @@ public class Projectile {
 		String coverName = input.readString();
 		ProjectileCover cover = coverName == null ? null : set.getProjectileCoverByName(coverName);
 		
-		return new Projectile(name, damage, minLaunchAngle, maxLaunchAngle, minStartSpeed, maxStartSpeed, 
+		return new CIProjectile(name, damage, minLaunchAngle, maxLaunchAngle, minStartSpeed, maxStartSpeed, 
 				maxLifeTime, damageSource, minecraftType, inFlightEffects, impactEffects, cover);
 	}
 	
@@ -75,7 +75,7 @@ public class Projectile {
 	
 	public ProjectileCover cover;
 
-	public Projectile(String name, float damage, float minLaunchAngle, float maxLaunchAngle, 
+	public CIProjectile(String name, float damage, float minLaunchAngle, float maxLaunchAngle, 
 			float minLaunchSpeed, float maxLaunchSpeed, int maxLifeTime,
 			DamageSource damageSource, ProjectileType minecraftType, 
 			Collection<ProjectileEffects> inFlightEffects, Collection<ProjectileEffect> impactEffects,
@@ -93,6 +93,13 @@ public class Projectile {
 		this.impactEffects = impactEffects;
 		this.cover = cover;
 	}
+	
+	// For validation checks (and some other stuff), it is very important that the equals() method of custom 
+    // projectiles only return true when `other` refers to the same object as `this`.
+    @Override
+    public final boolean equals(Object other) {
+    	return this == other;
+    }
 	
 	@Override
 	public String toString() {
