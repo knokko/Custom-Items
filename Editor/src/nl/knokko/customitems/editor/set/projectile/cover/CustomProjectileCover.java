@@ -35,4 +35,9 @@ public class CustomProjectileCover extends EditorProjectileCover {
 	public void writeModel(ZipOutputStream output) throws IOException {
 		output.write(model);
 	}
+
+	@Override
+	public String toString() {
+		return "Custom";
+	}
 }

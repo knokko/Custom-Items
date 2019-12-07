@@ -148,4 +148,9 @@ public class SphereProjectileCover extends EditorProjectileCover {
 		};
 		return ItemSet.chain(start, middle.toArray(middleArray), end);
 	}
+
+	@Override
+	public String toString() {
+		return "Sphere " + texture.getName();
+	}
 }

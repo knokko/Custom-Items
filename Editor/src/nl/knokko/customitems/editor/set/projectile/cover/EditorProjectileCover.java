@@ -36,6 +36,9 @@ public abstract class EditorProjectileCover extends ProjectileCover implements I
     }
     
     @Override
+    public abstract String toString();
+    
+    @Override
     public CustomItemType getItemType() {
     	return itemType;
     }

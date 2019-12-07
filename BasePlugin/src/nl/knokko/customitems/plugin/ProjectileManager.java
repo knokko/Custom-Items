@@ -1,6 +1,10 @@
 package nl.knokko.customitems.plugin;
 
-import static java.lang.Math.*;
+import static java.lang.Math.PI;
+import static java.lang.Math.cos;
+import static java.lang.Math.random;
+import static java.lang.Math.sin;
+import static java.lang.Math.toRadians;
 
 import java.util.Collection;
 import java.util.HashMap;
@@ -13,6 +17,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Particle;
 import org.bukkit.command.CommandSender;
+import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Item;
 import org.bukkit.entity.LargeFireball;
@@ -21,7 +26,9 @@ import org.bukkit.entity.Projectile;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
+import org.bukkit.event.entity.EntityPickupItemEvent;
 import org.bukkit.event.entity.ProjectileHitEvent;
+import org.bukkit.event.inventory.InventoryPickupItemEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.metadata.MetadataValue;
@@ -34,7 +41,15 @@ import nl.knokko.core.plugin.particles.ParticleHelper;
 import nl.knokko.customitems.item.CIMaterial;
 import nl.knokko.customitems.plugin.set.item.CustomItem;
 import nl.knokko.customitems.projectile.CIProjectile;
-import nl.knokko.customitems.projectile.effects.*;
+import nl.knokko.customitems.projectile.effects.ColoredRedstone;
+import nl.knokko.customitems.projectile.effects.ExecuteCommand;
+import nl.knokko.customitems.projectile.effects.Explosion;
+import nl.knokko.customitems.projectile.effects.ProjectileEffect;
+import nl.knokko.customitems.projectile.effects.ProjectileEffects;
+import nl.knokko.customitems.projectile.effects.RandomAccelleration;
+import nl.knokko.customitems.projectile.effects.SimpleParticles;
+import nl.knokko.customitems.projectile.effects.StraightAccelleration;
+import nl.knokko.customitems.projectile.effects.SubProjectiles;
 
 public class ProjectileManager implements Listener {
 	
@@ -102,7 +117,6 @@ public class ProjectileManager implements Listener {
 		Vector launchVelocity = launchDirection.multiply(launchSpeed);
 		
 		Projectile bukkitProjectile = responsibleShooter.launchProjectile(bukkitProjectileClass, launchVelocity);
-		bukkitProjectile.teleport(launchPosition);
 		if (projectile.cover != null) {
 			
 			CIMaterial coverMaterial = CustomItem.getMaterial(projectile.cover.itemType);
@@ -134,6 +148,13 @@ public class ProjectileManager implements Listener {
 					effects.delay, effects.period);
 		}
 		
+		// Apparently, calling teleport immediately doesn't work so well
+		Bukkit.getScheduler().scheduleSyncDelayedTask(plugin, () -> {
+			//bukkitProjectile.teleport(launchPosition);
+			
+			
+		});
+		
 		taskMap.put(bukkitProjectile, taskIDs);
 	}
 	
@@ -153,15 +174,46 @@ public class ProjectileManager implements Listener {
 		taskMap.clear();
 	}
 	
+	private boolean isProjectileCover(ItemStack item) {
+		return CustomItemsPlugin.getInstance().getSet().getCover(item) != null;
+	}
+	
+	@EventHandler
+	public void preventProjectileCoverPickup(EntityPickupItemEvent event) {
+		ItemStack item = event.getItem().getItemStack();
+		if (isProjectileCover(item)) {
+			event.setCancelled(true);
+		}
+	}
+	
+	@EventHandler
+	public void preventProjectileCoverPickup(InventoryPickupItemEvent event) {
+		ItemStack item = event.getItem().getItemStack();
+		if (isProjectileCover(item)) {
+			event.setCancelled(true);
+		}
+	}
+	
 	@EventHandler
 	public void handleCustomProjectileImpactEffects(ProjectileHitEvent event) {
 		List<MetadataValue> metas = event.getEntity().getMetadata("CustomProjectileName");
 		for (MetadataValue meta : metas) {
 			if (meta.getOwningPlugin() == CustomItemsPlugin.getInstance()) {
 				String projectileName = meta.asString();
+				
+				// Apply the impact effects
 				CIProjectile projectile = CustomItemsPlugin.getInstance().getSet().getProjectileByName(projectileName);
 				applyEffects(event.getEntity(), projectile, projectile.impactEffects);
 				
+				// Remove all passengers (the projectile covers)
+				List<Entity> passengers = event.getEntity().getPassengers();
+				for (Entity passenger : passengers) {
+					if (passenger instanceof Item) {
+						passenger.remove();
+					}
+				}
+				
+				// Cancel all tasks for the projectile
 				int[] taskIDs = taskMap.remove(event.getEntity());
 				if (taskIDs != null) {
 					for (int taskID : taskIDs) {
@@ -184,6 +236,8 @@ public class ProjectileManager implements Listener {
 					CIProjectile projectile = CustomItemsPlugin.getInstance().getSet().getProjectileByName(projectileName);
 					if (projectile != null) {
 						event.setDamage(projectile.damage);
+						
+						// TODO Set the right damage CAUSE
 					}
 				}
 			}

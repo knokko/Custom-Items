@@ -29,8 +29,6 @@ import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
-import java.util.Map.Entry;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Color;
@@ -70,7 +68,7 @@ public class ItemSet implements ItemSetBase {
 
 	private CustomRecipe[] recipes;
 
-	private final Map<CIMaterial, Map<Short, CustomItem>> customItemMap;
+	private final Map<CIMaterial, Map<Short, ItemDamageClaim>> customItemMap;
 
 	private CustomItem[] items;
 	
@@ -81,7 +79,7 @@ public class ItemSet implements ItemSetBase {
 	private EntityDrop[][] mobDropMap;
 
 	public ItemSet() {
-		customItemMap = new EnumMap<CIMaterial, Map<Short,CustomItem>>(CIMaterial.class);
+		customItemMap = new EnumMap<>(CIMaterial.class);
 		items = new CustomItem[0];
 		recipes = new CustomRecipe[0];
 		
@@ -90,7 +88,7 @@ public class ItemSet implements ItemSetBase {
 	}
 
 	public ItemSet(BitInput input) {
-		customItemMap = new EnumMap<CIMaterial, Map<Short, CustomItem>>(CIMaterial.class);
+		customItemMap = new EnumMap<>(CIMaterial.class);
 		byte encoding = input.readByte();
 		
 		// Note that ENCODING_2 and ENCODING_4 are editor-only
@@ -156,13 +154,20 @@ public class ItemSet implements ItemSetBase {
 		// Projectiles
 		int numProjectileCovers = input.readInt();
 		projectileCovers = new ProjectileCover[numProjectileCovers];
-		for (int index = 0; index < numProjectileCovers; index++)
-			projectileCovers[index] = new ProjectileCover(input);
+		for (int index = 0; index < numProjectileCovers; index++) {
+			PluginProjectileCover cover = new PluginProjectileCover(input);
+			projectileCovers[index] = cover;
+			registerItemDamageClaim(cover);
+		}
 		
 		int numProjectiles = input.readInt();
 		projectiles = new CIProjectile[numProjectiles];
 		for (int index = 0; index < numProjectiles; index++)
 			projectiles[index] = CIProjectile.fromBits(input, this);
+		
+		// Notify the projectiles that all projectiles are loaded
+		for (CIProjectile projectile : projectiles)
+			projectile.afterProjectilesAreLoaded(this);
 		
 		// Items
 		int itemSize = input.readInt();
@@ -1109,7 +1114,11 @@ public class ItemSet implements ItemSetBase {
 
 	private void register(CustomItem item, int index) {
 		items[index] = item;
-		Map<Short, CustomItem> map = customItemMap.get(item.getMaterial());
+		registerItemDamageClaim(item);
+	}
+	
+	private void registerItemDamageClaim(ItemDamageClaim item) {
+		Map<Short, ItemDamageClaim> map = customItemMap.get(item.getMaterial());
 		if (map == null) {
 			map = new HashMap<>();
 			customItemMap.put(item.getMaterial(), map);
@@ -1253,26 +1262,35 @@ public class ItemSet implements ItemSetBase {
 	}
 
 	public CustomItem getItem(String name) {
-		Set<Entry<CIMaterial, Map<Short, CustomItem>>> entrySet = customItemMap.entrySet();
-		for (Entry<CIMaterial, Map<Short, CustomItem>> entry : entrySet) {
-			Set<Entry<Short, CustomItem>> set = entry.getValue().entrySet();
-			for (Entry<Short, CustomItem> innerEntry : set) {
-				if (innerEntry.getValue().getName().equals(name)) {
-					return innerEntry.getValue();
-				}
-			}
-		}
+		for (CustomItem item : items)
+			if (item.getName().equals(name))
+				return item;
 		return null;
 	}
 
-	public CustomItem getItem(ItemStack item) {
+	public ItemDamageClaim getItemDamageClaim(ItemStack item) {
 		if (item != null && item.hasItemMeta() && item.getItemMeta().isUnbreakable()) {
-			Map<Short, CustomItem> map = customItemMap.get(CIMaterial.valueOf(ItemHelper.getMaterialName(item)));
-			if (map != null) {
+			Map<Short, ItemDamageClaim> map = customItemMap.get(CIMaterial.valueOf(ItemHelper.getMaterialName(item)));
+			if (map != null) 
 				return map.get(item.getDurability());
-			}
 		}
 		return null;
+	}
+	
+	public CustomItem getItem(ItemStack item) {
+		ItemDamageClaim claim = getItemDamageClaim(item);
+		if (claim instanceof CustomItem)
+			return (CustomItem) claim;
+		else
+			return null;
+	}
+	
+	public ProjectileCover getCover(ItemStack item) {
+		ItemDamageClaim claim = getItemDamageClaim(item);
+		if (claim instanceof ProjectileCover)
+			return (ProjectileCover) claim;
+		else
+			return null;
 	}
 
 	/**

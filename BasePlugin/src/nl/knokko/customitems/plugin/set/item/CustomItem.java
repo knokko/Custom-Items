@@ -45,9 +45,10 @@ import nl.knokko.customitems.item.AttributeModifier;
 import nl.knokko.customitems.item.CIMaterial;
 import nl.knokko.customitems.item.CustomItemType;
 import nl.knokko.customitems.item.Enchantment;
+import nl.knokko.customitems.plugin.set.ItemDamageClaim;
 import nl.knokko.customitems.effect.PotionEffect;
 
-public abstract class CustomItem extends nl.knokko.customitems.item.CustomItem {
+public abstract class CustomItem extends nl.knokko.customitems.item.CustomItem implements ItemDamageClaim {
 	
 	public static boolean isCustom(ItemStack item) {
 		return item != null && item.hasItemMeta() && item.getItemMeta().isUnbreakable() && item.getDurability() > 0;
