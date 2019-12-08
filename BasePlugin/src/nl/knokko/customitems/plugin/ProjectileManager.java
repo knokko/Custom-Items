@@ -1,10 +1,6 @@
 package nl.knokko.customitems.plugin;
 
-import static java.lang.Math.PI;
-import static java.lang.Math.cos;
-import static java.lang.Math.random;
-import static java.lang.Math.sin;
-import static java.lang.Math.toRadians;
+import static java.lang.Math.*;
 
 import java.util.Collection;
 import java.util.HashMap;
@@ -16,11 +12,10 @@ import java.util.Random;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Particle;
+import org.bukkit.World;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Entity;
-import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Item;
-import org.bukkit.entity.LargeFireball;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.Projectile;
 import org.bukkit.event.EventHandler;
@@ -32,12 +27,13 @@ import org.bukkit.event.inventory.InventoryPickupItemEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.metadata.MetadataValue;
-import org.bukkit.plugin.Plugin;
 import org.bukkit.projectiles.ProjectileSource;
 import org.bukkit.util.Vector;
 
 import nl.knokko.core.plugin.item.ItemHelper;
 import nl.knokko.core.plugin.particles.ParticleHelper;
+import nl.knokko.core.plugin.world.RaytraceResult;
+import nl.knokko.core.plugin.world.Raytracer;
 import nl.knokko.customitems.item.CIMaterial;
 import nl.knokko.customitems.plugin.set.item.CustomItem;
 import nl.knokko.customitems.projectile.CIProjectile;
@@ -45,7 +41,6 @@ import nl.knokko.customitems.projectile.effects.ColoredRedstone;
 import nl.knokko.customitems.projectile.effects.ExecuteCommand;
 import nl.knokko.customitems.projectile.effects.Explosion;
 import nl.knokko.customitems.projectile.effects.ProjectileEffect;
-import nl.knokko.customitems.projectile.effects.ProjectileEffects;
 import nl.knokko.customitems.projectile.effects.RandomAccelleration;
 import nl.knokko.customitems.projectile.effects.SimpleParticles;
 import nl.knokko.customitems.projectile.effects.StraightAccelleration;
@@ -77,10 +72,137 @@ public class ProjectileManager implements Listener {
 	public void fireProjectile(Player player, CIProjectile projectile) {
 		fireProjectile(player, player.getEyeLocation(), player.getLocation().getDirection(), projectile, 
 				projectile.maxLifeTime, 0.0);
+		
+		CustomItemsPlugin plugin = CustomItemsPlugin.getInstance();
+		Vector look = player.getLocation().getDirection();
+		double baseAngle = 0.0;
+		World world = player.getWorld();
+		int lifetime = projectile.maxLifeTime;
+		
+		// For the next computations, I need a unit vector that is not (almost) parallel to `look`
+		Vector notParallel;
+		
+		// If the absolute value of the x-component of `look` is in this range, it's not almost parallel to X
+		if (look.getX() > -0.8 && look.getX() < 0.8) {
+			notParallel = X;
+		} else {
+			
+			// In this block, the absolute value of the x-component of `look` must be at least 0.8
+			// Since also `look` is a unit vector, the absolute value of the y-component can't be close to 1
+			notParallel = Y;
+		}
+		
+		// A unit vector perpendicular to `look`
+		Vector perpendicular1 = look.getCrossProduct(notParallel).normalize();
+		
+		// A unit vector perpendicular to both `look` and `perpendicular1`
+		Vector perpendicular2 = look.getCrossProduct(perpendicular1);
+		
+		double randomAngle = random() * 2.0 * PI;
+		Vector randomPerpendicular = perpendicular1.clone().multiply(sin(randomAngle)).add(perpendicular2.clone().multiply(cos(randomAngle)));
+		
+		double launchAngle = toRadians(baseAngle + projectile.minLaunchAngle + random() * (projectile.maxLaunchAngle - projectile.minLaunchAngle));
+		Vector launchDirection = look.clone().multiply(cos(launchAngle)).add(randomPerpendicular.clone().multiply(sin(launchAngle)));
+		
+		double launchSpeed = projectile.minLaunchSpeed + random() * (projectile.maxLaunchSpeed - projectile.minLaunchSpeed);
+		Vector velocity = launchDirection.multiply(launchSpeed);
+		
+		Vector supposedPosition = player.getEyeLocation().toVector();
+		Vector startPosition = supposedPosition.clone();
+		
+		int[] taskIDs;
+		
+		Item coverItem;
+		
+		if (projectile.cover != null) {
+			CIMaterial coverMaterial = CustomItem.getMaterial(projectile.cover.itemType);
+			ItemStack coverStack = ItemHelper.createStack(coverMaterial.name(), 1);
+			ItemMeta coverMeta = coverStack.getItemMeta();
+			coverMeta.setUnbreakable(true);
+			coverStack.setItemMeta(coverMeta);
+			coverStack.setDurability(projectile.cover.itemDamage);
+			
+			coverItem = player.getWorld().dropItem(player.getEyeLocation(), coverStack);
+			coverItem.setGravity(false);
+			coverItem.setInvulnerable(true);
+			taskIDs = new int[]{ -1, -1, Bukkit.getScheduler().scheduleSyncRepeatingTask(plugin, () -> {
+				
+				double distance = supposedPosition.distance(coverItem.getLocation().toVector());
+				if (distance > 0.1) {
+					coverItem.teleport(supposedPosition.toLocation(world));
+				}
+				
+				coverItem.setVelocity(velocity);
+				
+			}, 0, 1) };
+		} else {
+			taskIDs = new int[] {-1, -1};
+			coverItem = null;
+		}
+		
+		taskIDs[1] = Bukkit.getScheduler().scheduleSyncRepeatingTask(plugin, () -> {
+			ParticleHelper.spawnColoredParticle(supposedPosition.toLocation(world), 1, 0.1, 0.1);
+			
+			long startTime = System.nanoTime();
+			
+			RaytraceResult rayTraceResult = Raytracer.raytrace(supposedPosition.toLocation(world), velocity, 
+					coverItem, supposedPosition.distanceSquared(startPosition) < 2.0 ? player : null);
+			
+			if (rayTraceResult != null) {
+				if (coverItem != null) {
+					coverItem.remove();
+				}
+				for (int taskID : taskIDs) {
+					
+					// Remove the if statement when the lifetime task has been added
+					if (taskID != -1) {
+						Bukkit.getScheduler().cancelTask(taskID);
+					}
+				}
+				if (rayTraceResult.getHitEntity() != null) {
+					Bukkit.broadcastMessage("Intersected with " + rayTraceResult.getHitEntity());
+				} else {
+					Bukkit.broadcastMessage("Intersected with " + rayTraceResult.getImpactLocation().getBlock());
+				}
+			}
+			
+			long endTime = System.nanoTime();
+			
+			// NMS end
+			
+			System.out.println("Raytracing took " + (endTime - startTime) / 1000 + " us");
+			
+			/*
+			double distance = supposedPosition.distance(rayTracer.getLocation().toVector());
+			System.out.println("distance to bat is " + distance);
+			if (distance > 0.1) {
+				if (supposedPosition.distance(startPosition) > 100.2) {
+					Bukkit.broadcastMessage("intersection: supposed distance is " + supposedPosition.distance(startPosition));
+					rayTracer.remove();
+					if (coverItem != null) {
+						coverItem.remove();
+					}
+					Bukkit.getScheduler().cancelTask(taskIDs[1]);
+					if (taskIDs.length > 2) {
+						Bukkit.getScheduler().cancelTask(taskIDs[2]);
+					}
+				} else {
+					rayTracer.teleport(supposedPosition.toLocation(world));
+				}
+			}
+			*/
+			
+			supposedPosition.add(velocity);
+			//rayTracer.setVelocity(velocity);
+			//Bukkit.broadcastMessage("rayTracer position is " + rayTracer.getLocation().toVector());
+			velocity.multiply(0.95 + 0.1 * Math.random());
+		}, 0, 1);
 	}
 	
 	private void fireProjectile(Player responsibleShooter, Location launchPosition, Vector look, 
 			CIProjectile projectile, int lifetime, double baseAngle) {
+		
+		/*
 		
 		EntityType projectileType = EntityType.valueOf(projectile.minecraftType.name());
 		
@@ -156,6 +278,8 @@ public class ProjectileManager implements Listener {
 		});
 		
 		taskMap.put(bukkitProjectile, taskIDs);
+		
+		*/
 	}
 	
 	/**
@@ -242,130 +366,6 @@ public class ProjectileManager implements Listener {
 				}
 			}
 		}
-	}
-	
-	private static class ProjectileMetadata implements MetadataValue {
-		
-		private final CIProjectile projectile;
-		
-		ProjectileMetadata(CIProjectile projectile){
-			this.projectile = projectile;
-		}
-
-		@Override
-		public Object value() {
-			return projectile.name;
-		}
-
-		@Override
-		public int asInt() {
-			return 0;
-		}
-
-		@Override
-		public float asFloat() {
-			return 0;
-		}
-
-		@Override
-		public double asDouble() {
-			return 0;
-		}
-
-		@Override
-		public long asLong() {
-			return 0;
-		}
-
-		@Override
-		public short asShort() {
-			return 0;
-		}
-
-		@Override
-		public byte asByte() {
-			return 0;
-		}
-
-		@Override
-		public boolean asBoolean() {
-			return false;
-		}
-
-		@Override
-		public String asString() {
-			return projectile.name;
-		}
-
-		@Override
-		public Plugin getOwningPlugin() {
-			return CustomItemsPlugin.getInstance();
-		}
-
-		@Override
-		public void invalidate() {}
-	}
-	
-	private static class ProjectileLaunchTimeMeta implements MetadataValue {
-		
-		final long launchTime;
-		
-		ProjectileLaunchTimeMeta(long time){
-			launchTime = time;
-		}
-
-		@Override
-		public Object value() {
-			return launchTime;
-		}
-
-		@Override
-		public int asInt() {
-			return 0;
-		}
-
-		@Override
-		public float asFloat() {
-			return 0;
-		}
-
-		@Override
-		public double asDouble() {
-			return 0;
-		}
-
-		@Override
-		public long asLong() {
-			return launchTime;
-		}
-
-		@Override
-		public short asShort() {
-			return 0;
-		}
-
-		@Override
-		public byte asByte() {
-			return 0;
-		}
-
-		@Override
-		public boolean asBoolean() {
-			return false;
-		}
-
-		@Override
-		public String asString() {
-			return null;
-		}
-
-		@Override
-		public Plugin getOwningPlugin() {
-			return CustomItemsPlugin.getInstance();
-		}
-
-		@Override
-		public void invalidate() {}
 	}
 	
 	private class RemoveTask implements Runnable {
