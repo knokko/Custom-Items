@@ -46,7 +46,6 @@ public class ExecuteCommand extends ProjectileEffect {
 	public static enum Executor {
 		
 		SHOOTER,
-		PROJECTILE,
 		CONSOLE;
 	}
 }

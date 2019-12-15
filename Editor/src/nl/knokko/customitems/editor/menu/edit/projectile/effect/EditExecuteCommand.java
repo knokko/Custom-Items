@@ -27,7 +27,7 @@ public class EditExecuteCommand extends EditProjectileEffect {
 		super(backingCollection, returnMenu);
 		this.original = original;
 		
-		this.executor = original == null ? Executor.PROJECTILE : original.executor;
+		this.executor = original == null ? Executor.SHOOTER : original.executor;
 	}
 
 	@Override

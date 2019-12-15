@@ -45,39 +45,14 @@ import javax.imageio.stream.MemoryCacheImageOutputStream;
 
 import nl.knokko.customitems.damage.DamageResistances;
 import nl.knokko.customitems.damage.DamageSource;
-import nl.knokko.customitems.drops.BlockDrop;
-import nl.knokko.customitems.drops.BlockType;
-import nl.knokko.customitems.drops.CIEntityType;
-import nl.knokko.customitems.drops.Drop;
-import nl.knokko.customitems.drops.EntityDrop;
+import nl.knokko.customitems.drops.*;
 import nl.knokko.customitems.editor.Editor;
-import nl.knokko.customitems.editor.set.item.CustomArmor;
-import nl.knokko.customitems.editor.set.item.CustomBow;
-import nl.knokko.customitems.editor.set.item.CustomHoe;
-import nl.knokko.customitems.editor.set.item.CustomItem;
-import nl.knokko.customitems.editor.set.item.CustomShears;
-import nl.knokko.customitems.editor.set.item.CustomShield;
-import nl.knokko.customitems.editor.set.item.CustomTool;
-import nl.knokko.customitems.editor.set.item.CustomTrident;
-import nl.knokko.customitems.editor.set.item.CustomWand;
-import nl.knokko.customitems.editor.set.item.NamedImage;
-import nl.knokko.customitems.editor.set.item.SimpleCustomItem;
+import nl.knokko.customitems.editor.set.item.*;
 import nl.knokko.customitems.editor.set.item.texture.BowTextures;
-import nl.knokko.customitems.editor.set.projectile.cover.CustomProjectileCover;
-import nl.knokko.customitems.editor.set.projectile.cover.EditorProjectileCover;
-import nl.knokko.customitems.editor.set.projectile.cover.SphereProjectileCover;
-import nl.knokko.customitems.editor.set.recipe.Recipe;
-import nl.knokko.customitems.editor.set.recipe.ShapedRecipe;
-import nl.knokko.customitems.editor.set.recipe.ShapelessRecipe;
-import nl.knokko.customitems.editor.set.recipe.ingredient.CustomItemIngredient;
-import nl.knokko.customitems.editor.set.recipe.ingredient.DataVanillaIngredient;
-import nl.knokko.customitems.editor.set.recipe.ingredient.Ingredient;
-import nl.knokko.customitems.editor.set.recipe.ingredient.NoIngredient;
-import nl.knokko.customitems.editor.set.recipe.ingredient.SimpleVanillaIngredient;
-import nl.knokko.customitems.editor.set.recipe.result.CustomItemResult;
-import nl.knokko.customitems.editor.set.recipe.result.DataVanillaResult;
-import nl.knokko.customitems.editor.set.recipe.result.Result;
-import nl.knokko.customitems.editor.set.recipe.result.SimpleVanillaResult;
+import nl.knokko.customitems.editor.set.projectile.cover.*;
+import nl.knokko.customitems.editor.set.recipe.*;
+import nl.knokko.customitems.editor.set.recipe.ingredient.*;
+import nl.knokko.customitems.editor.set.recipe.result.*;
 import nl.knokko.customitems.encoding.ItemEncoding;
 import nl.knokko.customitems.encoding.RecipeEncoding;
 import nl.knokko.customitems.item.AttributeModifier;
@@ -85,7 +60,6 @@ import nl.knokko.customitems.item.CustomItemType;
 import nl.knokko.customitems.item.CustomItemType.Category;
 import nl.knokko.customitems.projectile.CIProjectile;
 import nl.knokko.customitems.projectile.ProjectileCover;
-import nl.knokko.customitems.projectile.ProjectileType;
 import nl.knokko.customitems.projectile.effects.ProjectileEffect;
 import nl.knokko.customitems.projectile.effects.ProjectileEffects;
 import nl.knokko.customitems.item.CustomToolDurability;
@@ -96,9 +70,7 @@ import nl.knokko.customitems.item.ItemSetBase;
 import nl.knokko.customitems.item.WandCharges;
 import nl.knokko.gui.keycode.KeyCode;
 import nl.knokko.gui.window.input.WindowInput;
-import nl.knokko.customitems.item.AttributeModifier.Attribute;
-import nl.knokko.customitems.item.AttributeModifier.Operation;
-import nl.knokko.customitems.item.AttributeModifier.Slot;
+import nl.knokko.customitems.item.AttributeModifier.*;
 import nl.knokko.util.bits.BitInput;
 import nl.knokko.util.bits.BitOutput;
 import nl.knokko.util.bits.ByteArrayBitOutput;
@@ -3711,8 +3683,6 @@ public class ItemSet implements ItemSetBase {
 		// This is not equivalent to damage < 0 because this also deals with NaN
 		if (!(projectile.damage >= 0))
 			return "The damage of the projectile must be at least 0.0";
-		if (projectile.damage > 0 && projectile.damageSource == null)
-			return "If the damage of the projectile is not 0, you must select a damage source";
 		
 		if (!(projectile.minLaunchAngle >= 0))
 			return "The minimum launch angle can't be negative";
@@ -3731,8 +3701,6 @@ public class ItemSet implements ItemSetBase {
 		if (projectile.cover != null && !projectileCovers.contains(projectile.cover))
 			return "The projectile cover is not in the list of projectile covers";
 		
-		if (projectile.minecraftType == null)
-			return "You must select a projectile type";
 		for (ProjectileEffects effects : projectile.inFlightEffects) {
 			String effectsError = effects.validate();
 			if (effectsError != null)
@@ -4418,14 +4386,13 @@ public class ItemSet implements ItemSetBase {
 	 */
 	public String changeProjectile(CIProjectile original, String newName, float newDamage,
 			float newMinLaunchAngle, float newMaxLaunchAngle, 
-			float newMinLaunchSpeed, float newMaxLaunchSpeed, int newMaxLifeTime,
-			DamageSource newDamageSource, ProjectileType newMinecraftType, 
+			float newMinLaunchSpeed, float newMaxLaunchSpeed, float newGravity, int newMaxLifeTime, 
 			Collection<ProjectileEffects> newFlightEffects, Collection<ProjectileEffect> newImpactEffects,
 			ProjectileCover newCover) {
 		if (!bypassChecks()) {
 			String error = validateProjectile(new CIProjectile(newName, newDamage, 
-					newMinLaunchAngle, newMaxLaunchAngle, newMinLaunchSpeed, newMaxLaunchSpeed, newMaxLifeTime,
-					newDamageSource, newMinecraftType, newFlightEffects, newImpactEffects, newCover));
+					newMinLaunchAngle, newMaxLaunchAngle, newMinLaunchSpeed, newMaxLaunchSpeed, newGravity, newMaxLifeTime,
+					newFlightEffects, newImpactEffects, newCover));
 			if (error != null)
 				return error;
 			if (!projectiles.contains(original))
@@ -4440,9 +4407,8 @@ public class ItemSet implements ItemSetBase {
 		original.maxLaunchAngle = newMaxLaunchAngle;
 		original.minLaunchSpeed = newMinLaunchSpeed;
 		original.maxLaunchSpeed = newMaxLaunchSpeed;
+		original.gravity = newGravity;
 		original.maxLifeTime = newMaxLifeTime;
-		original.damageSource = newDamageSource;
-		original.minecraftType = newMinecraftType;
 		original.inFlightEffects = newFlightEffects;
 		original.impactEffects = newImpactEffects;
 		original.cover = newCover;

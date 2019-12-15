@@ -5,15 +5,12 @@ import static nl.knokko.customitems.editor.menu.edit.EditProps.*;
 import java.util.ArrayList;
 import java.util.Collection;
 
-import nl.knokko.customitems.damage.DamageSource;
 import nl.knokko.customitems.editor.menu.edit.CollectionSelect;
 import nl.knokko.customitems.editor.menu.edit.EditMenu;
-import nl.knokko.customitems.editor.menu.edit.EnumSelect;
 import nl.knokko.customitems.editor.menu.edit.projectile.effect.ProjectileEffectCollectionEdit;
 import nl.knokko.customitems.editor.menu.edit.projectile.effect.ProjectileEffectsCollectionEdit;
 import nl.knokko.customitems.editor.set.projectile.cover.EditorProjectileCover;
 import nl.knokko.customitems.projectile.CIProjectile;
-import nl.knokko.customitems.projectile.ProjectileType;
 import nl.knokko.customitems.projectile.effects.ProjectileEffect;
 import nl.knokko.customitems.projectile.effects.ProjectileEffects;
 import nl.knokko.gui.color.GuiColor;
@@ -36,8 +33,6 @@ public class EditProjectile extends GuiMenu {
 	private final EditMenu menu;
 	private final CIProjectile previous;
 	
-	private DamageSource impactDamageSource;
-	private ProjectileType minecraftType;
 	private EditorProjectileCover cover;
 
 	public EditProjectile(EditMenu menu, CIProjectile previous) {
@@ -45,12 +40,8 @@ public class EditProjectile extends GuiMenu {
 		this.previous = previous;
 		
 		if (previous == null) {
-			impactDamageSource = DamageSource.PROJECTILE;
-			minecraftType = ProjectileType.SNOWBALL;
 			cover = null;
 		} else {
-			impactDamageSource = previous.damageSource;
-			minecraftType = previous.minecraftType;
 			cover = (EditorProjectileCover) previous.cover;
 		}
 	}
@@ -67,7 +58,7 @@ public class EditProjectile extends GuiMenu {
 		// The edit fields
 		TextEditField nameField;
 		FloatEditField damageField, minLaunchAngleField, maxLaunchAngleField, 
-			minLaunchSpeedField, maxLaunchSpeedField;
+			minLaunchSpeedField, maxLaunchSpeedField, gravityField;
 		IntEditField lifetimeField;
 		
 		// The initial values of the edit fields
@@ -78,6 +69,7 @@ public class EditProjectile extends GuiMenu {
 			float damage;
 			float minLaunchAngle, maxLaunchAngle;
 			float minLaunchSpeed, maxLaunchSpeed;
+			float gravity;
 			int maxLifeTime;
 			
 			// Give them different values depending on whether we are editing an existing projectile or creating a new one
@@ -88,6 +80,7 @@ public class EditProjectile extends GuiMenu {
 				maxLaunchAngle = 5f;
 				minLaunchSpeed = 2f;
 				maxLaunchSpeed = 3f;
+				gravity = 0.1f;
 				maxLifeTime = 200;
 				impactEffects = new ArrayList<>(1);
 				inFlightEffects = new ArrayList<>(0);
@@ -98,6 +91,7 @@ public class EditProjectile extends GuiMenu {
 				maxLaunchAngle = previous.maxLaunchAngle;
 				minLaunchSpeed = previous.minLaunchSpeed;
 				maxLaunchSpeed = previous.maxLaunchSpeed;
+				gravity = previous.gravity;
 				maxLifeTime = previous.maxLifeTime;
 				impactEffects = new ArrayList<>(previous.impactEffects);
 				inFlightEffects = new ArrayList<>(previous.inFlightEffects);
@@ -110,6 +104,7 @@ public class EditProjectile extends GuiMenu {
 			maxLaunchAngleField = new FloatEditField(maxLaunchAngle, 0f, EDIT_BASE, EDIT_ACTIVE);
 			minLaunchSpeedField = new FloatEditField(minLaunchSpeed, 0f, EDIT_BASE, EDIT_ACTIVE);
 			maxLaunchSpeedField = new FloatEditField(maxLaunchSpeed, 0f, EDIT_BASE, EDIT_ACTIVE);
+			gravityField = new FloatEditField(gravity, -Float.MAX_VALUE, EDIT_BASE, EDIT_ACTIVE);
 			lifetimeField = new IntEditField(maxLifeTime, 1, EDIT_BASE, EDIT_ACTIVE);
 		}
 		
@@ -128,14 +123,8 @@ public class EditProjectile extends GuiMenu {
 		addComponent(maxLaunchSpeedField, BUTTON_X, 0.40f, BUTTON_X + 0.1f, 0.47f);
 		addComponent(new DynamicTextComponent("Maximum lifetime:", LABEL), LABEL_X - 0.22f, 0.32f, LABEL_X, 0.40f);
 		addComponent(lifetimeField, BUTTON_X, 0.32f, BUTTON_X + 0.1f, 0.39f);
-		addComponent(new DynamicTextComponent("Impact damage source:", LABEL), LABEL_X - 0.3f, 0.24f, LABEL_X, 0.32f);
-		addComponent(EnumSelect.createSelectButton(DamageSource.class, (DamageSource newImpactSource) -> {
-			impactDamageSource = newImpactSource;
-		}, impactDamageSource), BUTTON_X, 0.24f, BUTTON_X + 0.2f, 0.31f);
-		addComponent(new DynamicTextComponent("Projectile type:", LABEL), LABEL_X - 0.18f, 0.16f, LABEL_X, 0.24f);
-		addComponent(EnumSelect.createSelectButton(ProjectileType.class, (ProjectileType newType) -> {
-			minecraftType = newType;
-		}, minecraftType), BUTTON_X, 0.16f, BUTTON_X + 0.2f, 0.23f);
+		addComponent(new DynamicTextComponent("Gravity:", LABEL), LABEL_X - 0.12f, 0.24f, LABEL_X, 0.32f);
+		addComponent(gravityField, BUTTON_X, 0.24f, BUTTON_X + 0.1f, 0.31f);
 		
 		// Second column of the form
 		addComponent(new DynamicTextComponent("In flight effects:", LABEL), LABEL_X2 - 0.25f, 0.8f, LABEL_X2, 0.88f);
@@ -163,6 +152,7 @@ public class EditProjectile extends GuiMenu {
 			Option.Float maxLaunchAngle = maxLaunchAngleField.getFloat();
 			Option.Float minLaunchSpeed = minLaunchSpeedField.getFloat();
 			Option.Float maxLaunchSpeed = maxLaunchSpeedField.getFloat();
+			Option.Float gravity = gravityField.getFloat();
 			Option.Int lifetime = lifetimeField.getInt();
 			
 			String error = null;
@@ -172,21 +162,20 @@ public class EditProjectile extends GuiMenu {
 			if (!maxLaunchAngle.hasValue()) error = "The maximum launch angle must be a positive number";
 			if (!minLaunchSpeed.hasValue()) error = "The minimum launch speed must be a positive number";
 			if (!maxLaunchSpeed.hasValue()) error = "The maximum launch speed must be a positive number";
+			if (!gravity.hasValue()) error = "The gravity must be a number";
 			if (!lifetime.hasValue()) error = "The lifetime must be a positive integer";
-			if (impactDamageSource == null) error = "You must select an impact damage source";
-			if (minecraftType == null) error = "You must select a projectile type";
 			
 			if (error == null) {
 				if (previous == null) {
 					error = menu.getSet().addProjectile(new CIProjectile(name, damage.getValue(), 
-							minLaunchAngle.getValue(), maxLaunchAngle.getValue(), 
-							minLaunchSpeed.getValue(), maxLaunchSpeed.getValue(), lifetime.getValue(), 
-							impactDamageSource, minecraftType, inFlightEffects, impactEffects, cover));
+							minLaunchAngle.getValue(), maxLaunchAngle.getValue(), minLaunchSpeed.getValue(), 
+							maxLaunchSpeed.getValue(), gravity.getValue(), lifetime.getValue(), 
+							inFlightEffects, impactEffects, cover));
 				} else {
 					error = menu.getSet().changeProjectile(previous, name, damage.getValue(), 
-							minLaunchAngle.getValue(), maxLaunchAngle.getValue(), 
-							minLaunchSpeed.getValue(), maxLaunchSpeed.getValue(), lifetime.getValue(), 
-							impactDamageSource, minecraftType, inFlightEffects, impactEffects, cover);
+							minLaunchAngle.getValue(), maxLaunchAngle.getValue(), minLaunchSpeed.getValue(), 
+							maxLaunchSpeed.getValue(), gravity.getValue(), lifetime.getValue(), 
+							inFlightEffects, impactEffects, cover);
 				}
 				
 				if (error == null) {
