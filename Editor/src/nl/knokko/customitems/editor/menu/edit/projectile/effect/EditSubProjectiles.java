@@ -82,6 +82,9 @@ public class EditSubProjectiles extends EditProjectileEffect {
 					else {
 						original.child = dummy.child;
 						original.useParentLifeTime = dummy.useParentLifeTime;
+						original.minAmount = dummy.minAmount;
+						original.maxAmount = dummy.maxAmount;
+						original.angleToParent = dummy.angleToParent;
 					}
 					state.getWindow().setMainComponent(returnMenu);
 				} else {

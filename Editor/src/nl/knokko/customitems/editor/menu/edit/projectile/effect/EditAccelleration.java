@@ -29,9 +29,9 @@ public abstract class EditAccelleration extends EditProjectileEffect {
 		super.addComponents();
 		
 		FloatEditField minField = new FloatEditField(original == null ? 0.05f : original.minAccelleration, 
-				Float.MIN_VALUE, EDIT_BASE, EDIT_ACTIVE);
+				-Float.MAX_VALUE, EDIT_BASE, EDIT_ACTIVE);
 		FloatEditField maxField = new FloatEditField(original == null ? 0.1f : original.maxAccelleration, 
-				Float.MIN_VALUE, EDIT_BASE, EDIT_ACTIVE);
+				-Float.MAX_VALUE, EDIT_BASE, EDIT_ACTIVE);
 		
 		addComponent(new DynamicTextComponent("Minimum accelleration:", LABEL), LABEL_X - 0.25f, 0.7f, LABEL_X, 0.8f);
 		addComponent(minField, BUTTON_X, 0.71f, BUTTON_X + 0.1f, 0.79f);
