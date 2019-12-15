@@ -150,7 +150,6 @@ class FlyingProjectile {
 							"%x%", currentPosition.getX(), "%y%", currentPosition.getY(), "%z%", currentPosition.getZ(),
 							"%bx%", currentPosition.getBlockX(), "%by%", currentPosition.getBlockY(), "%bz%", currentPosition.getBlockZ(),
 							"%caster%", responsibleShooter.getName());
-					// TODO Test this!
 					Bukkit.dispatchCommand(sender, finalCommand);
 				}
 			} else if (effect instanceof Explosion) {
@@ -187,6 +186,7 @@ class FlyingProjectile {
 					
 					// Spawn the actual particle
 					world.spawnParticle(particle, next.getX(), next.getY(), next.getZ(), 1);
+					// TODO Fix velocity of flame particles and possibly more particles
 					
 					// Reset next
 					next.setX(loc.getX());
