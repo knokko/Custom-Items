@@ -89,9 +89,12 @@ public class BowTextureEdit extends GuiMenu {
 		addComponent(errorComponent, 0.05f, 0.9f, 0.95f, 0.975f);
 		addComponent(pullTextures, 0.65f, 0.025f, 0.95f, 0.775f);
 		addComponent(new DynamicTextComponent("Base texture: ", EditProps.LABEL), 0.2f, 0.55f, 0.4f, 0.65f);
-		addComponent(TextureEdit.createImageSelect((BufferedImage texture) -> {
+		addComponent(TextureEdit.createImageSelect((BufferedImage texture, String imageName) -> {
 			defaultTexture.setComponent(new SimpleImageComponent(state.getWindow().getTextureLoader().loadTexture(texture)));
 			defaultImage = texture;
+			if (nameField.getText().isEmpty()) {
+				nameField.setText(imageName);
+			}
 		}, errorComponent, this), 0.425f, 0.55f, 0.525f, 0.65f);
 		addComponent(new DynamicTextComponent("Name: ", EditProps.LABEL), 0.2f, 0.4f, 0.325f, 0.5f);
 		addComponent(nameField, 0.35f, 0.4f, 0.6f, 0.5f);
@@ -214,7 +217,7 @@ public class BowTextureEdit extends GuiMenu {
 				imageWrapper = new WrapperComponent<SimpleImageComponent>(null);
 			else
 				imageWrapper = new WrapperComponent<SimpleImageComponent>(new SimpleImageComponent(loader.loadTexture(entry.getTexture())));
-			addComponent(TextureEdit.createImageSelect((BufferedImage texture) -> {
+			addComponent(TextureEdit.createImageSelect((BufferedImage texture, String imageName) -> {
 				entry.setTexture(texture);
 				imageWrapper.setComponent(new SimpleImageComponent(state.getWindow().getTextureLoader().loadTexture(texture)));
 			}, errorComponent, BowTextureEdit.this), 0.5f, 0.05f, 0.75f, 0.45f);

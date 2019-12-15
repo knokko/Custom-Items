@@ -128,7 +128,13 @@ public class TextureEdit extends GuiMenu {
 							if(width >= 16) {
 								if(width <= 512) {
 									if(width == 16 || width == 32 || width == 64 || width == 128 || width == 256 || width == 512) {
-										listener.listen(loaded);
+										int indexDot = file.getName().indexOf('.');
+										String imageName;
+										if (indexDot == -1)
+											imageName = file.getName();
+										else
+											imageName = file.getName().substring(0, indexDot);
+										listener.listen(loaded, imageName);
 									} else
 										errorComponent.setText("The width and height (" + width + ") should be a power of 2");
 								} else
@@ -150,14 +156,17 @@ public class TextureEdit extends GuiMenu {
 	}
 	
 	private DynamicTextButton createImageSelect() {
-		return createImageSelect((BufferedImage loaded) -> {
+		return createImageSelect((BufferedImage loaded, String imageName) -> {
 			image = loaded;
 			wrapper.setComponent(new SimpleImageComponent(state.getWindow().getTextureLoader().loadTexture(image)));
+			if (name.getText().isEmpty()) {
+				name.setText(imageName);
+			}
 		}, errorComponent, this);
 	}
 	
 	public static interface ImageListener {
 		
-		void listen(BufferedImage image);
+		void listen(BufferedImage image, String imageName);
 	}
 }
