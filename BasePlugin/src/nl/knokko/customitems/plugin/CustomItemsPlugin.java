@@ -29,10 +29,12 @@ import java.nio.file.Files;
 import java.util.logging.Level;
 
 import org.bukkit.Bukkit;
+import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import nl.knokko.customitems.plugin.command.CommandCustomItems;
 import nl.knokko.customitems.plugin.multisupport.crazyenchantments.CrazyEnchantmentsSupport;
+import nl.knokko.customitems.plugin.projectile.ProjectileManager;
 import nl.knokko.customitems.plugin.set.ItemSet;
 import nl.knokko.util.bits.BitInput;
 import nl.knokko.util.bits.ByteArrayBitInput;
@@ -45,6 +47,8 @@ public class CustomItemsPlugin extends JavaPlugin {
 	private LanguageFile languageFile;
 	private PluginData data;
 	private ProjectileManager projectileManager;
+	
+	private int maxFlyingProjectiles;
 
 	public static CustomItemsPlugin getInstance() {
 		return instance;
@@ -55,6 +59,7 @@ public class CustomItemsPlugin extends JavaPlugin {
 		super.onEnable();
 		instance = this;
 		languageFile = new LanguageFile(new File(getDataFolder() + "/lang.yml"));
+		loadConfig();
 
 		// Load the set after creating language file instance because the set needs the
 		// durability prefix
@@ -73,6 +78,23 @@ public class CustomItemsPlugin extends JavaPlugin {
 		projectileManager.destroyCustomProjectiles();
 		instance = null;
 		super.onDisable();
+	}
+	
+	public int getMaxFlyingProjectiles() {
+		return maxFlyingProjectiles;
+	}
+	
+	private static final String KEY_MAX_PROJECTILES = "Maximum number of flying projectiles";
+	
+	private void loadConfig() {
+		FileConfiguration config = getConfig();
+		if (config.contains(KEY_MAX_PROJECTILES)) {
+			this.maxFlyingProjectiles = config.getInt(KEY_MAX_PROJECTILES);
+		} else {
+			this.maxFlyingProjectiles = 100;
+			config.set(KEY_MAX_PROJECTILES, maxFlyingProjectiles);
+			saveConfig();
+		}
 	}
 	
 	private void loadSet(File file) {
