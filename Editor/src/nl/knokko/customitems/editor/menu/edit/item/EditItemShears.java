@@ -16,17 +16,17 @@ public class EditItemShears extends EditItemTool {
 	
 	private static final AttributeModifier EXAMPLE_ATTRIBUTE_MODIFIER = new AttributeModifier(Attribute.MOVEMENT_SPEED, Slot.OFFHAND, Operation.ADD_FACTOR, 1.5);
 
-	private final CustomShears previous;
+	private final CustomShears toModify;
 	
 	private final IntEditField shearDurabilityLoss;
 
-	public EditItemShears(EditMenu menu, CustomShears previous) {
-		super(menu, previous, Category.SHEAR);
-		this.previous = previous;
-		if (previous == null) {
+	public EditItemShears(EditMenu menu, CustomShears oldValues, CustomShears toModify) {
+		super(menu, oldValues, toModify, Category.SHEAR);
+		this.toModify = toModify;
+		if (oldValues == null) {
 			shearDurabilityLoss = new IntEditField(1, 0, EditProps.EDIT_BASE, EditProps.EDIT_ACTIVE);
 		} else {
-			shearDurabilityLoss = new IntEditField(previous.getShearDurabilityLoss(), 0, EditProps.EDIT_BASE, EditProps.EDIT_ACTIVE);
+			shearDurabilityLoss = new IntEditField(oldValues.getShearDurabilityLoss(), 0, EditProps.EDIT_BASE, EditProps.EDIT_ACTIVE);
 		}
 	}
 	
@@ -40,11 +40,6 @@ public class EditItemShears extends EditItemTool {
 		super.addComponents();
 		addComponent(new DynamicTextComponent("Durability loss on shearing:", EditProps.LABEL), 0.55f, 0.35f, 0.84f, 0.425f);
 		addComponent(shearDurabilityLoss, 0.85f, 0.35f, 0.9f, 0.425f);
-	}
-	
-	@Override
-	protected CustomShears previous() {
-		return previous;
 	}
 	
 	@Override
@@ -65,7 +60,7 @@ public class EditItemShears extends EditItemTool {
 		Option.Int durLoss = shearDurabilityLoss.getInt();
 		if (!durLoss.hasValue())
 			return "The shear durability loss must be a positive integer";
-		return menu.getSet().changeShears(previous, internalType, damage, name.getText(),
+		return menu.getSet().changeShears(toModify, internalType, damage, name.getText(),
 				getDisplayName(), lore, attributes, enchantments, allowEnchanting.isChecked(),
 				allowAnvil.isChecked(), repairItem.getIngredient(), maxUses, textureSelect.getSelected(),
 				itemFlags, entityHitDurabilityLoss, blockBreakDurabilityLoss, durLoss.getValue(),

@@ -49,21 +49,22 @@ public class BowTextureEdit extends GuiMenu {
 	protected final WrapperComponent<SimpleImageComponent> defaultTexture;
 	protected final TextEditField nameField;
 
-	protected final BowTextures previous;
+	protected final BowTextures oldValues, toModify;
 	
 	protected BufferedImage defaultImage;
 	protected final List<Entry> pulls;
 
-	public BowTextureEdit(EditMenu menu, BowTextures previous) {
+	public BowTextureEdit(EditMenu menu, BowTextures oldValues, BowTextures toModify) {
 		this.menu = menu;
-		this.previous = previous;
+		this.oldValues = oldValues;
+		this.toModify = toModify;
 		pullTextures = new PullTextures();
 		errorComponent = new DynamicTextComponent("", EditProps.ERROR);
 		defaultTexture = new WrapperComponent<SimpleImageComponent>(null);
 		nameField = new TextEditField("", EditProps.EDIT_BASE, EditProps.EDIT_ACTIVE);
-		if (previous != null) {
-			defaultImage = previous.getImage();
-			List<Entry> oldPulls = previous.getPullTextures();
+		if (oldValues != null) {
+			defaultImage = oldValues.getImage();
+			List<Entry> oldPulls = oldValues.getPullTextures();
 			pulls = new ArrayList<Entry>(oldPulls.size());
 			for (Entry oldPull : oldPulls) {
 				pulls.add(new Entry(oldPull.getTexture(), oldPull.getPull()));
@@ -98,14 +99,14 @@ public class BowTextureEdit extends GuiMenu {
 		}, errorComponent, this), 0.425f, 0.55f, 0.525f, 0.65f);
 		addComponent(new DynamicTextComponent("Name: ", EditProps.LABEL), 0.2f, 0.4f, 0.325f, 0.5f);
 		addComponent(nameField, 0.35f, 0.4f, 0.6f, 0.5f);
-		if (previous != null) {
-			defaultTexture.setComponent(new SimpleImageComponent(state.getWindow().getTextureLoader().loadTexture(previous.getImage())));
-			nameField.setText(previous.getName());
+		if (toModify != null) {
+			defaultTexture.setComponent(new SimpleImageComponent(state.getWindow().getTextureLoader().loadTexture(oldValues.getImage())));
+			nameField.setText(toModify.getName());
 			addComponent(new DynamicTextButton("Apply", EditProps.SAVE_BASE, EditProps.SAVE_HOVER, () -> {
 				if (defaultImage == null) {
 					errorComponent.setText("You need to give this bow a base texture.");
 				} else {
-					String error = menu.getSet().changeBowTexture(previous, nameField.getText(), defaultImage, pulls, true);
+					String error = menu.getSet().changeBowTexture(toModify, nameField.getText(), defaultImage, pulls, true);
 					if (error != null) {
 						errorComponent.setText(error);
 					} else {

@@ -13,26 +13,27 @@ import nl.knokko.gui.component.text.dynamic.DynamicTextComponent;
 
 public class EditSphereProjectileCover extends EditProjectileCover {
 	
-	protected final SphereProjectileCover original;
+	protected final SphereProjectileCover oldValues, toModify;
 	
 	protected final IntEditField slotsPerAxis;
 	protected final FloatEditField scale;
 	protected final TextureSelect texture;
 
-	public EditSphereProjectileCover(EditMenu menu, SphereProjectileCover original) {
+	public EditSphereProjectileCover(EditMenu menu, SphereProjectileCover oldValues, SphereProjectileCover toModify) {
 		super(menu);
-		this.original = original;
+		this.oldValues = oldValues;
+		this.toModify = toModify;
 		int initialSlots;
 		double initialScale;
 		NamedImage initialTexture;
-		if (original == null) {
+		if (oldValues == null) {
 			initialSlots = 10;
 			initialScale = 0.35;
 			initialTexture = null;
 		} else {
-			initialSlots = original.slotsPerAxis;
-			initialScale = original.scale;
-			initialTexture = original.texture;
+			initialSlots = oldValues.slotsPerAxis;
+			initialScale = oldValues.scale;
+			initialTexture = oldValues.texture;
 		}
 		slotsPerAxis = new IntEditField(initialSlots, 1, 50, EditProps.EDIT_BASE, EditProps.EDIT_ACTIVE);
 		scale = new FloatEditField(initialScale, 0f, EditProps.EDIT_BASE, EditProps.EDIT_ACTIVE);
@@ -52,8 +53,13 @@ public class EditSphereProjectileCover extends EditProjectileCover {
 	}
 
 	@Override
-	protected EditorProjectileCover getOriginal() {
-		return original;
+	protected EditorProjectileCover getOldValues() {
+		return oldValues;
+	}
+	
+	@Override
+	protected EditorProjectileCover getToModify() {
+		return toModify;
 	}
 	
 	protected boolean validate() {
@@ -84,7 +90,7 @@ public class EditSphereProjectileCover extends EditProjectileCover {
 	@Override
 	protected void tryApply(String name, CustomItemType internalType, short internalDamage) {
 		if (validate()) {
-			handleError(menu.getSet().changeSphereProjectileCover(original, internalType, internalDamage, 
+			handleError(menu.getSet().changeSphereProjectileCover(toModify, internalType, internalDamage, 
 					name, texture.getSelected(), slotsPerAxis.getInt().getValue(), scale.getDouble().getValue()));
 		}
 	}

@@ -18,23 +18,25 @@ public class EditExecuteCommand extends EditProjectileEffect {
 	private static final float BUTTON_X = 0.4f;
 	private static final float LABEL_X = BUTTON_X - 0.01f;
 	
-	private final ExecuteCommand original;
+	private final ExecuteCommand oldValues, toModify;
 	
 	private Executor executor;
 
-	public EditExecuteCommand(ExecuteCommand original, Collection<ProjectileEffect> backingCollection,
+	public EditExecuteCommand(ExecuteCommand oldValues, ExecuteCommand toModify, 
+			Collection<ProjectileEffect> backingCollection,
 			GuiComponent returnMenu) {
 		super(backingCollection, returnMenu);
-		this.original = original;
+		this.oldValues = oldValues;
+		this.toModify = toModify;
 		
-		this.executor = original == null ? Executor.SHOOTER : original.executor;
+		this.executor = oldValues == null ? Executor.SHOOTER : oldValues.executor;
 	}
 
 	@Override
 	protected void addComponents() {
 		super.addComponents();
 		
-		TextEditField commandField = new TextEditField(original == null ? "" : original.command, EDIT_BASE, EDIT_ACTIVE);
+		TextEditField commandField = new TextEditField(oldValues == null ? "" : oldValues.command, EDIT_BASE, EDIT_ACTIVE);
 		addComponent(new DynamicTextComponent("Command:", LABEL), LABEL_X - 0.15f, 0.7f, LABEL_X, 0.8f);
 		addComponent(commandField, BUTTON_X, 0.71f, 0.99f, 0.79f);
 		addComponent(new DynamicTextComponent("Executed by:", LABEL), LABEL_X - 0.18f, 0.6f, LABEL_X, 0.7f);
@@ -42,15 +44,15 @@ public class EditExecuteCommand extends EditProjectileEffect {
 			executor = newExecutor;
 		}, executor), BUTTON_X, 0.61f, BUTTON_X + 0.2f, 0.69f);
 		
-		addComponent(new DynamicTextButton(original == null ? "Create" : "Apply", SAVE_BASE, SAVE_HOVER, () -> {
+		addComponent(new DynamicTextButton(toModify == null ? "Create" : "Apply", SAVE_BASE, SAVE_HOVER, () -> {
 			ExecuteCommand dummy = new ExecuteCommand(commandField.getText(), executor);
 			String error = dummy.validate();
 			if (error == null) {
-				if (original == null) {
+				if (toModify == null) {
 					backingCollection.add(dummy);
 				} else {
-					original.command = dummy.command;
-					original.executor = dummy.executor;
+					toModify.command = dummy.command;
+					toModify.executor = dummy.executor;
 				}
 				state.getWindow().setMainComponent(returnMenu);
 			} else {

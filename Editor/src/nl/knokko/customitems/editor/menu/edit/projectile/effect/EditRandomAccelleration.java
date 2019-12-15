@@ -9,9 +9,9 @@ import nl.knokko.gui.component.GuiComponent;
 
 public class EditRandomAccelleration extends EditAccelleration {
 
-	public EditRandomAccelleration(ProjectileAccelleration original, Collection<ProjectileEffect> backingCollection,
-			GuiComponent returnMenu) {
-		super(original, backingCollection, returnMenu);
+	public EditRandomAccelleration(ProjectileAccelleration oldValues, ProjectileAccelleration toModify, 
+			Collection<ProjectileEffect> backingCollection, GuiComponent returnMenu) {
+		super(oldValues, toModify, backingCollection, returnMenu);
 	}
 
 	@Override

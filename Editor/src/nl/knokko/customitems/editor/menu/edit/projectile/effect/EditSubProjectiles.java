@@ -21,29 +21,31 @@ public class EditSubProjectiles extends EditProjectileEffect {
 	private static final float BUTTON_X = 0.5f;
 	private static final float LABEL_X = BUTTON_X - 0.01f;
 	
-	private final SubProjectiles original;
+	private final SubProjectiles oldValues, toModify;
 	private final ItemSet set;
 	
 	private CIProjectile child;
 
-	public EditSubProjectiles(SubProjectiles original, ItemSet set, Collection<ProjectileEffect> backingCollection, GuiComponent returnMenu) {
+	public EditSubProjectiles(SubProjectiles oldValues, SubProjectiles toModify, ItemSet set, 
+			Collection<ProjectileEffect> backingCollection, GuiComponent returnMenu) {
 		super(backingCollection, returnMenu);
-		this.original = original;
+		this.oldValues = oldValues;
+		this.toModify = toModify;
 		this.set = set;
-		if (original == null)
+		if (oldValues == null)
 			child = null;
 		else
-			child = original.child;
+			child = oldValues.child;
 	}
 
 	@Override
 	protected void addComponents() {
 		super.addComponents();
 		
-		CheckboxComponent parentLifetimeBox = new CheckboxComponent(original != null && original.useParentLifeTime);
-		IntEditField minAmountField = new IntEditField(original == null ? 3 : original.minAmount, 1, EDIT_BASE, EDIT_ACTIVE);
-		IntEditField maxAmountField = new IntEditField(original == null ? 4 : original.maxAmount, 1, EDIT_BASE, EDIT_ACTIVE);
-		FloatEditField angleField = new FloatEditField(original == null ? 70f : original.angleToParent, 0f, EDIT_BASE, EDIT_ACTIVE);
+		CheckboxComponent parentLifetimeBox = new CheckboxComponent(oldValues != null && oldValues.useParentLifeTime);
+		IntEditField minAmountField = new IntEditField(oldValues == null ? 3 : oldValues.minAmount, 1, EDIT_BASE, EDIT_ACTIVE);
+		IntEditField maxAmountField = new IntEditField(oldValues == null ? 4 : oldValues.maxAmount, 1, EDIT_BASE, EDIT_ACTIVE);
+		FloatEditField angleField = new FloatEditField(oldValues == null ? 70f : oldValues.angleToParent, 0f, EDIT_BASE, EDIT_ACTIVE);
 		
 		addComponent(new DynamicTextComponent("Use parent lifetime", LABEL), LABEL_X - 0.25f, 0.7f, LABEL_X, 0.8f);
 		addComponent(parentLifetimeBox, BUTTON_X, 0.73f, BUTTON_X + 0.04f, 0.77f);
@@ -60,7 +62,7 @@ public class EditSubProjectiles extends EditProjectileEffect {
 			return toName.name;
 		}, child), BUTTON_X, 0.31f, BUTTON_X + 0.2f, 0.39f);
 		
-		addComponent(new DynamicTextButton(original == null ? "Create" : "Apply", SAVE_BASE, SAVE_HOVER, () -> {
+		addComponent(new DynamicTextButton(toModify == null ? "Create" : "Apply", SAVE_BASE, SAVE_HOVER, () -> {
 			
 			boolean parentLifetime = parentLifetimeBox.isChecked();
 			Option.Int minAmount = minAmountField.getInt();
@@ -77,14 +79,14 @@ public class EditSubProjectiles extends EditProjectileEffect {
 						maxAmount.getValue(), angleToParent.getValue());
 				error = dummy.validate();
 				if (error == null) {
-					if (original == null)
+					if (toModify == null)
 						backingCollection.add(dummy);
 					else {
-						original.child = dummy.child;
-						original.useParentLifeTime = dummy.useParentLifeTime;
-						original.minAmount = dummy.minAmount;
-						original.maxAmount = dummy.maxAmount;
-						original.angleToParent = dummy.angleToParent;
+						toModify.child = dummy.child;
+						toModify.useParentLifeTime = dummy.useParentLifeTime;
+						toModify.minAmount = dummy.minAmount;
+						toModify.maxAmount = dummy.maxAmount;
+						toModify.angleToParent = dummy.angleToParent;
 					}
 					state.getWindow().setMainComponent(returnMenu);
 				} else {

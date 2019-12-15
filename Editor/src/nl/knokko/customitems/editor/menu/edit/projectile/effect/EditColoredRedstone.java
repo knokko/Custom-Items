@@ -19,12 +19,14 @@ public class EditColoredRedstone extends EditProjectileEffect {
 	private static final float BUTTON_X2 = 0.8f;
 	private static final float LABEL_X2 = BUTTON_X2 - 0.01f;
 	
-	private final ColoredRedstone original;
+	private final ColoredRedstone oldValues, toModify;
 
-	public EditColoredRedstone(ColoredRedstone original, Collection<ProjectileEffect> backingCollection,
+	public EditColoredRedstone(ColoredRedstone oldValues, ColoredRedstone toModify, 
+			Collection<ProjectileEffect> backingCollection,
 			GuiComponent returnMenu) {
 		super(backingCollection, returnMenu);
-		this.original = original;
+		this.oldValues = oldValues;
+		this.toModify = toModify;
 	}
 
 	@Override
@@ -41,7 +43,7 @@ public class EditColoredRedstone extends EditProjectileEffect {
 			float minRadius, maxRadius;
 			int amount;
 			
-			if (original == null) {
+			if (oldValues == null) {
 				minRed = 200;
 				minGreen = 0;
 				minBlue = 0;
@@ -52,15 +54,15 @@ public class EditColoredRedstone extends EditProjectileEffect {
 				maxRadius = 0.15f;
 				amount = 10;
 			} else {
-				minRed = original.minRed;
-				minGreen = original.minGreen;
-				minBlue = original.minBlue;
-				maxRed = original.maxRed;
-				maxGreen = original.maxGreen;
-				maxBlue = original.maxBlue;
-				minRadius = original.minRadius;
-				maxRadius = original.maxRadius;
-				amount = original.amount;
+				minRed = oldValues.minRed;
+				minGreen = oldValues.minGreen;
+				minBlue = oldValues.minBlue;
+				maxRed = oldValues.maxRed;
+				maxGreen = oldValues.maxGreen;
+				maxBlue = oldValues.maxBlue;
+				minRadius = oldValues.minRadius;
+				maxRadius = oldValues.maxRadius;
+				amount = oldValues.amount;
 			}
 			
 			// Create the edit fields
@@ -96,7 +98,7 @@ public class EditColoredRedstone extends EditProjectileEffect {
 		addComponent(amountField, BUTTON_X, 0.41f, BUTTON_X + 0.05f, 0.49f);
 		
 		// Finally the Create/Apply button
-		addComponent(new DynamicTextButton(original == null ? "Create" : "Apply", SAVE_BASE, SAVE_HOVER, () -> {
+		addComponent(new DynamicTextButton(toModify == null ? "Create" : "Apply", SAVE_BASE, SAVE_HOVER, () -> {
 			
 			// Parse all values from the edit fields
 			Option.Int minRed = minRedField.getInt();
@@ -136,18 +138,18 @@ public class EditColoredRedstone extends EditProjectileEffect {
 					minRadius.getValue(), maxRadius.getValue(), amount.getValue());
 			error = toAdd.validate();
 			if (error == null) {
-				if (original == null) {
+				if (toModify == null) {
 					backingCollection.add(toAdd);
 				} else {
-					original.minRed = toAdd.minRed;
-					original.minGreen = toAdd.minGreen;
-					original.minBlue = toAdd.minBlue;
-					original.maxRed = toAdd.maxRed;
-					original.maxGreen = toAdd.maxGreen;
-					original.maxBlue = toAdd.maxBlue;
-					original.minRadius = toAdd.minRadius;
-					original.maxRadius = toAdd.maxRadius;
-					original.amount = toAdd.amount;
+					toModify.minRed = toAdd.minRed;
+					toModify.minGreen = toAdd.minGreen;
+					toModify.minBlue = toAdd.minBlue;
+					toModify.maxRed = toAdd.maxRed;
+					toModify.maxGreen = toAdd.maxGreen;
+					toModify.maxBlue = toAdd.maxBlue;
+					toModify.minRadius = toAdd.minRadius;
+					toModify.maxRadius = toAdd.maxRadius;
+					toModify.amount = toAdd.amount;
 				}
 				state.getWindow().setMainComponent(returnMenu);
 			} else {

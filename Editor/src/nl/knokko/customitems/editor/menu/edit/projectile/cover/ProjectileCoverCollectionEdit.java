@@ -50,16 +50,26 @@ public class ProjectileCoverCollectionEdit extends CollectionEdit<EditorProjecti
 		public String getLabel(EditorProjectileCover item) {
 			return item.name;
 		}
-
-		@Override
-		public GuiComponent createEditMenu(EditorProjectileCover cover, GuiComponent returnMenu) {
+		
+		private GuiComponent createEditMenu(EditorProjectileCover cover, boolean copy) {
+			EditorProjectileCover second = copy ? null : cover;
 			if (cover instanceof SphereProjectileCover) {
-				return new EditSphereProjectileCover(menu, (SphereProjectileCover) cover);
+				return new EditSphereProjectileCover(menu, (SphereProjectileCover) cover, (SphereProjectileCover) second);
 			} else if (cover instanceof CustomProjectileCover) {
-				return new EditCustomProjectileCover(menu, (CustomProjectileCover) cover);
+				return new EditCustomProjectileCover(menu, (CustomProjectileCover) cover, (CustomProjectileCover) second);
 			} else {
 				throw new Error("It looks like we forgot the edit menu for this projectile cover type. Please report on discord or BukkitDev");
 			}
+		}
+
+		@Override
+		public GuiComponent createEditMenu(EditorProjectileCover cover, GuiComponent returnMenu) {
+			return createEditMenu(cover, false);
+		}
+		
+		@Override
+		public GuiComponent createCopyMenu(EditorProjectileCover cover, GuiComponent returnMenu) {
+			return createEditMenu(cover, true);
 		}
 
 		@Override

@@ -49,57 +49,57 @@ public class CreateItem extends GuiMenu {
 			state.getWindow().setMainComponent(menu.getItemOverview());
 		}), 0.1f, 0.8f, 0.25f, 0.9f);
 		addComponent(new DynamicTextButton("Simple Item", EditProps.CHOOSE_BASE, EditProps.CHOOSE_HOVER, () -> {
-			state.getWindow().setMainComponent(new EditItemSimple(menu, null));
+			state.getWindow().setMainComponent(new EditItemSimple(menu, null, null));
 		}), 0.5f, 0.8f, 0.7f, 0.9f);
 		
 		// The row for later minecraft versions
 		addComponent(new DynamicTextButton("Trident (1.13+)", EditProps.CHOOSE_BASE, EditProps.CHOOSE_HOVER, () -> {
-			state.getWindow().setMainComponent(new EditItemTrident(menu, null));
+			state.getWindow().setMainComponent(new EditItemTrident(menu, null, null));
 		}), 0f, 0.65f, 0.2f, 0.75f);
 		
 		// The row for the special stuff
 		addComponent(new DynamicTextButton("Wand", EditProps.CHOOSE_BASE, EditProps.CHOOSE_HOVER, () -> {
-			state.getWindow().setMainComponent(new EditItemWand(menu, null));
+			state.getWindow().setMainComponent(new EditItemWand(menu, null, null));
 		}), 0.25f, 0.65f, 0.45f, 0.75f);
 		
 		// The row for the basic tools
 		addComponent(new DynamicTextButton("Sword", EditProps.CHOOSE_BASE, EditProps.CHOOSE_HOVER, () -> {
-			state.getWindow().setMainComponent(new EditItemTool(menu, null, Category.SWORD));
+			state.getWindow().setMainComponent(new EditItemTool(menu, null, null, Category.SWORD));
 		}), 0.5f, 0.65f, 0.7f, 0.75f);
 		addComponent(new DynamicTextButton("Pickaxe", EditProps.CHOOSE_BASE, EditProps.CHOOSE_HOVER, () -> {
-			state.getWindow().setMainComponent(new EditItemTool(menu, null, Category.PICKAXE));
+			state.getWindow().setMainComponent(new EditItemTool(menu, null, null, Category.PICKAXE));
 		}), 0.5f, 0.525f, 0.7f, 0.625f);
 		addComponent(new DynamicTextButton("Axe", EditProps.CHOOSE_BASE, EditProps.CHOOSE_HOVER, () -> {
-			state.getWindow().setMainComponent(new EditItemTool(menu, null, Category.AXE));
+			state.getWindow().setMainComponent(new EditItemTool(menu, null, null, Category.AXE));
 		}), 0.5f, 0.4f, 0.7f, 0.5f);
 		addComponent(new DynamicTextButton("Shovel", EditProps.CHOOSE_BASE, EditProps.CHOOSE_HOVER, () -> {
-			state.getWindow().setMainComponent(new EditItemTool(menu, null, Category.SHOVEL));
+			state.getWindow().setMainComponent(new EditItemTool(menu, null, null, Category.SHOVEL));
 		}), 0.5f, 0.275f, 0.7f, 0.375f);
 		addComponent(new DynamicTextButton("Hoe", EditProps.CHOOSE_BASE, EditProps.CHOOSE_HOVER, () -> {
-			state.getWindow().setMainComponent(new EditItemHoe(menu, null));
+			state.getWindow().setMainComponent(new EditItemHoe(menu, null, null));
 		}), 0.5f, 0.15f, 0.7f, 0.25f);
 		addComponent(new DynamicTextButton("Shear", EditProps.CHOOSE_BASE, EditProps.CHOOSE_HOVER, () -> {
-			state.getWindow().setMainComponent(new EditItemShears(menu, null));
+			state.getWindow().setMainComponent(new EditItemShears(menu, null, null));
 		}), 0.5f, 0.025f, 0.7f, 0.125f);
 		
 		// The row for the advanced combat stuff
 		addComponent(new DynamicTextButton("Bow", EditProps.CHOOSE_BASE, EditProps.CHOOSE_HOVER, () -> {
-			state.getWindow().setMainComponent(new EditItemBow(menu, null));
+			state.getWindow().setMainComponent(new EditItemBow(menu, null, null));
 		}), 0.75f, 0.65f, 0.95f, 0.75f);
 		addComponent(new DynamicTextButton("Helmet", EditProps.CHOOSE_BASE, EditProps.CHOOSE_HOVER, () -> {
-			state.getWindow().setMainComponent(new EditItemArmor(menu, null, Category.HELMET));
+			state.getWindow().setMainComponent(new EditItemArmor(menu, null, null, Category.HELMET));
 		}), 0.75f, 0.525f, 0.95f, 0.625f);
 		addComponent(new DynamicTextButton("Chestplate", EditProps.CHOOSE_BASE, EditProps.CHOOSE_HOVER, () -> {
-			state.getWindow().setMainComponent(new EditItemArmor(menu, null, Category.CHESTPLATE));
+			state.getWindow().setMainComponent(new EditItemArmor(menu, null, null, Category.CHESTPLATE));
 		}), 0.75f, 0.4f, 0.95f, 0.5f);
 		addComponent(new DynamicTextButton("Leggings", EditProps.CHOOSE_BASE, EditProps.CHOOSE_HOVER, () -> {
-			state.getWindow().setMainComponent(new EditItemArmor(menu, null, Category.LEGGINGS));
+			state.getWindow().setMainComponent(new EditItemArmor(menu, null, null, Category.LEGGINGS));
 		}), 0.75f, 0.275f, 0.95f, 0.375f);
 		addComponent(new DynamicTextButton("Boots", EditProps.CHOOSE_BASE, EditProps.CHOOSE_HOVER, () -> {
-			state.getWindow().setMainComponent(new EditItemArmor(menu, null, Category.BOOTS));
+			state.getWindow().setMainComponent(new EditItemArmor(menu, null, null, Category.BOOTS));
 		}), 0.75f, 0.15f, 0.95f, 0.25f);
 		addComponent(new DynamicTextButton("Shield", EditProps.CHOOSE_BASE, EditProps.CHOOSE_HOVER, () -> {
-			state.getWindow().setMainComponent(new EditItemShield(menu, null));
+			state.getWindow().setMainComponent(new EditItemShield(menu, null, null));
 		}), 0.75f, 0.025f, 0.95f, 0.125f);
 	}
 }

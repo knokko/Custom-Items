@@ -24,23 +24,25 @@ public class EditProjectileEffects extends GuiMenu {
 	private final ItemSet set;
 	private final GuiComponent returnMenu;
 	private final Collection<ProjectileEffects> backingCollection;
-	private final ProjectileEffects original;
+	private final ProjectileEffects oldValues, toModify;
 	private final DynamicTextComponent errorComponent;
 	
 	private Collection<ProjectileEffect> currentEffects;
 
 	public EditProjectileEffects(ItemSet set, GuiComponent returnMenu, 
-			Collection<ProjectileEffects> backingCollection, ProjectileEffects original) {
+			Collection<ProjectileEffects> backingCollection, 
+			ProjectileEffects oldValues, ProjectileEffects toModify) {
 		this.set = set;
 		this.returnMenu = returnMenu;
 		this.backingCollection = backingCollection;
-		this.original = original;
+		this.oldValues = oldValues;
+		this.toModify = toModify;
 		this.errorComponent = new DynamicTextComponent("", ERROR);
 		
-		if (original == null) {
+		if (oldValues == null) {
 			currentEffects = new ArrayList<>(1);
 		} else {
-			currentEffects = original.effects;
+			currentEffects = oldValues.effects;
 		}
 	}
 
@@ -55,12 +57,12 @@ public class EditProjectileEffects extends GuiMenu {
 		IntEditField delayField, periodField;
 		{
 			int delay, period;
-			if (original == null) {
+			if (oldValues == null) {
 				delay = 10;
 				period = 20;
 			} else {
-				delay = original.delay;
-				period = original.period;
+				delay = oldValues.delay;
+				period = oldValues.period;
 			}
 			
 			delayField = new IntEditField(delay, 0, EDIT_BASE, EDIT_ACTIVE);
@@ -76,7 +78,7 @@ public class EditProjectileEffects extends GuiMenu {
 			state.getWindow().setMainComponent(new ProjectileEffectCollectionEdit(set, currentEffects, this));
 		}), BUTTON_X, 0.5f, BUTTON_X + 0.15f, 0.6f);
 		
-		addComponent(new DynamicTextButton(original == null ? "Create" : "Apply", SAVE_BASE, SAVE_HOVER, () -> {
+		addComponent(new DynamicTextButton(toModify == null ? "Create" : "Apply", SAVE_BASE, SAVE_HOVER, () -> {
 			Option.Int delay = delayField.getInt();
 			Option.Int period = periodField.getInt();
 			
@@ -90,12 +92,12 @@ public class EditProjectileEffects extends GuiMenu {
 				ProjectileEffects test = new ProjectileEffects(delay.getValue(), period.getValue(), currentEffects);
 				error = test.validate();
 				if (error == null) {
-					if (original == null) {
+					if (toModify == null) {
 						backingCollection.add(test);
 					} else {
-						original.delay = test.delay;
-						original.period = test.period;
-						original.effects = test.effects;
+						toModify.delay = test.delay;
+						toModify.period = test.period;
+						toModify.effects = test.effects;
 					}
 					state.getWindow().setMainComponent(returnMenu);
 				} else {

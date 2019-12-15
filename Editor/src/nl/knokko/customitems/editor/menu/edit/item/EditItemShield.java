@@ -12,19 +12,19 @@ import nl.knokko.gui.util.Option;
 
 public class EditItemShield extends EditItemTool {
 	
-	private final CustomShield previous;
+	private final CustomShield toModify;
 	
 	private final FloatEditField thresholdField;
 	
 	private byte[] customBlockingModel;
 
-	public EditItemShield(EditMenu menu, CustomShield previous) {
-		super(menu, previous, Category.SHIELD);
-		this.previous = previous;
-		if (previous == null) {
+	public EditItemShield(EditMenu menu, CustomShield oldValues, CustomShield toModify) {
+		super(menu, oldValues, toModify, Category.SHIELD);
+		this.toModify = toModify;
+		if (oldValues == null) {
 			thresholdField = new FloatEditField(4.0, 0.0, EditProps.EDIT_BASE, EditProps.EDIT_ACTIVE);
 		} else {
-			thresholdField = new FloatEditField(previous.getThresholdDamage(), 0.0, EditProps.EDIT_BASE, EditProps.EDIT_ACTIVE);
+			thresholdField = new FloatEditField(oldValues.getThresholdDamage(), 0.0, EditProps.EDIT_BASE, EditProps.EDIT_ACTIVE);
 		}
 	}
 	
@@ -62,7 +62,7 @@ public class EditItemShield extends EditItemTool {
 		Option.Double thresholdDamage = thresholdField.getDouble();
 		if (!thresholdDamage.hasValue())
 			return "The required damage must be a positive number";
-		return menu.getSet().changeShield(previous, internalType, damage, name.getText(),
+		return menu.getSet().changeShield(toModify, internalType, damage, name.getText(),
 				getDisplayName(), lore, attributes, enchantments, allowEnchanting.isChecked(),
 				allowAnvil.isChecked(), repairItem.getIngredient(), maxUses, textureSelect.getSelected(),
 				itemFlags, entityHitDurabilityLoss, blockBreakDurabilityLoss, thresholdDamage.getValue(),

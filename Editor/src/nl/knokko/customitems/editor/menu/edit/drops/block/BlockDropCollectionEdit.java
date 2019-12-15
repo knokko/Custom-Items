@@ -23,7 +23,7 @@ public class BlockDropCollectionEdit extends CollectionEdit<BlockDrop> {
 	protected void addComponents() {
 		super.addComponents();
 		addComponent(new DynamicTextButton("New block drop", EditProps.BUTTON, EditProps.HOVER, () -> {
-			state.getWindow().setMainComponent(new EditBlockDrop(menu.getSet(), this, null));
+			state.getWindow().setMainComponent(new EditBlockDrop(menu.getSet(), this, null, null));
 		}), 0.025f, 0.2f, 0.2f, 0.3f);
 	}
 
@@ -52,7 +52,12 @@ public class BlockDropCollectionEdit extends CollectionEdit<BlockDrop> {
 
 		@Override
 		public GuiComponent createEditMenu(BlockDrop drop, GuiComponent returnMenu) {
-			return new EditBlockDrop(menu.getSet(), returnMenu, drop);
+			return new EditBlockDrop(menu.getSet(), returnMenu, drop, drop);
+		}
+		
+		@Override
+		public GuiComponent createCopyMenu(BlockDrop drop, GuiComponent returnMenu) {
+			return new EditBlockDrop(menu.getSet(), returnMenu, drop, null);
 		}
 
 		@Override

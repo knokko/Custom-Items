@@ -13,7 +13,7 @@ import nl.knokko.gui.util.Option;
 
 public class EditItemTrident extends EditItemTool {
 	
-	private final CustomTrident previous;
+	private final CustomTrident toModify;
 	
 	private final IntEditField throwDurabilityLoss;
 	
@@ -23,19 +23,19 @@ public class EditItemTrident extends EditItemTool {
 	private byte[] customInHandModel;
 	private byte[] customThrowingModel;
 
-	public EditItemTrident(EditMenu menu, CustomTrident previous) {
-		super(menu, previous, Category.TRIDENT);
-		this.previous = previous;
-		if (previous == null) {
+	public EditItemTrident(EditMenu menu, CustomTrident oldValues, CustomTrident toModify) {
+		super(menu, oldValues, toModify, Category.TRIDENT);
+		this.toModify = toModify;
+		if (oldValues == null) {
 			throwDurabilityLoss = new IntEditField(1, 0, EditProps.EDIT_BASE, EditProps.EDIT_ACTIVE);
 			throwDamageMultiplier = new FloatEditField(1.0, 0, EditProps.EDIT_BASE, EditProps.EDIT_ACTIVE);
 			throwSpeedMultiplier = new FloatEditField(1.0, 0, EditProps.EDIT_BASE, EditProps.EDIT_ACTIVE);
 		} else {
-			throwDurabilityLoss = new IntEditField(previous.throwDurabilityLoss, 0, EditProps.EDIT_BASE, EditProps.EDIT_ACTIVE);
-			throwDamageMultiplier = new FloatEditField(previous.throwDamageMultiplier, 0, EditProps.EDIT_BASE, EditProps.EDIT_ACTIVE);
-			throwSpeedMultiplier = new FloatEditField(previous.speedMultiplier, 0, EditProps.EDIT_BASE, EditProps.EDIT_ACTIVE);
-			customInHandModel = previous.customInHandModel;
-			customThrowingModel = previous.customThrowingModel;
+			throwDurabilityLoss = new IntEditField(oldValues.throwDurabilityLoss, 0, EditProps.EDIT_BASE, EditProps.EDIT_ACTIVE);
+			throwDamageMultiplier = new FloatEditField(oldValues.throwDamageMultiplier, 0, EditProps.EDIT_BASE, EditProps.EDIT_ACTIVE);
+			throwSpeedMultiplier = new FloatEditField(oldValues.speedMultiplier, 0, EditProps.EDIT_BASE, EditProps.EDIT_ACTIVE);
+			customInHandModel = oldValues.customInHandModel;
+			customThrowingModel = oldValues.customThrowingModel;
 		}
 	}
 	
@@ -63,11 +63,6 @@ public class EditItemTrident extends EditItemTool {
 								customThrowingModel = array;
 							}));
 		}), BUTTON_X, 0.14f, BUTTON_X + 0.1f, 0.19f);
-	}
-	
-	@Override
-	protected CustomTrident previous() {
-		return previous;
 	}
 	
 	@Override
@@ -101,7 +96,7 @@ public class EditItemTrident extends EditItemTool {
 		Option.Double speedMult = throwSpeedMultiplier.getDouble();
 		if (!speedMult.hasValue())
 			return "The throw speed multiplier must be a positive number";
-		return menu.getSet().changeTrident(previous, internalType, damage, name.getText(),
+		return menu.getSet().changeTrident(toModify, internalType, damage, name.getText(),
 				getDisplayName(), lore, attributes, enchantments, allowEnchanting.isChecked(),
 				allowAnvil.isChecked(), damageMult.getValue(), speedMult.getValue(), repairItem.getIngredient(), 
 				maxUses, textureSelect.getSelected(), itemFlags, entityHitDurabilityLoss, blockBreakDurabilityLoss, 
