@@ -27,7 +27,7 @@ public class EditSphereProjectileCover extends EditProjectileCover {
 		NamedImage initialTexture;
 		if (original == null) {
 			initialSlots = 10;
-			initialScale = 0.65;
+			initialScale = 0.35;
 			initialTexture = null;
 		} else {
 			initialSlots = original.slotsPerAxis;
