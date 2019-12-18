@@ -33,6 +33,7 @@ import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import nl.knokko.customitems.plugin.command.CommandCustomItems;
+import nl.knokko.customitems.plugin.data.PluginData;
 import nl.knokko.customitems.plugin.multisupport.crazyenchantments.CrazyEnchantmentsSupport;
 import nl.knokko.customitems.plugin.projectile.ProjectileManager;
 import nl.knokko.customitems.plugin.set.ItemSet;

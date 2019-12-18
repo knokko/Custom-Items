@@ -1,4 +1,4 @@
-package nl.knokko.customitems.plugin;
+package nl.knokko.customitems.plugin.data;
 
 import java.io.File;
 import java.io.IOException;
@@ -17,6 +17,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
+import nl.knokko.customitems.plugin.CustomItemsPlugin;
 import nl.knokko.customitems.plugin.set.ItemSet;
 import nl.knokko.customitems.plugin.set.item.CustomItem;
 import nl.knokko.customitems.plugin.set.item.CustomWand;
@@ -41,7 +42,7 @@ public class PluginData {
 	 * This method should be called exactly once in the onEnable() of CustomItemsPlugin.
 	 * @return A new PluginData or the previously saved PluginData
 	 */
-	static PluginData loadData() {
+	public static PluginData loadData() {
 		File dataFile = getDataFile();
 		if (dataFile.exists()) {
 			try {
@@ -102,14 +103,22 @@ public class PluginData {
 	private void init() {
 		shootingPlayers = new LinkedList<>();
 		
-		Bukkit.getScheduler().scheduleSyncRepeatingTask(CustomItemsPlugin.getInstance(), () -> {
+		CustomItemsPlugin plugin = CustomItemsPlugin.getInstance();
+		Bukkit.getScheduler().scheduleSyncRepeatingTask(plugin, () -> {
 			update();
 		}, 1, 1);
+		Bukkit.getScheduler().scheduleSyncRepeatingTask(plugin, () -> {
+			clean();
+		}, 200, 40);
 	}
 	
 	private void update() {
 		currentTick++;
 		
+		updateShooting();
+	}
+	
+	private void updateShooting() {
 		ItemSet set = CustomItemsPlugin.getInstance().getSet();
 		Iterator<Player> iterator = shootingPlayers.iterator();
 		while (iterator.hasNext()) {
@@ -119,10 +128,10 @@ public class PluginData {
 				CustomItem mainItem = set.getItem(current.getInventory().getItemInMainHand());
 				CustomItem offItem = set.getItem(current.getInventory().getItemInOffHand());
 				
-				if (data.canShootNow(mainItem, currentTick)) {
+				if (data.shootIfAllowed(mainItem, currentTick)) {
 					fire(current, data, mainItem, current.getInventory().getItemInMainHand());
 				}
-				if (data.canShootNow(offItem, currentTick)) {
+				if (data.shootIfAllowed(offItem, currentTick)) {
 					fire(current, data, offItem, current.getInventory().getItemInOffHand());
 				}
 			} else {
@@ -131,11 +140,18 @@ public class PluginData {
 		}
 	}
 	
+	private void clean() {
+		Iterator<Entry<UUID, PlayerData>> it = playerData.entrySet().iterator();
+		while (it.hasNext()) {
+			if (it.next().getValue().clean(currentTick)) {
+				it.remove();
+			}
+		}
+	}
+	
 	private void fire(Player player, PlayerData data, CustomItem weapon, ItemStack weaponStack) {
 		if (weapon instanceof CustomWand) {
 			CustomWand wand = (CustomWand) weapon;
-			data.cooldownMap.put(weapon, currentTick + wand.cooldown);
-			// TODO Remove a wand charge
 			
 			for (int counter = 0; counter < wand.amountPerShot; counter++)
 				CustomItemsPlugin.getInstance().getProjectileManager().fireProjectile(player, wand.projectile);
@@ -170,7 +186,7 @@ public class PluginData {
 		for (Entry<UUID,PlayerData> entry : playerData.entrySet()) {
 			output.addLong(entry.getKey().getMostSignificantBits());
 			output.addLong(entry.getKey().getLeastSignificantBits());
-			entry.getValue().save(output);
+			entry.getValue().save(output, currentTick);
 		}
 	}
 	
@@ -182,7 +198,7 @@ public class PluginData {
 	 * @param player The player that wants to start shooting
 	 */
 	public void setShooting(Player player) {
-		getPlayerData(player).lastShootTick = currentTick;
+		getPlayerData(player).setShooting(currentTick);
 		if (!shootingPlayers.contains(player)) {
 			shootingPlayers.add(player);
 		}
@@ -202,102 +218,6 @@ public class PluginData {
 	 */
 	public long getCurrentTick() {
 		return currentTick;
-	}
-
-	private static class PlayerData {
-		
-		public static PlayerData load1(BitInput input) {
-			int numCooldowns = input.readInt();
-			Map<CustomItem,Long> cooldownMap = new HashMap<>(numCooldowns);
-			for (int counter = 0; counter < numCooldowns; counter++) {
-				String itemName = input.readString();
-				long availableTick = input.readLong();
-				CustomItem item = CustomItemsPlugin.getInstance().getSet().getCustomItemByName(itemName);
-				if (item != null) {
-					cooldownMap.put(item, availableTick);
-				} else {
-					Bukkit.getLogger().warning("Discarded someones cooldown for custom item " + itemName + " because the item seems to have been removed.");
-				}
-			}
-			
-			return new PlayerData(cooldownMap);
-		}
-		
-		// Persisting data
-		
-		/**
-		 * For each CustomWand and CustomGun, this map contains the tick at which the cooldown for firing
-		 * expires. If no value is contained for a wand or gun, it indicates that it is currently not on
-		 * cooldown and can thus immediately fire the next projectile.
-		 */
-		final Map<CustomItem,Long> cooldownMap;
-		
-		// Non-persisting data
-		
-		long lastShootTick;
-		
-		// TODO Also keep track of the charges
-		
-		public PlayerData() {
-			cooldownMap = new HashMap<>();
-			
-			init();
-		}
-		
-		PlayerData(Map<CustomItem,Long> cooldownMap){
-			this.cooldownMap = cooldownMap;
-			
-			init();
-		}
-		
-		void init() {
-			lastShootTick = -1;
-		}
-		
-		public void save(BitOutput output) {
-			save1(output);
-		}
-		
-		void save1(BitOutput output) {
-			output.addInt(cooldownMap.size());
-			for (Entry<CustomItem,Long> entry : cooldownMap.entrySet()) {
-				output.addString(entry.getKey().getName());
-				output.addLong(entry.getValue());
-			}
-		}
-		
-		public boolean canShootNow(CustomItem weapon, long currentTick) {
-			if (weapon instanceof CustomWand) { // TODO Add similar check for CustomGun, once it's added
-				Long availableTick = cooldownMap.get(weapon);
-				
-				// TODO Also add a check for the charges
-				if (availableTick != null) {
-					if (currentTick >= availableTick) {
-						cooldownMap.remove(weapon);
-						return true;
-					} else {
-						return false;
-					}
-				} else {
-					return true;
-				}
-			} else {
-				return false;
-			}
-		}
-		
-		public boolean isShooting(long currentTick) {
-			if (lastShootTick != -1) {
-				if (currentTick <= lastShootTick + 10) {
-					return true;
-				} else {
-					lastShootTick = -1;
-					return false;
-				}
-			} else {
-				return false;
-			}
-		}
 	}
 	
 	private static class CarefulPluginData extends PluginData {
