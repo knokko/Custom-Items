@@ -2547,7 +2547,7 @@ public class ItemSet implements ItemSetBase {
 						zipOutput.write(blockingModel);
 						zipOutput.flush();
 					} else {
-						String[] modelContent = getDefaultModelBlockingShield(item.getName());
+						String[] modelContent = getDefaultModelBlockingShield(item.getTexture().getName());
 						jsonWriter = new PrintWriter(zipOutput);
 						for (String line : modelContent) {
 							jsonWriter.println(line);
