@@ -66,12 +66,13 @@ public class PluginData {
 	
 	private static PluginData load1(BitInput input) {
 		long currentTick = input.readLong();
+		CustomItemsPlugin plugin = CustomItemsPlugin.getInstance();
 		
 		int numPlayers = input.readInt();
 		Map<UUID,PlayerData> playersMap = new HashMap<>(numPlayers);
 		for (int counter = 0; counter < numPlayers; counter++) {
 			UUID id = new UUID(input.readLong(), input.readLong());
-			PlayerData data = PlayerData.load1(input);
+			PlayerData data = PlayerData.load1(input, plugin.getSet(), Bukkit.getLogger());
 			playersMap.put(id, data);
 		}
 		
@@ -186,7 +187,7 @@ public class PluginData {
 		for (Entry<UUID,PlayerData> entry : playerData.entrySet()) {
 			output.addLong(entry.getKey().getMostSignificantBits());
 			output.addLong(entry.getKey().getLeastSignificantBits());
-			entry.getValue().save(output, currentTick);
+			entry.getValue().save1(output, currentTick);
 		}
 	}
 	

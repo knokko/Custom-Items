@@ -83,6 +83,9 @@ public class ItemSet implements ItemSetBase {
 		items = new CustomItem[0];
 		recipes = new CustomRecipe[0];
 		
+		projectileCovers = new ProjectileCover[0];
+		projectiles = new CIProjectile[0];
+		
 		blockDropMap = new Drop[BlockType.AMOUNT][0];
 		mobDropMap = new EntityDrop[CIEntityType.AMOUNT][0];
 	}

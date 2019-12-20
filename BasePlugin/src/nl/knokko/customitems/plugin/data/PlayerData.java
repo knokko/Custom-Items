@@ -4,10 +4,9 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.logging.Logger;
 
-import org.bukkit.Bukkit;
-
-import nl.knokko.customitems.plugin.CustomItemsPlugin;
+import nl.knokko.customitems.plugin.set.ItemSet;
 import nl.knokko.customitems.plugin.set.item.CustomItem;
 import nl.knokko.customitems.plugin.set.item.CustomWand;
 import nl.knokko.util.bits.BitInput;
@@ -19,20 +18,20 @@ class PlayerData {
 	 * The number of ticks players remain in the shooting state after right clicking with a wand or gun.
 	 * Right clicking again will 'reset' the timer to this number of ticks again.
 	 */
-	private static final int SHOOT_TIME = 10;
+	static final int SHOOT_TIME = 10;
 	
-	static PlayerData load1(BitInput input) {
+	public static PlayerData load1(BitInput input, ItemSet set, Logger logger) {
 		int numWandsData = input.readInt();
 		Map<CustomWand,PlayerWandData> wandsData = new HashMap<>(numWandsData);
 		for (int counter = 0; counter < numWandsData; counter++) {
 			String itemName = input.readString();
-			CustomItem item = CustomItemsPlugin.getInstance().getSet().getCustomItemByName(itemName);
+			CustomItem item = set.getCustomItemByName(itemName);
 			if (item instanceof CustomWand) {
 				CustomWand wand = (CustomWand) item;
 				wandsData.put(wand, PlayerWandData.load1(input, wand));
 			} else {
 				PlayerWandData.discard1(input);
-				Bukkit.getLogger().warning("Discarded someones cooldown for custom item " + itemName + " because the item seems to have been removed.");
+				logger.warning("Discarded someones cooldown for custom item " + itemName + " because the item seems to have been removed.");
 			}
 		}
 		
@@ -55,7 +54,7 @@ class PlayerData {
 	
 	private long lastShootTick;
 	
-	PlayerData() {
+	public PlayerData() {
 		wandsData = new HashMap<>();
 		
 		init();
@@ -71,11 +70,7 @@ class PlayerData {
 		lastShootTick = -1;
 	}
 	
-	public void save(BitOutput output, long currentTick) {
-		save1(output, currentTick);
-	}
-	
-	private void save1(BitOutput output, long currentTick) {
+	public void save1(BitOutput output, long currentTick) {
 		output.addInt(wandsData.size());
 		for (Entry<CustomWand,PlayerWandData> entry : wandsData.entrySet()) {
 			output.addString(entry.getKey().getName());
@@ -83,7 +78,7 @@ class PlayerData {
 		}
 	}
 	
-	void setShooting(long currentTick) {
+	public void setShooting(long currentTick) {
 		lastShootTick = currentTick;
 	}
 	
@@ -101,7 +96,7 @@ class PlayerData {
 	 * @return true if the player was allowed to fire projectiles and the cooldown has been set, false
 	 * if the player wasn't allowed to fire projectiles
 	 */
-	boolean shootIfAllowed(CustomItem weapon, long currentTick) {
+	public boolean shootIfAllowed(CustomItem weapon, long currentTick) {
 		if (weapon instanceof CustomWand) { // TODO Add similar check for CustomGun, once it's added
 			CustomWand wand = (CustomWand) weapon;
 			PlayerWandData data = wandsData.get(wand);
@@ -115,6 +110,7 @@ class PlayerData {
 				}
 			} else {
 				data = new PlayerWandData(wand);
+				wandsData.put(wand, data);
 				data.onShoot(wand, currentTick);
 				return true;
 			}
@@ -123,7 +119,7 @@ class PlayerData {
 		}
 	}
 	
-	boolean isShooting(long currentTick) {
+	public boolean isShooting(long currentTick) {
 		if (lastShootTick != -1) {
 			if (currentTick <= lastShootTick + SHOOT_TIME) {
 				return true;
@@ -139,7 +135,7 @@ class PlayerData {
 	/**
 	 * @return true if this PlayerData doesn't have any active data
 	 */
-	boolean clean(long currentTick) {
+	public boolean clean(long currentTick) {
 		
 		// Clean the wands data
 		Iterator<Entry<CustomWand, PlayerWandData>> iterator = wandsData.entrySet().iterator();
@@ -152,7 +148,7 @@ class PlayerData {
 			 * because the absence of an entry also indicates that it's not on cooldown and no charges
 			 * are missing.
 			 */
-			if (!data.isOnCooldown() && !data.isMissingCharges(next.getKey(), currentTick)) {
+			if (!data.isOnCooldown(currentTick) && !data.isMissingCharges(next.getKey(), currentTick)) {
 				iterator.remove();
 			}
 		}
