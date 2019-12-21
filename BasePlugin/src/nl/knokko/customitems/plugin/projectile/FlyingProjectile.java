@@ -1,9 +1,6 @@
 package nl.knokko.customitems.plugin.projectile;
 
-import static java.lang.Math.PI;
-import static java.lang.Math.cos;
-import static java.lang.Math.random;
-import static java.lang.Math.sin;
+import static java.lang.Math.*;
 
 import java.util.Collection;
 import java.util.Random;
@@ -19,15 +16,7 @@ import org.bukkit.util.Vector;
 import nl.knokko.core.plugin.particles.ParticleHelper;
 import nl.knokko.customitems.plugin.CustomItemsPlugin;
 import nl.knokko.customitems.projectile.CIProjectile;
-import nl.knokko.customitems.projectile.effects.ColoredRedstone;
-import nl.knokko.customitems.projectile.effects.ExecuteCommand;
-import nl.knokko.customitems.projectile.effects.Explosion;
-import nl.knokko.customitems.projectile.effects.ProjectileEffect;
-import nl.knokko.customitems.projectile.effects.ProjectileEffects;
-import nl.knokko.customitems.projectile.effects.RandomAccelleration;
-import nl.knokko.customitems.projectile.effects.SimpleParticles;
-import nl.knokko.customitems.projectile.effects.StraightAccelleration;
-import nl.knokko.customitems.projectile.effects.SubProjectiles;
+import nl.knokko.customitems.projectile.effects.*;
 
 /**
  * Represents a custom projectile that has been fired and is thus currently flying. A new instance of
@@ -150,7 +139,6 @@ class FlyingProjectile {
 							"%x%", currentPosition.getX(), "%y%", currentPosition.getY(), "%z%", currentPosition.getZ(),
 							"%bx%", currentPosition.getBlockX(), "%by%", currentPosition.getBlockY(), "%bz%", currentPosition.getBlockZ(),
 							"%caster%", responsibleShooter.getName());
-					// TODO Test this!
 					Bukkit.dispatchCommand(sender, finalCommand);
 				}
 			} else if (effect instanceof Explosion) {
@@ -159,7 +147,6 @@ class FlyingProjectile {
 				Location loc = currentPosition.toLocation(world);
 				world.createExplosion(loc.getX(), loc.getY(), loc.getZ(), explosion.power, 
 						explosion.setFire, explosion.destroyBlocks);
-				System.out.println("Projectile explosion");
 			} else if (effect instanceof RandomAccelleration) {
 				
 				RandomAccelleration ra = (RandomAccelleration) effect;

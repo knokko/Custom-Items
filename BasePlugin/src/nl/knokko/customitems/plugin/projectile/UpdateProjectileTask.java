@@ -1,16 +1,12 @@
 package nl.knokko.customitems.plugin.projectile;
 
 import org.bukkit.World;
-import org.bukkit.craftbukkit.v1_12_R1.CraftWorld;
-import org.bukkit.craftbukkit.v1_12_R1.entity.CraftEntity;
 import org.bukkit.entity.Item;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.util.Vector;
 
-import net.minecraft.server.v1_12_R1.Entity;
-import net.minecraft.server.v1_12_R1.EntityDamageSourceIndirect;
-import net.minecraft.server.v1_12_R1.EntitySmallFireball;
+import nl.knokko.core.plugin.entity.EntityDamageHelper;
 import nl.knokko.core.plugin.item.ItemHelper;
 import nl.knokko.core.plugin.world.RaytraceResult;
 import nl.knokko.core.plugin.world.Raytracer;
@@ -65,11 +61,12 @@ public class UpdateProjectileTask implements Runnable {
 			
 			// If we hit an entity, damage it
 			if (ray.getHitEntity() != null && projectile.prototype.damage > 0) {
-				Entity nmsHitEntity = ((CraftEntity) ray.getHitEntity()).getHandle();
-				nmsHitEntity.damageEntity(new EntityDamageSourceIndirect("thrown", new EntitySmallFireball(((CraftWorld) world).getHandle(), 
-						projectile.currentPosition.getX(), projectile.currentPosition.getY(), projectile.currentPosition.getZ(), 
-						projectile.currentVelocity.getX(), projectile.currentVelocity.getY(), projectile.currentVelocity.getZ()), 
-						((CraftEntity) projectile.responsibleShooter).getHandle()), projectile.prototype.damage);
+				EntityDamageHelper.causeFakeProjectileDamage(ray.getHitEntity(), 
+						projectile.responsibleShooter, projectile.prototype.damage, 
+						projectile.currentPosition.getX(), projectile.currentPosition.getY(), 
+						projectile.currentPosition.getZ(), 
+						projectile.currentVelocity.getX(), projectile.currentVelocity.getY(), 
+						projectile.currentVelocity.getZ());
 			}
 			
 			projectile.destroy();
