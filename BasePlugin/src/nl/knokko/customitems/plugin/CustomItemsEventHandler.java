@@ -553,7 +553,7 @@ public class CustomItemsEventHandler implements Listener {
 
 	@EventHandler
 	public void onEntityHit(EntityDamageByEntityEvent event) {
-		if (event.getDamager() instanceof LivingEntity) {
+		if (event.getDamager() instanceof LivingEntity && event.getEntity() instanceof LivingEntity) {
 			LivingEntity damager = (LivingEntity) event.getDamager();
 			LivingEntity target = (LivingEntity) event.getEntity();
 			ItemStack weapon = damager.getEquipment().getItemInMainHand();
