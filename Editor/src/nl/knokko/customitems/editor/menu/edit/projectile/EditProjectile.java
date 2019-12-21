@@ -78,9 +78,9 @@ public class EditProjectile extends GuiMenu {
 				damage = 5f;
 				minLaunchAngle = 0f;
 				maxLaunchAngle = 5f;
-				minLaunchSpeed = 2f;
-				maxLaunchSpeed = 3f;
-				gravity = 0.1f;
+				minLaunchSpeed = 1.1f;
+				maxLaunchSpeed = 1.3f;
+				gravity = 0.02f;
 				maxLifeTime = 200;
 				impactEffects = new ArrayList<>(1);
 				inFlightEffects = new ArrayList<>(0);
