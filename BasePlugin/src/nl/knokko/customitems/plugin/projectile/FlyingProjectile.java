@@ -186,7 +186,7 @@ class FlyingProjectile {
 					addRandomDirection(random, next, distance);
 					
 					// Spawn the actual particle
-					world.spawnParticle(particle, next.getX(), next.getY(), next.getZ(), 1);
+					world.spawnParticle(particle, next.getX(), next.getY(), next.getZ(), 1, 0.0, 0.0, 0.0, 0.0);
 					
 					// Reset next
 					next.setX(loc.getX());
