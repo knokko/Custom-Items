@@ -59,42 +59,42 @@ public class EditorTestFull implements GuiTestProgram {
 		// Test creating items
 		CreateSimpleItemTest.create(test, "simple_test_item", "simple_test_one", "52",
 				"The very first line of lore", "The second line of lore", 
-				"generic.armor", "head", "Multiply", "1.3", 
-				"generic.attackSpeed", "offhand", "Add", "4.0", 
-				"fire aspect", "5", "knockback", "1");
+				"generic.armor", "Head", "Multiply", "1.300000", 
+				"generic.attackSpeed", "Offhand", "Add", "4.000000", 
+				"Damage all", "5", "Mending", "1");
 		test.assertComponentsWithTexts("Back", "Create item", "Edit", "Delete", "simple_test_item");
 		
 		CreateToolTest.create(test, "Axe", "test_aks", "simple_test_one", "1234", "Custom Item", 
 				"simple_test_item", "4", "3", "Test Test Chop", "Chop Chop akse", "generic.attackSpeed", 
-				"offhand", "Add factor", "3.14", "generic.movementSpeed", "mainhand", "Multiply", "1.3", 
-				"knockback", "4", "damage undead", "7");
+				"Offhand", "Add factor", "3.140000", "generic.movementSpeed", "Mainhand", "Multiply", "1.300000", 
+				"Mending", "4", "Damage undead", "7");
 		
 		CreateToolTest.create(test, "Shovel", "test_shovel", "simple_test_one", "4312", 
-				"Vanilla item with datavalue", "acacia fence", "2", "1", "For digging graves", "Or just normal stuff", 
-				"generic.armor", "mainhand","Multiply", "3.0", "generic.luck", "mainhand", "Add", "1.0", 
-				"mending", "3", "dig speed", "5");
+				"Vanilla item with datavalue", "Acacia fence", "2", "1", "For digging graves", "Or just normal stuff", 
+				"generic.armor", "Mainhand","Multiply", "3.000000", "generic.luck", "Mainhand", "Add", "1.000000", 
+				"Mending", "3", "Water worker", "5");
 		CreateToolTest.create(test, "Sword", "test_sword", "simple_test_one", "3214", "Vanilla item with datavalue", 
-				"acacia door", "6", "7", "Test Test Slash", "Smite sword", "generic.attackDamage", 
-				"mainhand", "Multiply", "1.8", "generic.knockbackResistance", "mainhand", "Add", "0.7", 
-				"fire aspect", "2", "loot bonus mobs", "1");
+				"Acacia door", "6", "7", "Test Test Slash", "Smite sword", "generic.attackDamage", 
+				"Mainhand", "Multiply", "1.800000", "generic.knockbackResistance", "Mainhand", "Add", "0.700000", 
+				"Oxygen", "2", "Depth strider", "1");
 		CreateToolTest.create(test, "Pickaxe", "test_pick", "simple_test_one", "4132", "Empty", 
 				null, "4", "1", "Test Test Break", "Breaking pick", "generic.luck", 
-				"mainhand", "Multiply", "1.6", "generic.knockbackResistance", "offhand", "Add", "0.2", 
-				"dig speed", "8", "silk touch", "4");
+				"Mainhand", "Multiply", "1.600000", "generic.knockbackResistance", "Offhand", "Add", "0.200000", 
+				"Protection fall", "8", "Frost walker", "4");
 		CreateHoeTest.create(test, "test_hoe", "simple_test_one", "2431", "Custom Item", "simple_test_item", 
 				"1", "2", "3", "A fighting hoe", "Can also till dirt", 
-				"generic.attackSpeed", "mainhand", "Multiply", "2.0", 
-				"generic.attackDamage", "mainhand", "Add", "8.0", 
-				"loot bonus blocks", "2", "loot bonus mobs", "5");
-		CreateShearsTest.create(test, "test_shears", "simple_test_one", "64", "Simple vanilla item", "acacia fence", 
+				"generic.attackSpeed", "Mainhand", "Multiply", "2.000000", 
+				"generic.attackDamage", "Mainhand", "Add", "8.000000", 
+				"Binding curse", "2", "Protection environmental", "5");
+		CreateShearsTest.create(test, "test_shears", "simple_test_one", "64", "Simple vanilla item", "Acacia fence", 
 				"4", "3", "2", "Improve your defences", "Or just obtain wool from sheeps", 
-				"generic.maxHealth", "offhand", "Add", "6.0", 
-				"generic.armorToughness", "offhand", "Add", "3.0", "damage all", "8", "binding curse", "1");
-		CreateBowTest.create(test, "fragile_bow", "test_bow_first", "34", "Simple vanilla item", "acacia door", 
-				"5", "6", "7", "A quite fragile bow", "Also deals more damage", "8", "3.14", "9", 
-				"generic.knockbackResistance", "offhand", "Add", "0.4", 
-				"generic.attackDamage", "mainhand", "Multiply", "2.0", 
-				"arrow infinite", "7", "durability", "2");
+				"generic.maxHealth", "Offhand", "Add", "6.000000", 
+				"generic.armorToughness", "Offhand", "Add", "3.000000", "Damage all", "8", "Binding curse", "1");
+		CreateBowTest.create(test, "fragile_bow", "test_bow_first", "34", "Simple vanilla item", "Acacia door", 
+				"5", "6", "7", "A quite fragile bow", "Also deals more damage", "8", "3.140000", "9", 
+				"generic.knockbackResistance", "Offhand", "Add", "0.400000", 
+				"generic.attackDamage", "Mainhand", "Multiply", "2.000000", 
+				"Mending", "1", "Thorns", "2");
 		test.assertComponentsWithTexts("simple_test_item", "test_aks", "fragile_bow");
 		// TODO Also create EditorTestQuick
 		
@@ -102,7 +102,7 @@ public class EditorTestFull implements GuiTestProgram {
 		test.click("Back");
 		test.click("Recipes");
 		AddRecipeTest.addShapelessRecipe(test, "Custom Item;test_hoe", "1", "Custom Item;test_aks",
-				"Simple vanilla item;acacia door", "Vanilla item with datavalue;acacia fence;OK");
+				"Simple vanilla item;Acacia door", "Vanilla item with datavalue;Acacia fence;OK");
 		
 	}
 }
