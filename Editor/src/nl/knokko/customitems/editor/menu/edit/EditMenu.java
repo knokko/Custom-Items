@@ -117,44 +117,56 @@ public class EditMenu extends GuiMenu {
 				setError(error);
 			else
 				setInfo("Saved successfully");
-		}), 0.1f, 0.52f, 0.25f, 0.62f);
+		}), 0.1f, 0.64f, 0.25f, 0.74f);
 		addComponent(new DynamicTextButton("Save and quit", EditProps.SAVE_BASE, EditProps.SAVE_HOVER, () -> {
 			String error = set.save();
 			if(error != null)
 				setError(error);
 			else
 				state.getWindow().setMainComponent(MainMenu.INSTANCE);
-		}), 0.1f, 0.4f, 0.35f, 0.5f);
+		}), 0.1f, 0.52f, 0.35f, 0.62f);
 		addComponent(new DynamicTextButton("Export for 1.12", EditProps.SAVE_BASE, EditProps.SAVE_HOVER, () -> {
 			String error = set.save();
 			if(error != null)
 				setError(error);
 			else {
-				error = set.exportOld(MCVersions.VERSION1_12);
+				error = set.exportFor12(MCVersions.VERSION1_12);
+				if(error != null)
+					setError(error);
+				else
+					state.getWindow().setMainComponent(MainMenu.INSTANCE);
+			}
+		}), 0.1f, 0.4f, 0.35f, 0.5f);
+		addComponent(new DynamicTextButton("Export for 1.13", EditProps.SAVE_BASE, EditProps.SAVE_HOVER, () -> {
+			String error = set.save();
+			if(error != null)
+				setError(error);
+			else {
+				error = set.exportFor13Or14(MCVersions.VERSION1_13);
 				if(error != null)
 					setError(error);
 				else
 					state.getWindow().setMainComponent(MainMenu.INSTANCE);
 			}
 		}), 0.1f, 0.27f, 0.35f, 0.37f);
-		addComponent(new DynamicTextButton("Export for 1.13", EditProps.SAVE_BASE, EditProps.SAVE_HOVER, () -> {
+		addComponent(new DynamicTextButton("Export for 1.14", EditProps.SAVE_BASE, EditProps.SAVE_HOVER, () -> {
 			String error = set.save();
 			if(error != null)
 				setError(error);
 			else {
-				error = set.exportNew(MCVersions.VERSION1_13);
+				error = set.exportFor13Or14(MCVersions.VERSION1_14);
 				if(error != null)
 					setError(error);
 				else
 					state.getWindow().setMainComponent(MainMenu.INSTANCE);
 			}
 		}), 0.1f, 0.14f, 0.35f, 0.24f);
-		addComponent(new DynamicTextButton("Export for 1.14", EditProps.SAVE_BASE, EditProps.SAVE_HOVER, () -> {
+		addComponent(new DynamicTextButton("Export for 1.15", EditProps.SAVE_BASE, EditProps.SAVE_HOVER, () -> {
 			String error = set.save();
 			if(error != null)
 				setError(error);
 			else {
-				error = set.exportNew(MCVersions.VERSION1_14);
+				error = set.exportFor15();
 				if(error != null)
 					setError(error);
 				else

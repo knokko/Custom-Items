@@ -43,6 +43,7 @@ import java.util.zip.ZipOutputStream;
 import javax.imageio.ImageIO;
 import javax.imageio.stream.MemoryCacheImageOutputStream;
 
+import nl.knokko.customitems.MCVersions;
 import nl.knokko.customitems.damage.DamageResistances;
 import nl.knokko.customitems.damage.DamageSource;
 import nl.knokko.customitems.drops.*;
@@ -1918,11 +1919,22 @@ public class ItemSet implements ItemSetBase {
 	}
 	
 	/**
-	 * Export the item set for minecraft version 1.mcVersion with the new resourcepack format
+	 * Export the item set for minecraft version 1.mcVersion with the resourcepack format for mc
+	 * 1.13.x and 1.14.x
 	 * @param mcVersion The minecraft version to export for, after the 1.
 	 * @return The error message if exporting failed, or null if the item set was exported successfully
 	 */
-	public String exportNew(int mcVersion) {
+	public String exportFor13Or14(int mcVersion) {
+		return exportFor13Or14(mcVersion, 4);
+	}
+	
+	public String exportFor15() {
+		
+		// It seems like nothing relevant for this plug-in changed in the resourcepack format
+		return exportFor13Or14(MCVersions.VERSION1_15, 5);
+	}
+	
+	private String exportFor13Or14(int mcVersion, int packFormat) {
 		String versionError = validateExportVersion(mcVersion);
 		if (versionError != null) {
 			return versionError;
@@ -2311,7 +2323,7 @@ public class ItemSet implements ItemSetBase {
 			PrintWriter jsonWriter = new PrintWriter(zipOutput);
 			jsonWriter.println("{");
 			jsonWriter.println("    " + Q + "pack" + Q + ": {");
-			jsonWriter.println("        " + Q + "pack_format" + Q + ": 4,");
+			jsonWriter.println("        " + Q + "pack_format" + Q + ": " + packFormat + ",");
 			jsonWriter.println("        " + Q + "description" + Q + ": " + Q + "CustomItemSet" + Q);
 			jsonWriter.println("    }");
 			jsonWriter.println("}");
@@ -2441,7 +2453,7 @@ public class ItemSet implements ItemSetBase {
 	 * @param mcVersion The minecraft version to export for, after the 1.
 	 * @return The error message if exporting failed, or null if the item set was exported successfully
 	 */
-	public String exportOld(int mcVersion) {
+	public String exportFor12(int mcVersion) {
 		
 		String error = validateExportVersion(mcVersion);
 		if (error != null) {
