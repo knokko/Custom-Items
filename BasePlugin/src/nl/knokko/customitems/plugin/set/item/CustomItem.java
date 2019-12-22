@@ -69,7 +69,7 @@ public abstract class CustomItem extends nl.knokko.customitems.item.CustomItem i
 	}
 	
 	protected final CIMaterial material;
-	
+
 	protected final Single[] attributeModifiers;
     
     public CustomItem(CustomItemType itemType, short itemDamage, String name, String displayName, 
