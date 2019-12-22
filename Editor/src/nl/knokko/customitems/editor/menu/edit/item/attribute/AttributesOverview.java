@@ -78,7 +78,7 @@ public class AttributesOverview extends GuiMenu {
 		}), 0.05f, 0.8f, 0.2f, 0.9f);
 		addComponent(new DynamicTextButton("New Attribute", EditProps.BUTTON, EditProps.HOVER, () -> {
 			float y = 0.8f - (getComponents().size() - 4) * 0.125f;
-			addComponent(new Entry(exampleModifier), 0.4f, y, 1f, y + 0.1f);
+			addComponent(new Entry(exampleModifier), 0.325f, y, 1f, y + 0.1f);
 		}), 0.05f, 0.5f, 0.3f, 0.6f);
 		addComponent(new DynamicTextButton("Apply", EditProps.SAVE_BASE, EditProps.SAVE_HOVER, () -> {
 			List<SubComponent> components = getComponents();
@@ -102,7 +102,7 @@ public class AttributesOverview extends GuiMenu {
 		addComponent(errorComponent, 0.05f, 0.9f, 0.95f, 1f);
 		for (int index = 0; index < current.length; index++) {
 			float y = 0.8f - index * 0.125f;
-			addComponent(new Entry(current[index]), 0.4f, y, 1f, y + 0.1f);
+			addComponent(new Entry(current[index]), 0.325f, y, 1f, y + 0.1f);
 		}
 	}
 	
@@ -143,7 +143,7 @@ public class AttributesOverview extends GuiMenu {
 			addComponent(slotButton, 0.425f, 0f, 0.6f, 1f);
 			addComponent(operationButton, 0.61f, 0f, 0.76f, 1f);
 			addComponent(new DynamicTextComponent("Value: ", EditProps.LABEL), 0.775f, 0f, 0.87f, 1f);
-			addComponent(valueField, 0.875f, 0f, 0.975f, 1f);
+			addComponent(valueField, 0.875f, 0f, 0.995f, 1f);
 		}
 	}
 	
