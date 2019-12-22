@@ -62,12 +62,7 @@ public class AttributeModTest {
 		test.delay(30);
 		test.click(op1);
 		test.click(defaultValue);
-		test.backspace(3);
-		test.type("test");
-		test.click("Apply");
-		test.assertComponentWithText("All values must be numbers");
-		test.click("test");
-		test.backspace(4);
+		test.backspace(defaultValue.length());
 		test.type(value1);
 		test.click("New Attribute");
 		
@@ -91,12 +86,15 @@ public class AttributeModTest {
 		test.assertComponentsWithTexts("Cancel", "New Attribute", "Apply", attribute1, slot1, op1, value1,
 				attribute2, slot2, op2, value2);
 		test.click(value2);
+		test.backspace(1);
 		test.type("1");
-		test.assertComponentWithText(value2 + "1");
+		String modifiedValue2 = value2.substring(0, value2.length() - 1) + "1";
+		test.assertComponentWithText(modifiedValue2);
 		test.click("Apply");
 		test.clickNearest("Change...", "Attribute modifiers: ", numChangeButtons);
-		test.click(value2 + "1");
+		test.click(modifiedValue2);
 		test.backspace(1);
+		test.type(value2.charAt(value2.length() - 1));
 		test.assertComponentWithText(value2);
 		test.click("Apply");
 	}

@@ -57,8 +57,8 @@ public class CreateToolTest {
 		
 		// Not my most pretty solution ever, but will do the trick
 		CustomItemType customItemType = CustomItemType.valueOf("IRON_" + toolType.toUpperCase());
-		AttributeModTest.test(test, "generic.attackDamage", "mainhand", "Add", 
-				CustomItemDamage.getDefaultAttackDamage(customItemType) + "", 
+		AttributeModTest.test(test, "generic.attackDamage", "Mainhand", "Add", 
+				String.format("%f", CustomItemDamage.getDefaultAttackDamage(customItemType)), 
 				attribute1, slot1, op1, value1, attribute2, slot2, op2, value2, 8);
 		EnchantmentsTest.test(test, enchantment1, level1, enchantment2, level2, 8);
 		
@@ -84,9 +84,9 @@ public class CreateToolTest {
 			}
 		}
 		if (repairItemCategory.equals("Vanilla item with datavalue")) {
-			test.assertComponentWithText(repairItem.replace(' ', '_') + "(0)");
+			test.assertComponentWithText(repairItem.toLowerCase().replace(' ', '_') + "(0)");
 		} else if (repairItem != null){
-			test.assertComponentWithText(repairItem.replace(' ', '_'));
+			test.assertComponentWithText(repairItem.toLowerCase().replace(' ', '_'));
 		} else {
 			test.assertComponentWithText("None");
 		}
