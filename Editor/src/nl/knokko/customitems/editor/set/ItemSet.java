@@ -3713,6 +3713,8 @@ public class ItemSet implements ItemSetBase {
 		if (projectile.cover != null && !projectileCovers.contains(projectile.cover))
 			return "The projectile cover is not in the list of projectile covers";
 		
+		if (projectile.inFlightEffects.size() > Byte.MAX_VALUE)
+			return "Currently, (only) " + Byte.MAX_VALUE + " flight effects are allowed";
 		for (ProjectileEffects effects : projectile.inFlightEffects) {
 			String effectsError = effects.validate();
 			if (effectsError != null)
@@ -3725,6 +3727,8 @@ public class ItemSet implements ItemSetBase {
 	}
 	
 	private String validateProjectileEffects(Collection<ProjectileEffect> effects) {
+		if (effects.size() > Byte.MAX_VALUE)
+			return "Currently, only " + Byte.MAX_VALUE + " effects are allowed per wave";
 		for (ProjectileEffect effect : effects) {
 			String error = effect.validate();
 			if (error != null)
@@ -3778,11 +3782,28 @@ public class ItemSet implements ItemSetBase {
 				return "The lore is null";
 			if (item.getLore().length > Byte.MAX_VALUE)
 				return "Too much lore";
-			for (Enchantment enchantment : item.getDefaultEnchantments()) {
-				if (enchantment.getType() == null) {
+			for (Enchantment enchantment : item.getDefaultEnchantments())
+				if (enchantment.getType() == null)
 					return "An enchantment has no type";
-				}
-			}
+			
+			for (PotionEffect effect : item.getPlayerEffects())
+				if (effect.getEffect() == null)
+					return "A player on-hit effect has no status effect";
+			for (PotionEffect effect : item.getTargetEffects())
+				if (effect.getEffect() == null)
+					return "A target on-hit effect has no status effect";
+			if (item.getCommands() == null)
+				return "The commands can't be null";
+			if (item.getCommands().length > Byte.MAX_VALUE)
+				return "Too many commands";
+			if (item.getTargetEffects() == null)
+				return "The target effects can't be null";
+			if (item.getTargetEffects().size() > Byte.MAX_VALUE)
+				return "Too many target effects";
+			if (item.getPlayerEffects() == null)
+				return "The player effects can't be null";
+			if (item.getPlayerEffects().size() > Byte.MAX_VALUE)
+				return "Too many player effects";
 			for (CustomItem current : items)
 				if (current.getName().equals(item.getName()))
 					return "There is already a custom item with that name";
@@ -3849,8 +3870,8 @@ public class ItemSet implements ItemSetBase {
 	private String changeItem(CustomItem item, CustomItemType newType, short newDamage, String newName,
 			String newDisplayName, String[] newLore, AttributeModifier[] newAttributes, 
 			Enchantment[] newEnchantments, NamedImage newImage, boolean[] itemFlags,
-			byte[] newCustomModel, List<PotionEffect> playerEffects, List<PotionEffect> targetEffects, 
-			String[] commands) {
+			byte[] newCustomModel, List<PotionEffect> newPlayerEffects, List<PotionEffect> newTargetEffects, 
+			String[] newCommands) {
 		if (!bypassChecks()) {
 			if (item == null)
 				return "Can't change null items";
@@ -3885,26 +3906,32 @@ public class ItemSet implements ItemSetBase {
 				return "Default enchantments are null";
 			if (newEnchantments.length > Byte.MAX_VALUE)
 				return "Too many default enchantments";
+			if (newCommands == null)
+				return "The commands can't be null";
+			if (newCommands.length > Byte.MAX_VALUE)
+				return "Too many commands";
+			if (newTargetEffects == null)
+				return "The target effects can't be null";
+			if (newTargetEffects.size() > Byte.MAX_VALUE)
+				return "Too many target effects";
+			if (newPlayerEffects == null)
+				return "The player effects can't be null";
+			if (newPlayerEffects.size() > Byte.MAX_VALUE)
+				return "Too many player effects";
 			if (newLore == null)
 				return "The lore is null";
 			if (newLore.length > Byte.MAX_VALUE)
 				return "Too much lore";
-			for (Enchantment enchantment : newEnchantments) {
-				if (enchantment.getType() == null) {
+			for (Enchantment enchantment : newEnchantments)
+				if (enchantment.getType() == null)
 					return "An enchantment has no type";
-				}
-			}
 			
-			for (PotionEffect effect : playerEffects) {
-				if (effect.getEffect() == null) {
+			for (PotionEffect effect : newPlayerEffects)
+				if (effect.getEffect() == null)
 					return "A player on-hit effect has no status effect";
-				}
-			}
-			for (PotionEffect effect : targetEffects) {
-				if (effect.getEffect() == null) {
+			for (PotionEffect effect : newTargetEffects)
+				if (effect.getEffect() == null)
 					return "A target on-hit effect has no status effect";
-				}
-			}
 			if (!items.contains(item))
 				return "There is no previous item!";
 			if (!isItemDamageTypeFree(newType, newDamage, item))
@@ -3922,9 +3949,9 @@ public class ItemSet implements ItemSetBase {
 		item.setTexture(newImage);
 		item.setItemFlags(itemFlags);
 		item.setCustomModel(newCustomModel);
-		item.setPlayerEffects(playerEffects);
-		item.setTargetEffects(targetEffects);
-		item.setCommands(commands);
+		item.setPlayerEffects(newPlayerEffects);
+		item.setTargetEffects(newTargetEffects);
+		item.setCommands(newCommands);
 		return null;
 	}
 
