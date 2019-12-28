@@ -11,10 +11,15 @@ import nl.knokko.customitems.editor.menu.edit.EditProps;
 import nl.knokko.customitems.editor.set.ItemSet;
 import nl.knokko.customitems.editor.set.item.CustomItem;
 import nl.knokko.customitems.editor.set.item.NamedImage;
+import nl.knokko.customitems.editor.set.item.texture.BowTextures;
+import nl.knokko.customitems.editor.set.projectile.cover.CustomProjectileCover;
+import nl.knokko.customitems.editor.set.projectile.cover.EditorProjectileCover;
+import nl.knokko.customitems.editor.set.projectile.cover.SphereProjectileCover;
 import nl.knokko.customitems.editor.set.recipe.Recipe;
 import nl.knokko.customitems.editor.set.recipe.ShapedRecipe;
 import nl.knokko.customitems.editor.set.recipe.ShapelessRecipe;
 import nl.knokko.customitems.item.CustomItemType;
+import nl.knokko.customitems.projectile.CIProjectile;
 import nl.knokko.gui.color.GuiColor;
 import nl.knokko.gui.component.menu.GuiMenu;
 import nl.knokko.gui.component.text.TextEditField;
@@ -141,25 +146,34 @@ public class CombineMenu extends GuiMenu {
 					return;
 				}
 				
-				Collection<NamedImage> primaryTextures = primarySet.getBackingTextures();
 				Collection<NamedImage> secundaryTextures = secundarySet.getBackingTextures();
 				for (NamedImage texture : secundaryTextures) {
 					
-					// Do not tolerate multiple textures with the same name
-					if (primarySet.hasTexture(texture.getName())) {
-						errorComponent.setText("Both item sets have a texture with name " + texture.getName());
+					String error;
+					if (texture.getClass() == NamedImage.class) {
+						error = primarySet.addTexture(texture, true);
+					} else if (texture.getClass() == BowTextures.class) {
+						error = primarySet.addBowTexture((BowTextures) texture, true);
+					} else {
+						error = "Don't know how to deal with this texture, please report on discord or BukkitDev";
+					}
+					
+					if (error != null) {
+						errorComponent.setText("Error with " + texture.getName() + ": " + error);
 						return;
 					}
-					primaryTextures.add(texture);
 				}
 				
 				TypeDamageMap typeDamageMap = new TypeDamageMap();
 				Collection<CustomItem> primaryItems = primarySet.getBackingItems();
+				Collection<EditorProjectileCover> primaryCovers = primarySet.getBackingProjectileCovers();
 				Collection<CustomItem> secundaryItems = secundarySet.getBackingItems();
+				Collection<EditorProjectileCover> secundaryCovers = secundarySet.getBackingProjectileCovers();
 				
-				for (CustomItem item : primaryItems) {
+				for (CustomItem item : primaryItems)
 					typeDamageMap.set(item.getItemType(), item.getItemDamage());
-				}
+				for (EditorProjectileCover cover : primaryCovers)
+					typeDamageMap.set(cover.itemType, cover.itemDamage);
 				
 				for (CustomItem item : secundaryItems) {
 					
@@ -186,6 +200,35 @@ public class CombineMenu extends GuiMenu {
 					primaryItems.add(item);
 				}
 				
+				for (EditorProjectileCover cover : secundaryCovers) {
+					
+					// Don't allow mutliple projectile covers to have the same name in the combined set
+					short newDamage = cover.itemDamage;
+					if (typeDamageMap.has(cover.itemType, newDamage)) {
+						newDamage = typeDamageMap.find(cover.itemType);
+						if (newDamage == 0) {
+							errorComponent.setText("There are too many items with internal item type " + cover.itemType);
+							return;
+						}
+					}
+					cover.itemDamage = newDamage;
+					typeDamageMap.set(cover.itemType, newDamage);
+					
+					String error;
+					if (cover instanceof SphereProjectileCover) {
+						error = primarySet.addSphereProjectileCover((SphereProjectileCover) cover);
+					} else if (cover instanceof CustomProjectileCover) {
+						error = primarySet.addCustomProjectileCover((CustomProjectileCover) cover);
+					} else {
+						error = "Don't know how to deal with this projectile cover, please report on discord or BukkitDev";
+					}
+					
+					if (error != null) {
+						errorComponent.setText("Error with " + cover.name + ": " + error);
+						return;
+					}
+				}
+				
 				Collection<Recipe> secundaryRecipes = secundarySet.getBackingRecipes();
 				for (Recipe recipe : secundaryRecipes) {
 					
@@ -206,6 +249,16 @@ public class CombineMenu extends GuiMenu {
 				// Since drops can't conflict, we can simply do this
 				primarySet.getBackingBlockDrops().addAll(secundarySet.getBackingBlockDrops());
 				primarySet.getBackingMobDrops().addAll(secundarySet.getBackingMobDrops());
+				
+				Collection<CIProjectile> secundaryProjectiles = secundarySet.getBackingProjectiles();
+				for (CIProjectile projectile : secundaryProjectiles) {
+					
+					String error = primarySet.addProjectile(projectile);
+					if (error != null) {
+						errorComponent.setText("Error with " + projectile.name + ": " + error);
+						return;
+					}
+				}
 				
 				// When we created the instance of primarySet, we already gave it the new name
 				// So this should do the trick
