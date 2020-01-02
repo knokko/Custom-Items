@@ -31,18 +31,19 @@ public class EditProjectile extends GuiMenu {
 	private static final float LABEL_X2 = BUTTON_X2 - 0.01f;
 	
 	private final EditMenu menu;
-	private final CIProjectile previous;
+	private final CIProjectile oldValues, toModify;
 	
 	private EditorProjectileCover cover;
 
-	public EditProjectile(EditMenu menu, CIProjectile previous) {
+	public EditProjectile(EditMenu menu, CIProjectile oldValues, CIProjectile toModify) {
 		this.menu = menu;
-		this.previous = previous;
+		this.oldValues = oldValues;
+		this.toModify = toModify;
 		
-		if (previous == null) {
+		if (oldValues == null) {
 			cover = null;
 		} else {
-			cover = (EditorProjectileCover) previous.cover;
+			cover = (EditorProjectileCover) oldValues.cover;
 		}
 	}
 
@@ -73,7 +74,7 @@ public class EditProjectile extends GuiMenu {
 			int maxLifeTime;
 			
 			// Give them different values depending on whether we are editing an existing projectile or creating a new one
-			if (previous == null) {
+			if (oldValues == null) {
 				name = "";
 				damage = 5f;
 				minLaunchAngle = 0f;
@@ -85,16 +86,16 @@ public class EditProjectile extends GuiMenu {
 				impactEffects = new ArrayList<>(1);
 				inFlightEffects = new ArrayList<>(0);
 			} else {
-				name = previous.name;
-				damage = previous.damage;
-				minLaunchAngle = previous.minLaunchAngle;
-				maxLaunchAngle = previous.maxLaunchAngle;
-				minLaunchSpeed = previous.minLaunchSpeed;
-				maxLaunchSpeed = previous.maxLaunchSpeed;
-				gravity = previous.gravity;
-				maxLifeTime = previous.maxLifeTime;
-				impactEffects = new ArrayList<>(previous.impactEffects);
-				inFlightEffects = new ArrayList<>(previous.inFlightEffects);
+				name = oldValues.name;
+				damage = oldValues.damage;
+				minLaunchAngle = oldValues.minLaunchAngle;
+				maxLaunchAngle = oldValues.maxLaunchAngle;
+				minLaunchSpeed = oldValues.minLaunchSpeed;
+				maxLaunchSpeed = oldValues.maxLaunchSpeed;
+				gravity = oldValues.gravity;
+				maxLifeTime = oldValues.maxLifeTime;
+				impactEffects = new ArrayList<>(oldValues.impactEffects);
+				inFlightEffects = new ArrayList<>(oldValues.inFlightEffects);
 			}
 			
 			// Initialize the edit fields
@@ -144,7 +145,7 @@ public class EditProjectile extends GuiMenu {
 		}, cover), BUTTON_X2, 0.64f, BUTTON_X2 + 0.09f, 0.71f);
 		
 		// The Create/Apply button
-		addComponent(new DynamicTextButton(previous == null ? "Create" : "Apply", SAVE_BASE, SAVE_HOVER, () -> {
+		addComponent(new DynamicTextButton(toModify == null ? "Create" : "Apply", SAVE_BASE, SAVE_HOVER, () -> {
 			
 			String name = nameField.getText();
 			Option.Float damage = damageField.getFloat();
@@ -166,13 +167,13 @@ public class EditProjectile extends GuiMenu {
 			if (!lifetime.hasValue()) error = "The lifetime must be a positive integer";
 			
 			if (error == null) {
-				if (previous == null) {
+				if (toModify == null) {
 					error = menu.getSet().addProjectile(new CIProjectile(name, damage.getValue(), 
 							minLaunchAngle.getValue(), maxLaunchAngle.getValue(), minLaunchSpeed.getValue(), 
 							maxLaunchSpeed.getValue(), gravity.getValue(), lifetime.getValue(), 
 							inFlightEffects, impactEffects, cover));
 				} else {
-					error = menu.getSet().changeProjectile(previous, name, damage.getValue(), 
+					error = menu.getSet().changeProjectile(toModify, name, damage.getValue(), 
 							minLaunchAngle.getValue(), maxLaunchAngle.getValue(), minLaunchSpeed.getValue(), 
 							maxLaunchSpeed.getValue(), gravity.getValue(), lifetime.getValue(), 
 							inFlightEffects, impactEffects, cover);

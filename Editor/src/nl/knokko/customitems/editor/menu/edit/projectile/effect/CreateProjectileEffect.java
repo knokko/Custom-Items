@@ -30,25 +30,25 @@ public class CreateProjectileEffect extends GuiMenu {
 		}), 0.025f, 0.7f, 0.175f, 0.8f);
 		
 		addComponent(new DynamicTextButton("Spawn colored redstone dust", EditProps.CHOOSE_BASE, EditProps.CHOOSE_HOVER, () -> {
-			state.getWindow().setMainComponent(new EditColoredRedstone(null, backingCollection, returnMenu));
+			state.getWindow().setMainComponent(new EditColoredRedstone(null, null, backingCollection, returnMenu));
 		}), 0.5f, 0.8f, 0.85f, 0.9f);
 		addComponent(new DynamicTextButton("Execute command", EditProps.CHOOSE_BASE, EditProps.CHOOSE_HOVER, () -> {
-			state.getWindow().setMainComponent(new EditExecuteCommand(null, backingCollection, returnMenu));
+			state.getWindow().setMainComponent(new EditExecuteCommand(null, null, backingCollection, returnMenu));
 		}), 0.5f, 0.68f, 0.7f, 0.78f);
 		addComponent(new DynamicTextButton("Create explosion", EditProps.CHOOSE_BASE, EditProps.CHOOSE_HOVER, () -> {
-			state.getWindow().setMainComponent(new EditExplosion(null, backingCollection, returnMenu));
+			state.getWindow().setMainComponent(new EditExplosion(null, null, backingCollection, returnMenu));
 		}), 0.5f, 0.56f, 0.7f, 0.66f);
 		addComponent(new DynamicTextButton("Accellerate in random direction", EditProps.CHOOSE_BASE, EditProps.CHOOSE_HOVER, () -> {
-			state.getWindow().setMainComponent(new EditRandomAccelleration(null, backingCollection, returnMenu));
+			state.getWindow().setMainComponent(new EditRandomAccelleration(null, null, backingCollection, returnMenu));
 		}), 0.5f, 0.44f, 0.9f, 0.54f);
 		addComponent(new DynamicTextButton("Accellerate in move direction", EditProps.CHOOSE_BASE, EditProps.CHOOSE_HOVER, () -> {
-			state.getWindow().setMainComponent(new EditStraightAccelleration(null, backingCollection, returnMenu));
+			state.getWindow().setMainComponent(new EditStraightAccelleration(null, null, backingCollection, returnMenu));
 		}), 0.5f, 0.32f, 0.9f, 0.42f);
 		addComponent(new DynamicTextButton("Spawn simple particle", EditProps.CHOOSE_BASE, EditProps.CHOOSE_HOVER, () -> {
-			state.getWindow().setMainComponent(new EditSimpleParticles(null, backingCollection, returnMenu));
+			state.getWindow().setMainComponent(new EditSimpleParticles(null, null, backingCollection, returnMenu));
 		}), 0.5f, 0.2f, 0.8f, 0.3f);
 		addComponent(new DynamicTextButton("Launch (another) projectile", EditProps.CHOOSE_BASE, EditProps.CHOOSE_HOVER, () -> {
-			state.getWindow().setMainComponent(new EditSubProjectiles(null, set, backingCollection, returnMenu));
+			state.getWindow().setMainComponent(new EditSubProjectiles(null, null, set, backingCollection, returnMenu));
 		}), 0.5f, 0.08f, 0.9f, 0.18f);
 	}
 

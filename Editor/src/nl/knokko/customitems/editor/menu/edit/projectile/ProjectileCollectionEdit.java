@@ -22,7 +22,7 @@ public class ProjectileCollectionEdit extends CollectionEdit<CIProjectile> {
 	protected void addComponents() {
 		super.addComponents();
 		addComponent(new DynamicTextButton("Create", EditProps.BUTTON, EditProps.HOVER, () -> {
-			state.getWindow().setMainComponent(new EditProjectile(menu, null));
+			state.getWindow().setMainComponent(new EditProjectile(menu, null, null));
 		}), 0.025f, 0.2f, 0.2f, 0.3f);
 	}
 	
@@ -51,7 +51,12 @@ public class ProjectileCollectionEdit extends CollectionEdit<CIProjectile> {
 
 		@Override
 		public GuiComponent createEditMenu(CIProjectile itemToEdit, GuiComponent returnMenu) {
-			return new EditProjectile(menu, itemToEdit);
+			return new EditProjectile(menu, itemToEdit, itemToEdit);
+		}
+		
+		@Override
+		public GuiComponent createCopyMenu(CIProjectile itemToEdit, GuiComponent returnMenu) {
+			return new EditProjectile(menu, itemToEdit, null);
 		}
 
 		@Override

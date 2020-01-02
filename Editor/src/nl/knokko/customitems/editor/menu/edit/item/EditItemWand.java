@@ -4,7 +4,6 @@ import static nl.knokko.customitems.editor.menu.edit.EditProps.*;
 
 import nl.knokko.customitems.editor.menu.edit.CollectionSelect;
 import nl.knokko.customitems.editor.menu.edit.EditMenu;
-import nl.knokko.customitems.editor.set.item.CustomItem;
 import nl.knokko.customitems.editor.set.item.CustomWand;
 import nl.knokko.customitems.item.AttributeModifier;
 import nl.knokko.customitems.item.AttributeModifier.Attribute;
@@ -26,7 +25,7 @@ public class EditItemWand extends EditItemBase {
 	private static final float BUTTON_X2 = 0.75f;
 	private static final float LABEL_X2 = BUTTON_X2 - 0.01f;
 	
-	private final CustomWand previous;
+	private final CustomWand toModify;
 	
 	private final IntEditField cooldownField;
 	private final IntEditField maxChargesField;
@@ -35,17 +34,17 @@ public class EditItemWand extends EditItemBase {
 	
 	private CIProjectile projectile;
 
-	public EditItemWand(EditMenu menu, CustomWand previous) {
-		super(menu, previous, Category.WAND);
-		this.previous = previous;
+	public EditItemWand(EditMenu menu, CustomWand oldValues, CustomWand toModify) {
+		super(menu, oldValues, toModify, Category.WAND);
+		this.toModify = toModify;
 		
-		if (previous != null)
-			projectile = previous.projectile;
+		if (oldValues != null)
+			projectile = oldValues.projectile;
 		
-		cooldownField = new IntEditField(previous == null ? 40 : previous.cooldown, 0, EDIT_BASE, EDIT_ACTIVE);
-		maxChargesField = new IntEditField(previous == null || previous.charges == null ? 1 : previous.charges.maxCharges, 1, EDIT_BASE, EDIT_ACTIVE);
-		rechargeTimeField = new IntEditField(previous == null || previous.charges == null ? 20 : previous.charges.rechargeTime, 0, EDIT_BASE, EDIT_ACTIVE);
-		amountField = new IntEditField(previous == null ? 1 : previous.amountPerShot, 1, EDIT_BASE, EDIT_ACTIVE);
+		cooldownField = new IntEditField(oldValues == null ? 40 : oldValues.cooldown, 0, EDIT_BASE, EDIT_ACTIVE);
+		maxChargesField = new IntEditField(oldValues == null || oldValues.charges == null ? 1 : oldValues.charges.maxCharges, 1, EDIT_BASE, EDIT_ACTIVE);
+		rechargeTimeField = new IntEditField(oldValues == null || oldValues.charges == null ? 20 : oldValues.charges.rechargeTime, 0, EDIT_BASE, EDIT_ACTIVE);
+		amountField = new IntEditField(oldValues == null ? 1 : oldValues.amountPerShot, 1, EDIT_BASE, EDIT_ACTIVE);
 	}
 	
 	@Override
@@ -99,7 +98,7 @@ public class EditItemWand extends EditItemBase {
 	@Override
 	protected String apply(short internalItemDamage) {
 		return withProperties((int cooldown, WandCharges charges, int amount) -> {
-			return menu.getSet().changeWand(previous, internalType, internalItemDamage, name.getText(), 
+			return menu.getSet().changeWand(toModify, internalType, internalItemDamage, name.getText(), 
 					getDisplayName(), lore, attributes, enchantments, textureSelect.getSelected(), 
 					itemFlags, customModel, playerEffects, targetEffects, commands, projectile, cooldown, 
 					charges, amount);
@@ -136,11 +135,6 @@ public class EditItemWand extends EditItemBase {
 	private static interface PropsListener {
 		
 		String process(int cooldown, WandCharges charges, int amount);
-	}
-
-	@Override
-	protected CustomItem previous() {
-		return previous;
 	}
 
 	@Override

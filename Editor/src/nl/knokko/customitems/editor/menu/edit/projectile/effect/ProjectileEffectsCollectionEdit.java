@@ -26,7 +26,7 @@ public class ProjectileEffectsCollectionEdit extends CollectionEdit<ProjectileEf
 	protected void addComponents() {
 		super.addComponents();
 		addComponent(new DynamicTextButton("Add effects", EditProps.BUTTON, EditProps.HOVER, () -> {
-			state.getWindow().setMainComponent(new EditProjectileEffects(set, this, backingCollection, null));
+			state.getWindow().setMainComponent(new EditProjectileEffects(set, this, backingCollection, null, null));
 		}), 0.025f, 0.2f, 0.2f, 0.3f);
 	}
 	
@@ -60,7 +60,12 @@ public class ProjectileEffectsCollectionEdit extends CollectionEdit<ProjectileEf
 
 		@Override
 		public GuiComponent createEditMenu(ProjectileEffects itemToEdit, GuiComponent returnMenu) {
-			return new EditProjectileEffects(set, returnMenu, backingCollection, itemToEdit);
+			return new EditProjectileEffects(set, returnMenu, backingCollection, itemToEdit, itemToEdit);
+		}
+		
+		@Override
+		public GuiComponent createCopyMenu(ProjectileEffects itemToEdit, GuiComponent returnMenu) {
+			return new EditProjectileEffects(set, returnMenu, backingCollection, itemToEdit, null);
 		}
 
 		@Override

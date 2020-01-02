@@ -40,21 +40,21 @@ import nl.knokko.gui.component.text.dynamic.DynamicTextComponent;
 public class ShapedRecipeEdit extends GuiMenu {
 	
 	private final EditMenu menu;
-	private final ShapedRecipe previous;
+	private final ShapedRecipe toModify;
 	private final Ingredients ingredientsComponent;
 	private final ResultComponent resultComponent;
 	private final DynamicTextComponent errorComponent;
 
-	public ShapedRecipeEdit(EditMenu menu, ShapedRecipe previous) {
+	public ShapedRecipeEdit(EditMenu menu, ShapedRecipe oldValues, ShapedRecipe toModify) {
 		this.menu = menu;
-		this.previous = previous;
+		this.toModify = toModify;
 		errorComponent = new DynamicTextComponent("", EditProps.ERROR);
-		if (previous != null)
-			resultComponent = new ResultComponent(previous.getResult(), this, menu.getSet());
+		if (oldValues != null)
+			resultComponent = new ResultComponent(oldValues.getResult(), this, menu.getSet());
 		else
 			resultComponent = new ResultComponent(new SimpleVanillaResult(CIMaterial.IRON_INGOT, (byte) 1), this, menu.getSet());
-		if (previous != null)
-			ingredientsComponent = new Ingredients(previous.getIngredients());
+		if (oldValues != null)
+			ingredientsComponent = new Ingredients(oldValues.getIngredients());
 		else
 			ingredientsComponent = new Ingredients();
 	}
@@ -64,12 +64,12 @@ public class ShapedRecipeEdit extends GuiMenu {
 		addComponent(new DynamicTextButton("Cancel", EditProps.CANCEL_BASE, EditProps.CANCEL_HOVER, () -> {
 			state.getWindow().setMainComponent(menu.getRecipeOverview());
 		}), 0.1f, 0.85f, 0.25f, 0.95f);
-		addComponent(new DynamicTextButton("Apply", EditProps.SAVE_BASE, EditProps.SAVE_HOVER, () -> {
-			if (previous != null) {
+		addComponent(new DynamicTextButton(toModify == null ? "Create" : "Apply", EditProps.SAVE_BASE, EditProps.SAVE_HOVER, () -> {
+			if (toModify != null) {
 				Ingredient[] ingredients = new Ingredient[9];
 				for (int index = 0; index < ingredients.length; index++)
 					ingredients[index] = ingredientsComponent.ingredients[index].getIngredient();
-				String error = menu.getSet().changeShapedRecipe(previous, ingredients, resultComponent.getResult());
+				String error = menu.getSet().changeShapedRecipe(toModify, ingredients, resultComponent.getResult());
 				if (error != null)
 					errorComponent.setText(error);
 				else

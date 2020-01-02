@@ -18,21 +18,22 @@ public class EditExplosion extends EditProjectileEffect {
 	private static final float BUTTON_X = 0.5f;
 	private static final float LABEL_X = BUTTON_X - 0.01f;
 	
-	private final Explosion previous;
+	private final Explosion oldValues, toModify;
 
-	public EditExplosion(Explosion previous, Collection<ProjectileEffect> backingCollection,
+	public EditExplosion(Explosion oldValues, Explosion toModify, Collection<ProjectileEffect> backingCollection,
 			GuiComponent returnMenu) {
 		super(backingCollection, returnMenu);
-		this.previous = previous;
+		this.oldValues = oldValues;
+		this.toModify = toModify;
 	}
 
 	@Override
 	protected void addComponents() {
 		super.addComponents();
 		
-		FloatEditField powerField = new FloatEditField(previous == null ? 2f : previous.power, 0f, EDIT_BASE, EDIT_ACTIVE);
-		CheckboxComponent destroyBlocksBox = new CheckboxComponent(previous == null || previous.destroyBlocks);
-		CheckboxComponent fireBox = new CheckboxComponent(previous != null && previous.setFire);
+		FloatEditField powerField = new FloatEditField(oldValues == null ? 2f : oldValues.power, 0f, EDIT_BASE, EDIT_ACTIVE);
+		CheckboxComponent destroyBlocksBox = new CheckboxComponent(oldValues == null || oldValues.destroyBlocks);
+		CheckboxComponent fireBox = new CheckboxComponent(oldValues != null && oldValues.setFire);
 		
 		addComponent(new DynamicTextComponent("Power:", LABEL), LABEL_X - 0.1f, 0.7f, LABEL_X, 0.8f);
 		addComponent(powerField, BUTTON_X, 0.71f, BUTTON_X + 0.2f, 0.79f);
@@ -41,18 +42,18 @@ public class EditExplosion extends EditProjectileEffect {
 		addComponent(new DynamicTextComponent("Sets fire?", LABEL), LABEL_X - 0.15f, 0.5f, LABEL_X, 0.6f);
 		addComponent(fireBox, BUTTON_X, 0.53f, BUTTON_X + 0.05f, 0.57f);
 		
-		addComponent(new DynamicTextButton(previous == null ? "Create" : "Apply", SAVE_BASE, SAVE_HOVER, () -> {
+		addComponent(new DynamicTextButton(toModify == null ? "Create" : "Apply", SAVE_BASE, SAVE_HOVER, () -> {
 			Option.Float power = powerField.getFloat();
 			if (power.hasValue()) {
 				Explosion dummy = new Explosion(power.getValue(), destroyBlocksBox.isChecked(), fireBox.isChecked());
 				String error = dummy.validate();
 				if (error == null) {
-					if (previous == null) {
+					if (toModify == null) {
 						backingCollection.add(dummy);
 					} else {
-						previous.power = dummy.power;
-						previous.destroyBlocks = dummy.destroyBlocks;
-						previous.setFire = dummy.setFire;
+						toModify.power = dummy.power;
+						toModify.destroyBlocks = dummy.destroyBlocks;
+						toModify.setFire = dummy.setFire;
 					}
 					state.getWindow().setMainComponent(returnMenu);
 				} else {

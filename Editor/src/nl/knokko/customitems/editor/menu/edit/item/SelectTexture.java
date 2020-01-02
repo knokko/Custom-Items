@@ -69,7 +69,7 @@ public class SelectTexture extends GuiMenu {
 			state.getWindow().setMainComponent(returnMenu);
 		}), 0.1f, 0.6f, 0.3f, 0.7f);
 		addComponent(new DynamicTextButton("Load texture...", EditProps.BUTTON, EditProps.HOVER, () -> {
-			state.getWindow().setMainComponent(new TextureEdit(set, this, null));
+			state.getWindow().setMainComponent(new TextureEdit(set, this, null, null));
 		}), 0.1f, 0.3f, 0.35f, 0.4f);
 		addComponent(textureList, 0.4f, 0.1f, 0.85f, 0.9f);
 	}

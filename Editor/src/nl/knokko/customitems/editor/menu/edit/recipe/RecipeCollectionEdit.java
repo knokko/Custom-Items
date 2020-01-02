@@ -24,10 +24,10 @@ public class RecipeCollectionEdit extends CollectionEdit<Recipe> {
 	protected void addComponents() {
 		super.addComponents();
 		addComponent(new DynamicTextButton("Create shaped recipe", EditProps.BUTTON, EditProps.HOVER, () -> {
-			state.getWindow().setMainComponent(new ShapedRecipeEdit(menu, null));
+			state.getWindow().setMainComponent(new ShapedRecipeEdit(menu, null, null));
 		}), 0.025f, 0.25f, 0.27f, 0.35f);
 		addComponent(new DynamicTextButton("Create shapeless recipe", EditProps.BUTTON, EditProps.HOVER, () -> {
-			state.getWindow().setMainComponent(new ShapelessRecipeEdit(menu, null));
+			state.getWindow().setMainComponent(new ShapelessRecipeEdit(menu, null, null));
 		}), 0.025f, 0.1f, 0.29f, 0.2f);
 	}
 	
@@ -54,15 +54,25 @@ public class RecipeCollectionEdit extends CollectionEdit<Recipe> {
 		public String getLabel(Recipe item) {
 			return item.getResult().getString();
 		}
+		
+		private GuiComponent createEditMenu(Recipe recipe, boolean copy) {
+			Recipe second = copy ? null : recipe;
+			if (recipe instanceof ShapedRecipe)
+				return new ShapedRecipeEdit(menu, (ShapedRecipe) recipe, (ShapedRecipe) second);
+			else if (recipe instanceof ShapelessRecipe)
+				return new ShapelessRecipeEdit(menu, (ShapelessRecipe) recipe, (ShapelessRecipe) second);
+			else
+				throw new IllegalStateException("Unknown recipe class: " + recipe.getClass());
+		}
 
 		@Override
 		public GuiComponent createEditMenu(Recipe recipe, GuiComponent returnMenu) {
-			if (recipe instanceof ShapedRecipe)
-				return new ShapedRecipeEdit(menu, (ShapedRecipe) recipe);
-			else if (recipe instanceof ShapelessRecipe)
-				return new ShapelessRecipeEdit(menu, (ShapelessRecipe) recipe);
-			else
-				throw new IllegalStateException("Unknown recipe class: " + recipe.getClass());
+			return createEditMenu(recipe, false);
+		}
+		
+		@Override
+		public GuiComponent createCopyMenu(Recipe recipe, GuiComponent returnMenu) {
+			return createEditMenu(recipe, true);
 		}
 
 		@Override

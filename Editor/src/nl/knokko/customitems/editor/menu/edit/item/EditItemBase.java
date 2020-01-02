@@ -81,9 +81,9 @@ public abstract class EditItemBase extends GuiMenu {
 	private static final List<PotionEffect> DEFAULT_TARGET_EFFECTS = new ArrayList<PotionEffect>();
 	
 	protected final EditMenu menu;
+	private final CustomItem toModify;
 
 	protected TextEditField name;
-	//protected ItemTypeSelectButton internalType;
 	protected CustomItemType internalType;
 	protected IntEditField internalDamage;
 	protected TextEditField displayName;
@@ -98,24 +98,24 @@ public abstract class EditItemBase extends GuiMenu {
 	protected List<PotionEffect> targetEffects;
 	protected String[] commands;
 
-	public EditItemBase(EditMenu menu, CustomItem previous, Category category) {
+	public EditItemBase(EditMenu menu, CustomItem oldValues, CustomItem toModify, Category category) {
 		this.menu = menu;
-		if (previous != null) {
-			name = new TextEditField(previous.getName(), EditProps.EDIT_BASE, EditProps.EDIT_ACTIVE);
-			//internalType = new ItemTypeSelect(previous.getItemType(), category);
-			internalType = previous.getItemType();
-			internalDamage = new IntEditField(previous.getItemDamage(), 1, EditProps.EDIT_BASE,
+		this.toModify = toModify;
+		if (oldValues != null) {
+			name = new TextEditField(oldValues.getName(), EditProps.EDIT_BASE, EditProps.EDIT_ACTIVE);
+			internalType = oldValues.getItemType();
+			internalDamage = new IntEditField(oldValues.getItemDamage(), 1, EditProps.EDIT_BASE,
 					EditProps.EDIT_ACTIVE);
-			displayName = new TextEditField(previous.getDisplayName(), EditProps.EDIT_BASE, EditProps.EDIT_ACTIVE);
-			textureSelect = new TextureSelect(previous.getTexture());
-			lore = previous.getLore();
-			attributes = previous.getAttributes();
-			enchantments = previous.getDefaultEnchantments();
-			itemFlags = previous.getItemFlags();
-			customModel = previous.getCustomModel();
-			playerEffects = previous.getPlayerEffects();
-			targetEffects = previous.getTargetEffects();
-			commands = previous.getCommands();
+			displayName = new TextEditField(oldValues.getDisplayName(), EditProps.EDIT_BASE, EditProps.EDIT_ACTIVE);
+			textureSelect = new TextureSelect(oldValues.getTexture());
+			lore = oldValues.getLore();
+			attributes = oldValues.getAttributes();
+			enchantments = oldValues.getDefaultEnchantments();
+			itemFlags = oldValues.getItemFlags();
+			customModel = oldValues.getCustomModel();
+			playerEffects = oldValues.getPlayerEffects();
+			targetEffects = oldValues.getTargetEffects();
+			commands = oldValues.getCommands();
 		} else {
 			name = new TextEditField("", EditProps.EDIT_BASE, EditProps.EDIT_ACTIVE);
 			//internalType = new ItemTypeSelect(CustomItemType.DIAMOND_HOE, category);
@@ -170,7 +170,7 @@ public abstract class EditItemBase extends GuiMenu {
 		if (!(this instanceof EditItemBow)) {
 			addComponent(new DynamicTextComponent("Model: ", EditProps.LABEL), LABEL_X, 0.26f, LABEL_X + 0.11f, 0.31f);
 		}
-		if (previous() != null) {
+		if (toModify != null) {
 			addComponent(new DynamicTextButton("Apply", EditProps.SAVE_BASE, EditProps.SAVE_HOVER, () -> {
 				String error = apply();
 				if (error != null) {
@@ -209,7 +209,7 @@ public abstract class EditItemBase extends GuiMenu {
 			}
 			
 			if (editInternalDamage) {
-				short newDamage = set.nextAvailableDamage(newType, previous());
+				short newDamage = set.nextAvailableDamage(newType, toModify);
 				if (newDamage == -1) {
 					errorComponent.setText("There is no internal item damage available for this type!");
 				} else {
@@ -283,8 +283,6 @@ public abstract class EditItemBase extends GuiMenu {
 		}
 		return error;
 	}
-
-	protected abstract CustomItem previous();
 
 	protected String getDisplayName() {
 		return displayName.getText().replaceAll("&", "§");

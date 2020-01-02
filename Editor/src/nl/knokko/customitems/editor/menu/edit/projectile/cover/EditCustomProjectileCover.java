@@ -11,21 +11,27 @@ import nl.knokko.gui.component.text.dynamic.DynamicTextComponent;
 
 public class EditCustomProjectileCover extends EditProjectileCover {
 	
-	private final CustomProjectileCover original;
+	private final CustomProjectileCover oldValues, toModify;
 	
 	protected byte[] customModel;
 
-	public EditCustomProjectileCover(EditMenu menu, CustomProjectileCover original) {
+	public EditCustomProjectileCover(EditMenu menu, CustomProjectileCover oldValues, CustomProjectileCover toModify) {
 		super(menu);
-		this.original = original;
-		if (original != null) {
-			customModel = original.model;
+		this.oldValues = oldValues;
+		this.toModify = toModify;
+		if (oldValues != null) {
+			customModel = oldValues.model;
 		} // else customModel remains null
 	}
 
 	@Override
-	protected EditorProjectileCover getOriginal() {
-		return original;
+	protected EditorProjectileCover getOldValues() {
+		return oldValues;
+	}
+	
+	@Override
+	protected EditorProjectileCover getToModify() {
+		return toModify;
 	}
 	
 	@Override
@@ -47,6 +53,6 @@ public class EditCustomProjectileCover extends EditProjectileCover {
 
 	@Override
 	protected void tryApply(String name, CustomItemType internalType, short internalDamage) {
-		handleError(menu.getSet().changeCustomProjectileCover(original, internalType, internalDamage, name, customModel));
+		handleError(menu.getSet().changeCustomProjectileCover(toModify, internalType, internalDamage, name, customModel));
 	}
 }

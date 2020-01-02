@@ -52,17 +52,18 @@ import nl.knokko.gui.texture.GuiTexture;
 public class ShapelessRecipeEdit extends GuiMenu {
 	
 	private final EditMenu menu;
-	private final ShapelessRecipe previous;
+	private final ShapelessRecipe oldValues, toModify;
 	
 	private final Ingredients ingredients;
 	private final ResultComponent result;
 	private final DynamicTextComponent errorComponent;
 
-	public ShapelessRecipeEdit(EditMenu menu, ShapelessRecipe previous) {
+	public ShapelessRecipeEdit(EditMenu menu, ShapelessRecipe oldValues, ShapelessRecipe toModify) {
 		this.menu = menu;
-		this.previous = previous;
+		this.oldValues = oldValues;
+		this.toModify = toModify;
 		ingredients = new Ingredients();
-		result = new ResultComponent(previous != null ? previous.getResult() : new SimpleVanillaResult(CIMaterial.DIAMOND, (byte) 1), this, menu.getSet());
+		result = new ResultComponent(oldValues != null ? oldValues.getResult() : new SimpleVanillaResult(CIMaterial.DIAMOND, (byte) 1), this, menu.getSet());
 		errorComponent = new DynamicTextComponent("", EditProps.ERROR);
 	}
 
@@ -88,8 +89,8 @@ public class ShapelessRecipeEdit extends GuiMenu {
 					ingredients[index++] = ic.getIngredient();
 				}
 			}
-			if (previous != null) {
-				String error = menu.getSet().changeShapelessRecipe(previous, ingredients, result.getResult());
+			if (toModify != null) {
+				String error = menu.getSet().changeShapelessRecipe(toModify, ingredients, result.getResult());
 				if (error != null)
 					errorComponent.setText(error);
 				else
@@ -144,8 +145,8 @@ public class ShapelessRecipeEdit extends GuiMenu {
 		protected void addComponents() {
 			deleteBase = state.getWindow().getTextureLoader().loadTexture("nl/knokko/gui/images/icons/delete.png");
 			deleteHover = state.getWindow().getTextureLoader().loadTexture("nl/knokko/gui/images/icons/delete_hover.png");
-			if (previous != null) {
-				Ingredient[] ingredients = previous.getIngredients();
+			if (oldValues != null) {
+				Ingredient[] ingredients = oldValues.getIngredients();
 				for (int index = 0; index < ingredients.length; index++)
 					addIngredient(ingredients[index], index);
 			}

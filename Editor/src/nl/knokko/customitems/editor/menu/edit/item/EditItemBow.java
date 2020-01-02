@@ -43,7 +43,7 @@ public class EditItemBow extends EditItemTool {
 	
 	private static final AttributeModifier EXAMPLE_ATTRIBUTE_MODIFIER = new AttributeModifier(Attribute.MOVEMENT_SPEED, Slot.OFFHAND, Operation.ADD_FACTOR, 1.5);
 
-	private final CustomBow previous;
+	private final CustomBow toModify;
 
 	private final FloatEditField damageMultiplier;
 	private final FloatEditField speedMultiplier;
@@ -52,19 +52,19 @@ public class EditItemBow extends EditItemTool {
 	
 	private final IntEditField shootDurabilityLoss;
 
-	public EditItemBow(EditMenu menu, CustomBow previous) {
-		super(menu, previous, Category.BOW);
-		this.previous = previous;
-		if (previous != null) {
-			damageMultiplier = new FloatEditField(previous.getDamageMultiplier(), 0, EditProps.EDIT_BASE,
+	public EditItemBow(EditMenu menu, CustomBow oldValues, CustomBow toModify) {
+		super(menu, oldValues, toModify, Category.BOW);
+		this.toModify = toModify;
+		if (oldValues != null) {
+			damageMultiplier = new FloatEditField(oldValues.getDamageMultiplier(), 0, EditProps.EDIT_BASE,
 					EditProps.EDIT_ACTIVE);
-			speedMultiplier = new FloatEditField(previous.getSpeedMultiplier(), 0, EditProps.EDIT_BASE,
+			speedMultiplier = new FloatEditField(oldValues.getSpeedMultiplier(), 0, EditProps.EDIT_BASE,
 					EditProps.EDIT_ACTIVE);
-			knockbackStrength = new IntEditField(previous.getKnockbackStrength(), 0, EditProps.EDIT_BASE,
+			knockbackStrength = new IntEditField(oldValues.getKnockbackStrength(), 0, EditProps.EDIT_BASE,
 					EditProps.EDIT_ACTIVE);
-			shootDurabilityLoss = new IntEditField(previous.getShootDurabilityLoss(), 0, EditProps.EDIT_BASE,
+			shootDurabilityLoss = new IntEditField(oldValues.getShootDurabilityLoss(), 0, EditProps.EDIT_BASE,
 					EditProps.EDIT_ACTIVE);
-			gravity = new CheckboxComponent(previous.hasGravity());
+			gravity = new CheckboxComponent(oldValues.hasGravity());
 		} else {
 			damageMultiplier = new FloatEditField(1, 0, EditProps.EDIT_BASE, EditProps.EDIT_ACTIVE);
 			speedMultiplier = new FloatEditField(1, 0, EditProps.EDIT_BASE, EditProps.EDIT_ACTIVE);
@@ -100,11 +100,6 @@ public class EditItemBow extends EditItemTool {
 	}
 
 	@Override
-	protected CustomBow previous() {
-		return previous;
-	}
-
-	@Override
 	protected String create(short damage, long maxUses, int entityHitDurabilityLoss, int blockBreakDurabilityLoss) {
 		Option.Double damageMultiplier = this.damageMultiplier.getDouble();
 		if (!damageMultiplier.hasValue()) return "The damage multiplier must be a positive number";
@@ -132,7 +127,7 @@ public class EditItemBow extends EditItemTool {
 		if (!knockbackStrength.hasValue()) return "The knockback strength must be a positive integer";
 		Option.Int shootDurabilityLoss = this.shootDurabilityLoss.getInt();
 		if (!shootDurabilityLoss.hasValue()) return "The shoot durability loss must be a positive integer";
-		return menu.getSet().changeBow(previous, damage, name.getText(), getDisplayName(), lore, attributes, 
+		return menu.getSet().changeBow(toModify, damage, name.getText(), getDisplayName(), lore, attributes, 
 				enchantments, damageMultiplier.getValue(), speedMultiplier.getValue(), 
 				knockbackStrength.getValue(), gravity.isChecked(), allowEnchanting.isChecked(), 
 				allowAnvil.isChecked(), repairItem.getIngredient(), maxUses, 

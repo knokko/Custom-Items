@@ -16,22 +16,24 @@ public class EditBlockDrop extends GuiMenu {
 	
 	private final ItemSet set;
 	private final GuiComponent returnMenu;
-	private final BlockDrop drop;
+	private final BlockDrop oldValues;
+	private final BlockDrop toModify;
 	
 	private BlockType selectedBlock;
 	private Drop selectedDrop;
 	
-	public EditBlockDrop(ItemSet set, GuiComponent returnMenu, BlockDrop drop) {
+	public EditBlockDrop(ItemSet set, GuiComponent returnMenu, BlockDrop oldValues, BlockDrop toModify) {
 		this.set = set;
 		this.returnMenu = returnMenu;
-		this.drop = drop;
+		this.oldValues = oldValues;
+		this.toModify = toModify;
 		
-		if (drop == null) {
+		if (oldValues == null) {
 			selectedBlock = BlockType.STONE;
 			selectedDrop = null;
 		} else {
-			selectedBlock = drop.getBlock();
-			selectedDrop = drop.getDrop();
+			selectedBlock = oldValues.getBlock();
+			selectedDrop = oldValues.getDrop();
 		}
 	}
 
@@ -56,7 +58,7 @@ public class EditBlockDrop extends GuiMenu {
 		addComponent(changeButtons[0], 0.5f, 0.6f, 0.8f, 0.7f);
 		
 		addComponent(new DynamicTextComponent("Drop:", EditProps.LABEL), 0.3f, 0.4f, 0.45f, 0.5f);
-		SelectDrop dropSelect = new SelectDrop(set, this, drop != null ? drop.getDrop() : null, (Drop newDrop) -> {
+		SelectDrop dropSelect = new SelectDrop(set, this, oldValues != null ? oldValues.getDrop() : null, (Drop newDrop) -> {
 			selectedDrop = newDrop;
 			changeButtons[1].setText(newDrop.toString());
 		});
@@ -65,7 +67,7 @@ public class EditBlockDrop extends GuiMenu {
 		});
 		addComponent(changeButtons[1], 0.5f, 0.4f, 0.8f, 0.5f);
 		
-		if (drop == null) {
+		if (toModify == null) {
 			addComponent(new DynamicTextButton("Create", EditProps.SAVE_BASE, EditProps.SAVE_HOVER, () -> {
 				if (selectedDrop == null) {
 					errorComponent.setText("You need to select the drop");
@@ -80,7 +82,7 @@ public class EditBlockDrop extends GuiMenu {
 			}), 0.025f, 0.1f, 0.2f, 0.2f);
 		} else {
 			addComponent(new DynamicTextButton("Apply", EditProps.SAVE_BASE, EditProps.SAVE_HOVER, () -> {
-				String error = set.changeBlockDrop(drop, selectedBlock, selectedDrop);
+				String error = set.changeBlockDrop(toModify, selectedBlock, selectedDrop);
 				if (error == null) {
 					state.getWindow().setMainComponent(returnMenu);
 				} else {

@@ -40,29 +40,39 @@ public class ItemCollectionEdit extends CollectionEdit<CustomItem> {
 		public void goBack() {
 			menu.getState().getWindow().setMainComponent(menu);
 		}
+		
+		private GuiComponent createEditMenu(CustomItem item, boolean copy) {
+			CustomItem secondParam = copy ? null : item;
+			if (item instanceof CustomBow)
+				return new EditItemBow(menu, (CustomBow) item, (CustomBow) secondParam);
+			else if (item instanceof CustomArmor)
+				return new EditItemArmor(menu, (CustomArmor) item, (CustomArmor) secondParam, item.getItemType().getMainCategory());
+			else if (item instanceof CustomShears) 
+				return new EditItemShears(menu, (CustomShears) item, (CustomShears) secondParam);
+			else if (item instanceof CustomHoe)
+				return new EditItemHoe(menu, (CustomHoe) item, (CustomHoe) secondParam);
+			else if (item instanceof CustomShield)
+				return new EditItemShield(menu, (CustomShield) item, (CustomShield) secondParam);
+			else if (item instanceof CustomTrident)
+				return new EditItemTrident(menu, (CustomTrident) item, (CustomTrident) secondParam);
+			else if (item instanceof CustomTool)
+				return new EditItemTool(menu, (CustomTool) item, (CustomTool) secondParam, item.getItemType().getMainCategory());
+			else if (item instanceof CustomWand)
+				return new EditItemWand(menu, (CustomWand) item, (CustomWand) secondParam);
+			else if (item instanceof SimpleCustomItem)
+				return new EditItemSimple(menu, (SimpleCustomItem) item, (SimpleCustomItem) secondParam);
+			else
+				throw new IllegalArgumentException("Unsupported custom item class: " + item.getClass());
+		}
 
 		@Override
 		public GuiComponent createEditMenu(CustomItem item, GuiComponent returnMenu) {
-			if (item instanceof CustomBow)
-				return new EditItemBow(menu, (CustomBow) item);
-			else if (item instanceof CustomArmor)
-				return new EditItemArmor(menu, (CustomArmor) item, item.getItemType().getMainCategory());
-			else if (item instanceof CustomShears) 
-				return new EditItemShears(menu, (CustomShears) item);
-			else if (item instanceof CustomHoe)
-				return new EditItemHoe(menu, (CustomHoe) item);
-			else if (item instanceof CustomShield)
-				return new EditItemShield(menu, (CustomShield) item);
-			else if (item instanceof CustomTrident)
-				return new EditItemTrident(menu, (CustomTrident) item);
-			else if (item instanceof CustomTool)
-				return new EditItemTool(menu, (CustomTool) item, item.getItemType().getMainCategory());
-			else if (item instanceof CustomWand)
-				return new EditItemWand(menu, (CustomWand) item);
-			else if (item instanceof SimpleCustomItem)
-				return new EditItemSimple(menu, (SimpleCustomItem) item);
-			else
-				throw new IllegalArgumentException("Unsupported custom item class: " + item.getClass());
+			return createEditMenu(item, false);
+		}
+		
+		@Override
+		public GuiComponent createCopyMenu(CustomItem item, GuiComponent returnMenu) {
+			return createEditMenu(item, true);
 		}
 
 		@Override

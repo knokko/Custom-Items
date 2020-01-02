@@ -48,21 +48,22 @@ public class TextureEdit extends GuiMenu {
 	
 	protected final ItemSet itemSet;
 	protected final GuiComponent returnMenu;
-	protected final NamedImage previous;
+	protected final NamedImage oldValues, toModify;
 	protected final DynamicTextComponent errorComponent;
 	
 	protected TextEditField name;
 	protected BufferedImage image;
 	protected WrapperComponent<SimpleImageComponent> wrapper;
 	
-	public TextureEdit(EditMenu menu, NamedImage previous) {
-		this(menu.getSet(), menu.getTextureOverview(), previous);
+	public TextureEdit(EditMenu menu, NamedImage oldValues, NamedImage toModify) {
+		this(menu.getSet(), menu.getTextureOverview(), oldValues, toModify);
 	}
 
-	public TextureEdit(ItemSet set, GuiComponent returnMenu, NamedImage previous) {
+	public TextureEdit(ItemSet set, GuiComponent returnMenu, NamedImage oldValues, NamedImage toModify) {
 		this.itemSet = set;
 		this.returnMenu = returnMenu;
-		this.previous = previous;
+		this.oldValues = oldValues;
+		this.toModify = toModify;
 		errorComponent = new DynamicTextComponent("", EditProps.ERROR);
 		wrapper = new WrapperComponent<SimpleImageComponent>(null);
 	}
@@ -78,9 +79,9 @@ public class TextureEdit extends GuiMenu {
 		addComponent(new DynamicTextButton("Cancel", EditProps.CANCEL_BASE, EditProps.CANCEL_HOVER, () -> {
 			state.getWindow().setMainComponent(returnMenu);
 		}), 0.1f, 0.7f, 0.25f, 0.8f);
-		if(previous != null) {
-			name = new TextEditField(previous.getName(), EditProps.EDIT_BASE, EditProps.EDIT_ACTIVE);
-			image = previous.getImage();
+		if(oldValues != null) {
+			name = new TextEditField(oldValues.getName(), EditProps.EDIT_BASE, EditProps.EDIT_ACTIVE);
+			image = oldValues.getImage();
 			wrapper.setComponent(new SimpleImageComponent(state.getWindow().getTextureLoader().loadTexture(image)));
 		}
 		else {
@@ -91,14 +92,14 @@ public class TextureEdit extends GuiMenu {
 		addComponent(new DynamicTextComponent("Texture: ", EditProps.LABEL), 0.4f, 0.4f, 0.55f, 0.5f);
 		addComponent(wrapper, 0.6f, 0.4f, 0.7f, 0.5f);
 		addComponent(createImageSelect(), 0.75f, 0.4f, 0.9f, 0.5f);
-		addComponent(new DynamicTextButton(previous != null ? "Apply" : "Create", EditProps.SAVE_BASE, EditProps.SAVE_HOVER, () -> {
+		addComponent(new DynamicTextButton(toModify != null ? "Apply" : "Create", EditProps.SAVE_BASE, EditProps.SAVE_HOVER, () -> {
 			if(image != null) {
 				String error = CreateMenu.testFileName(name.getText() + ".png");
 				if(error != null)
 					errorComponent.setText(error);
 				else {
-					if(previous != null) {
-						error = itemSet.changeTexture(previous, name.getText(), image, true);
+					if(toModify != null) {
+						error = itemSet.changeTexture(toModify, name.getText(), image, true);
 						if(error != null)
 							errorComponent.setText(error);
 						else

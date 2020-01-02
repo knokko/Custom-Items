@@ -23,7 +23,6 @@ public abstract class EditProjectileCover extends GuiMenu {
 	protected DynamicTextComponent errorComponent;
 	
 	protected TextEditField nameField;
-	//protected ItemTypeSelect internalTypeSelect;
 	protected CustomItemType internalType;
 	protected IntEditField internalDamageField;
 	
@@ -37,20 +36,18 @@ public abstract class EditProjectileCover extends GuiMenu {
 			state.getWindow().setMainComponent(menu.getProjectileMenu().getCoverOverview());
 		}), 0.025f, 0.7f, 0.2f, 0.8f);
 		
-		EditorProjectileCover original = getOriginal();
+		EditorProjectileCover oldValues = getOldValues();
 		
 		errorComponent = new DynamicTextComponent("", EditProps.ERROR);
 		
-		if (original == null) {
+		if (oldValues == null) {
 			nameField = new TextEditField("", EditProps.EDIT_BASE, EditProps.EDIT_ACTIVE);
-			//internalTypeSelect = new ItemTypeSelect(menu.getSet(), Category.PROJECTILE_COVER, CustomItemType.DIAMOND_HOE, null);
 			internalType = EditItemBase.chooseInitialItemType(menu.getSet(), Category.PROJECTILE_COVER, CustomItemType.DIAMOND_SHOVEL, null);
 			internalDamageField = new IntEditField(menu.getSet().nextAvailableDamage(internalType, null), 1, EditProps.EDIT_BASE, EditProps.EDIT_ACTIVE);
 		} else {
-			nameField = new TextEditField(original.name, EditProps.EDIT_BASE, EditProps.EDIT_ACTIVE);
-			//internalTypeSelect = new ItemTypeSelect(original.itemType, Category.PROJECTILE_COVER);
-			internalType = original.itemType;
-			internalDamageField = new IntEditField(original.itemDamage, 1, original.itemType.getMaxDurability(), EditProps.EDIT_BASE, EditProps.EDIT_ACTIVE);
+			nameField = new TextEditField(oldValues.name, EditProps.EDIT_BASE, EditProps.EDIT_ACTIVE);
+			internalType = oldValues.itemType;
+			internalDamageField = new IntEditField(oldValues.itemDamage, 1, oldValues.itemType.getMaxDurability(), EditProps.EDIT_BASE, EditProps.EDIT_ACTIVE);
 		}
 		
 		addComponent(errorComponent, 0.025f, 0.9f, 0.975f, 1f);
@@ -73,7 +70,7 @@ public abstract class EditProjectileCover extends GuiMenu {
 			}
 			
 			if (editInternalDamage) {
-				short newDamage = set.nextAvailableDamage(newType, getOriginal());
+				short newDamage = set.nextAvailableDamage(newType, getToModify());
 				if (newDamage == -1) {
 					errorComponent.setText("There is no internal item damage available for this type!");
 				} else {
@@ -87,7 +84,7 @@ public abstract class EditProjectileCover extends GuiMenu {
 		addComponent(new DynamicTextComponent("Internal item damage:", EditProps.LABEL), 0.25f, 0.6f, 0.59f, 0.7f);
 		addComponent(internalDamageField, 0.6f, 0.61f, 0.8f, 0.69f);
 		
-		if (original == null) {
+		if (getToModify() == null) {
 			addComponent(new DynamicTextButton("Create", EditProps.SAVE_BASE, EditProps.SAVE_HOVER, () -> {
 				Option.Short internalDamage = internalDamageField.getInt().toShort();
 				if (internalDamage.hasValue()) {
@@ -113,7 +110,9 @@ public abstract class EditProjectileCover extends GuiMenu {
 		return EditProps.BACKGROUND;
 	}
 	
-	protected abstract EditorProjectileCover getOriginal();
+	protected abstract EditorProjectileCover getOldValues();
+	
+	protected abstract EditorProjectileCover getToModify();
 	
 	protected abstract void tryCreate(String name, CustomItemType internalType, short internalDamage);
 	

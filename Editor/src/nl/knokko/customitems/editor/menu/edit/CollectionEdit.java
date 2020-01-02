@@ -75,7 +75,10 @@ public class CollectionEdit<T> extends GuiMenu {
 				addComponent(new DynamicTextComponent(label, EditProps.LABEL), minTextX, minY, maxTextX, maxY);
 				addComponent(new DynamicTextButton("Edit", EditProps.BUTTON, EditProps.HOVER, () -> {
 					state.getWindow().setMainComponent(handler.createEditMenu(item, CollectionEdit.this));
-				}), 0.55f, minY, 0.7f, maxY);
+				}), 0.51f, minY, 0.62f, maxY);
+				addComponent(new DynamicTextButton("Copy", EditProps.BUTTON, EditProps.HOVER, () -> {
+					state.getWindow().setMainComponent(handler.createCopyMenu(item, CollectionEdit.this));
+				}), 0.64f, minY, 0.76f, maxY);
 				addComponent(new DynamicTextButton("Delete", EditProps.QUIT_BASE, EditProps.QUIT_HOVER, () -> {
 					String error = handler.deleteItem(item);
 					if (error == null) {
@@ -83,7 +86,7 @@ public class CollectionEdit<T> extends GuiMenu {
 					} else {
 						errorComponent.setText(error);
 					}
-				}), 0.725f, minY, 0.925f, maxY);
+				}), 0.775f, minY, 0.975f, maxY);
 				index++;
 			}
 		}
@@ -108,6 +111,8 @@ public class CollectionEdit<T> extends GuiMenu {
 		String getLabel(T item);
 		
 		GuiComponent createEditMenu(T itemToEdit, GuiComponent returnMenu);
+		
+		GuiComponent createCopyMenu(T itemToCopy, GuiComponent returnMenu);
 		
 		String deleteItem(T itemToDelete);
 	}

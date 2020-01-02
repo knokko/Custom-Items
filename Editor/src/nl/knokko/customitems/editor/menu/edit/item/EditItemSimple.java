@@ -25,7 +25,6 @@ package nl.knokko.customitems.editor.menu.edit.item;
 
 import nl.knokko.customitems.editor.menu.edit.EditMenu;
 import nl.knokko.customitems.editor.menu.edit.EditProps;
-import nl.knokko.customitems.editor.set.item.CustomItem;
 import nl.knokko.customitems.editor.set.item.SimpleCustomItem;
 import nl.knokko.customitems.item.AttributeModifier;
 import nl.knokko.customitems.item.AttributeModifier.Attribute;
@@ -40,17 +39,17 @@ public class EditItemSimple extends EditItemBase {
 	
 	private static final AttributeModifier EXAMPLE_MODIFIER = new AttributeModifier(Attribute.ATTACK_DAMAGE, Slot.MAINHAND, Operation.ADD, 5.0);
 	
-	private final SimpleCustomItem previous;
+	private final SimpleCustomItem toModify;
 	
 	private final IntEditField maxStacksize;
 
-	public EditItemSimple(EditMenu menu, SimpleCustomItem previous) {
-		super(menu, previous, Category.DEFAULT);
-		this.previous = previous;
-		if (previous == null) {
+	public EditItemSimple(EditMenu menu, SimpleCustomItem oldValues, SimpleCustomItem toModify) {
+		super(menu, oldValues, toModify, Category.DEFAULT);
+		this.toModify = toModify;
+		if (oldValues == null) {
 			maxStacksize = new IntEditField(64, 1, 64, EditProps.EDIT_BASE, EditProps.EDIT_ACTIVE);
 		} else {
-			maxStacksize = new IntEditField(previous.getMaxStacksize(), 1, 64, EditProps.EDIT_BASE, EditProps.EDIT_ACTIVE);
+			maxStacksize = new IntEditField(oldValues.getMaxStacksize(), 1, 64, EditProps.EDIT_BASE, EditProps.EDIT_ACTIVE);
 		}
 	}
 	
@@ -79,14 +78,9 @@ public class EditItemSimple extends EditItemBase {
 	protected String apply(short damage) {
 		Option.Int stackSize = maxStacksize.getInt();
 		if (!stackSize.hasValue()) return "The max stacksize should be an integer at least 1 and at most 64";
-		return menu.getSet().changeSimpleItem(previous, internalType, damage, name.getText(), 
+		return menu.getSet().changeSimpleItem(toModify, internalType, damage, name.getText(), 
 				getDisplayName(), lore, attributes, enchantments, textureSelect.getSelected(), 
 				stackSize.getValue(), itemFlags, customModel, playerEffects, targetEffects, commands, true);
-	}
-
-	@Override
-	protected CustomItem previous() {
-		return previous;
 	}
 
 	@Override

@@ -57,26 +57,37 @@ public class ProjectileEffectCollectionEdit extends CollectionEdit<ProjectileEff
 		public String getLabel(ProjectileEffect item) {
 			return item.toString();
 		}
+		
+		private GuiComponent createEditMenu(ProjectileEffect itemToEdit, boolean copy, GuiComponent returnMenu) {
+			GuiComponent currentMenu = returnMenu.getState().getWindow().getMainComponent();
+			ProjectileEffect second = copy ? null : itemToEdit;
+			if (itemToEdit instanceof ColoredRedstone) {
+				return new EditColoredRedstone((ColoredRedstone) itemToEdit, (ColoredRedstone) second, backingCollection, currentMenu);
+			} else if (itemToEdit instanceof ExecuteCommand) {
+				return new EditExecuteCommand((ExecuteCommand) itemToEdit, (ExecuteCommand) second, backingCollection, currentMenu);
+			} else if (itemToEdit instanceof Explosion) {
+				return new EditExplosion((Explosion) itemToEdit, (Explosion) second, backingCollection, currentMenu);
+			} else if (itemToEdit instanceof RandomAccelleration) {
+				return new EditRandomAccelleration((RandomAccelleration) itemToEdit, (ProjectileAccelleration) second, backingCollection, returnMenu);
+			} else if (itemToEdit instanceof SimpleParticles) {
+				return new EditSimpleParticles((SimpleParticles) itemToEdit, (SimpleParticles) second, backingCollection, returnMenu);
+			} else if (itemToEdit instanceof StraightAccelleration) {
+				return new EditStraightAccelleration((StraightAccelleration) itemToEdit, (ProjectileAccelleration) second, backingCollection, returnMenu);
+			} else if (itemToEdit instanceof SubProjectiles) {
+				return new EditSubProjectiles((SubProjectiles) itemToEdit, (SubProjectiles) second, set, backingCollection, returnMenu);
+			} else {
+				throw new Error("Unknown projectile effect class: " + itemToEdit.getClass());
+			}
+		}
 
 		@Override
 		public GuiComponent createEditMenu(ProjectileEffect itemToEdit, GuiComponent returnMenu) {
-			GuiComponent currentMenu = returnMenu.getState().getWindow().getMainComponent();
-			if (itemToEdit instanceof ColoredRedstone) {
-				return new EditColoredRedstone((ColoredRedstone) itemToEdit, backingCollection, currentMenu);
-			} else if (itemToEdit instanceof ExecuteCommand) {
-				return new EditExecuteCommand((ExecuteCommand) itemToEdit, backingCollection, currentMenu);
-			} else if (itemToEdit instanceof Explosion) {
-				return new EditExplosion((Explosion) itemToEdit, backingCollection, currentMenu);
-			} else if (itemToEdit instanceof RandomAccelleration) {
-				return new EditRandomAccelleration((RandomAccelleration) itemToEdit, backingCollection, returnMenu);
-			} else if (itemToEdit instanceof SimpleParticles) {
-				return new EditSimpleParticles((SimpleParticles) itemToEdit, backingCollection, returnMenu);
-			} else if (itemToEdit instanceof StraightAccelleration) {
-				return new EditStraightAccelleration((StraightAccelleration) itemToEdit, backingCollection, returnMenu);
-			} else if (itemToEdit instanceof SubProjectiles) {
-				return new EditSubProjectiles((SubProjectiles) itemToEdit, set, backingCollection, returnMenu);
-			}
-			throw new Error("Unknown projectile effect class: " + itemToEdit.getClass());
+			return createEditMenu(itemToEdit, false, returnMenu);
+		}
+		
+		@Override
+		public GuiComponent createCopyMenu(ProjectileEffect itemToEdit, GuiComponent returnMenu) {
+			return createEditMenu(itemToEdit, true, returnMenu);
 		}
 
 		@Override

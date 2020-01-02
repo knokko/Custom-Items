@@ -20,27 +20,29 @@ public class EditSimpleParticles extends EditProjectileEffect {
 	private static final float BUTTON_X = 0.4f;
 	private static final float LABEL_X = BUTTON_X - 0.01f;
 	
-	private final SimpleParticles original;
+	private final SimpleParticles oldValues, toModify;
 	
 	private CIParticle particle;
 
-	public EditSimpleParticles(SimpleParticles original, Collection<ProjectileEffect> backingCollection, GuiComponent returnMenu) {
+	public EditSimpleParticles(SimpleParticles oldValues, SimpleParticles toModify, 
+			Collection<ProjectileEffect> backingCollection, GuiComponent returnMenu) {
 		super(backingCollection, returnMenu);
-		this.original = original;
+		this.oldValues = oldValues;
+		this.toModify = toModify;
 		
-		if (original == null)
+		if (oldValues == null)
 			particle = CIParticle.CRIT_MAGIC;
 		else
-			particle = original.particle;
+			particle = oldValues.particle;
 	}
 
 	@Override
 	protected void addComponents() {
 		super.addComponents();
 		
-		FloatEditField minRadiusField = new FloatEditField(original == null ? 0f : original.minRadius, 0f, EDIT_BASE, EDIT_ACTIVE);
-		FloatEditField maxRadiusField = new FloatEditField(original == null ? 0.5f : original.maxRadius, 0f, EDIT_BASE, EDIT_ACTIVE);
-		IntEditField amountField = new IntEditField(original == null ? 10 : original.amount, 1, EDIT_BASE, EDIT_ACTIVE);
+		FloatEditField minRadiusField = new FloatEditField(oldValues == null ? 0f : oldValues.minRadius, 0f, EDIT_BASE, EDIT_ACTIVE);
+		FloatEditField maxRadiusField = new FloatEditField(oldValues == null ? 0.5f : oldValues.maxRadius, 0f, EDIT_BASE, EDIT_ACTIVE);
+		IntEditField amountField = new IntEditField(oldValues == null ? 10 : oldValues.amount, 1, EDIT_BASE, EDIT_ACTIVE);
 		
 		addComponent(new DynamicTextComponent("Minimum radius:", LABEL), LABEL_X - 0.2f, 0.7f, LABEL_X, 0.8f);
 		addComponent(minRadiusField, BUTTON_X, 0.71f, BUTTON_X + 0.1f, 0.79f);
@@ -53,7 +55,7 @@ public class EditSimpleParticles extends EditProjectileEffect {
 			particle = newParticle;
 		}, particle), BUTTON_X, 0.41f, BUTTON_X + 0.15f, 0.49f);
 		
-		addComponent(new DynamicTextButton(original == null ? "Create" : "Apply", SAVE_BASE, SAVE_HOVER, () -> {
+		addComponent(new DynamicTextButton(toModify == null ? "Create" : "Apply", SAVE_BASE, SAVE_HOVER, () -> {
 			
 			Option.Float minRadius = minRadiusField.getFloat();
 			Option.Float maxRadius = maxRadiusField.getFloat();
@@ -68,13 +70,13 @@ public class EditSimpleParticles extends EditProjectileEffect {
 				SimpleParticles dummy = new SimpleParticles(particle, minRadius.getValue(), maxRadius.getValue(), amount.getValue());
 				error = dummy.validate();
 				if (error == null) {
-					if (original == null) {
+					if (toModify == null) {
 						backingCollection.add(dummy);
 					} else {
-						original.particle = dummy.particle;
-						original.minRadius = dummy.minRadius;
-						original.maxRadius = dummy.maxRadius;
-						original.amount = dummy.amount;
+						toModify.particle = dummy.particle;
+						toModify.minRadius = dummy.minRadius;
+						toModify.maxRadius = dummy.maxRadius;
+						toModify.amount = dummy.amount;
 					}
 					state.getWindow().setMainComponent(returnMenu);
 				} else {

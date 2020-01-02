@@ -20,7 +20,7 @@ public class EditMobDrop extends GuiMenu {
 	
 	private final ItemSet set;
 	private final GuiComponent returnMenu;
-	private final EntityDrop drop;
+	private final EntityDrop toModify;
 	
 	private final NameField nameField;
 	private final CheckboxComponent requiresName;
@@ -28,24 +28,24 @@ public class EditMobDrop extends GuiMenu {
 	private Drop selectedDrop;
 	private CIEntityType selectedType;
 
-	public EditMobDrop(ItemSet set, GuiComponent returnMenu, EntityDrop drop) {
+	public EditMobDrop(ItemSet set, GuiComponent returnMenu, EntityDrop oldValues, EntityDrop toModify) {
 		this.set = set;
 		this.returnMenu = returnMenu;
-		this.drop = drop;
-		if (drop == null) {
+		this.toModify = toModify;
+		if (oldValues == null) {
 			selectedDrop = null;
 			selectedType = CIEntityType.ZOMBIE;
 			nameField = new NameField("");
 			requiresName = new CheckboxComponent(false);
 		} else {
-			selectedDrop = drop.getDrop();
-			selectedType = drop.getEntityType();
-			if (drop.getRequiredName() == null) {
+			selectedDrop = oldValues.getDrop();
+			selectedType = oldValues.getEntityType();
+			if (oldValues.getRequiredName() == null) {
 				nameField = new NameField("");
 				requiresName = new CheckboxComponent(false);
 			}
 			else {
-				nameField = new NameField(drop.getRequiredName());
+				nameField = new NameField(oldValues.getRequiredName());
 				requiresName = new CheckboxComponent(true);
 			}
 		}
@@ -74,15 +74,6 @@ public class EditMobDrop extends GuiMenu {
 		addComponent(changeButtons[0], 0.5f, 0.7f, 0.8f, 0.8f);
 		
 		addComponent(new DynamicTextComponent("Entity:", EditProps.LABEL), 0.28f, 0.5f, 0.45f, 0.6f);
-		/*
-		SelectEntityType selectEntity = new SelectEntityType(this, (CIEntityType newType) -> {
-			selectedType = newType;
-			changeButtons[1].setText(newType.toString());
-		});
-		changeButtons[1] = new DynamicTextButton(selectedType + "", EditProps.CHOOSE_BASE, EditProps.CHOOSE_HOVER, () -> {
-			state.getWindow().setMainComponent(selectEntity);
-		});
-		addComponent(changeButtons[1], 0.5f, 0.5f, 0.7f, 0.6f);*/
 		addComponent(EnumSelect.createSelectButton(CIEntityType.class, (CIEntityType newType) -> {
 			selectedType = newType;
 		}, selectedType), 0.5f, 0.5f, 0.7f, 0.6f);
@@ -92,7 +83,7 @@ public class EditMobDrop extends GuiMenu {
 		addComponent(nameField, 0.6f, 0.3f, 0.8f, 0.4f);
 		
 		DynamicTextButton doneButton;
-		if (drop == null) {
+		if (toModify == null) {
 			doneButton = new DynamicTextButton("Create", EditProps.SAVE_BASE, EditProps.SAVE_HOVER, () -> {
 				if (selectedDrop == null) {
 					errorComponent.setText("You need to choose a custom item to drop");
@@ -108,7 +99,7 @@ public class EditMobDrop extends GuiMenu {
 			});
 		} else {
 			doneButton = new DynamicTextButton("Apply", EditProps.SAVE_BASE, EditProps.SAVE_HOVER, () -> {
-				String error = set.changeMobDrop(drop, selectedType, requiresName.isChecked() ? nameField.getComponent().getText() : null, selectedDrop);
+				String error = set.changeMobDrop(toModify, selectedType, requiresName.isChecked() ? nameField.getComponent().getText() : null, selectedDrop);
 				if (error == null)
 					state.getWindow().setMainComponent(returnMenu);
 				else 

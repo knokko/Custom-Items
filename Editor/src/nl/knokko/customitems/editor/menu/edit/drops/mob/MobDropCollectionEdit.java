@@ -21,7 +21,7 @@ public class MobDropCollectionEdit extends CollectionEdit<EntityDrop> {
 	protected void addComponents() {
 		super.addComponents();
 		addComponent(new DynamicTextButton("New mob drop", EditProps.BUTTON, EditProps.HOVER, () -> {
-			state.getWindow().setMainComponent(new EditMobDrop(menu.getSet(), this, null));
+			state.getWindow().setMainComponent(new EditMobDrop(menu.getSet(), this, null, null));
 		}), 0.025f, 0.2f, 0.2f, 0.3f);
 	}
 	
@@ -50,7 +50,12 @@ public class MobDropCollectionEdit extends CollectionEdit<EntityDrop> {
 
 		@Override
 		public GuiComponent createEditMenu(EntityDrop itemToEdit, GuiComponent returnMenu) {
-			return new EditMobDrop(menu.getSet(), returnMenu, itemToEdit);
+			return new EditMobDrop(menu.getSet(), returnMenu, itemToEdit, itemToEdit);
+		}
+		
+		@Override
+		public GuiComponent createCopyMenu(EntityDrop itemToEdit, GuiComponent returnMenu) {
+			return new EditMobDrop(menu.getSet(), returnMenu, itemToEdit, null);
 		}
 
 		@Override

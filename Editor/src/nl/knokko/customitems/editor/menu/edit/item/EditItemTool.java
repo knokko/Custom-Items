@@ -26,7 +26,6 @@ package nl.knokko.customitems.editor.menu.edit.item;
 import nl.knokko.customitems.editor.menu.edit.EditMenu;
 import nl.knokko.customitems.editor.menu.edit.EditProps;
 import nl.knokko.customitems.editor.menu.edit.recipe.ingredient.IngredientComponent;
-import nl.knokko.customitems.editor.set.item.CustomItem;
 import nl.knokko.customitems.editor.set.item.CustomTool;
 import nl.knokko.customitems.editor.set.recipe.ingredient.NoIngredient;
 import nl.knokko.customitems.item.AttributeModifier;
@@ -44,7 +43,7 @@ import nl.knokko.gui.util.Option;
 
 public class EditItemTool extends EditItemBase {
 
-	private final CustomTool previous;
+	private final CustomTool toModify;
 	private final Category category;
 
 	protected final CheckboxComponent allowEnchanting;
@@ -54,17 +53,17 @@ public class EditItemTool extends EditItemBase {
 	protected final IntEditField entityHitDurabilityLoss;
 	protected final IntEditField blockBreakDurabilityLoss;
 
-	public EditItemTool(EditMenu menu, CustomTool previous, Category toolCategory) {
-		super(menu, previous, toolCategory);
-		this.previous = previous;
+	public EditItemTool(EditMenu menu, CustomTool oldValues, CustomTool toModify, Category toolCategory) {
+		super(menu, oldValues, toModify, toolCategory);
+		this.toModify = toModify;
 		category = toolCategory;
-		if (previous != null) {
-			allowEnchanting = new CheckboxComponent(previous.allowEnchanting());
-			allowAnvil = new CheckboxComponent(previous.allowAnvilActions());
-			repairItem = new IngredientComponent("None", previous.getRepairItem(), this, menu.getSet());
-			durability = new IntEditField(previous.getDurability(), CustomTool.UNBREAKABLE_TOOL_DURABILITY, EditProps.EDIT_BASE, EditProps.EDIT_ACTIVE);
-			entityHitDurabilityLoss = new IntEditField(previous.getEntityHitDurabilityLoss(), 0, EditProps.EDIT_BASE, EditProps.EDIT_ACTIVE);
-			blockBreakDurabilityLoss = new IntEditField(previous.getBlockBreakDurabilityLoss(), 0, EditProps.EDIT_BASE, EditProps.EDIT_ACTIVE);
+		if (oldValues != null) {
+			allowEnchanting = new CheckboxComponent(oldValues.allowEnchanting());
+			allowAnvil = new CheckboxComponent(oldValues.allowAnvilActions());
+			repairItem = new IngredientComponent("None", oldValues.getRepairItem(), this, menu.getSet());
+			durability = new IntEditField(oldValues.getDurability(), CustomTool.UNBREAKABLE_TOOL_DURABILITY, EditProps.EDIT_BASE, EditProps.EDIT_ACTIVE);
+			entityHitDurabilityLoss = new IntEditField(oldValues.getEntityHitDurabilityLoss(), 0, EditProps.EDIT_BASE, EditProps.EDIT_ACTIVE);
+			blockBreakDurabilityLoss = new IntEditField(oldValues.getBlockBreakDurabilityLoss(), 0, EditProps.EDIT_BASE, EditProps.EDIT_ACTIVE);
 		} else {
 			allowEnchanting = new CheckboxComponent(true);
 			allowAnvil = new CheckboxComponent(true);
@@ -165,7 +164,7 @@ public class EditItemTool extends EditItemBase {
 	}
 	
 	protected String apply(short damage, long maxUses, int entityHitDurabilityLoss, int blockBreakDurabilityLoss) {
-		return menu.getSet().changeTool(previous, internalType, damage, name.getText(),
+		return menu.getSet().changeTool(toModify, internalType, damage, name.getText(),
 				getDisplayName(), lore, attributes, enchantments, allowEnchanting.isChecked(),
 				allowAnvil.isChecked(), repairItem.getIngredient(), maxUses, textureSelect.getSelected(),
 				itemFlags, entityHitDurabilityLoss, blockBreakDurabilityLoss, customModel,
@@ -184,11 +183,6 @@ public class EditItemTool extends EditItemBase {
 		Option.Int blockBreak = blockBreakDurabilityLoss.getInt();
 		if (!blockBreak.hasValue()) return "The block break durability loss should be a positive integer";
 		return apply(damage, durability, entityHit.getValue(), blockBreak.getValue());
-	}
-
-	@Override
-	protected CustomItem previous() {
-		return previous;
 	}
 
 	@Override
