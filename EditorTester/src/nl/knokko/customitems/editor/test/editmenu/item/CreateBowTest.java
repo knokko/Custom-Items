@@ -21,13 +21,13 @@ public class CreateBowTest {
 				"None", "Allow enchanting", "Allow anvil actions", "Max uses: ", "Repair item: ",
 				"Durability loss on attack:", "Durability loss on block break:",
 				"Durability loss on shooting:", "Damage multiplier: ", "Speed multiplier: ",
-				"knockback strength: ", "Arrow gravity", "500", "0", "1", "1.000000");
+				"knockback strength: ", "Arrow gravity", "500", "0", "1", "1");
 		SimpleTextureTest.test(test, textureName);
 		ItemNameTest.test(test, "fragile_bow");
 		DisplayNameTest.test(test, itemName);
 		LoreTest.test(test, lore1, lore2, 7);
 		
-		AttributeModTest.test(test, "generic.movementSpeed", "Offhand", "Add factor", "1.500000", 
+		AttributeModTest.test(test, "generic.movementSpeed", "Offhand", "Add factor", "1.5", 
 				attribute1, slot1, op1, value1, attribute2, slot2, op2, value2, 7);
 		EnchantmentsTest.test(test, enchantment1, level1, enchantment2, level2, 7);
 		CreateToolTest.attackDurabilityLoss(test, CustomItemType.BOW, attackDurLoss, 10);

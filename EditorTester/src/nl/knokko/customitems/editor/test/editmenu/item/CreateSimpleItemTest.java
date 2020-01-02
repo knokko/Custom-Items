@@ -53,7 +53,7 @@ public class CreateSimpleItemTest {
 		SimpleTextureTest.test(test, textureName);
 		DisplayNameTest.test(test, itemName);
 		LoreTest.test(test, lore1, lore2, 8);
-		AttributeModTest.test(test, "generic.attackDamage", "Mainhand", "Add", "5.000000", 
+		AttributeModTest.test(test, "generic.attackDamage", "Mainhand", "Add", "5", 
 				attribute1, slot1, op1, value1, attribute2, slot2, op2, value2, 8);
 		EnchantmentsTest.test(test, enchantment1, level1, enchantment2, level2, 8);
 		

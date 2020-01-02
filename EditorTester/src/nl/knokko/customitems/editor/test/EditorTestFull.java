@@ -59,41 +59,41 @@ public class EditorTestFull implements GuiTestProgram {
 		// Test creating items
 		CreateSimpleItemTest.create(test, "simple_test_item", "simple_test_one", "52",
 				"The very first line of lore", "The second line of lore", 
-				"generic.armor", "Head", "Multiply", "1.300000", 
-				"generic.attackSpeed", "Offhand", "Add", "4.000000", 
+				"generic.armor", "Head", "Multiply", "1.3", 
+				"generic.attackSpeed", "Offhand", "Add", "4", 
 				"Damage all", "5", "Mending", "1");
 		test.assertComponentsWithTexts("Back", "Create item", "Edit", "Delete", "simple_test_item");
 		
 		CreateToolTest.create(test, "Axe", "test_aks", "simple_test_one", "1234", "Custom Item", 
 				"simple_test_item", "4", "3", "Test Test Chop", "Chop Chop akse", "generic.attackSpeed", 
-				"Offhand", "Add factor", "3.140000", "generic.movementSpeed", "Mainhand", "Multiply", "1.300000", 
+				"Offhand", "Add factor", "3.14", "generic.movementSpeed", "Mainhand", "Multiply", "1.3", 
 				"Mending", "4", "Damage undead", "7");
 		
 		CreateToolTest.create(test, "Shovel", "test_shovel", "simple_test_one", "4312", 
 				"Vanilla item with datavalue", "Acacia fence", "2", "1", "For digging graves", "Or just normal stuff", 
-				"generic.armor", "Mainhand","Multiply", "3.000000", "generic.luck", "Mainhand", "Add", "1.000000", 
+				"generic.armor", "Mainhand","Multiply", "3", "generic.luck", "Mainhand", "Add", "1", 
 				"Mending", "3", "Water worker", "5");
 		CreateToolTest.create(test, "Sword", "test_sword", "simple_test_one", "3214", "Vanilla item with datavalue", 
 				"Acacia door", "6", "7", "Test Test Slash", "Smite sword", "generic.attackDamage", 
-				"Mainhand", "Multiply", "1.800000", "generic.knockbackResistance", "Mainhand", "Add", "0.700000", 
+				"Mainhand", "Multiply", "1.8", "generic.knockbackResistance", "Mainhand", "Add", "0.7", 
 				"Oxygen", "2", "Depth strider", "1");
 		CreateToolTest.create(test, "Pickaxe", "test_pick", "simple_test_one", "4132", "Empty", 
 				null, "4", "1", "Test Test Break", "Breaking pick", "generic.luck", 
-				"Mainhand", "Multiply", "1.600000", "generic.knockbackResistance", "Offhand", "Add", "0.200000", 
+				"Mainhand", "Multiply", "1.6", "generic.knockbackResistance", "Offhand", "Add", "0.2", 
 				"Protection fall", "8", "Frost walker", "4");
 		CreateHoeTest.create(test, "test_hoe", "simple_test_one", "2431", "Custom Item", "simple_test_item", 
 				"1", "2", "3", "A fighting hoe", "Can also till dirt", 
-				"generic.attackSpeed", "Mainhand", "Multiply", "2.000000", 
-				"generic.attackDamage", "Mainhand", "Add", "8.000000", 
+				"generic.attackSpeed", "Mainhand", "Multiply", "2", 
+				"generic.attackDamage", "Mainhand", "Add", "8", 
 				"Binding curse", "2", "Protection environmental", "5");
 		CreateShearsTest.create(test, "test_shears", "simple_test_one", "64", "Simple vanilla item", "Acacia fence", 
 				"4", "3", "2", "Improve your defences", "Or just obtain wool from sheeps", 
-				"generic.maxHealth", "Offhand", "Add", "6.000000", 
-				"generic.armorToughness", "Offhand", "Add", "3.000000", "Damage all", "8", "Binding curse", "1");
+				"generic.maxHealth", "Offhand", "Add", "6", 
+				"generic.armorToughness", "Offhand", "Add", "3", "Damage all", "8", "Binding curse", "1");
 		CreateBowTest.create(test, "fragile_bow", "test_bow_first", "34", "Simple vanilla item", "Acacia door", 
-				"5", "6", "7", "A quite fragile bow", "Also deals more damage", "8", "3.140000", "9", 
-				"generic.knockbackResistance", "Offhand", "Add", "0.400000", 
-				"generic.attackDamage", "Mainhand", "Multiply", "2.000000", 
+				"5", "6", "7", "A quite fragile bow", "Also deals more damage", "8", "3.14", "9", 
+				"generic.knockbackResistance", "Offhand", "Add", "0.4", 
+				"generic.attackDamage", "Mainhand", "Multiply", "2", 
 				"Mending", "1", "Thorns", "2");
 		test.assertComponentsWithTexts("simple_test_item", "test_aks", "fragile_bow");
 		// TODO Also create EditorTestQuick

@@ -1,5 +1,7 @@
 package nl.knokko.customitems.editor.test.editmenu.item;
 
+import java.text.DecimalFormat;
+
 import nl.knokko.customitems.item.CustomItemDamage;
 import nl.knokko.customitems.item.CustomItemType;
 import nl.knokko.customitems.item.CustomToolDurability;
@@ -58,7 +60,7 @@ public class CreateToolTest {
 		// Not my most pretty solution ever, but will do the trick
 		CustomItemType customItemType = CustomItemType.valueOf("IRON_" + toolType.toUpperCase());
 		AttributeModTest.test(test, "generic.attackDamage", "Mainhand", "Add", 
-				String.format("%f", CustomItemDamage.getDefaultAttackDamage(customItemType)), 
+				new DecimalFormat("#.############").format(CustomItemDamage.getDefaultAttackDamage(customItemType)), 
 				attribute1, slot1, op1, value1, attribute2, slot2, op2, value2, 8);
 		EnchantmentsTest.test(test, enchantment1, level1, enchantment2, level2, 8);
 		
