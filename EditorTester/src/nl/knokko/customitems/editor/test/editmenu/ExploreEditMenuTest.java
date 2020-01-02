@@ -83,7 +83,7 @@ public class ExploreEditMenuTest {
 		
 		// Look into shaped recipes
 		test.click("Create shaped recipe");
-		test.assertComponentsWithTexts("Cancel", "Apply", "empty");
+		test.assertComponentsWithTexts("Cancel", "Create", "empty");
 		
 		// Look into simple ingredient modification
 		test.click("empty");
