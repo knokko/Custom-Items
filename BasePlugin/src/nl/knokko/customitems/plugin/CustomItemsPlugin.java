@@ -164,7 +164,7 @@ public class CustomItemsPlugin extends JavaPlugin {
 				loadSet(file);
 			} else if (files.length == 0) {
 				Bukkit.getLogger().log(Level.WARNING,
-						"No custom item set could be found in the Custom Items plugin data folder. It should contain a single file that ends with .cis");
+						"No custom item set could be found in the Custom Items plugin data folder. It should contain a file that ends with .cis or .txt");
 				set = new ItemSet();
 			} else {
 				File file = files[0];
