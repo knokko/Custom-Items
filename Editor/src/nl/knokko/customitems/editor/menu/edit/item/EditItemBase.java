@@ -360,6 +360,8 @@ public abstract class EditItemBase extends GuiMenu {
 	protected abstract CustomItemType.Category getCategory();
 
 	protected boolean allowTexture(NamedImage texture) {
-		return true;
+		
+		// No subclasses such as bow textures
+		return texture.getClass() == NamedImage.class;
 	}
 }
