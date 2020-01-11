@@ -23,6 +23,7 @@
  *******************************************************************************/
 package nl.knokko.customitems.editor.set.recipe.result;
 
+import nl.knokko.customitems.NameHelper;
 import nl.knokko.customitems.encoding.RecipeEncoding;
 import nl.knokko.customitems.item.CIMaterial;
 import nl.knokko.util.bits.BitInput;
@@ -62,14 +63,14 @@ public class DataVanillaResult extends Result {
 	protected String[] createInfo() {
 		return new String[] {
 				"Vanilla result:",
-				"Type: " + type.name().toLowerCase(),
+				"Type: " + NameHelper.getNiceEnumName(type.name()),
 				"Data: " + data
 		};
 	}
 
 	@Override
 	public String getString() {
-		return type.name().toLowerCase() + "(" + data + ")";
+		return NameHelper.getNiceEnumName(type.name()) + "(" + data + ")";
 	}
 
 	@Override

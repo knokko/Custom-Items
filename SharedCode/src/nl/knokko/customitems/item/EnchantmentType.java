@@ -76,7 +76,7 @@ public enum EnchantmentType {
 	private final String minecraftName;
 	
 	private EnchantmentType(String minecraftName, int numericID, int mcVersion) {
-		niceName = name().toLowerCase().replace('_', ' ');
+		niceName = NameHelper.getNiceEnumName(name());
 		version = mcVersion;
 		this.numericID = numericID;
 		this.minecraftName = minecraftName;

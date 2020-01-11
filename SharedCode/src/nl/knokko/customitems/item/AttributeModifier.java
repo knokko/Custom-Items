@@ -23,6 +23,8 @@
  *******************************************************************************/
 package nl.knokko.customitems.item;
 
+import java.util.Locale;
+
 import nl.knokko.customitems.NameHelper;
 
 public class AttributeModifier {
@@ -97,7 +99,7 @@ public class AttributeModifier {
 		}
 		
 		public String getSlot() {
-			return name().toLowerCase();
+			return name().toLowerCase(Locale.ROOT);
 		}
 	}
 	

@@ -4,6 +4,8 @@ import static nl.knokko.customitems.MCVersions.VERSION1_12;
 import static nl.knokko.customitems.MCVersions.VERSION1_13;
 import static nl.knokko.customitems.MCVersions.VERSION1_14;
 
+import java.util.Locale;
+
 public class NameHelper {
 	
 	public static String getNiceEnumName(String name) {
@@ -11,7 +13,7 @@ public class NameHelper {
 		// The charAt(0) and substring(1) would be out of bounds for an empty string
 		if (name.isEmpty())
 			return name;
-		return name.charAt(0) + name.substring(1).toLowerCase().replaceAll("_", " ");
+		return name.charAt(0) + name.substring(1).toLowerCase(Locale.ROOT).replaceAll("_", " ");
 	}
 	
 	public static String getNiceEnumName(String name, int mcVersion) {

@@ -86,9 +86,9 @@ public class CreateToolTest {
 			}
 		}
 		if (repairItemCategory.equals("Vanilla item with datavalue")) {
-			test.assertComponentWithText(repairItem.toLowerCase().replace(' ', '_') + "(0)");
+			test.assertComponentWithText(repairItem + "(0)");
 		} else if (repairItem != null){
-			test.assertComponentWithText(repairItem.toLowerCase().replace(' ', '_'));
+			test.assertComponentWithText(repairItem);
 		} else {
 			test.assertComponentWithText("None");
 		}

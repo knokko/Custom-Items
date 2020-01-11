@@ -25,6 +25,7 @@ package nl.knokko.customitems.editor.menu.edit.select.item;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Locale;
 
 import nl.knokko.customitems.editor.menu.edit.EditProps;
 import nl.knokko.customitems.item.CIMaterial;
@@ -131,7 +132,7 @@ public class SelectSimpleVanillaItem extends GuiMenu {
 		private void addMaterials() {
 			int index = addNoneButton ? 1 : 0;
 			for (DynamicTextButton button : buttons) {
-				if (button.getText().toLowerCase().contains(filterField.getText().toLowerCase())) {
+				if (button.getText().toLowerCase(Locale.ROOT).contains(filterField.getText().toLowerCase(Locale.ROOT))) {
 					addComponent(button, 0f, 0.9f - index * 0.1f, Math.min(1f, button.getText().length() * 0.05f), 1f - index * 0.1f);
 					index++;
 				}

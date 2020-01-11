@@ -25,6 +25,8 @@ package nl.knokko.customitems.item;
 
 import static nl.knokko.customitems.item.CustomItemType.Category.*;
 
+import java.util.Locale;
+
 import nl.knokko.customitems.NameHelper;
 
 import static nl.knokko.customitems.MCVersions.*;
@@ -105,7 +107,7 @@ public enum CustomItemType {
 		this.categories = categories;
 		this.version = version;
 		
-		String lowerCaseName = this.name().toLowerCase();
+		String lowerCaseName = this.name().toLowerCase(Locale.ROOT);
 		if (lowerCaseName.equals("carrot_stick")) {
 			this.minecraftName = "carrot_on_a_stick";
 			this.textureName12 = this.minecraftName;

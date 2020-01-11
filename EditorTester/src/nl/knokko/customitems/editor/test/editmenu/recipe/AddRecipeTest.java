@@ -7,9 +7,9 @@ public class AddRecipeTest {
 	public static void addShapelessRecipe(GuiTestHelper test, String result, String resultAmount, String...ingredients) {
 		
 		test.click("Create shapeless recipe");
-		test.assertComponentsWithTexts("Cancel", "Add ingredient", "Ingredients", "Result", "diamond x 1");
+		test.assertComponentsWithTexts("Cancel", "Add ingredient", "Ingredients", "Result", "Diamond x 1");
 		
-		test.click("diamond x 1");
+		test.click("Diamond x 1");
 		test.click("Change");
 		test.click("1");
 		test.backspace(1);

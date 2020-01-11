@@ -23,6 +23,7 @@
  *******************************************************************************/
 package nl.knokko.customitems.editor.set.recipe.ingredient;
 
+import nl.knokko.customitems.NameHelper;
 import nl.knokko.customitems.encoding.RecipeEncoding;
 import nl.knokko.customitems.item.CIMaterial;
 import nl.knokko.util.bits.BitInput;
@@ -47,7 +48,7 @@ public class SimpleVanillaIngredient implements Ingredient {
 	private void determineInfo() {
 		info = new String[] {
 				"Vanilla ingredient:",
-				"Type: " + type.name().toLowerCase()
+				"Type: " + NameHelper.getNiceEnumName(type.name())
 		};
 	}
 	
@@ -77,7 +78,7 @@ public class SimpleVanillaIngredient implements Ingredient {
 	
 	@Override
 	public String toString(String emptyString) {
-		return type.name().toLowerCase();
+		return NameHelper.getNiceEnumName(type.name());
 	}
 	
 	@Override
