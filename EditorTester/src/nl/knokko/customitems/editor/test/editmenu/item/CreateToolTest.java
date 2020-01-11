@@ -1,6 +1,7 @@
 package nl.knokko.customitems.editor.test.editmenu.item;
 
 import java.text.DecimalFormat;
+import java.util.Locale;
 
 import nl.knokko.customitems.item.CustomItemDamage;
 import nl.knokko.customitems.item.CustomItemType;
@@ -58,7 +59,7 @@ public class CreateToolTest {
 		LoreTest.test(test, lore1, lore2, 8);
 		
 		// Not my most pretty solution ever, but will do the trick
-		CustomItemType customItemType = CustomItemType.valueOf("IRON_" + toolType.toUpperCase());
+		CustomItemType customItemType = CustomItemType.valueOf("IRON_" + toolType.toUpperCase(Locale.ROOT));
 		AttributeModTest.test(test, "generic.attackDamage", "Mainhand", "Add", 
 				new DecimalFormat("#.############").format(CustomItemDamage.getDefaultAttackDamage(customItemType)), 
 				attribute1, slot1, op1, value1, attribute2, slot2, op2, value2, 8);
