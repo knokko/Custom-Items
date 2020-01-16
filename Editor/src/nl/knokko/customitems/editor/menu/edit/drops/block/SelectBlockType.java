@@ -1,5 +1,7 @@
 package nl.knokko.customitems.editor.menu.edit.drops.block;
 
+import java.util.Locale;
+
 import nl.knokko.customitems.drops.BlockType;
 import nl.knokko.customitems.editor.menu.edit.EditProps;
 import nl.knokko.gui.color.GuiColor;
@@ -84,7 +86,7 @@ public class SelectBlockType extends GuiMenu {
 			int heightIndex = 0;
 			for (BlockType block : blocks) {
 				String blockName = block.toString();
-				if (blockName.contains(searchField.getText())) {
+				if (blockName.toLowerCase(Locale.ROOT).contains(searchField.getText().toLowerCase(Locale.ROOT))) {
 					addComponent(new DynamicTextButton(block.toString(), EditProps.SELECT_BASE, EditProps.SELECT_HOVER, () -> {
 						receiver.onSelect(block);
 						state.getWindow().setMainComponent(returnMenu);
