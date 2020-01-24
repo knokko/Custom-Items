@@ -92,6 +92,7 @@ public class AttributeModTest {
 		test.assertComponentWithText(modifiedValue2);
 		test.click("Apply");
 		test.clickNearest("Change...", "Attribute modifiers: ", numChangeButtons);
+		test.assertComponentsWithTexts("Cancel", "New Attribute", "Apply");
 		test.click(modifiedValue2);
 		test.backspace(1);
 		test.type(value2.charAt(value2.length() - 1));
