@@ -241,7 +241,7 @@ public abstract class EditItemBase extends GuiMenu {
 								: "%TEXTURE_NAME%", internalType.isLeatherArmor())
 								, this, (byte[] array) -> {
 									customModel = array;
-								}));
+								}, customModel));
 			}), BUTTON_X, 0.26f, BUTTON_X + 0.1f, 0.31f);
 		}
 	}

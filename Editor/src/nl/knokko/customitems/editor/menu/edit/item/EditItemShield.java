@@ -39,7 +39,7 @@ public class EditItemShield extends EditItemTool {
 			state.getWindow()
 					.setMainComponent(new EditCustomModel(ItemSet.getDefaultModelBlockingShield(textureSelect.getSelected() != null ? textureSelect.getSelected().getName() : "TEXTURE_NAME"), this, (byte[] array) -> {
 								customBlockingModel = array;
-							}));
+							}, customBlockingModel));
 		}), BUTTON_X, 0.02f, BUTTON_X + 0.1f, 0.07f);
 	}
 	

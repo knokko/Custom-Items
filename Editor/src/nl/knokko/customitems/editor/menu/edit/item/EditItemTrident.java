@@ -54,14 +54,14 @@ public class EditItemTrident extends EditItemTool {
 			state.getWindow()
 					.setMainComponent(new EditCustomModel(ItemSet.getDefaultModelBlockingShield(textureSelect.getSelected() != null ? textureSelect.getSelected().getName() : "TEXTURE_NAME"), this, (byte[] array) -> {
 								customInHandModel = array;
-							}));
+							}, customInHandModel));
 		}), BUTTON_X, 0.02f, BUTTON_X + 0.1f, 0.07f);
 		addComponent(new DynamicTextComponent("Throwing model: ", EditProps.LABEL), LABEL_X, -0.04f, LABEL_X + 0.2f, 0.01f);
 		addComponent(new DynamicTextButton("Change...", EditProps.BUTTON, EditProps.HOVER, () -> {
 			state.getWindow()
 					.setMainComponent(new EditCustomModel(ItemSet.getDefaultModelBlockingShield(textureSelect.getSelected() != null ? textureSelect.getSelected().getName() : "TEXTURE_NAME"), this, (byte[] array) -> {
 								customThrowingModel = array;
-							}));
+							}, customThrowingModel));
 		}), BUTTON_X, -0.04f, BUTTON_X + 0.1f, 0.01f);
 	}
 	

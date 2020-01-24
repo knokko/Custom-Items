@@ -4,7 +4,11 @@ import java.io.DataInputStream;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.ByteBuffer;
+import java.nio.charset.CharacterCodingException;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
+import java.util.Scanner;
 
 import nl.knokko.customitems.editor.menu.commandhelp.CommandBlockHelpOverview;
 import nl.knokko.customitems.editor.menu.edit.EditProps;
@@ -24,12 +28,14 @@ public class EditCustomModel extends GuiMenu {
 	private final ByteArrayListener receiver;
 	
 	private final String[] exampleContent;
+	private final byte[] currentContent;
 	private TextEditField parent = new TextEditField("handheld", EditProps.EDIT_BASE, EditProps.EDIT_ACTIVE);
 	
-	public EditCustomModel(String[] exampleContent, GuiComponent returnMenu, ByteArrayListener receiver) {
+	public EditCustomModel(String[] exampleContent, GuiComponent returnMenu, ByteArrayListener receiver, byte[] currentContent) {
 		this.returnMenu = returnMenu;
 		this.receiver = receiver;
 		this.exampleContent = exampleContent;
+		this.currentContent = currentContent;
 	}
 
 	@Override
@@ -52,13 +58,32 @@ public class EditCustomModel extends GuiMenu {
 		addComponent(new DynamicTextComponent("The editor will simply put the model you choose in the resourcepack", EditProps.LABEL), 0.1f, 0.7f, 0.9f, 0.8f);
 		addComponent(new DynamicTextComponent("upon exporting, no attempt will be made to read the model json.", EditProps.LABEL), 0.1f, 0.6f, 0.85f, 0.7f);
 		
-		if (exampleContent != null) {
+		if (exampleContent != null && currentContent == null) {
 			addComponent(new DynamicTextComponent("The default model for this item would be:", EditProps.LABEL), 0.1f, 0.5f, 0.6f, 0.6f);
 			int index = 0;
 			for (String content : exampleContent) {
 				addComponent(new DynamicTextComponent(content, EditProps.LABEL), 0.025f, 0.40f - 0.05f * index, 0.025f + content.length() * 0.01f, 0.45f - 0.05f * index);
 				index++;
 			}
+		} else if (currentContent != null) {
+			try {
+				String asString = StandardCharsets.UTF_8.newDecoder().decode(ByteBuffer.wrap(currentContent)).toString();
+				Scanner lineByLine = new Scanner(asString);
+				addComponent(new DynamicTextComponent("The current custom model for this item is:", EditProps.LABEL), 0.1f, 0.5f, 0.6f, 0.6f);
+				
+				int index = 0;
+				while (lineByLine.hasNextLine()) {
+					String content = lineByLine.nextLine();
+					addComponent(new DynamicTextComponent(content, EditProps.LABEL), 0.025f, 0.40f - 0.05f * index, 0.025f + content.length() * 0.01f, 0.45f - 0.05f * index);
+					index++;
+				}
+				
+				lineByLine.close();
+				
+			} catch (CharacterCodingException e) {
+				addComponent(new DynamicTextComponent("The current custom model for this item seems to be invalid", EditProps.LABEL), 0.1f, 0.5f, 0.6f, 0.6f);
+			}
+			
 		}
 		addComponent(new DynamicTextButton("Select file...", EditProps.CHOOSE_BASE, EditProps.CHOOSE_HOVER, () -> {
 			state.getWindow().setMainComponent(new FileChooserMenu(returnMenu, (File file) -> {

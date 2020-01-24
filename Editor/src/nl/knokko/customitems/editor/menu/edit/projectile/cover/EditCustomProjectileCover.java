@@ -42,7 +42,7 @@ public class EditCustomProjectileCover extends EditProjectileCover {
 		addComponent(new DynamicTextButton("Change...", EditProps.BUTTON, EditProps.HOVER, () -> {
 			state.getWindow().setMainComponent(new EditCustomModel(null, this, (byte[] array) -> {
 				customModel = array;
-			}));
+			}, customModel));
 		}), 0.6f, 0.11f, 0.7f, 0.19f);
 	}
 
