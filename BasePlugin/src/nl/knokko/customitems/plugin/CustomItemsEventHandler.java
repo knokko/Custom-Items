@@ -152,12 +152,10 @@ public class CustomItemsEventHandler implements Listener {
 			if (custom != null) {
 				if (custom.forbidDefaultUse(item))
 					event.setCancelled(true);
-				else {
-					Player player = event.getPlayer();
-					String[] commands = custom.getCommands();
-					for (String command : commands) {
-						player.performCommand(command);
-					}
+				Player player = event.getPlayer();
+				String[] commands = custom.getCommands();
+				for (String command : commands) {
+					player.performCommand(command);
 				}
 			}
 		}
