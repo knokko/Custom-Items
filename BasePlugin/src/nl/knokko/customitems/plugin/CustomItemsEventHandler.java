@@ -563,7 +563,11 @@ public class CustomItemsEventHandler implements Listener {
 		if (CustomItem.isCustom(item)) {
 			CustomItem custom = set.getItem(item);
 			if (custom != null) {
-				custom.onBlockBreak(event.getPlayer(), item, event.getBlock());
+				
+				// Delay this to avoid messing around with other plug-ins
+				Bukkit.getScheduler().scheduleSyncDelayedTask(CustomItemsPlugin.getInstance(), () -> {
+					custom.onBlockBreak(event.getPlayer(), item, event.getBlock());
+				});
 			} else {
 				Bukkit.getLogger().warning("Interesting item: " + item);
 			}
