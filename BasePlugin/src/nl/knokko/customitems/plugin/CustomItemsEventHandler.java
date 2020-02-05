@@ -1652,7 +1652,7 @@ public class CustomItemsEventHandler implements Listener {
 				ShulkerBox shulker = (ShulkerBox) block.getState();
 				event.setDropItems(false);
 
-				ItemStack stackToDrop = new ItemStack(block.getType());
+				ItemStack stackToDrop = ItemHelper.createStack(ItemHelper.getMaterialName(block), 1);
 				ItemMeta meta = stackToDrop.getItemMeta();
 				BlockStateMeta bms = (BlockStateMeta) meta;
 				bms.setBlockState(shulker);
