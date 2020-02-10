@@ -117,12 +117,24 @@ import static org.bukkit.enchantments.Enchantment.*;
 public class CustomItemsEventHandler implements Listener {
 
 	private Map<UUID, Boolean> shouldInterfere = new HashMap<UUID, Boolean>();
+	
+	private static CustomItemsPlugin plugin() {
+		return CustomItemsPlugin.getInstance();
+	}
+	
+	private ItemSet set() {
+		return plugin().getSet();
+	}
+	
+	private boolean interestingWarnings() {
+		return plugin().showInterestingWarnings();
+	}
 
 	@EventHandler(ignoreCancelled = true)
 	public void onItemUse(PlayerInteractEvent event) {
 		if (event.getAction() == Action.RIGHT_CLICK_BLOCK) {
 			ItemStack item = event.getItem();
-			CustomItem custom = CustomItemsPlugin.getInstance().getSet().getItem(item);
+			CustomItem custom = set().getItem(item);
 			if (custom != null) {
 				// Don't let custom items be used as their internal item
 				if (custom.forbidDefaultUse(item))
@@ -148,7 +160,7 @@ public class CustomItemsEventHandler implements Listener {
 	public void handleCommands (PlayerInteractEvent event) {
 		if (event.getAction() == Action.RIGHT_CLICK_AIR || event.getAction() == Action.RIGHT_CLICK_BLOCK) {
 			ItemStack item = event.getItem();
-			CustomItem custom = CustomItemsPlugin.getInstance().getSet().getItem(item);
+			CustomItem custom = set().getItem(item);
 			if (custom != null) {
 				if (custom.forbidDefaultUse(item))
 					event.setCancelled(true);
@@ -164,7 +176,7 @@ public class CustomItemsEventHandler implements Listener {
 	@EventHandler(ignoreCancelled = false)
 	public void updateGunsAndWands(PlayerInteractEvent event) {
 		if (event.getAction() == Action.RIGHT_CLICK_AIR || event.getAction() == Action.RIGHT_CLICK_BLOCK) {
-			ItemSet set = CustomItemsPlugin.getInstance().getSet();
+			ItemSet set = set();
 			
 			if (set.getItem(event.getItem()) instanceof CustomWand) {
 				CustomItemsPlugin.getInstance().getData().setShooting(event.getPlayer());
@@ -187,7 +199,7 @@ public class CustomItemsEventHandler implements Listener {
 
 	@EventHandler(ignoreCancelled = true)
 	public void processCustomBowAndTridentDamage(EntityDamageByEntityEvent event) {
-		CustomItemsPlugin plugin = CustomItemsPlugin.getInstance();
+		CustomItemsPlugin plugin = plugin();
 		if (event.getDamager() instanceof Arrow) {
 			List<MetadataValue> metas = event.getDamager().getMetadata("CustomBowName");
 			for (MetadataValue meta : metas) {
@@ -303,7 +315,7 @@ public class CustomItemsEventHandler implements Listener {
 
 		@Override
 		public Plugin getOwningPlugin() {
-			return CustomItemsPlugin.getInstance();
+			return plugin();
 		}
 
 		@Override
@@ -320,7 +332,7 @@ public class CustomItemsEventHandler implements Listener {
 				Player shooter = (Player) trident.getShooter();
 				ItemStack main = shooter.getInventory().getItemInMainHand();
 				ItemStack off = shooter.getInventory().getItemInOffHand();
-				ItemSet set = CustomItemsPlugin.getInstance().getSet();
+				ItemSet set = set();
 				if (main != null && ItemHelper.getMaterialName(main).equals(CIMaterial.TRIDENT.name())) {
 					if (CustomItem.isCustom(main)) {
 						CustomItem customMain = set.getItem(main);
@@ -395,7 +407,7 @@ public class CustomItemsEventHandler implements Listener {
 
 						@Override
 						public Plugin getOwningPlugin() {
-							return CustomItemsPlugin.getInstance();
+							return plugin();
 						}
 
 						@Override
@@ -416,7 +428,7 @@ public class CustomItemsEventHandler implements Listener {
 	@EventHandler(ignoreCancelled = true)
 	public void onBowShoot(EntityShootBowEvent event) {
 		if (CustomItem.isCustom(event.getBow())) {
-			CustomItem customItem = CustomItemsPlugin.getInstance().getSet().getItem(event.getBow());
+			CustomItem customItem = set().getItem(event.getBow());
 			if (customItem instanceof CustomBow) {
 				CustomBow bow = (CustomBow) customItem;
 				Entity projectile = event.getProjectile();
@@ -426,7 +438,7 @@ public class CustomItemsEventHandler implements Listener {
 						Player player = (Player) event.getEntity();
 						playBreakSound(player);
 						ItemStack mainHand = player.getInventory().getItemInMainHand();
-						if (mainHand != null && CustomItemsPlugin.getInstance().getSet().getItem(mainHand) == bow) {
+						if (mainHand != null && set().getItem(mainHand) == bow) {
 							player.getInventory().setItemInMainHand(null);
 						} else {
 							player.getInventory().setItemInOffHand(null);
@@ -486,17 +498,17 @@ public class CustomItemsEventHandler implements Listener {
 
 						@Override
 						public Plugin getOwningPlugin() {
-							return CustomItemsPlugin.getInstance();
+							return plugin();
 						}
 
 						@Override
 						public void invalidate() {
 						}
 					});
-				} else {
+				} else if (interestingWarnings()) {
 					Bukkit.getLogger().warning("A bow was shot, but it didn't shoot an arrow");
 				}
-			} else {
+			} else if (interestingWarnings()) {
 				Bukkit.getLogger().warning("A bow is being used as custom item, but is not a custom bow");
 			}
 		}
@@ -507,11 +519,9 @@ public class CustomItemsEventHandler implements Listener {
 		ItemStack main = event.getPlayer().getInventory().getItemInMainHand();
 		ItemStack off = event.getPlayer().getInventory().getItemInOffHand();
 		CustomItem customMain = CIMaterial.valueOf(ItemHelper.getMaterialName(main)) == CIMaterial.SHEARS
-				? CustomItemsPlugin.getInstance().getSet().getItem(main)
-						: null;
+				? set().getItem(main) : null;
 				CustomItem customOff = CIMaterial.valueOf(ItemHelper.getMaterialName(off)) == CIMaterial.SHEARS
-						? CustomItemsPlugin.getInstance().getSet().getItem(off)
-								: null;
+						? set().getItem(off) : null;
 						if (customMain != null) {
 							if (customMain.forbidDefaultUse(main))
 								event.setCancelled(true);
@@ -521,8 +531,9 @@ public class CustomItemsEventHandler implements Listener {
 									playBreakSound(event.getPlayer());
 									event.getPlayer().getInventory().setItemInMainHand(null);
 								}
-							} else
+							} else if (interestingWarnings()) {
 								Bukkit.getLogger().warning("Interesting custom main shear: " + customMain);
+							}
 						} else if (customOff != null) {
 							if (customOff.forbidDefaultUse(off))
 								event.setCancelled(true);
@@ -532,8 +543,9 @@ public class CustomItemsEventHandler implements Listener {
 									playBreakSound(event.getPlayer());
 									event.getPlayer().getInventory().setItemInOffHand(null);
 								}
-							} else
+							} else if (interestingWarnings()) {
 								Bukkit.getLogger().warning("Interesting custom off shear: " + customOff);
+							}
 						}
 	}
 
@@ -541,7 +553,7 @@ public class CustomItemsEventHandler implements Listener {
 	// and we may need to modify the setDropItems flag of the event
 	@EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
 	public void onBlockBreak(BlockBreakEvent event) {
-		ItemSet set = CustomItemsPlugin.getInstance().getSet();
+		ItemSet set = set();
 		Drop[] customDrops = set.getDrops(CIMaterial.valueOf(ItemHelper.getMaterialName(event.getBlock())));
 
 		Random random = new Random();
@@ -565,10 +577,10 @@ public class CustomItemsEventHandler implements Listener {
 			if (custom != null) {
 				
 				// Delay this to avoid messing around with other plug-ins
-				Bukkit.getScheduler().scheduleSyncDelayedTask(CustomItemsPlugin.getInstance(), () -> {
+				Bukkit.getScheduler().scheduleSyncDelayedTask(plugin(), () -> {
 					custom.onBlockBreak(event.getPlayer(), item, event.getBlock());
 				});
-			} else {
+			} else if (interestingWarnings()) {
 				Bukkit.getLogger().warning("Interesting item: " + item);
 			}
 		}
@@ -576,7 +588,7 @@ public class CustomItemsEventHandler implements Listener {
 
 	@EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
 	public void onEntityDeath(EntityDeathEvent event) {
-		Drop[] drops = CustomItemsPlugin.getInstance().getSet().getDrops(event.getEntity());
+		Drop[] drops = set().getDrops(event.getEntity());
 		Random random = new Random();
 
 		for (Drop drop : drops) {
@@ -600,55 +612,55 @@ public class CustomItemsEventHandler implements Listener {
 			ItemStack boots = target.getEquipment().getBoots();
 
 			if (CustomItem.isCustom(helmet)) {
-				CustomItem custom = CustomItemsPlugin.getInstance().getSet().getItem(helmet);
+				CustomItem custom = set().getItem(helmet);
 				if (custom != null) {
-					Collection<org.bukkit.potion.PotionEffect> pe = new ArrayList<org.bukkit.potion.PotionEffect>();
+					Collection<org.bukkit.potion.PotionEffect> pe = new ArrayList<>();
 
 					for (PotionEffect effect : custom.getPlayerEffects()) {
 						pe.add(new org.bukkit.potion.PotionEffect(org.bukkit.potion.PotionEffectType.getByName(effect.getEffect().name()), effect.getDuration() * 20, effect.getLevel() - 1));
 					}
 
 					target.addPotionEffects(pe);
-				} else {
+				} else if (interestingWarnings()) {
 					Bukkit.getLogger().warning("Interesting item: " + custom);
 				}
 			}
 
 			if (CustomItem.isCustom(chest)) {
-				CustomItem custom = CustomItemsPlugin.getInstance().getSet().getItem(chest);
+				CustomItem custom = set().getItem(chest);
 				if (custom != null) {
-					Collection<org.bukkit.potion.PotionEffect> pe = new ArrayList<org.bukkit.potion.PotionEffect>();
+					Collection<org.bukkit.potion.PotionEffect> pe = new ArrayList<>();
 					for (PotionEffect effect : custom.getPlayerEffects()) {
 						pe.add(new org.bukkit.potion.PotionEffect(org.bukkit.potion.PotionEffectType.getByName(effect.getEffect().name()), effect.getDuration() * 20, effect.getLevel() - 1));
 					}
 					target.addPotionEffects(pe);
-				} else {
+				} else if (interestingWarnings()) {
 					Bukkit.getLogger().warning("Interesting item: " + custom);
 				}
 			}
 
 			if (CustomItem.isCustom(legs)) {
-				CustomItem custom = CustomItemsPlugin.getInstance().getSet().getItem(legs);
+				CustomItem custom = set().getItem(legs);
 				if (custom != null) {
-					Collection<org.bukkit.potion.PotionEffect> pe = new ArrayList<org.bukkit.potion.PotionEffect>();
+					Collection<org.bukkit.potion.PotionEffect> pe = new ArrayList<>();
 					for (PotionEffect effect : custom.getPlayerEffects()) {
 						pe.add(new org.bukkit.potion.PotionEffect(org.bukkit.potion.PotionEffectType.getByName(effect.getEffect().name()), effect.getDuration() * 20, effect.getLevel() - 1));
 					}
 					target.addPotionEffects(pe);
-				} else {
+				} else if (interestingWarnings()) {
 					Bukkit.getLogger().warning("Interesting item: " + custom);
 				}
 			}
 
 			if (CustomItem.isCustom(boots)) {
-				CustomItem custom = CustomItemsPlugin.getInstance().getSet().getItem(boots);
+				CustomItem custom = set().getItem(boots);
 				if (custom != null) {
-					Collection<org.bukkit.potion.PotionEffect> pe = new ArrayList<org.bukkit.potion.PotionEffect>();
+					Collection<org.bukkit.potion.PotionEffect> pe = new ArrayList<>();
 					for (PotionEffect effect : custom.getPlayerEffects()) {
 						pe.add(new org.bukkit.potion.PotionEffect(org.bukkit.potion.PotionEffectType.getByName(effect.getEffect().name()), effect.getDuration() * 20, effect.getLevel() - 1));
 					}
 					target.addPotionEffects(pe);
-				} else {
+				} else if (interestingWarnings()) {
 					Bukkit.getLogger().warning("Interesting item: " + custom);
 				}
 
@@ -658,19 +670,19 @@ public class CustomItemsEventHandler implements Listener {
 				LivingEntity damager = (LivingEntity) event.getDamager();
 				ItemStack weapon = damager.getEquipment().getItemInMainHand();
 				if (CustomItem.isCustom(weapon)) {
-					CustomItem custom = CustomItemsPlugin.getInstance().getSet().getItem(weapon);
+					CustomItem custom = set().getItem(weapon);
 					if (custom != null) {
 						custom.onEntityHit(damager, weapon, event.getEntity());
-					} else {
+					} else if (interestingWarnings()) {
 						Bukkit.getLogger().warning("Interesting item: " + weapon);
 					}
 				}
 
-				Collection<org.bukkit.potion.PotionEffect> te = new ArrayList<org.bukkit.potion.PotionEffect>();
-				CustomItem customHelmet = CustomItemsPlugin.getInstance().getSet().getItem(helmet);
-				CustomItem customChest = CustomItemsPlugin.getInstance().getSet().getItem(chest);
-				CustomItem customLegs = CustomItemsPlugin.getInstance().getSet().getItem(legs);
-				CustomItem customBoots = CustomItemsPlugin.getInstance().getSet().getItem(boots);
+				Collection<org.bukkit.potion.PotionEffect> te = new ArrayList<>();
+				CustomItem customHelmet = set().getItem(helmet);
+				CustomItem customChest = set().getItem(chest);
+				CustomItem customLegs = set().getItem(legs);
+				CustomItem customBoots = set().getItem(boots);
 				if (customHelmet != null) {
 					for (PotionEffect effect : customHelmet.getTargetEffects()) {
 						te.add(new org.bukkit.potion.PotionEffect(org.bukkit.potion.PotionEffectType.getByName(effect.getEffect().name()), effect.getDuration() * 20, effect.getLevel() - 1));
@@ -732,7 +744,7 @@ public class CustomItemsEventHandler implements Listener {
 				boolean offhand = true;
 
 				if (CustomItem.isCustom(player.getInventory().getItemInOffHand())) {
-					ItemSet set = CustomItemsPlugin.getInstance().getSet();
+					ItemSet set = set();
 					CustomItem customMain = set.getItem(player.getInventory().getItemInOffHand());
 					if (customMain instanceof CustomShield) {
 						shield = (CustomShield) customMain;
@@ -740,7 +752,7 @@ public class CustomItemsEventHandler implements Listener {
 				}
 
 				if (CustomItem.isCustom(player.getInventory().getItemInMainHand())) {
-					ItemSet set = CustomItemsPlugin.getInstance().getSet();
+					ItemSet set = set();
 					CustomItem customMain = set.getItem(player.getInventory().getItemInMainHand());
 					if (customMain instanceof CustomShield) {
 						shield = (CustomShield) customMain;
@@ -768,11 +780,13 @@ public class CustomItemsEventHandler implements Listener {
 
 	private boolean decreaseCustomArmorDurability(ItemStack piece, int damage) {
 		if (CustomItem.isCustom(piece)) {
-			CustomItem custom = CustomItemsPlugin.getInstance().getSet().getItem(piece);
+			CustomItem custom = set().getItem(piece);
 			if (custom instanceof CustomArmor) {
 				return ((CustomArmor) custom).decreaseDurability(piece, damage);
 			} else {
-				Bukkit.getLogger().warning("Strange item " + piece);
+				if (interestingWarnings()) {
+					Bukkit.getLogger().warning("Strange item " + piece);
+				}
 				return false;
 			}
 		} else {
@@ -832,13 +846,13 @@ public class CustomItemsEventHandler implements Listener {
 
 	private void applyCustomArmorDamageReduction(ItemStack armorPiece, DamageSource source, short[] damageResistances, int resistanceIndex) {
 		if (CustomItem.isCustom(armorPiece)) {
-			CustomItem custom = CustomItemsPlugin.getInstance().getSet().getItem(armorPiece);
+			CustomItem custom = set().getItem(armorPiece);
 			if (custom instanceof CustomArmor) {
 				CustomArmor armor = (CustomArmor) custom;
 				if (source != null) {
 					damageResistances[resistanceIndex] = armor.getDamageResistances().getResistance(source);
 				}
-			} else {
+			} else if (interestingWarnings()) {
 				Bukkit.getLogger().warning("Strange armor piece " + armorPiece);
 			}
 		}
@@ -851,34 +865,18 @@ public class CustomItemsEventHandler implements Listener {
 			item = event.getPlayer().getInventory().getItemInMainHand();
 		else
 			item = event.getPlayer().getInventory().getItemInOffHand();
-		CustomItem custom = CustomItemsPlugin.getInstance().getSet().getItem(item);
+		CustomItem custom = set().getItem(item);
 		if (custom != null && custom.forbidDefaultUse(item)) {
 			// Don't let custom items be used as their internal item
 			event.setCancelled(true);
 		}
 	}
 
-	/*
-	 * The mending enchantment is ignored on unbreakable items
-	 * 
-	 * @EventHandler(priority = EventPriority.HIGHEST) public void
-	 * handleCustomMending(PlayerItemMendEvent event) { if
-	 * (CustomItem.isCustom(event.getItem())) { CustomItem custom =
-	 * CustomItemsPlugin.getInstance().getSet().getItem(event.getItem()); if (custom
-	 * != null) { if (custom instanceof CustomTool) { CustomTool tool = (CustomTool)
-	 * custom; int repaired = tool.increaseDurability(event.getItem(),
-	 * event.getRepairAmount()); int newXP =
-	 * event.getExperienceOrb().getExperience() - repaired / 2; if (newXP < 0)
-	 * event.getExperienceOrb().remove();
-	 * event.getExperienceOrb().setExperience(newXP); } event.setCancelled(true); }
-	 * } }
-	 */
-
 	@EventHandler
 	public void beforeXP(PlayerExpChangeEvent event) {
 		ItemStack item = event.getPlayer().getInventory().getItemInMainHand();
 		if (CustomItem.isCustom(item)) {
-			CustomItem custom = CustomItemsPlugin.getInstance().getSet().getItem(item);
+			CustomItem custom = set().getItem(item);
 			if (custom != null) {
 				if (item.containsEnchantment(Enchantment.MENDING) && custom instanceof CustomTool) {
 					CustomTool tool = (CustomTool) custom;
@@ -898,9 +896,9 @@ public class CustomItemsEventHandler implements Listener {
 		CustomItem custom1 = null;
 		CustomItem custom2 = null;
 		if (CustomItem.isCustom(contents[0]))
-			custom1 = CustomItemsPlugin.getInstance().getSet().getItem(contents[0]);
+			custom1 = set().getItem(contents[0]);
 		if (CustomItem.isCustom(contents[1]))
-			custom2 = CustomItemsPlugin.getInstance().getSet().getItem(contents[1]);
+			custom2 = set().getItem(contents[1]);
 		if (custom1 != null) {
 			if (custom1.allowAnvilActions()) {
 				if (custom1 instanceof CustomTool) {
@@ -1115,7 +1113,7 @@ public class CustomItemsEventHandler implements Listener {
 
 	@EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
 	public void cancelEnchanting(PrepareItemEnchantEvent event) {
-		CustomItem custom = CustomItemsPlugin.getInstance().getSet().getItem(event.getItem());
+		CustomItem custom = set().getItem(event.getItem());
 		if (custom != null && !custom.allowVanillaEnchanting())
 			event.setCancelled(true);
 	}
@@ -1256,7 +1254,7 @@ public class CustomItemsEventHandler implements Listener {
 						for (int index = 1; index < contents.length; index++)
 							contents[index].setAmount(contents[index].getAmount() - minAmount);
 						event.getInventory().setItem(0, ItemHelper.createStack(CIMaterial.AIR.name(), 1));
-						CustomItem customResult = CustomItemsPlugin.getInstance().getSet().getItem(result);
+						CustomItem customResult = set().getItem(result);
 						int amountToGive = amountPerCraft * minAmount;
 						if (customResult != null && !customResult.canStack()) {
 							for (int counter = 0; counter < amountToGive; counter++) {
@@ -1284,7 +1282,7 @@ public class CustomItemsEventHandler implements Listener {
 						if (CustomItem.isCustom(cursor) && CustomItem.isCustom(current)
 								&& cursor.getType() == current.getType()
 								&& cursor.getDurability() == current.getDurability()) {
-							CustomItem custom = CustomItemsPlugin.getInstance().getSet().getItem(current);
+							CustomItem custom = set().getItem(current);
 							if (custom != null && custom.canStack()
 									&& cursor.getAmount() + current.getAmount() <= custom.getMaxStacksize()) {
 								Bukkit.getScheduler().scheduleSyncDelayedTask(CustomItemsPlugin.getInstance(), () -> {
@@ -1324,9 +1322,9 @@ public class CustomItemsEventHandler implements Listener {
 					});
 				} else if ((cursor == null || ItemHelper.getMaterialName(cursor).equals(CIMaterial.AIR.name())) && CustomItem.isCustom(current)) {
 					AnvilInventory ai = (AnvilInventory) event.getInventory();
-					CustomItem custom = CustomItemsPlugin.getInstance().getSet().getItem(current);
+					CustomItem custom = set().getItem(current);
 					ItemStack first = event.getInventory().getItem(0);
-					CustomItem customFirst = CustomItemsPlugin.getInstance().getSet().getItem(first);
+					CustomItem customFirst = set().getItem(first);
 					if (customFirst != null && !customFirst.allowAnvilActions()) {
 						event.setCancelled(true);
 						Bukkit.getScheduler().scheduleSyncDelayedTask(CustomItemsPlugin.getInstance(), () -> {
@@ -1374,7 +1372,7 @@ public class CustomItemsEventHandler implements Listener {
 			ItemStack current = event.getCurrentItem();
 			// This block makes custom items stackable
 			if (CustomItem.isCustom(cursor) && CustomItem.isCustom(current)) {
-				ItemSet set = CustomItemsPlugin.getInstance().getSet();
+				ItemSet set = set();
 				CustomItem customCursor = set.getItem(cursor);
 				CustomItem customCurrent = set.getItem(current);
 				if (customCursor != null && customCursor == customCurrent && customCursor.canStack()) {
@@ -1429,7 +1427,7 @@ public class CustomItemsEventHandler implements Listener {
 		}
 
 		// Check if there are any custom recipes matching the ingredients
-		CustomRecipe[] recipes = CustomItemsPlugin.getInstance().getSet().getRecipes();
+		CustomRecipe[] recipes = set().getRecipes();
 		if (recipes.length > 0) {
 			// Determine ingredients
 			ItemStack[] ingredients = inventory.getStorageContents();
@@ -1529,7 +1527,7 @@ public class CustomItemsEventHandler implements Listener {
 			} else {
 				amount = 1;
 			}
-			CustomItem customItem = CustomItemsPlugin.getInstance().getSet().getItem(tagContent);
+			CustomItem customItem = set().getItem(tagContent);
 
 			if (customItem == null) {
 				throw new IllegalArgumentException("There is no custom item with name \"" + tagContent + "\"");
@@ -1551,7 +1549,7 @@ public class CustomItemsEventHandler implements Listener {
 
 	private boolean fixCustomItemPickup(final ItemStack stack, ItemStack[] contents) {
 		if (CustomItem.isCustom(stack)) {
-			CustomItem customItem = CustomItemsPlugin.getInstance().getSet().getItem(stack);
+			CustomItem customItem = set().getItem(stack);
 			if (customItem != null) {
 				int remainingAmount = stack.getAmount();
 				for (ItemStack content : contents) {
@@ -1623,7 +1621,7 @@ public class CustomItemsEventHandler implements Listener {
 	@EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
 	public void fixHopperTransport(InventoryMoveItemEvent event) {
 		ItemStack stack = event.getItem();
-		ItemSet set = CustomItemsPlugin.getInstance().getSet();
+		ItemSet set = set();
 		CustomItem customStack = set.getItem(stack);
 		if (fixCustomItemPickup(stack, event.getDestination().getContents())) {
 			event.setCancelled(true);

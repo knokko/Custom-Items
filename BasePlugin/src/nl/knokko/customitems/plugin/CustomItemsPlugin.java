@@ -50,6 +50,7 @@ public class CustomItemsPlugin extends JavaPlugin {
 	private ProjectileManager projectileManager;
 	
 	private int maxFlyingProjectiles;
+	private boolean showInterestingWarnings;
 
 	public static CustomItemsPlugin getInstance() {
 		return instance;
@@ -85,7 +86,12 @@ public class CustomItemsPlugin extends JavaPlugin {
 		return maxFlyingProjectiles;
 	}
 	
+	public boolean showInterestingWarnings() {
+		return showInterestingWarnings();
+	}
+	
 	private static final String KEY_MAX_PROJECTILES = "Maximum number of flying projectiles";
+	private static final String KEY_INTERESTING_WARNINGS = "Show warnings about interesting items";
 	
 	private void loadConfig() {
 		FileConfiguration config = getConfig();
@@ -94,6 +100,14 @@ public class CustomItemsPlugin extends JavaPlugin {
 		} else {
 			this.maxFlyingProjectiles = 100;
 			config.set(KEY_MAX_PROJECTILES, maxFlyingProjectiles);
+			saveConfig();
+		}
+		
+		if (config.contains(KEY_INTERESTING_WARNINGS)) {
+			this.showInterestingWarnings = config.getBoolean(KEY_INTERESTING_WARNINGS);
+		} else {
+			this.showInterestingWarnings = true;
+			config.set(KEY_INTERESTING_WARNINGS, this.showInterestingWarnings);
 			saveConfig();
 		}
 	}
