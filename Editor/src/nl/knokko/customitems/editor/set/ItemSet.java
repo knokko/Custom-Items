@@ -1423,7 +1423,7 @@ public class ItemSet implements ItemSetBase {
 			char c = name.charAt(index);
 			if (c >= 'A' && c <= 'Z')
 				return "Uppercase characters are not allowed in names.";
-			if ((c < 'a' || c > 'z') && c != '_')
+			if ((c < 'a' || c > 'z') && c != '_' && (c < '0' || c > '9'))
 				return "The _ character is the only special character that is allowed in names.";
 		}
 		return null;
