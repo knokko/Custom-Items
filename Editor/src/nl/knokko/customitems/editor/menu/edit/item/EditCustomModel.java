@@ -88,6 +88,7 @@ public class EditCustomModel extends GuiMenu {
 		addComponent(new DynamicTextButton("Select file...", EditProps.CHOOSE_BASE, EditProps.CHOOSE_HOVER, () -> {
 			state.getWindow().setMainComponent(new FileChooserMenu(returnMenu, (File file) -> {
 				receiver.readArray(new ByteArrayFileListener().convertFile(file));
+				return returnMenu;
 			}, (File file) -> {
 				return file.getName().endsWith(".json");
 			}, EditProps.CANCEL_BASE, EditProps.CANCEL_HOVER, EditProps.CHOOSE_BASE, EditProps.CHOOSE_HOVER, 

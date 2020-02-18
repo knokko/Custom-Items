@@ -65,11 +65,7 @@ public class CreateBowTextureTest1 {
 		test.click("Create");
 		test.assertComponentWithText("You can't leave the name empty.");
 		test.click("");
-		test.type(textureName + "1");
-		test.click("Create");
-		test.assertComponentWithText("The _ character is the only special character that is allowed in names.");
-		test.click(textureName + "1");
-		test.backspace(1);
+		test.type(textureName);
 		test.click("Create");
 		test.assertComponentWithText("Pull 0.0 doesn't have a texture");
 		test.clickNearest("Edit...", "0.0", 4);

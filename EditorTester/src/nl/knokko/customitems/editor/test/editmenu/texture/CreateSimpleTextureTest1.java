@@ -60,12 +60,7 @@ public class CreateSimpleTextureTest1 {
 		test.click("Create");
 		test.assertComponentWithText("You can't leave the name empty.");
 		test.click("");
-		test.type(textureName + "_1");
-		test.assertComponentWithText(textureName + "_1");
-		test.click("Create");
-		test.assertComponentWithText("The _ character is the only special character that is allowed in names.");
-		test.click(textureName + "_1");
-		test.backspace(2);
+		test.type(textureName);
 		test.click("Create");
 		test.assertComponentsWithTexts("Back", "Load texture", "Edit", "Delete", textureName);
 		test.clickNearest("Edit", textureName, 2);

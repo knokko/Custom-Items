@@ -23,6 +23,7 @@
  *******************************************************************************/
 package nl.knokko.customitems.editor.menu.edit.texture;
 
+import java.awt.Color;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
@@ -135,7 +136,8 @@ public class TextureEdit extends GuiMenu {
 											imageName = file.getName();
 										else
 											imageName = file.getName().substring(0, indexDot);
-										listener.listen(loaded, imageName);
+										
+										return listener.listen(loaded, imageName);
 									} else
 										errorComponent.setText("The width and height (" + width + ") should be a power of 2");
 								} else
@@ -149,6 +151,7 @@ public class TextureEdit extends GuiMenu {
 				} catch(IOException ioex) {
 					errorComponent.setText("IO error: " + ioex.getMessage());
 				}
+				return returnMenu;
 			}, (File file) -> {
 				return file.getName().endsWith(".png");
 			}, EditProps.CANCEL_BASE, EditProps.CANCEL_HOVER, EditProps.CHOOSE_BASE, EditProps.CHOOSE_HOVER, 
@@ -157,17 +160,59 @@ public class TextureEdit extends GuiMenu {
 	}
 	
 	private DynamicTextButton createImageSelect() {
-		return createImageSelect((BufferedImage loaded, String imageName) -> {
-			image = loaded;
-			wrapper.setComponent(new SimpleImageComponent(state.getWindow().getTextureLoader().loadTexture(image)));
-			if (name.getText().isEmpty()) {
-				name.setText(imageName);
+		return createImageSelect(new PartialTransparencyFilter(this, 
+				(BufferedImage loaded, String imageName) -> {
+					setImage(loaded, imageName);
+			return this;
+		}), errorComponent, this);
+	}
+	
+	public static class PartialTransparencyFilter implements ImageListener {
+		
+		private final GuiComponent cancelMenu;
+		private final ImageListener listener;
+		
+		public PartialTransparencyFilter(GuiComponent cancelMenu, ImageListener listener) {
+			this.cancelMenu = cancelMenu;
+			this.listener = listener;
+		}
+
+		@Override
+		public GuiComponent listen(BufferedImage loaded, String imageName) {
+			boolean hasPartialTransparency = false;
+			alphaLoop:
+			for (int x = 0; x < loaded.getWidth(); x++) {
+				for (int y = 0; y < loaded.getHeight(); y++) {
+					Color pixel = new Color(loaded.getRGB(x, y), true);
+					if (pixel.getAlpha() > 0 && pixel.getAlpha() < 255) {
+						hasPartialTransparency = true;
+						break alphaLoop;
+					}
+				}
 			}
-		}, errorComponent, this);
+			
+			if (hasPartialTransparency) {
+				return new TransparencyFixMenu(() -> {
+					cancelMenu.getState().getWindow().setMainComponent(cancelMenu);
+				}, (BufferedImage modified, String alsoImageName) -> {
+					return listener.listen(modified, alsoImageName);
+				}, loaded, imageName);
+			} else {
+				return listener.listen(loaded, imageName);
+			}
+		}
+	}
+	
+	private void setImage(BufferedImage loaded, String imageName) {
+		image = loaded;
+		wrapper.setComponent(new SimpleImageComponent(state.getWindow().getTextureLoader().loadTexture(image)));
+		if (name.getText().isEmpty()) {
+			name.setText(imageName);
+		}
 	}
 	
 	public static interface ImageListener {
 		
-		void listen(BufferedImage image, String imageName);
+		GuiComponent listen(BufferedImage image, String imageName);
 	}
 }
