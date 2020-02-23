@@ -874,20 +874,40 @@ public class CustomItemsEventHandler implements Listener {
 
 	@EventHandler
 	public void beforeXP(PlayerExpChangeEvent event) {
-		ItemStack item = event.getPlayer().getInventory().getItemInMainHand();
-		if (CustomItem.isCustom(item)) {
-			CustomItem custom = set().getItem(item);
-			if (custom != null) {
-				if (item.containsEnchantment(Enchantment.MENDING) && custom instanceof CustomTool) {
-					CustomTool tool = (CustomTool) custom;
-					long repaired = tool.increaseDurability(item, event.getAmount() * 2);
-
-					// Let's assume the int range will not be exceeded with a single xp orb
-					int newXP = (int) (event.getAmount() - repaired / 2);
-					event.setAmount(newXP);
+		
+		EntityEquipment eq = event.getPlayer().getEquipment();
+		
+		ItemStack mainHand = eq.getItemInMainHand();
+		ItemStack offHand = eq.getItemInOffHand();
+		
+		ItemStack helmet = eq.getHelmet();
+		ItemStack chest = eq.getChestplate();
+		ItemStack leggs = eq.getLeggings();
+		ItemStack boots = eq.getBoots();
+		
+		ItemStack[] allEquipment = {mainHand, offHand, helmet, chest, leggs, boots};
+		int durAmount = event.getAmount() * 2;
+		
+		for (ItemStack item : allEquipment) {
+			if (CustomItem.isCustom(item)) {
+				CustomItem custom = set().getItem(item);
+				if (custom != null) {
+					if (item.containsEnchantment(Enchantment.MENDING) && custom instanceof CustomTool) {
+						CustomTool tool = (CustomTool) custom;
+						
+						long repaired = tool.increaseDurability(item, durAmount);
+						durAmount -= repaired;
+						
+						if (durAmount == 0) {
+							break;
+						}
+					}
 				}
 			}
 		}
+		
+		int newXP = durAmount / 2;
+		event.setAmount(newXP);
 	}
 
 	@EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
