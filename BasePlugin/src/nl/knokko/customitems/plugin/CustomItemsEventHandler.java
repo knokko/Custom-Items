@@ -142,7 +142,7 @@ public class CustomItemsEventHandler implements Listener {
 				else if (custom instanceof CustomTool) {
 					CustomTool tool = (CustomTool) custom;
 					if (tool instanceof CustomHoe) {
-						CIMaterial type = CIMaterial.valueOf(ItemHelper.getMaterialName(event.getClickedBlock()));
+						CIMaterial type = CIMaterial.getOrNull(ItemHelper.getMaterialName(event.getClickedBlock()));
 						if ((type == CIMaterial.DIRT || type == CIMaterial.GRASS) && tool.decreaseDurability(item, ((CustomHoe) tool).getTillDurabilityLoss())) {
 							playBreakSound(event.getPlayer());
 							if (event.getHand() == EquipmentSlot.HAND)
@@ -518,9 +518,9 @@ public class CustomItemsEventHandler implements Listener {
 	public void onShear(PlayerShearEntityEvent event) {
 		ItemStack main = event.getPlayer().getInventory().getItemInMainHand();
 		ItemStack off = event.getPlayer().getInventory().getItemInOffHand();
-		CustomItem customMain = CIMaterial.valueOf(ItemHelper.getMaterialName(main)) == CIMaterial.SHEARS
+		CustomItem customMain = CIMaterial.getOrNull(ItemHelper.getMaterialName(main)) == CIMaterial.SHEARS
 				? set().getItem(main) : null;
-				CustomItem customOff = CIMaterial.valueOf(ItemHelper.getMaterialName(off)) == CIMaterial.SHEARS
+				CustomItem customOff = CIMaterial.getOrNull(ItemHelper.getMaterialName(off)) == CIMaterial.SHEARS
 						? set().getItem(off) : null;
 						if (customMain != null) {
 							if (customMain.forbidDefaultUse(main))
@@ -554,7 +554,7 @@ public class CustomItemsEventHandler implements Listener {
 	@EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
 	public void onBlockBreak(BlockBreakEvent event) {
 		ItemSet set = set();
-		Drop[] customDrops = set.getDrops(CIMaterial.valueOf(ItemHelper.getMaterialName(event.getBlock())));
+		Drop[] customDrops = set.getDrops(CIMaterial.getOrNull(ItemHelper.getMaterialName(event.getBlock())));
 
 		Random random = new Random();
 		boolean cancelDefaultDrops = false;

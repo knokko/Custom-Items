@@ -1186,6 +1186,17 @@ public enum CIMaterial {
 	WHITE_DYE(VERSION1_14),
 	WITHER_ROSE(VERSION1_14),
 	YELLOW_DYE(VERSION1_14);
+	
+	/**
+	 * Returns null if the enum constant wasn't found
+	 */
+	public static CIMaterial getOrNull(String materialName) {
+		try {
+			return CIMaterial.valueOf(materialName);
+		} catch (IllegalArgumentException notFound) {
+			return null;
+		}
+	}
 
 	public final int version;
 	

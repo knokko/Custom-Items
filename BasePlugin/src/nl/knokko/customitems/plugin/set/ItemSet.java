@@ -1204,6 +1204,8 @@ public class ItemSet implements ItemSetBase {
 	private static final Drop[] NO_DROPS = {};
 	
 	public Drop[] getDrops(CIMaterial block) {
+		if (block == null)
+			return NO_DROPS;
 		BlockType blockType = BlockType.fromBukkitMaterial(block);
 		if (blockType != null) {
 			return blockDropMap[blockType.ordinal()];
