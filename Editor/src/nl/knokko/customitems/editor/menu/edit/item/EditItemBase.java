@@ -29,9 +29,12 @@ import java.util.List;
 import nl.knokko.customitems.editor.menu.edit.EditMenu;
 import nl.knokko.customitems.editor.menu.edit.EditProps;
 import nl.knokko.customitems.editor.menu.edit.EnumSelect;
+import nl.knokko.customitems.editor.menu.edit.item.SelectTexture.CreateMenuFactory;
 import nl.knokko.customitems.editor.menu.edit.item.attribute.AttributesOverview;
 import nl.knokko.customitems.editor.menu.edit.item.effect.EffectsOverview;
 import nl.knokko.customitems.editor.menu.edit.item.enchantment.EnchantmentsOverview;
+import nl.knokko.customitems.editor.menu.edit.texture.BowTextureEdit;
+import nl.knokko.customitems.editor.menu.edit.texture.TextureEdit;
 import nl.knokko.customitems.editor.set.ItemDamageClaim;
 import nl.knokko.customitems.editor.set.ItemSet;
 import nl.knokko.customitems.editor.set.item.CustomItem;
@@ -101,13 +104,19 @@ public abstract class EditItemBase extends GuiMenu {
 	public EditItemBase(EditMenu menu, CustomItem oldValues, CustomItem toModify, Category category) {
 		this.menu = menu;
 		this.toModify = toModify;
+		CreateMenuFactory textureCreateFactory = (set, returnMenu) -> {
+			if (this instanceof EditItemBow)
+				return new BowTextureEdit(set, returnMenu, null, null);
+			else
+				return new TextureEdit(set, returnMenu, null, null);
+		};
 		if (oldValues != null) {
 			name = new TextEditField(oldValues.getName(), EditProps.EDIT_BASE, EditProps.EDIT_ACTIVE);
 			internalType = oldValues.getItemType();
 			internalDamage = new IntEditField(oldValues.getItemDamage(), 1, EditProps.EDIT_BASE,
 					EditProps.EDIT_ACTIVE);
 			displayName = new TextEditField(oldValues.getDisplayName(), EditProps.EDIT_BASE, EditProps.EDIT_ACTIVE);
-			textureSelect = new TextureSelect(oldValues.getTexture());
+			textureSelect = new TextureSelect(oldValues.getTexture(), textureCreateFactory);
 			lore = oldValues.getLore();
 			attributes = oldValues.getAttributes();
 			enchantments = oldValues.getDefaultEnchantments();
@@ -118,13 +127,12 @@ public abstract class EditItemBase extends GuiMenu {
 			commands = oldValues.getCommands();
 		} else {
 			name = new TextEditField("", EditProps.EDIT_BASE, EditProps.EDIT_ACTIVE);
-			//internalType = new ItemTypeSelect(CustomItemType.DIAMOND_HOE, category);
 			internalType = chooseInitialItemType(menu.getSet(), category, CustomItemType.DIAMOND_HOE, null);
 			internalDamage = new IntEditField(
 					menu.getSet().nextAvailableDamage(internalType, null), 1, EditProps.EDIT_BASE,
 					EditProps.EDIT_ACTIVE);
 			displayName = new TextEditField("", EditProps.EDIT_BASE, EditProps.EDIT_ACTIVE);
-			textureSelect = new TextureSelect(null);
+			textureSelect = new TextureSelect(null, textureCreateFactory);
 			lore = new String[] {};
 			attributes = DEFAULT_ATTRIBUTES;
 			enchantments = DEFAULT_ENCHANTMENTS;
@@ -290,8 +298,8 @@ public abstract class EditItemBase extends GuiMenu {
 	
 	protected class TextureSelect extends TextureSelectButton {
 
-		public TextureSelect(NamedImage initial) {
-			super(initial, menu.getSet());
+		public TextureSelect(NamedImage initial, CreateMenuFactory factory) {
+			super(initial, menu.getSet(), factory);
 		}
 
 		@Override

@@ -26,7 +26,6 @@ package nl.knokko.customitems.editor.menu.edit.item;
 import java.util.Collection;
 
 import nl.knokko.customitems.editor.menu.edit.EditProps;
-import nl.knokko.customitems.editor.menu.edit.texture.TextureEdit;
 import nl.knokko.customitems.editor.set.ItemSet;
 import nl.knokko.customitems.editor.set.item.NamedImage;
 import nl.knokko.gui.color.GuiColor;
@@ -40,14 +39,17 @@ public class SelectTexture extends GuiMenu {
 	private final GuiComponent returnMenu;
 	private final ReturnAction returnAction;
 	private final TextureFilter filter;
+	private final CreateMenuFactory createMenuFactory;
 	private final ItemSet set;
 	
 	private final TextureList textureList;
 
-	public SelectTexture(ItemSet set, GuiComponent returnMenu, TextureFilter filter, ReturnAction returnAction) {
+	public SelectTexture(ItemSet set, GuiComponent returnMenu, TextureFilter filter, 
+			CreateMenuFactory createMenuFactory, ReturnAction returnAction) {
 		this.returnMenu = returnMenu;
 		this.returnAction = returnAction;
 		this.filter = filter;
+		this.createMenuFactory = createMenuFactory;
 		this.set = set;
 		this.textureList = new TextureList();
 	}
@@ -69,7 +71,7 @@ public class SelectTexture extends GuiMenu {
 			state.getWindow().setMainComponent(returnMenu);
 		}), 0.1f, 0.6f, 0.3f, 0.7f);
 		addComponent(new DynamicTextButton("Load texture...", EditProps.BUTTON, EditProps.HOVER, () -> {
-			state.getWindow().setMainComponent(new TextureEdit(set, this, null, null));
+			state.getWindow().setMainComponent(createMenuFactory.getCreateMenu(set, this));
 		}), 0.1f, 0.3f, 0.35f, 0.4f);
 		addComponent(textureList, 0.4f, 0.1f, 0.85f, 0.9f);
 	}
@@ -117,5 +119,11 @@ public class SelectTexture extends GuiMenu {
 	public static interface TextureFilter {
 
 		boolean approve(NamedImage texture);
+	}
+	
+	@FunctionalInterface
+	public static interface CreateMenuFactory {
+		
+		GuiComponent getCreateMenu(ItemSet set, GuiComponent returnMenu);
 	}
 }

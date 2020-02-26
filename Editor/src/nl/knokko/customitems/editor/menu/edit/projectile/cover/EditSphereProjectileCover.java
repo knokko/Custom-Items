@@ -3,6 +3,7 @@ package nl.knokko.customitems.editor.menu.edit.projectile.cover;
 import nl.knokko.customitems.editor.menu.edit.EditMenu;
 import nl.knokko.customitems.editor.menu.edit.EditProps;
 import nl.knokko.customitems.editor.menu.edit.item.TextureSelectButton;
+import nl.knokko.customitems.editor.menu.edit.texture.TextureEdit;
 import nl.knokko.customitems.editor.set.item.NamedImage;
 import nl.knokko.customitems.editor.set.projectile.cover.EditorProjectileCover;
 import nl.knokko.customitems.editor.set.projectile.cover.SphereProjectileCover;
@@ -98,7 +99,8 @@ public class EditSphereProjectileCover extends EditProjectileCover {
 	protected class TextureSelect extends TextureSelectButton {
 
 		public TextureSelect(NamedImage initial) {
-			super(initial, menu.getSet());
+			super(initial, menu.getSet(), 
+					(set, returnMenu) -> new TextureEdit(set, returnMenu, null, null));
 		}
 
 		@Override

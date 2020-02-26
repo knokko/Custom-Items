@@ -29,9 +29,11 @@ import java.util.List;
 
 import nl.knokko.customitems.editor.menu.edit.EditMenu;
 import nl.knokko.customitems.editor.menu.edit.EditProps;
+import nl.knokko.customitems.editor.set.ItemSet;
 import nl.knokko.customitems.editor.set.item.texture.BowTextures;
 import nl.knokko.customitems.editor.set.item.texture.BowTextures.Entry;
 import nl.knokko.gui.color.GuiColor;
+import nl.knokko.gui.component.GuiComponent;
 import nl.knokko.gui.component.WrapperComponent;
 import nl.knokko.gui.component.image.ImageButton;
 import nl.knokko.gui.component.image.SimpleImageComponent;
@@ -43,7 +45,8 @@ import nl.knokko.gui.texture.loader.GuiTextureLoader;
 
 public class BowTextureEdit extends GuiMenu {
 
-	protected final EditMenu menu;
+	protected final ItemSet set;
+	protected final GuiComponent returnMenu;
 	protected final PullTextures pullTextures;
 	protected final DynamicTextComponent errorComponent;
 	protected final WrapperComponent<SimpleImageComponent> defaultTexture;
@@ -53,9 +56,15 @@ public class BowTextureEdit extends GuiMenu {
 	
 	protected BufferedImage defaultImage;
 	protected final List<Entry> pulls;
-
+	
 	public BowTextureEdit(EditMenu menu, BowTextures oldValues, BowTextures toModify) {
-		this.menu = menu;
+		this(menu.getSet(), menu.getTextureOverview(), oldValues, toModify);
+	}
+
+	public BowTextureEdit(ItemSet set, GuiComponent returnMenu, 
+			BowTextures oldValues, BowTextures toModify) {
+		this.set = set;
+		this.returnMenu = returnMenu;
 		this.oldValues = oldValues;
 		this.toModify = toModify;
 		pullTextures = new PullTextures();
@@ -85,7 +94,7 @@ public class BowTextureEdit extends GuiMenu {
 	@Override
 	protected void addComponents() {
 		addComponent(new DynamicTextButton("Cancel", EditProps.CANCEL_BASE, EditProps.CANCEL_HOVER, () -> {
-			state.getWindow().setMainComponent(menu.getTextureOverview());
+			state.getWindow().setMainComponent(returnMenu);
 		}), 0.1f, 0.7f, 0.25f, 0.8f);
 		addComponent(errorComponent, 0.05f, 0.9f, 0.95f, 0.975f);
 		addComponent(pullTextures, 0.65f, 0.025f, 0.95f, 0.775f);
@@ -107,11 +116,11 @@ public class BowTextureEdit extends GuiMenu {
 				if (defaultImage == null) {
 					errorComponent.setText("You need to give this bow a base texture.");
 				} else {
-					String error = menu.getSet().changeBowTexture(toModify, nameField.getText(), defaultImage, pulls, true);
+					String error = set.changeBowTexture(toModify, nameField.getText(), defaultImage, pulls, true);
 					if (error != null) {
 						errorComponent.setText(error);
 					} else {
-						state.getWindow().setMainComponent(menu.getTextureOverview());
+						state.getWindow().setMainComponent(returnMenu);
 					}
 				}
 			}), 0.1f, 0.1f, 0.25f, 0.2f);
@@ -124,11 +133,11 @@ public class BowTextureEdit extends GuiMenu {
 					for (int index = 0; index < entries.length; index++) {
 						entries[index] = pulls.get(index).clone();
 					}
-					String error = menu.getSet().addBowTexture(new BowTextures(nameField.getText(), defaultImage, entries), true);
+					String error = set.addBowTexture(new BowTextures(nameField.getText(), defaultImage, entries), true);
 					if (error != null) {
 						errorComponent.setText(error);
 					} else {
-						state.getWindow().setMainComponent(menu.getTextureOverview());
+						state.getWindow().setMainComponent(returnMenu);
 					}
 				}
 			}), 0.1f, 0.1f, 0.25f, 0.2f);
