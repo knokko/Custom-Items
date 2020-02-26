@@ -87,7 +87,7 @@ public class CustomItemsPlugin extends JavaPlugin {
 	}
 	
 	public boolean showInterestingWarnings() {
-		return showInterestingWarnings();
+		return showInterestingWarnings;
 	}
 	
 	private static final String KEY_MAX_PROJECTILES = "Maximum number of flying projectiles";
