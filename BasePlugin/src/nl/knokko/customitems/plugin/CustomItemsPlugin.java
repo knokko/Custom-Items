@@ -71,6 +71,7 @@ public class CustomItemsPlugin extends JavaPlugin {
 		getCommand("customitems").setExecutor(new CommandCustomItems(languageFile));
 		Bukkit.getPluginManager().registerEvents(new CustomItemsEventHandler(), this);
 		Bukkit.getPluginManager().registerEvents(projectileManager, this);
+		CustomItemPickups.start();
 		CrazyEnchantmentsSupport.onEnable();
 	}
 
