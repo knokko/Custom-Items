@@ -58,6 +58,15 @@ public class CollectionEdit<T> extends GuiMenu {
 
 		@Override
 		protected void addComponents() {
+			
+			boolean hasImage = false;
+			for (T item : changingCollection) {
+				if (handler.getImage(item) != null) {
+					hasImage = true;
+					break;
+				}
+			}
+			
 			int index = 0;
 			for (T item : changingCollection) {
 				float minY = 0.9f - index * 0.11f;
@@ -65,12 +74,12 @@ public class CollectionEdit<T> extends GuiMenu {
 				String label = handler.getLabel(item);
 				BufferedImage image = handler.getImage(item);
 				float minTextX, maxTextX;
-				if (image == null) {
-					minTextX = 0.025f;
-				} else {
-					addComponent(new SimpleImageComponent(state.getWindow().getTextureLoader().loadTexture(image)), 0f, minY, 0.15f, maxY);
+				if (hasImage)
 					minTextX = 0.175f;
-				}
+				else
+					minTextX = 0.025f;
+				if (image != null)
+					addComponent(new SimpleImageComponent(state.getWindow().getTextureLoader().loadTexture(image)), 0f, minY, 0.15f, maxY);
 				maxTextX = min(0.5f, minTextX + 0.03f * label.length());
 				addComponent(new DynamicTextComponent(label, EditProps.LABEL), minTextX, minY, maxTextX, maxY);
 				addComponent(new DynamicTextButton("Edit", EditProps.BUTTON, EditProps.HOVER, () -> {

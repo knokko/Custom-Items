@@ -5,9 +5,11 @@ import java.awt.image.BufferedImage;
 import nl.knokko.customitems.editor.menu.edit.CollectionEdit;
 import nl.knokko.customitems.editor.menu.edit.EditMenu;
 import nl.knokko.customitems.editor.menu.edit.EditProps;
+import nl.knokko.customitems.editor.set.item.CustomItem;
 import nl.knokko.customitems.editor.set.recipe.Recipe;
 import nl.knokko.customitems.editor.set.recipe.ShapedRecipe;
 import nl.knokko.customitems.editor.set.recipe.ShapelessRecipe;
+import nl.knokko.customitems.editor.set.recipe.result.CustomItemResult;
 import nl.knokko.gui.component.GuiComponent;
 import nl.knokko.gui.component.text.dynamic.DynamicTextButton;
 
@@ -45,9 +47,15 @@ public class RecipeCollectionEdit extends CollectionEdit<Recipe> {
 		}
 
 		@Override
-		public BufferedImage getImage(Recipe item) {
-			// It is allowed to return null
-			return null;
+		public BufferedImage getImage(Recipe recipe) {
+			if (recipe.getResult() instanceof CustomItemResult) {
+				CustomItem item = ((CustomItemResult)recipe.getResult()).getItem();
+				return item.getTexture().getImage();
+			} else {
+				
+				// It is allowed to return null
+				return null;
+			}
 		}
 
 		@Override
