@@ -55,6 +55,11 @@ public class CustomItemsPlugin extends JavaPlugin {
 	public static CustomItemsPlugin getInstance() {
 		return instance;
 	}
+	
+	public void reload() {
+		loadConfig();
+		loadSet();
+	}
 
 	@Override
 	public void onEnable() {

@@ -6,6 +6,6 @@ softdepend: [CrazyEnchantments]
 loadbefore: [UltraChest]
 commands:
   customitems:
-    description: give a custom item to a player
-    useage: /ci give <item name> [player name]
+    description: Commands for the CustomItems plugin
+    useage: /ci give <item name> [player name] or /ci list or /ci reload
     aliases: [ci]

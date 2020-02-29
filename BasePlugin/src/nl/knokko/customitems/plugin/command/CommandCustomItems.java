@@ -31,7 +31,6 @@ import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
-import org.bukkit.inventory.ItemStack;
 
 import nl.knokko.customitems.plugin.CustomItemsPlugin;
 import nl.knokko.customitems.plugin.LanguageFile;
@@ -111,20 +110,6 @@ public class CommandCustomItems implements CommandExecutor {
 				else {
 					sendGiveUseage(sender);
 				}
-			} else if(args[0].equals("damage")) {
-				if(sender instanceof Player) {
-					Player player = (Player) sender;
-					ItemStack item = player.getInventory().getItemInMainHand();
-					if(item != null) {
-						sender.sendMessage(lang.getCommandDamageItem(item.getDurability()));
-					}
-					else {
-						sender.sendMessage(lang.getCommandDamageNotInHand());
-					}
-				}
-				else {
-					sender.sendMessage(lang.getCommandDamageNoPlayer());
-				}
 			} else if (args[0].equals("list")) {
 				ItemSet set = CustomItemsPlugin.getInstance().getSet();
 				CustomItem[] items = set.getBackingItems();
@@ -136,6 +121,9 @@ public class CommandCustomItems implements CommandExecutor {
 				} else {
 					sender.sendMessage(ChatColor.RED + "There are 0 custom items");
 				}
+			} else if (args[0].equals("reload")) {
+				CustomItemsPlugin.getInstance().reload();
+				sender.sendMessage("The item set and config should have been reloaded");
 			} else {
 				sendUseage(sender);
 			}
