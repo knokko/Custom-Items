@@ -7,6 +7,7 @@ import nl.knokko.customitems.editor.set.item.CustomItem;
 import nl.knokko.gui.color.GuiColor;
 import nl.knokko.gui.component.GuiComponent;
 import nl.knokko.gui.component.WrapperComponent;
+import nl.knokko.gui.component.image.CheckboxComponent;
 import nl.knokko.gui.component.image.SimpleImageComponent;
 import nl.knokko.gui.component.menu.GuiMenu;
 import nl.knokko.gui.component.text.TextComponent;
@@ -22,10 +23,12 @@ public class HelpMobSpawner extends GuiMenu {
 
 	private CustomItem selectedMainHand, selectedOffHand, selectedHelmet, selectedChestplate, selectedLeggings,
 			selectedBoots;
+	private final CheckboxComponent useOldCommands;
 
 	public HelpMobSpawner(ItemSet set, GuiComponent returnMenu) {
 		this.set = set;
 		this.returnMenu = returnMenu;
+		this.useOldCommands = new CheckboxComponent(false);
 	}
 
 	@Override
@@ -108,12 +111,23 @@ public class HelpMobSpawner extends GuiMenu {
 			}, set));
 		}), 0.75f, 0.175f, 0.9f, 0.275f);
 		addComponent(bootsImage, 0.9f, 0.175f, 1f, 0.275f);
+		addComponent(useOldCommands, 0.025f, 0.2f, 0.05f, 0.225f);
+		addComponent(new DynamicTextComponent("Use the old long commands", EditProps.LABEL),
+				0.055f, 0.185f, 0.28f, 0.26f);
 
 		addComponent(new DynamicTextButton("Generate for minecraft 1.12", EditProps.BUTTON, EditProps.HOVER, () -> {
-			String command = "/setblock ~ ~1 ~ mob_spawner 0 replace {SpawnData:{id:skeleton,HandItems:["
-					+ getEquipmentTag(selectedMainHand) + "," + getEquipmentTag(selectedOffHand)
-					+ "],ArmorItems:[" + getEquipmentTag(selectedBoots) + "," + getEquipmentTag(selectedLeggings)
-					+ "," + getEquipmentTag(selectedChestplate) + "," + getEquipmentTag(selectedHelmet) + "]},Delay:2}";
+			String command;
+			if (useOldCommands.isChecked()) {
+				command = "/setblock ~ ~1 ~ mob_spawner 0 replace {SpawnData:{id:skeleton,HandItems:["
+						+ getEquipmentTag12(selectedMainHand) + "," + getEquipmentTag12(selectedOffHand)
+						+ "],ArmorItems:[" + getEquipmentTag12(selectedBoots) + "," + getEquipmentTag12(selectedLeggings)
+						+ "," + getEquipmentTag12(selectedChestplate) + "," + getEquipmentTag12(selectedHelmet) + "]},Delay:2}";
+			} else {
+				command = "/setblock ~ ~1 ~ mob_spawner 0 replace {SpawnData:{id:skeleton,HandItems:["
+						+ getEquipmentTag(selectedMainHand) + "," + getEquipmentTag(selectedOffHand)
+						+ "],ArmorItems:[" + getEquipmentTag(selectedBoots) + "," + getEquipmentTag(selectedLeggings)
+						+ "," + getEquipmentTag(selectedChestplate) + "," + getEquipmentTag(selectedHelmet) + "]},Delay:2}";
+			}
 			String error = CommandBlockHelpOverview.setClipboard(command);
 			if (error == null) {
 				infoComponent.setProperties(EditProps.LABEL);
@@ -142,11 +156,20 @@ public class HelpMobSpawner extends GuiMenu {
 				infoComponent.setProperties(EditProps.ERROR);
 				infoComponent.setText(error);
 			} else {
-				String command = "/setblock ~ ~1 ~ spawner{SpawnData:{id:skeleton,HandItems:["
-						+ getEquipmentTag(selectedMainHand) + "," + getEquipmentTag(selectedOffHand)
-						+ "],ArmorItems:[" + getEquipmentTag(selectedBoots) + "," + getEquipmentTag(selectedLeggings)
-						+ "," + getEquipmentTag(selectedChestplate) + ","
-						+ getEquipmentTag(selectedHelmet) + "]},Delay:2} replace";
+				String command;
+				if (useOldCommands.isChecked()) {
+					command = "/setblock ~ ~1 ~ spawner{SpawnData:{id:skeleton,HandItems:["
+							+ getEquipmentTag14(selectedMainHand) + "," + getEquipmentTag14(selectedOffHand)
+							+ "],ArmorItems:[" + getEquipmentTag14(selectedBoots) + "," + getEquipmentTag14(selectedLeggings)
+							+ "," + getEquipmentTag14(selectedChestplate) + ","
+							+ getEquipmentTag14(selectedHelmet) + "]},Delay:2} replace";
+				} else {
+					command = "/setblock ~ ~1 ~ spawner{SpawnData:{id:skeleton,HandItems:["
+							+ getEquipmentTag(selectedMainHand) + "," + getEquipmentTag(selectedOffHand)
+							+ "],ArmorItems:[" + getEquipmentTag(selectedBoots) + "," + getEquipmentTag(selectedLeggings)
+							+ "," + getEquipmentTag(selectedChestplate) + ","
+							+ getEquipmentTag(selectedHelmet) + "]},Delay:2} replace";
+				}
 				error = CommandBlockHelpOverview.setClipboard(command);
 				if (error == null) {
 					infoComponent.setProperties(EditProps.LABEL);
@@ -157,5 +180,13 @@ public class HelpMobSpawner extends GuiMenu {
 				}
 			}
 		}), 0.55f, 0.05f, 0.8f, 0.15f);
+	}
+	
+	private static String getEquipmentTag12(CustomItem item) {
+		return item == null ? "{}" : item.getEquipmentTag12(1);
+	}
+
+	private static String getEquipmentTag14(CustomItem item) {
+		return item == null ? "{}" : item.getEquipmentTag14(1);
 	}
 }
