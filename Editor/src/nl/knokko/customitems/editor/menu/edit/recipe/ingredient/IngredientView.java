@@ -24,8 +24,11 @@
 package nl.knokko.customitems.editor.menu.edit.recipe.ingredient;
 
 import nl.knokko.customitems.editor.menu.edit.EditProps;
+import nl.knokko.customitems.editor.menu.edit.select.item.*;
 import nl.knokko.customitems.editor.set.ItemSet;
-import nl.knokko.customitems.editor.set.recipe.ingredient.Ingredient;
+import nl.knokko.customitems.editor.set.item.CustomItem;
+import nl.knokko.customitems.editor.set.recipe.ingredient.*;
+import nl.knokko.customitems.item.CIMaterial;
 import nl.knokko.gui.color.GuiColor;
 import nl.knokko.gui.component.menu.GuiMenu;
 import nl.knokko.gui.component.text.dynamic.DynamicTextButton;
@@ -47,15 +50,35 @@ public class IngredientView extends GuiMenu {
 	protected void addComponents() {
 		addComponent(new DynamicTextButton("Back", EditProps.BUTTON, EditProps.HOVER, () -> {
 			state.getWindow().setMainComponent(component.getMenu());
-		}), 0.1f, 0.7f, 0.25f, 0.8f);
-		addComponent(new DynamicTextButton("Change", EditProps.BUTTON, EditProps.HOVER, () -> {
-			state.getWindow().setMainComponent(new ChooseIngredient(component.getMenu(), (Ingredient newIngredient) -> {
-				IngredientView.this.component.setIngredient(newIngredient);
-			}, true, set));
-		}), 0.1f, 0.3f, 0.25f, 0.4f);
+		}), 0.025f, 0.7f, 0.175f, 0.8f);
 		String[] info = component.getIngredient().getInfo(emptyString);
 		for (int index = 0; index < info.length; index++)
-			addComponent(new DynamicTextComponent(info[index], EditProps.LABEL), 0.4f, 0.8f - index * 0.15f, 0.7f, 0.9f - index * 0.15f);
+			addComponent(new DynamicTextComponent(info[index], EditProps.LABEL), 0.2f, 0.8f - index * 0.15f, 0.5f, 0.9f - index * 0.15f);
+		
+		
+		addComponent(new DynamicTextComponent("Change to", EditProps.LABEL), 
+				0.75f, 0.75f, 0.9f, 0.85f);
+		addComponent(new DynamicTextButton("Custom Item", EditProps.BUTTON, EditProps.HOVER, () -> {
+			state.getWindow().setMainComponent(new SelectCustomItem(component.getMenu(), (CustomItem item) -> {
+				component.setIngredient(new CustomItemIngredient(item));
+				//the SelectCustomItem will go the the returnGui automatically
+			}, set));
+		}), 0.75f, 0.6f, 0.95f, 0.7f);
+		addComponent(new DynamicTextButton("Simple vanilla item", EditProps.BUTTON, EditProps.HOVER, () -> {
+			state.getWindow().setMainComponent(new SelectSimpleVanillaItem(component.getMenu(), (CIMaterial material) -> {
+				component.setIngredient(new SimpleVanillaIngredient(material));
+				//the SelectSimpleVanillaItem will go to the returnGui automatically
+			}, false));
+		}), 0.75f, 0.45f, 0.95f, 0.55f);
+		addComponent(new DynamicTextButton("Vanilla item with datavalue", EditProps.BUTTON, EditProps.HOVER, () -> {
+			state.getWindow().setMainComponent(new SelectDataVanillaItem(component.getMenu(), (CIMaterial material, byte data) -> {
+				component.setIngredient(new DataVanillaIngredient(material, data));
+			}));
+		}), 0.75f, 0.3f, 0.95f, 0.4f);
+		addComponent(new DynamicTextButton("Empty", EditProps.BUTTON, EditProps.HOVER, () -> {
+			component.setIngredient(new NoIngredient());
+			state.getWindow().setMainComponent(component.getMenu());
+		}), 0.75f, 0.15f, 0.95f, 0.25f);
 	}
 	
 	@Override
