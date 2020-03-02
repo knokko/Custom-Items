@@ -22,7 +22,7 @@ public class ItemCollectionEdit extends CollectionEdit<CustomItem> {
 		super.addComponents();
 		addComponent(new DynamicTextButton("Create item", EditProps.BUTTON, EditProps.HOVER, () -> {
 			state.getWindow().setMainComponent(new CreateItem(menu));
-		}), 0.025f, 0.4f, 0.225f, 0.5f);
+		}), 0.025f, 0.3f, 0.225f, 0.4f);
 		addComponent(new DynamicTextButton("Command block help", EditProps.BUTTON, EditProps.HOVER, () -> {
 			state.getWindow().setMainComponent(new CommandBlockHelpOverview(menu.getSet(), this));
 		}), 0.025f, 0.1f, 0.275f, 0.2f);
