@@ -29,7 +29,7 @@ public class RecipeCollectionEdit extends CollectionEdit<Recipe> {
 			state.getWindow().setMainComponent(new ShapedRecipeEdit(menu, null, null));
 		}), 0.025f, 0.25f, 0.27f, 0.35f);
 		addComponent(new DynamicTextButton("Create shapeless recipe", EditProps.BUTTON, EditProps.HOVER, () -> {
-			state.getWindow().setMainComponent(new ShapelessRecipeEdit(menu, null, null));
+			state.getWindow().setMainComponent(new ShapelessRecipeCollectionEdit(menu, null, null));
 		}), 0.025f, 0.1f, 0.29f, 0.2f);
 	}
 	
@@ -68,7 +68,7 @@ public class RecipeCollectionEdit extends CollectionEdit<Recipe> {
 			if (recipe instanceof ShapedRecipe)
 				return new ShapedRecipeEdit(menu, (ShapedRecipe) recipe, (ShapedRecipe) second);
 			else if (recipe instanceof ShapelessRecipe)
-				return new ShapelessRecipeEdit(menu, (ShapelessRecipe) recipe, (ShapelessRecipe) second);
+				return new ShapelessRecipeCollectionEdit(menu, (ShapelessRecipe) recipe, (ShapelessRecipe) second);
 			else
 				throw new IllegalStateException("Unknown recipe class: " + recipe.getClass());
 		}
