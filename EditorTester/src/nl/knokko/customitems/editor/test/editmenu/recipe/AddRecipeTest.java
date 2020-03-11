@@ -7,7 +7,7 @@ public class AddRecipeTest {
 	public static void addShapelessRecipe(GuiTestHelper test, String result, String resultAmount, String...ingredients) {
 		
 		test.click("Create shapeless recipe");
-		test.assertComponentsWithTexts("Cancel", "Add ingredient", "Ingredients", "Result", "Diamond x 1");
+		test.assertComponentsWithTexts("Cancel", "Add ingredient", "Result", "Diamond x 1");
 		
 		test.click("Diamond x 1");
 		test.click("Change");
@@ -23,7 +23,7 @@ public class AddRecipeTest {
 			select(test, ingredient, "Result");
 		}
 		
-		test.click("Apply");
+		test.click("Create");
 	}
 	
 	private static void select(GuiTestHelper test, String ingredient, String indication) {

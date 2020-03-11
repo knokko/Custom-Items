@@ -87,22 +87,18 @@ public class ExploreEditMenuTest {
 		
 		// Look into simple ingredient modification
 		test.click("empty");
-		test.assertComponentsWithTexts("Back", "Change", "empty");
-		test.click("Change");
-		test.assertComponentsWithTexts("Cancel", "Custom Item", "Simple vanilla item",
-				"Vanilla item with datavalue", "Empty");
+		test.assertComponentsWithTexts("Back", "Change to", "empty", "Custom Item", 
+				"Simple vanilla item", "Vanilla item with datavalue", "Empty");
 		test.click("Custom Item");
 		
 		// It appears that this delay is necessary to make sure things are processed the right way
 		test.delay(30);
 		test.click("Cancel");
 		test.click("empty");
-		test.click("Change");
 		test.click("Simple vanilla item");
 		test.assertComponentsWithTexts("Cancel", "Search:", "");
 		test.click("Cancel");
 		test.click("empty");
-		test.click("Change");
 		test.click("Vanilla item with datavalue");
 		test.assertComponentsWithTexts("Cancel", "Data value: ", "0", "Search:", "");
 		test.click("Cancel");
@@ -110,7 +106,7 @@ public class ExploreEditMenuTest {
 		
 		// Also look into shapeless recipes
 		test.click("Create shapeless recipe");
-		test.assertComponentsWithTexts("Cancel", "Add ingredient", "Ingredients", "Result");
+		test.assertComponentsWithTexts("Cancel", "Add ingredient", "Result");
 		test.click("Add ingredient");
 		test.assertComponentsWithTexts("Cancel", "Custom Item", "Simple vanilla item",
 				"Vanilla item with datavalue");

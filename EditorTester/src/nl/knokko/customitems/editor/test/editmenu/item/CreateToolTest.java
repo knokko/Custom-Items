@@ -75,10 +75,8 @@ public class CreateToolTest {
 	public static void repairItem(GuiTestHelper test, String repairItemCategory, String repairItem) {
 		test.assertComponentWithText("Repair item: ");
 		test.click("None");
-		test.assertComponentsWithTexts("Back", "Change", "None");
-		test.click("Change");
-		test.assertComponentsWithTexts("Cancel", "Custom Item", "Simple vanilla item", 
-				"Vanilla item with datavalue", "Empty");
+		test.assertComponentsWithTexts("Back", "None", "Custom Item", 
+				"Simple vanilla item", "Vanilla item with datavalue");
 		test.click(repairItemCategory);
 		if (!repairItemCategory.equals("Empty")) {
 			test.click(repairItem);
