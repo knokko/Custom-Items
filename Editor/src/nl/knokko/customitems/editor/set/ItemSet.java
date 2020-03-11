@@ -1713,17 +1713,6 @@ public class ItemSet implements ItemSetBase {
 		for (int counter = 0; counter < numMobDrops; counter++)
 			mobDrops.add(EntityDrop.load(input, this));
 	}
-	
-	// Simple hash, doesn't have to be cryptographically strong
-	private long hash(byte[] content) {
-		long result = 0;
-		for (byte b : content) {
-			int i = b + 129;
-			result += i;
-			result *= i;
-		}
-		return result;
-	}
 
 	/**
 	 * A String containing only the quote character. I use this constant because
@@ -2031,7 +2020,7 @@ public class ItemSet implements ItemSetBase {
 			File file = new File(Editor.getFolder() + "/" + fileName + ".cis");// cis stands for Custom Item Set
 			OutputStream fileOutput = Files.newOutputStream(file.toPath());
 			ByteArrayBitOutput output = new ByteArrayBitOutput();
-			export5(output);
+			export6(output);
 			output.terminate();
 			
 			byte[] bytes = output.getBytes();
@@ -2547,7 +2536,7 @@ public class ItemSet implements ItemSetBase {
 		}
 		try {
 			ByteArrayBitOutput output = new ByteArrayBitOutput();
-			export5(output);
+			export6(output);
 			output.terminate();
 			
 			byte[] bytes = output.getBytes();
@@ -2938,6 +2927,7 @@ public class ItemSet implements ItemSetBase {
 	
 	// ENCODING_4 is editor-only, so it doesn't have its own export method
 	
+	@SuppressWarnings("unused")
 	private void export5(BitOutput output) {
 		output.addByte(ENCODING_5);
 		
@@ -2968,6 +2958,46 @@ public class ItemSet implements ItemSetBase {
 		output.addInt(mobDrops.size());
 		for (EntityDrop drop : mobDrops)
 			drop.save(output);
+	}
+	
+	// Add integrity checks
+	private void export6(BitOutput outerOutput) {
+		outerOutput.addByte(ENCODING_6);
+		
+		ByteArrayBitOutput output = new ByteArrayBitOutput();
+		
+		// Projectiles
+		output.addInt(projectileCovers.size());
+		for (EditorProjectileCover cover : projectileCovers)
+			cover.export(output);
+		
+		output.addInt(projectiles.size());
+		for (CIProjectile projectile : projectiles)
+			projectile.toBits(output);
+
+		// Items
+		output.addInt(items.size());
+		for (CustomItem item : items)
+			item.export(output);
+
+		// Recipes
+		output.addInt(recipes.size());
+		for (Recipe recipe : recipes)
+			recipe.save(output);
+		
+		// Drops
+		output.addInt(blockDrops.size());
+		for (BlockDrop drop : blockDrops)
+			drop.save(output);
+		
+		output.addInt(mobDrops.size());
+		for (EntityDrop drop : mobDrops)
+			drop.save(output);
+		
+		// Finish the integrity stuff
+		byte[] contentBytes = output.getBytes();
+		outerOutput.addLong(hash(contentBytes));
+		outerOutput.addByteArray(contentBytes);
 	}
 
 	public String save() {

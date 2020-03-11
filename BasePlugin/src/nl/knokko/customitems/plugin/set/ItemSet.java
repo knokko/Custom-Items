@@ -61,8 +61,10 @@ import nl.knokko.customitems.plugin.recipe.ingredient.*;
 import nl.knokko.customitems.plugin.set.item.*;
 import nl.knokko.customitems.projectile.CIProjectile;
 import nl.knokko.customitems.projectile.ProjectileCover;
+import nl.knokko.customitems.trouble.IntegrityException;
 import nl.knokko.customitems.trouble.UnknownEncodingException;
 import nl.knokko.util.bits.BitInput;
+import nl.knokko.util.bits.ByteArrayBitInput;
 import nl.knokko.customitems.effect.EffectType;
 import nl.knokko.customitems.effect.PotionEffect;
 
@@ -96,7 +98,7 @@ public class ItemSet implements ItemSetBase {
 		errors = new ArrayList<>();
 	}
 
-	public ItemSet(BitInput input) throws UnknownEncodingException {
+	public ItemSet(BitInput input) throws UnknownEncodingException, IntegrityException {
 		customItemMap = new EnumMap<>(CIMaterial.class);
 		byte encoding = input.readByte();
 		
@@ -107,6 +109,8 @@ public class ItemSet implements ItemSetBase {
 			load3(input);
 		else if (encoding == SetEncoding.ENCODING_5)
 			load5(input);
+		else if (encoding == SetEncoding.ENCODING_6)
+			load6(input);
 		else
 			throw new UnknownEncodingException("ItemSet", encoding);
 		
@@ -173,6 +177,64 @@ public class ItemSet implements ItemSetBase {
 	// Since ENCODING_4 is editor-only, there is no load4 method
 	
 	private void load5(BitInput input) throws UnknownEncodingException {
+		
+		// Projectiles
+		int numProjectileCovers = input.readInt();
+		projectileCovers = new ProjectileCover[numProjectileCovers];
+		for (int index = 0; index < numProjectileCovers; index++) {
+			PluginProjectileCover cover = new PluginProjectileCover(input);
+			projectileCovers[index] = cover;
+			registerItemDamageClaim(cover);
+		}
+		
+		int numProjectiles = input.readInt();
+		projectiles = new CIProjectile[numProjectiles];
+		for (int index = 0; index < numProjectiles; index++)
+			projectiles[index] = CIProjectile.fromBits(input, this);
+		
+		// Notify the projectiles that all projectiles are loaded
+		for (CIProjectile projectile : projectiles)
+			projectile.afterProjectilesAreLoaded(this);
+		
+		// Items
+		int itemSize = input.readInt();
+		items = new CustomItem[itemSize];
+		for (int counter = 0; counter < itemSize; counter++)
+			register(loadItem(input), counter);
+
+		// Recipes
+		int recipeAmount = input.readInt();
+		recipes = new CustomRecipe[recipeAmount];
+		for (int counter = 0; counter < recipeAmount; counter++)
+			register(loadRecipe(input), counter);
+		
+		int numBlockDrops = input.readInt();
+		blockDropMap = new Drop[BlockType.AMOUNT][0];
+		for (int counter = 0; counter < numBlockDrops; counter++)
+			register(BlockDrop.load(input, this));
+		
+		int numMobDrops = input.readInt();
+		mobDropMap = new EntityDrop[CIEntityType.AMOUNT][0];
+		for (int counter = 0; counter < numMobDrops; counter++)
+			register(EntityDrop.load(input, this));
+	}
+	
+	private void load6(BitInput input) throws UnknownEncodingException, IntegrityException {
+		
+		long expectedHash = input.readLong();
+		byte[] content;
+		try {
+			// Catch undefined behavior
+			content = input.readByteArray();
+		} catch (Throwable t) {
+			throw new IntegrityException(t);
+		}
+		long actualHash = hash(content);
+		if (expectedHash != actualHash) {
+			throw new IntegrityException(expectedHash, actualHash);
+		}
+		
+		input = new ByteArrayBitInput(content);
 		
 		// Projectiles
 		int numProjectileCovers = input.readInt();

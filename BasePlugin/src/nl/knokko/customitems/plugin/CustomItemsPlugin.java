@@ -40,6 +40,7 @@ import nl.knokko.customitems.plugin.data.PluginData;
 import nl.knokko.customitems.plugin.multisupport.crazyenchantments.CrazyEnchantmentsSupport;
 import nl.knokko.customitems.plugin.projectile.ProjectileManager;
 import nl.knokko.customitems.plugin.set.ItemSet;
+import nl.knokko.customitems.trouble.IntegrityException;
 import nl.knokko.customitems.trouble.UnknownEncodingException;
 import nl.knokko.util.bits.BitInput;
 import nl.knokko.util.bits.ByteArrayBitInput;
@@ -252,6 +253,10 @@ public class CustomItemsPlugin extends JavaPlugin {
 			Bukkit.getLogger().log(Level.SEVERE, "Failed to load the custom item set " + file + " because this plug-in version is outdated. Please install a newer version.");
 			set = new ItemSet();
 			set.addError("The item set " + file + " was made with a newer version of the editor. To use this item set, you also need a newer version of the plug-in.");
+		} catch (IntegrityException corrupted) {
+			Bukkit.getLogger().log(Level.SEVERE, "Failed to load the custom item set " + file + " because it was corrupted.");
+			set = new ItemSet();
+			set.addError("The item set " + file + " seems to have been corrupted. Try exporting and uploading again.");
 		} catch (NoSuchMethodError | NoClassDefFoundError missingStuff) {
 			Bukkit.getLogger().log(Level.SEVERE, "Failed to load the custom item set because something is missing", missingStuff);
 			set = new ItemSet();
