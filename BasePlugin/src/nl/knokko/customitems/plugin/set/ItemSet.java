@@ -25,6 +25,7 @@ package nl.knokko.customitems.plugin.set;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.List;
@@ -78,6 +79,8 @@ public class ItemSet implements ItemSetBase {
 	
 	private Drop[][] blockDropMap;
 	private EntityDrop[][] mobDropMap;
+	
+	private final Collection<String> errors;
 
 	public ItemSet() {
 		customItemMap = new EnumMap<>(CIMaterial.class);
@@ -89,6 +92,8 @@ public class ItemSet implements ItemSetBase {
 		
 		blockDropMap = new Drop[BlockType.AMOUNT][0];
 		mobDropMap = new EntityDrop[CIEntityType.AMOUNT][0];
+		
+		errors = new ArrayList<>();
 	}
 
 	public ItemSet(BitInput input) throws UnknownEncodingException {
@@ -104,6 +109,20 @@ public class ItemSet implements ItemSetBase {
 			load5(input);
 		else
 			throw new UnknownEncodingException("ItemSet", encoding);
+		
+		errors = new ArrayList<>(0);
+	}
+	
+	public void addError(String error) {
+		errors.add(error);
+	}
+	
+	public Iterable<String> getErrors() {
+		return errors;
+	}
+	
+	public boolean hasErrors() {
+		return !errors.isEmpty();
 	}
 
 	private void load1(BitInput input) throws UnknownEncodingException {

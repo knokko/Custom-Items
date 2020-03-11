@@ -36,6 +36,7 @@ import java.util.UUID;
 import java.util.logging.Level;
 
 import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
 import org.bukkit.GameMode;
 import org.bukkit.Sound;
 import org.bukkit.attribute.Attribute;
@@ -75,6 +76,7 @@ import org.bukkit.event.player.PlayerCommandPreprocessEvent;
 import org.bukkit.event.player.PlayerExpChangeEvent;
 import org.bukkit.event.player.PlayerInteractAtEntityEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
+import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerShearEntityEvent;
 import org.bukkit.event.server.ServerCommandEvent;
 import org.bukkit.inventory.AnvilInventory;
@@ -128,6 +130,20 @@ public class CustomItemsEventHandler implements Listener {
 	
 	private boolean interestingWarnings() {
 		return plugin().showInterestingWarnings();
+	}
+	
+	@EventHandler
+	public void sendErrors(PlayerJoinEvent event) {
+		Player player = event.getPlayer();
+		if (player.isOp()) {
+			ItemSet set = set();
+			if (set.hasErrors()) {
+				player.sendMessage(ChatColor.RED + "There were errors while enabling the CustomItems plugin:");
+				for (String error : set.getErrors())
+					player.sendMessage(ChatColor.YELLOW + error);
+				player.sendMessage(ChatColor.RED + "You are receiving this error because you are a server operator");
+			}
+		}
 	}
 
 	@EventHandler(ignoreCancelled = true)

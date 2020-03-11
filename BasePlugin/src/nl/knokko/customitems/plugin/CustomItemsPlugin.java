@@ -30,6 +30,7 @@ import java.util.logging.Level;
 
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.file.FileConfiguration;
+import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import nl.knokko.customitems.plugin.command.CommandCustomItems;
@@ -72,6 +73,7 @@ public class CustomItemsPlugin extends JavaPlugin {
 		// Load the set after creating language file instance because the set needs the
 		// durability prefix
 		loadSet();
+		debugChecks();
 		data = PluginData.loadData();
 		projectileManager = new ProjectileManager();
 		getCommand("customitems").setExecutor(new CommandCustomItems(languageFile));
@@ -99,6 +101,72 @@ public class CustomItemsPlugin extends JavaPlugin {
 	
 	private static final String KEY_MAX_PROJECTILES = "Maximum number of flying projectiles";
 	private static final String KEY_INTERESTING_WARNINGS = "Show warnings about interesting items";
+	
+	private void debugChecks() {
+		Plugin knokkoCore = Bukkit.getPluginManager().getPlugin("KnokkoCore");
+		if (knokkoCore == null) {
+			set.addError("It looks like KnokkoCore is not installed.");
+			return;
+		}
+		
+		File pluginsFolder = getDataFolder().getParentFile();
+		File[] plugins = pluginsFolder.listFiles();
+		if (plugins == null) {
+			set.addError("It looks like the datafolder of CustomItems is at a weird location");
+		} else {
+			
+			int knokkoCoreCounter = 0;
+			int customItemsCounter = 0;
+			for (File plugin : plugins) {
+				if (plugin.isFile()) {
+					String name = plugin.getName();
+					if (name.contains("Custom") && name.contains("Items") && name.indexOf("Custom") < name.indexOf("Items"))
+						customItemsCounter++;
+					if (name.contains("Knokko") && name.contains("Core") && name.indexOf("Knokko") < name.indexOf("Core"))
+						knokkoCoreCounter++;
+				}
+			}
+			
+			if (knokkoCoreCounter > 1)
+				set.addError("It looks like you have multiple versions of KnokkoCore in your plugins folder. This can cause problems.");
+			if (customItemsCounter > 1)
+				set.addError("It looks like you have multiple versions of CustomItems in your plugins folder. This can cause problems");
+		}
+		
+		String coreVersion = knokkoCore.getDescription().getVersion();
+		int indexSpace = coreVersion.indexOf(' ');
+		if (indexSpace == -1) {
+			set.addError("It looks like KnokkoCore is very outdated. Please install a newer one.");
+			return;
+		}
+		
+		String coreMcVersion = coreVersion.substring(0, indexSpace);
+		String bukkitVersion = Bukkit.getVersion();
+		
+		int indexMC = bukkitVersion.indexOf("MC: ");
+		if (indexMC == -1) {
+			set.addError("Can't find mc server version");
+			return;
+		}
+		
+		int indexDot1 = bukkitVersion.indexOf('.', indexMC);
+		if (indexDot1 == -1) {
+			set.addError("Can't parse mc version (1)");
+			return;
+		}
+		
+		int indexDot2 = bukkitVersion.indexOf('.', indexDot1 + 1);
+		if (indexDot2 == -1) {
+			set.addError("Can't parse mc version (2)");
+			return;
+		}
+		
+		String mcVersion = bukkitVersion.substring(indexMC + 4, indexDot2);
+		
+		if (!mcVersion.equals(coreMcVersion)) {
+			set.addError("It looks like you are using KnokkoCore for mc " + coreMcVersion + " on a mc " + mcVersion + " server. This will probably go wrong.");
+		}
+	}
 	
 	private void loadConfig() {
 		FileConfiguration config = getConfig();
@@ -166,13 +234,22 @@ public class CustomItemsPlugin extends JavaPlugin {
 			} else {
 				Bukkit.getLogger().log(Level.SEVERE, "The custom item set " + file + " is too big");
 				set = new ItemSet();
+				set.addError("The custom item set " + file + " is too big.");
 			}
 		} catch (UnknownEncodingException outdated) {
 			Bukkit.getLogger().log(Level.SEVERE, "Failed to load the custom item set " + file + " because this plug-in version is outdated. Please install a newer version.");
 			set = new ItemSet();
-		} catch (Exception ex) {
-			Bukkit.getLogger().log(Level.SEVERE, "Failed to load the custom item set " + file, ex);
+			set.addError("The item set " + file + " was made with a newer version of the editor. To use this item set, you also need a newer version of the plug-in.");
+		} catch (NoSuchMethodError | NoClassDefFoundError missingStuff) {
+			Bukkit.getLogger().log(Level.SEVERE, "Failed to load the custom item set because something is missing", missingStuff);
 			set = new ItemSet();
+			if (missingStuff.getMessage().startsWith("nl.knokko.core")) {
+				set.addError("It looks like KnokkoCore is outdated or not installed at all.");
+			}
+		} catch (Throwable t) {
+			Bukkit.getLogger().log(Level.SEVERE, "Failed to load the custom item set " + file, t);
+			set = new ItemSet();
+			set.addError("An error occured while trying to load the item set " + file + ". Check the console for the stacktrace.");
 		}
 	}
 
