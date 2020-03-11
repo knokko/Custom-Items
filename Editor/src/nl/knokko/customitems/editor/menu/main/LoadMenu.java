@@ -32,6 +32,7 @@ import nl.knokko.customitems.editor.Editor;
 import nl.knokko.customitems.editor.menu.edit.EditMenu;
 import nl.knokko.customitems.editor.menu.edit.EditProps;
 import nl.knokko.customitems.editor.set.ItemSet;
+import nl.knokko.customitems.trouble.IntegrityException;
 import nl.knokko.customitems.trouble.UnknownEncodingException;
 import nl.knokko.gui.color.GuiColor;
 import nl.knokko.gui.component.menu.GuiMenu;
@@ -161,6 +162,8 @@ public class LoadMenu extends GuiMenu {
 							errorComponent.setText(ioex.getMessage());
 						} catch (UnknownEncodingException encoding) {
 							errorComponent.setText("It looks like this version of the editor is too old. Please download a newer one.");
+						} catch (IntegrityException integrity) {
+							errorComponent.setText("It looks like this back-up is corrupted. Please try another back-up.");
 						}
 					}), 0, 0.9f - index * 0.1f, 1, 1 - index * 0.1f);
 				}
@@ -203,6 +206,8 @@ public class LoadMenu extends GuiMenu {
 							throw new RuntimeException(ioex);
 						} catch (UnknownEncodingException encoding) {
 							errorComponent.setText("This editor is too old to edit this item set. Please download a newer one.");
+						} catch (IntegrityException integrity) {
+							errorComponent.setText("It looks like this file is corrupted. Please load a back-up of it instead.");
 						}
 					}), 0, 0.9f - index * 0.1f, 1, 1 - index * 0.1f);
 				}

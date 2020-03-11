@@ -49,4 +49,9 @@ public class SetEncoding {
 	 * Added projectiles
 	 */
 	public static final byte ENCODING_5 = 4;
+	
+	/**
+	 * Added file integrity check
+	 */
+	public static final byte ENCODING_6 = 5;
 }

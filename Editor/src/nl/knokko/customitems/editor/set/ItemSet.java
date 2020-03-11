@@ -63,6 +63,7 @@ import nl.knokko.customitems.projectile.CIProjectile;
 import nl.knokko.customitems.projectile.ProjectileCover;
 import nl.knokko.customitems.projectile.effects.ProjectileEffect;
 import nl.knokko.customitems.projectile.effects.ProjectileEffects;
+import nl.knokko.customitems.trouble.IntegrityException;
 import nl.knokko.customitems.trouble.UnknownEncodingException;
 import nl.knokko.customitems.item.CustomToolDurability;
 import nl.knokko.customitems.item.Enchantment;
@@ -75,6 +76,7 @@ import nl.knokko.gui.window.input.WindowInput;
 import nl.knokko.customitems.item.AttributeModifier.*;
 import nl.knokko.util.bits.BitInput;
 import nl.knokko.util.bits.BitOutput;
+import nl.knokko.util.bits.ByteArrayBitInput;
 import nl.knokko.util.bits.ByteArrayBitOutput;
 import nl.knokko.customitems.effect.EffectType;
 import nl.knokko.customitems.effect.PotionEffect;
@@ -1398,7 +1400,7 @@ public class ItemSet implements ItemSetBase {
 		projectiles = new ArrayList<>();
 	}
 
-	public ItemSet(String fileName, BitInput input) throws UnknownEncodingException {
+	public ItemSet(String fileName, BitInput input) throws UnknownEncodingException, IntegrityException {
 		this.fileName = fileName;
 		byte encoding = input.readByte();
 		if (encoding == ENCODING_1)
@@ -1411,6 +1413,8 @@ public class ItemSet implements ItemSetBase {
 			load4(input);
 		else if (encoding == ENCODING_5)
 			load5(input);
+		else if (encoding == ENCODING_6)
+			load6(input);
 		else
 			throw new UnknownEncodingException("ItemSet", encoding);
 	}
@@ -1638,6 +1642,87 @@ public class ItemSet implements ItemSetBase {
 		mobDrops = new ArrayList<>(numMobDrops);
 		for (int counter = 0; counter < numMobDrops; counter++)
 			mobDrops.add(EntityDrop.load(input, this));
+	}
+	
+	private void load6(BitInput input) throws UnknownEncodingException, IntegrityException {
+		// Check integrity
+		long expectedHash = input.readLong();
+		byte[] remaining;
+		try {
+			// Catch undefined behavior when the remaining size is wrong
+			remaining = input.readByteArray();
+		} catch (Throwable t) {
+			throw new IntegrityException(t);
+		}
+		long actualHash = hash(remaining);
+		if (expectedHash != actualHash)
+			throw new IntegrityException(expectedHash, actualHash);
+		
+		input = new ByteArrayBitInput(remaining);
+		
+		// Textures
+		int textureAmount = input.readInt();
+		textures = new ArrayList<NamedImage>(textureAmount);
+		for (int counter = 0; counter < textureAmount; counter++) {
+			byte textureType = input.readByte();
+			if (textureType == NamedImage.ENCODING_BOW)
+				textures.add(new BowTextures(input));
+			else if (textureType == NamedImage.ENCODING_SIMPLE)
+				textures.add(new NamedImage(input));
+			else
+				throw new UnknownEncodingException("Texture", textureType);
+		}
+		
+		// Projectile covers
+		int numProjectileCovers = input.readInt();
+		projectileCovers = new ArrayList<>(numProjectileCovers);
+		for (int counter = 0; counter < numProjectileCovers; counter++)
+			projectileCovers.add(EditorProjectileCover.fromBits(input, this));
+		
+		// Projectiles
+		int numProjectiles = input.readInt();
+		projectiles = new ArrayList<>(numProjectiles);
+		for (int counter = 0; counter < numProjectiles; counter++)
+			projectiles.add(CIProjectile.fromBits(input, this));
+		
+		// Notify the projectile effects that all projectiles have been loaded
+		for (CIProjectile projectile : projectiles)
+			projectile.afterProjectilesAreLoaded(this);
+
+		// Items
+		int itemAmount = input.readInt();
+		// System.out.println("amount of items is " + itemAmount);
+		items = new ArrayList<CustomItem>(itemAmount);
+		for (int counter = 0; counter < itemAmount; counter++)
+			items.add(loadItem(input, true));
+
+		// Recipes
+		int recipeAmount = input.readInt();
+		recipes = new ArrayList<Recipe>(recipeAmount);
+		for (int counter = 0; counter < recipeAmount; counter++)
+			recipes.add(loadRecipe(input));
+		
+		// Drops
+		int numBlockDrops = input.readInt();
+		blockDrops = new ArrayList<>(numBlockDrops);
+		for (int counter = 0; counter < numBlockDrops; counter++)
+			blockDrops.add(BlockDrop.load(input, this));
+		
+		int numMobDrops = input.readInt();
+		mobDrops = new ArrayList<>(numMobDrops);
+		for (int counter = 0; counter < numMobDrops; counter++)
+			mobDrops.add(EntityDrop.load(input, this));
+	}
+	
+	// Simple hash, doesn't have to be cryptographically strong
+	private long hash(byte[] content) {
+		long result = 0;
+		for (byte b : content) {
+			int i = b + 129;
+			result += i;
+			result *= i;
+		}
+		return result;
 	}
 
 	/**
@@ -2892,7 +2977,7 @@ public class ItemSet implements ItemSetBase {
 			File file = new File(Editor.getFolder() + "/" + fileName + ".cisb");// cisb stands for Custom Item Set
 																				// Builder
 			ByteArrayBitOutput output = new ByteArrayBitOutput();
-			save5(output);
+			save6(output);
 			output.terminate();
 			byte[] bytes = output.getBytes();
 			OutputStream mainOutput = Files.newOutputStream(file.toPath());
@@ -3060,6 +3145,7 @@ public class ItemSet implements ItemSetBase {
 	}
 	
 	// Add projectiles
+	@SuppressWarnings("unused")
 	private void save5(BitOutput output) {
 		output.addByte(ENCODING_5);
 		output.addInt(textures.size());
@@ -3108,6 +3194,66 @@ public class ItemSet implements ItemSetBase {
 		output.addInt(mobDrops.size());
 		for (EntityDrop drop : mobDrops)
 			drop.save(output);
+	}
+	
+	// Add integrity check
+	private void save6(BitOutput outerOutput) {
+		outerOutput.addByte(ENCODING_6);
+		
+		// Prepare integrity
+		ByteArrayBitOutput output = new ByteArrayBitOutput();
+		
+		output.addInt(textures.size());
+		for (NamedImage texture : textures) {
+			if (texture instanceof BowTextures)
+				output.addByte(NamedImage.ENCODING_BOW);
+			else
+				output.addByte(NamedImage.ENCODING_SIMPLE);
+			texture.save(output);
+		}
+		
+		output.addInt(projectileCovers.size());
+		for (EditorProjectileCover cover : projectileCovers)
+			cover.toBits(output);
+		
+		output.addInt(projectiles.size());
+		for (CIProjectile projectile : projectiles)
+			projectile.toBits(output);
+		
+		output.addInt(items.size());
+
+		// Save the normal items before the tools so that tools can use normal items as
+		// repair item
+		List<CustomItem> sorted = new ArrayList<CustomItem>(items.size());
+		for (CustomItem item : items) {
+			if (!(item instanceof CustomTool)) {
+				sorted.add(item);
+			}
+		}
+		for (CustomItem item : items) {
+			if (item instanceof CustomTool) {
+				sorted.add(item);
+			}
+		}
+		for (CustomItem item : sorted)
+			item.save2(output);
+
+		output.addInt(recipes.size());
+		for (Recipe recipe : recipes)
+			recipe.save(output);
+		
+		output.addInt(blockDrops.size());
+		for (BlockDrop drop : blockDrops)
+			drop.save(output);
+		
+		output.addInt(mobDrops.size());
+		for (EntityDrop drop : mobDrops)
+			drop.save(output);
+		
+		// Finish the integrity work
+		byte[] contentBytes = output.getBytes();
+		outerOutput.addLong(hash(contentBytes));
+		outerOutput.addByteArray(contentBytes);
 	}
 
 	/**
