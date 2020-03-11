@@ -63,6 +63,7 @@ import nl.knokko.customitems.projectile.CIProjectile;
 import nl.knokko.customitems.projectile.ProjectileCover;
 import nl.knokko.customitems.projectile.effects.ProjectileEffect;
 import nl.knokko.customitems.projectile.effects.ProjectileEffects;
+import nl.knokko.customitems.trouble.UnknownEncodingException;
 import nl.knokko.customitems.item.CustomToolDurability;
 import nl.knokko.customitems.item.Enchantment;
 import nl.knokko.customitems.item.EnchantmentType;
@@ -83,16 +84,16 @@ import static nl.knokko.customitems.encoding.SetEncoding.*;
 
 public class ItemSet implements ItemSetBase {
 
-	private Recipe loadRecipe(BitInput input) {
+	private Recipe loadRecipe(BitInput input) throws UnknownEncodingException {
 		byte encoding = input.readByte();
 		if (encoding == RecipeEncoding.SHAPED_RECIPE)
 			return new ShapedRecipe(input, this);
 		if (encoding == RecipeEncoding.SHAPELESS_RECIPE)
 			return new ShapelessRecipe(input, this);
-		throw new IllegalArgumentException("Unknown recipe encoding: " + encoding);
+		throw new UnknownEncodingException("Recipe", encoding);
 	}
 
-	private CustomItem loadItem(BitInput input, boolean checkCustomModel) {
+	private CustomItem loadItem(BitInput input, boolean checkCustomModel) throws UnknownEncodingException {
 		byte encoding = input.readByte();
 		switch (encoding) {
 			case ItemEncoding.ENCODING_SIMPLE_1 : return loadSimpleItem1(input, checkCustomModel);
@@ -124,7 +125,7 @@ public class ItemSet implements ItemSetBase {
 			case ItemEncoding.ENCODING_HOE_5 : return loadHoe5(input, checkCustomModel);
 			case ItemEncoding.ENCODING_HOE_6 : return loadHoe6(input, checkCustomModel);
 			case ItemEncoding.ENCODING_WAND_8: return loadWand8(input);
-			default : throw new IllegalArgumentException("Unknown encoding: " + encoding);
+			default : throw new UnknownEncodingException("Item", encoding);
 		}
 	}
 	
@@ -1397,7 +1398,7 @@ public class ItemSet implements ItemSetBase {
 		projectiles = new ArrayList<>();
 	}
 
-	public ItemSet(String fileName, BitInput input) {
+	public ItemSet(String fileName, BitInput input) throws UnknownEncodingException {
 		this.fileName = fileName;
 		byte encoding = input.readByte();
 		if (encoding == ENCODING_1)
@@ -1411,7 +1412,7 @@ public class ItemSet implements ItemSetBase {
 		else if (encoding == ENCODING_5)
 			load5(input);
 		else
-			throw new IllegalArgumentException("Unknown encoding: " + encoding);
+			throw new UnknownEncodingException("ItemSet", encoding);
 	}
 
 	private String checkName(String name) {
@@ -1429,7 +1430,7 @@ public class ItemSet implements ItemSetBase {
 		return null;
 	}
 
-	private void load1(BitInput input) {
+	private void load1(BitInput input) throws UnknownEncodingException {
 		// Textures
 		int textureAmount = input.readInt();
 		// System.out.println("amount of textures is " + textureAmount);
@@ -1459,7 +1460,7 @@ public class ItemSet implements ItemSetBase {
 		projectiles = new ArrayList<>();
 	}
 
-	private void load2(BitInput input) {
+	private void load2(BitInput input) throws UnknownEncodingException {
 		// Textures
 		int textureAmount = input.readInt();
 		// System.out.println("amount of textures is " + textureAmount);
@@ -1471,7 +1472,7 @@ public class ItemSet implements ItemSetBase {
 			else if (textureType == NamedImage.ENCODING_SIMPLE)
 				textures.add(new NamedImage(input));
 			else
-				throw new IllegalArgumentException("Unknown texture encoding: " + textureType);
+				throw new UnknownEncodingException("Texture", textureType);
 		}
 		// System.out.println("textures are " + textures);
 		// Items
@@ -1496,7 +1497,7 @@ public class ItemSet implements ItemSetBase {
 		projectiles = new ArrayList<>();
 	}
 	
-	private void load3(BitInput input) {
+	private void load3(BitInput input) throws UnknownEncodingException {
 		// Textures
 		int textureAmount = input.readInt();
 		// System.out.println("amount of textures is " + textureAmount);
@@ -1508,7 +1509,7 @@ public class ItemSet implements ItemSetBase {
 			else if (textureType == NamedImage.ENCODING_SIMPLE)
 				textures.add(new NamedImage(input));
 			else
-				throw new IllegalArgumentException("Unknown texture encoding: " + textureType);
+				throw new UnknownEncodingException("Texture", textureType);
 		}
 		// System.out.println("textures are " + textures);
 		// Items
@@ -1540,7 +1541,7 @@ public class ItemSet implements ItemSetBase {
 		projectiles = new ArrayList<>();
 	}
 	
-	private void load4(BitInput input) {
+	private void load4(BitInput input) throws UnknownEncodingException {
 		// Textures
 		int textureAmount = input.readInt();
 		// System.out.println("amount of textures is " + textureAmount);
@@ -1552,7 +1553,7 @@ public class ItemSet implements ItemSetBase {
 			else if (textureType == NamedImage.ENCODING_SIMPLE)
 				textures.add(new NamedImage(input));
 			else
-				throw new IllegalArgumentException("Unknown texture encoding: " + textureType);
+				throw new UnknownEncodingException("Texture", textureType);
 		}
 		// System.out.println("textures are " + textures);
 		// Items
@@ -1584,7 +1585,7 @@ public class ItemSet implements ItemSetBase {
 		projectiles = new ArrayList<>();
 	}
 	
-	private void load5(BitInput input) {
+	private void load5(BitInput input) throws UnknownEncodingException {
 		// Textures
 		int textureAmount = input.readInt();
 		textures = new ArrayList<NamedImage>(textureAmount);
@@ -1595,7 +1596,7 @@ public class ItemSet implements ItemSetBase {
 			else if (textureType == NamedImage.ENCODING_SIMPLE)
 				textures.add(new NamedImage(input));
 			else
-				throw new IllegalArgumentException("Unknown texture encoding: " + textureType);
+				throw new UnknownEncodingException("Texture", textureType);
 		}
 		
 		// Projectile covers
@@ -4064,6 +4065,10 @@ public class ItemSet implements ItemSetBase {
 	 */
 	public String addShapelessRecipe(Ingredient[] ingredients, Result result) {
 		if (!bypassChecks()) {
+			if (ingredients.length == 0)
+				return "Recipes must have at least 1 ingredient";
+			if (ingredients.length > 9)
+				return "Recipes can have at most 9 ingredients";
 			for (Recipe recipe : recipes)
 				if (recipe.hasConflictingShapelessIngredients(ingredients))
 					return "Another shapeless recipe (" + recipe.getResult() + ") has conflicting ingredients";
@@ -4085,6 +4090,10 @@ public class ItemSet implements ItemSetBase {
 	 */
 	public String changeShapelessRecipe(ShapelessRecipe previous, Ingredient[] newIngredients, Result newResult) {
 		if (!bypassChecks()) {
+			if (newIngredients.length == 0)
+				return "Recipes must have at least 1 ingredient";
+			if (newIngredients.length > 9)
+				return "Recipes can have at most 9 ingredients";
 			boolean has = false;
 			for (Recipe recipe : recipes) {
 				if (recipe == previous) {

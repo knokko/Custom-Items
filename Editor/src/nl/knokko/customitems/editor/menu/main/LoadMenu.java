@@ -32,9 +32,11 @@ import nl.knokko.customitems.editor.Editor;
 import nl.knokko.customitems.editor.menu.edit.EditMenu;
 import nl.knokko.customitems.editor.menu.edit.EditProps;
 import nl.knokko.customitems.editor.set.ItemSet;
+import nl.knokko.customitems.trouble.UnknownEncodingException;
 import nl.knokko.gui.color.GuiColor;
 import nl.knokko.gui.component.menu.GuiMenu;
 import nl.knokko.gui.component.text.dynamic.DynamicTextButton;
+import nl.knokko.gui.component.text.dynamic.DynamicTextComponent;
 import nl.knokko.util.bits.BitInput;
 import nl.knokko.util.bits.ByteArrayBitInput;
 
@@ -43,11 +45,13 @@ public class LoadMenu extends GuiMenu {
 	public static final LoadMenu INSTANCE = new LoadMenu();
 	
 	private SetList setList;
+	private final DynamicTextComponent errorComponent = new DynamicTextComponent("", EditProps.ERROR);
 
 	@Override
 	protected void addComponents() {
 		setList = new SetList();
-		addComponent(setList, 0.3f, 0f, 1f, 0.8f);
+		addComponent(errorComponent, 0.05f, 0.9f, 0.95f, 1f);
+		addComponent(setList, 0.3f, 0f, 1f, 0.7f);
 		addComponent(new DynamicTextButton("Cancel", EditProps.CANCEL_BASE, EditProps.CANCEL_HOVER, () -> {
 			state.getWindow().setMainComponent(MainMenu.INSTANCE);
 		}), 0.05f, 0.8f, 0.25f, 0.9f);
@@ -56,7 +60,7 @@ public class LoadMenu extends GuiMenu {
 		}), 0.05f, 0.6f, 0.25f, 0.7f);
 		addComponent(new DynamicTextButton("Refresh", EditProps.BUTTON, EditProps.HOVER, () -> {
 			setList.refresh();
-		}), 0.35f, 0.85f, 0.55f, 0.95f);
+		}), 0.35f, 0.75f, 0.55f, 0.85f);
 	}
 	
 	@Override
@@ -76,14 +80,16 @@ public class LoadMenu extends GuiMenu {
 		
 		@Override
 		protected void addComponents() {
-			setList = new BackupSetList();
+			DynamicTextComponent errorComponent = new DynamicTextComponent("", EditProps.ERROR);
+			addComponent(errorComponent, 0.05f, 0.9f, 0.95f, 1f);
+			setList = new BackupSetList(errorComponent);
 			addComponent(setList, 0.3f, 0f, 1f, 0.8f);
 			addComponent(new DynamicTextButton("Back", EditProps.CANCEL_BASE, EditProps.CANCEL_HOVER, () -> {
 				state.getWindow().setMainComponent(LoadMenu.INSTANCE);
 			}), 0.05f, 0.8f, 0.25f, 0.9f);
 			addComponent(new DynamicTextButton("Refresh", EditProps.BUTTON, EditProps.HOVER, () -> {
 				setList.refresh();
-			}), 0.35f, 0.85f, 0.55f, 0.95f);
+			}), 0.05f, 0.6f, 0.25f, 0.7f);
 		}
 		
 		@Override
@@ -96,7 +102,12 @@ public class LoadMenu extends GuiMenu {
 		
 		//private static final Properties BUTTON_PROPERTIES = Properties.createButton(new Color(0, 200, 0), new Color(0, 50, 0), 1024, 128);
 		//private static final Properties HOVER_PROPERTIES = Properties.createButton(new Color(0, 250, 0), new Color(0, 70, 0), 1024, 128);
-
+		private final DynamicTextComponent errorComponent;
+		
+		private BackupSetList(DynamicTextComponent errorComponent) {
+			this.errorComponent = errorComponent;
+		}
+		
 		@Override
 		protected void addComponents() {
 			refresh();
@@ -147,7 +158,9 @@ public class LoadMenu extends GuiMenu {
 							input.terminate();
 							state.getWindow().setMainComponent(new EditMenu(set));
 						} catch(IOException ioex) {
-							throw new RuntimeException(ioex);
+							errorComponent.setText(ioex.getMessage());
+						} catch (UnknownEncodingException encoding) {
+							errorComponent.setText("It looks like this version of the editor is too old. Please download a newer one.");
 						}
 					}), 0, 0.9f - index * 0.1f, 1, 1 - index * 0.1f);
 				}
@@ -155,11 +168,8 @@ public class LoadMenu extends GuiMenu {
 		}
 	}
 	
-	private static class SetList extends GuiMenu {
+	private class SetList extends GuiMenu {
 		
-		//private static final Properties BUTTON_PROPERTIES = Properties.createButton(new Color(0, 200, 0), new Color(0, 50, 0), 512, 128);
-		//private static final Properties HOVER_PROPERTIES = Properties.createButton(new Color(0, 250, 0), new Color(0, 70, 0), 512, 128);
-
 		@Override
 		protected void addComponents() {
 			refresh();
@@ -191,6 +201,8 @@ public class LoadMenu extends GuiMenu {
 							state.getWindow().setMainComponent(new EditMenu(set));
 						} catch(IOException ioex) {
 							throw new RuntimeException(ioex);
+						} catch (UnknownEncodingException encoding) {
+							errorComponent.setText("This editor is too old to edit this item set. Please download a newer one.");
 						}
 					}), 0, 0.9f - index * 0.1f, 1, 1 - index * 0.1f);
 				}
