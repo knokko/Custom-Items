@@ -30,9 +30,11 @@ import java.util.logging.Level;
 
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.file.FileConfiguration;
+import org.bukkit.entity.Entity;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.java.JavaPlugin;
 
+import nl.knokko.core.plugin.entity.EntityDamageHelper;
 import nl.knokko.customitems.plugin.command.CommandCustomItems;
 import nl.knokko.customitems.plugin.data.PluginData;
 import nl.knokko.customitems.plugin.multisupport.crazyenchantments.CrazyEnchantmentsSupport;
@@ -118,7 +120,7 @@ public class CustomItemsPlugin extends JavaPlugin {
 			int knokkoCoreCounter = 0;
 			int customItemsCounter = 0;
 			for (File plugin : plugins) {
-				if (plugin.isFile()) {
+				if (plugin.isFile() && plugin.getName().endsWith(".jar")) {
 					String name = plugin.getName();
 					if (name.contains("Custom") && name.contains("Items") && name.indexOf("Custom") < name.indexOf("Items"))
 						customItemsCounter++;
@@ -165,6 +167,16 @@ public class CustomItemsPlugin extends JavaPlugin {
 		
 		if (!mcVersion.equals(coreMcVersion)) {
 			set.addError("It looks like you are using KnokkoCore for mc " + coreMcVersion + " on a mc " + mcVersion + " server. This will probably go wrong.");
+		}
+		
+		// I'm afraid I need to update the next line each time KnokkoCore updates
+		try {
+			EntityDamageHelper.class.getDeclaredMethod("causeFakeProjectileDamage", 
+					Entity.class, Entity.class, float.class,
+					double.class, double.class, double.class,
+					double.class, double.class, double.class);
+		} catch (NoSuchMethodException | NoClassDefFoundError outdated) {
+			set.addError("It looks like your KnokkoCore is outdated. Please install a newer version.");
 		}
 	}
 	
