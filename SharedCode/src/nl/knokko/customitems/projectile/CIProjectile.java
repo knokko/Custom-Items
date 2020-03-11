@@ -6,6 +6,7 @@ import java.util.Collection;
 import nl.knokko.customitems.item.ItemSetBase;
 import nl.knokko.customitems.projectile.effects.ProjectileEffect;
 import nl.knokko.customitems.projectile.effects.ProjectileEffects;
+import nl.knokko.customitems.trouble.UnknownEncodingException;
 import nl.knokko.util.bits.BitInput;
 import nl.knokko.util.bits.BitOutput;
 
@@ -13,15 +14,15 @@ public class CIProjectile {
 	
 	private static final byte ENCODING_1 = 0;
 	
-	public static CIProjectile fromBits(BitInput input, ItemSetBase set) {
+	public static CIProjectile fromBits(BitInput input, ItemSetBase set) throws UnknownEncodingException {
 		byte encoding = input.readByte();
 		switch (encoding) {
 		case ENCODING_1: return load1(input, set);
-		default: throw new IllegalArgumentException("Unknown projectile encoding: " + encoding);
+		default: throw new UnknownEncodingException("Projectile", encoding);
 		}
 	}
 	
-	private static CIProjectile load1(BitInput input, ItemSetBase set) {
+	private static CIProjectile load1(BitInput input, ItemSetBase set) throws UnknownEncodingException {
 		String name = input.readString();
 		float damage = input.readFloat();
 		float minLaunchAngle = input.readFloat();

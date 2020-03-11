@@ -2,17 +2,18 @@ package nl.knokko.customitems.drops;
 
 import nl.knokko.customitems.encoding.DropEncoding;
 import nl.knokko.customitems.item.ItemSetBase;
+import nl.knokko.customitems.trouble.UnknownEncodingException;
 import nl.knokko.util.bits.BitInput;
 import nl.knokko.util.bits.BitOutput;
 
 public class BlockDrop {
 	
-	public static BlockDrop load(BitInput input, ItemSetBase set) {
+	public static BlockDrop load(BitInput input, ItemSetBase set) throws UnknownEncodingException {
 		byte encoding = input.readByte();
 		if (encoding == DropEncoding.Block.ENCODING1)
 			return load1(input, set);
 		else
-			throw new IllegalArgumentException("Unknown block drop encoding: " + encoding);
+			throw new UnknownEncodingException("BlockDrop", encoding);
 	}
 	
 	private static BlockDrop load1(BitInput input, ItemSetBase set) {

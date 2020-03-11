@@ -3,6 +3,7 @@ package nl.knokko.customitems.projectile.effects;
 import java.util.ArrayList;
 import java.util.Collection;
 
+import nl.knokko.customitems.trouble.UnknownEncodingException;
 import nl.knokko.util.bits.BitInput;
 import nl.knokko.util.bits.BitOutput;
 
@@ -20,7 +21,7 @@ public class ProjectileEffects {
 	
 	private static final byte ENCODING_1 = 0;
 	
-	public static ProjectileEffects fromBits(BitInput input) {
+	public static ProjectileEffects fromBits(BitInput input) throws UnknownEncodingException {
 		byte encoding = input.readByte();
 		switch (encoding) {
 		case ENCODING_1: {
@@ -32,7 +33,7 @@ public class ProjectileEffects {
 				effects.add(ProjectileEffect.fromBits(input));
 			return new ProjectileEffects(delay, period, effects);
 		}
-		default: throw new IllegalArgumentException("Unknown projectile effects encoding: " + encoding);
+		default: throw new UnknownEncodingException("ProjectileEffects", encoding);
 		}
 	}
 	

@@ -1,6 +1,7 @@
 package nl.knokko.customitems.projectile.effects;
 
 import nl.knokko.customitems.item.ItemSetBase;
+import nl.knokko.customitems.trouble.UnknownEncodingException;
 import nl.knokko.util.bits.BitInput;
 import nl.knokko.util.bits.BitOutput;
 
@@ -21,7 +22,7 @@ public abstract class ProjectileEffect {
 	protected static final byte ENCODING_SUB_PROJECTILE_1 = 5;
 	protected static final byte ENCODING_COMMAND_1 = 6;
 	
-	public static ProjectileEffect fromBits(BitInput input) {
+	public static ProjectileEffect fromBits(BitInput input) throws UnknownEncodingException {
 		byte encoding = input.readByte();
 		switch (encoding) {
 		case ENCODING_EXPLOSION_1: return Explosion.load1(input);
@@ -31,7 +32,7 @@ public abstract class ProjectileEffect {
 		case ENCODING_RANDOM_ACCELLERATION_1: return RandomAccelleration.load1(input);
 		case ENCODING_SUB_PROJECTILE_1: return SubProjectiles.load1(input);
 		case ENCODING_COMMAND_1: return ExecuteCommand.load1(input);
-		default: throw new IllegalArgumentException("Unknown projectile effect encoding: " + encoding);
+		default: throw new UnknownEncodingException("ProjectileEffect", encoding);
 		}
 	}
 	
