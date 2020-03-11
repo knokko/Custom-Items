@@ -60,6 +60,7 @@ import nl.knokko.customitems.plugin.recipe.ingredient.*;
 import nl.knokko.customitems.plugin.set.item.*;
 import nl.knokko.customitems.projectile.CIProjectile;
 import nl.knokko.customitems.projectile.ProjectileCover;
+import nl.knokko.customitems.trouble.UnknownEncodingException;
 import nl.knokko.util.bits.BitInput;
 import nl.knokko.customitems.effect.EffectType;
 import nl.knokko.customitems.effect.PotionEffect;
@@ -90,7 +91,7 @@ public class ItemSet implements ItemSetBase {
 		mobDropMap = new EntityDrop[CIEntityType.AMOUNT][0];
 	}
 
-	public ItemSet(BitInput input) {
+	public ItemSet(BitInput input) throws UnknownEncodingException {
 		customItemMap = new EnumMap<>(CIMaterial.class);
 		byte encoding = input.readByte();
 		
@@ -102,10 +103,10 @@ public class ItemSet implements ItemSetBase {
 		else if (encoding == SetEncoding.ENCODING_5)
 			load5(input);
 		else
-			throw new IllegalArgumentException("Unknown item set encoding: " + encoding);
+			throw new UnknownEncodingException("ItemSet", encoding);
 	}
 
-	private void load1(BitInput input) {
+	private void load1(BitInput input) throws UnknownEncodingException {
 		// Items
 		int itemSize = input.readInt();
 		items = new CustomItem[itemSize];
@@ -125,7 +126,7 @@ public class ItemSet implements ItemSetBase {
 
 	// Just like the ItemSet of Editor doesn't have export2, this doesn't have load2
 
-	private void load3(BitInput input) {
+	private void load3(BitInput input) throws UnknownEncodingException {
 		
 		// Items
 		int itemSize = input.readInt();
@@ -152,7 +153,7 @@ public class ItemSet implements ItemSetBase {
 	
 	// Since ENCODING_4 is editor-only, there is no load4 method
 	
-	private void load5(BitInput input) {
+	private void load5(BitInput input) throws UnknownEncodingException {
 		
 		// Projectiles
 		int numProjectileCovers = input.readInt();
@@ -195,7 +196,7 @@ public class ItemSet implements ItemSetBase {
 			register(EntityDrop.load(input, this));
 	}
 
-	private CustomItem loadItem(BitInput input) {
+	private CustomItem loadItem(BitInput input) throws UnknownEncodingException {
 		byte encoding = input.readByte();
 		switch (encoding) {
 		case ItemEncoding.ENCODING_SIMPLE_1 : return loadSimpleItem1(input);
@@ -227,7 +228,7 @@ public class ItemSet implements ItemSetBase {
 		case ItemEncoding.ENCODING_HOE_5 : return loadHoe5(input);
 		case ItemEncoding.ENCODING_HOE_6 : return loadHoe6(input);
 		case ItemEncoding.ENCODING_WAND_8: return loadWand8(input);
-		default : throw new IllegalArgumentException("Unknown encoding: " + encoding);
+		default : throw new UnknownEncodingException("Item", encoding);
 	}
 	}
 
@@ -350,7 +351,7 @@ public class ItemSet implements ItemSetBase {
 				stackSize, itemFlags, playerEffects, targetEffects, commands);
 	}
 
-	private CustomItem loadTool2(BitInput input) {
+	private CustomItem loadTool2(BitInput input) throws UnknownEncodingException {
 		CustomItemType itemType = CustomItemType.valueOf(input.readJavaString());
 		short damage = input.readShort();
 		String name = input.readJavaString();
@@ -371,7 +372,7 @@ public class ItemSet implements ItemSetBase {
 				new ArrayList<PotionEffect>(), new ArrayList<PotionEffect>(), new String[] {});
 	}
 
-	private CustomItem loadTool3(BitInput input) {
+	private CustomItem loadTool3(BitInput input) throws UnknownEncodingException {
 		CustomItemType itemType = CustomItemType.valueOf(input.readJavaString());
 		short damage = input.readShort();
 		String name = input.readJavaString();
@@ -393,7 +394,7 @@ public class ItemSet implements ItemSetBase {
 				new ArrayList<PotionEffect>(), new ArrayList<PotionEffect>(), new String[] {});
 	}
 
-	private CustomItem loadTool4(BitInput input) {
+	private CustomItem loadTool4(BitInput input) throws UnknownEncodingException {
 		CustomItemType itemType = CustomItemType.valueOf(input.readJavaString());
 		short damage = input.readShort();
 		String name = input.readJavaString();
@@ -418,7 +419,7 @@ public class ItemSet implements ItemSetBase {
 				new ArrayList<PotionEffect>(), new ArrayList<PotionEffect>(), new String[] {});
 	}
 
-	private CustomItem loadTool5(BitInput input) {
+	private CustomItem loadTool5(BitInput input) throws UnknownEncodingException {
 		CustomItemType itemType = CustomItemType.valueOf(input.readJavaString());
 		short damage = input.readShort();
 		String name = input.readJavaString();
@@ -444,7 +445,7 @@ public class ItemSet implements ItemSetBase {
 				new ArrayList<PotionEffect>(), new ArrayList<PotionEffect>(), new String[] {});
 	}
 	
-	private CustomItem loadTool6(BitInput input) {
+	private CustomItem loadTool6(BitInput input) throws UnknownEncodingException {
 		CustomItemType itemType = CustomItemType.valueOf(input.readJavaString());
 		short damage = input.readShort();
 		String name = input.readJavaString();
@@ -486,7 +487,7 @@ public class ItemSet implements ItemSetBase {
 	
 	
 	
-	private CustomItem loadHoe5(BitInput input) {
+	private CustomItem loadHoe5(BitInput input) throws UnknownEncodingException {
 		CustomItemType itemType = CustomItemType.valueOf(input.readJavaString());
 		short damage = input.readShort();
 		String name = input.readJavaString();
@@ -513,7 +514,7 @@ public class ItemSet implements ItemSetBase {
 				tillDurabilityLoss, new ArrayList<PotionEffect>(), new ArrayList<PotionEffect>(), new String[] {});
 	}
 	
-	private CustomItem loadHoe6(BitInput input) {
+	private CustomItem loadHoe6(BitInput input) throws UnknownEncodingException {
 		CustomItemType itemType = CustomItemType.valueOf(input.readJavaString());
 		short damage = input.readShort();
 		String name = input.readJavaString();
@@ -554,7 +555,7 @@ public class ItemSet implements ItemSetBase {
 				tillDurabilityLoss, playerEffects, targetEffects, commands);
 	}
 	
-	private CustomItem loadShear5(BitInput input) {
+	private CustomItem loadShear5(BitInput input) throws UnknownEncodingException {
 		CustomItemType itemType = CustomItemType.valueOf(input.readJavaString());
 		short damage = input.readShort();
 		String name = input.readJavaString();
@@ -581,7 +582,7 @@ public class ItemSet implements ItemSetBase {
 				shearDurabilityLoss, new ArrayList<PotionEffect>(), new ArrayList<PotionEffect>(), new String[] {});
 	}
 	
-	private CustomItem loadShear6(BitInput input) {
+	private CustomItem loadShear6(BitInput input) throws UnknownEncodingException {
 		CustomItemType itemType = CustomItemType.valueOf(input.readJavaString());
 		short damage = input.readShort();
 		String name = input.readJavaString();
@@ -622,7 +623,7 @@ public class ItemSet implements ItemSetBase {
 				shearDurabilityLoss, playerEffects, targetEffects, commands);
 	}
 
-	private CustomItem loadArmor4(BitInput input) {
+	private CustomItem loadArmor4(BitInput input) throws UnknownEncodingException {
 		CustomItemType itemType = CustomItemType.valueOf(input.readJavaString());
 		short damage = input.readShort();
 		String name = input.readJavaString();
@@ -651,7 +652,7 @@ public class ItemSet implements ItemSetBase {
 				new DamageResistances(), new ArrayList<PotionEffect>(), new ArrayList<PotionEffect>(), new String[] {});
 	}
 
-	private CustomItem loadArmor5(BitInput input) {
+	private CustomItem loadArmor5(BitInput input) throws UnknownEncodingException {
 		CustomItemType itemType = CustomItemType.valueOf(input.readJavaString());
 		short damage = input.readShort();
 		String name = input.readJavaString();
@@ -684,7 +685,7 @@ public class ItemSet implements ItemSetBase {
 				new ArrayList<PotionEffect>(), new String[] {});
 	}
 
-	private CustomItem loadArmor6(BitInput input) {
+	private CustomItem loadArmor6(BitInput input) throws UnknownEncodingException {
 		CustomItemType itemType = CustomItemType.valueOf(input.readJavaString());
 		short damage = input.readShort();
 		String name = input.readJavaString();
@@ -718,7 +719,7 @@ public class ItemSet implements ItemSetBase {
 				new ArrayList<PotionEffect>(), new String[] {});
 	}
 	
-	private CustomItem loadArmor7(BitInput input) {
+	private CustomItem loadArmor7(BitInput input) throws UnknownEncodingException {
 		CustomItemType itemType = CustomItemType.valueOf(input.readJavaString());
 		short damage = input.readShort();
 		String name = input.readJavaString();
@@ -752,7 +753,7 @@ public class ItemSet implements ItemSetBase {
 				new ArrayList<PotionEffect>(), new String[] {});
 	}
 	
-	private CustomItem loadArmor8(BitInput input) {
+	private CustomItem loadArmor8(BitInput input) throws UnknownEncodingException {
 		CustomItemType itemType = CustomItemType.valueOf(input.readJavaString());
 		short damage = input.readShort();
 		String name = input.readJavaString();
@@ -799,7 +800,7 @@ public class ItemSet implements ItemSetBase {
 				blockBreakDurabilityLoss, damageResistances, playerEffects, targetEffects, commands);
 	}
 
-	private CustomBow loadBow3(BitInput input) {
+	private CustomBow loadBow3(BitInput input) throws UnknownEncodingException {
 		short damage = input.readShort();
 		String name = input.readJavaString();
 		String displayName = input.readJavaString();
@@ -822,7 +823,7 @@ public class ItemSet implements ItemSetBase {
 				ItemFlag.getDefaultValues(), 0, 0, 1, new ArrayList<PotionEffect>(), new ArrayList<PotionEffect>(), new String[] {});
 	}
 
-	private CustomBow loadBow4(BitInput input) {
+	private CustomBow loadBow4(BitInput input) throws UnknownEncodingException {
 		short damage = input.readShort();
 		String name = input.readJavaString();
 		String displayName = input.readJavaString();
@@ -848,7 +849,7 @@ public class ItemSet implements ItemSetBase {
 				ItemFlag.getDefaultValues(), 0, 0, 1, new ArrayList<PotionEffect>(), new ArrayList<PotionEffect>(), new String[] {});
 	}
 
-	private CustomBow loadBow5(BitInput input) {
+	private CustomBow loadBow5(BitInput input) throws UnknownEncodingException {
 		short damage = input.readShort();
 		String name = input.readJavaString();
 		String displayName = input.readJavaString();
@@ -879,7 +880,7 @@ public class ItemSet implements ItemSetBase {
 				new ArrayList<PotionEffect>(), new ArrayList<PotionEffect>(), new String[] {});
 	}
 	
-	private CustomBow loadBow6(BitInput input) {
+	private CustomBow loadBow6(BitInput input) throws UnknownEncodingException {
 		short damage = input.readShort();
 		String name = input.readJavaString();
 		String displayName = input.readJavaString();
@@ -924,7 +925,7 @@ public class ItemSet implements ItemSetBase {
 				playerEffects, targetEffects, commands);
 	}
 	
-	private CustomItem loadShield6(BitInput input) {
+	private CustomItem loadShield6(BitInput input) throws UnknownEncodingException {
 		CustomItemType itemType = CustomItemType.valueOf(input.readJavaString());
 		short damage = input.readShort();
 		String name = input.readJavaString();
@@ -951,7 +952,7 @@ public class ItemSet implements ItemSetBase {
 				new ArrayList<PotionEffect>(), new ArrayList<PotionEffect>(), new String[] {});
 	}
 	
-	private CustomItem loadShield7(BitInput input) {
+	private CustomItem loadShield7(BitInput input) throws UnknownEncodingException {
 		CustomItemType itemType = CustomItemType.valueOf(input.readJavaString());
 		short damage = input.readShort();
 		String name = input.readJavaString();
@@ -992,7 +993,7 @@ public class ItemSet implements ItemSetBase {
 				playerEffects, targetEffects, commands);
 	}
 	
-	private CustomItem loadTrident7(BitInput input) {
+	private CustomItem loadTrident7(BitInput input) throws UnknownEncodingException {
 		short damage = input.readShort();
 		String name = input.readJavaString();
 		String displayName = input.readJavaString();
@@ -1021,7 +1022,7 @@ public class ItemSet implements ItemSetBase {
 				new ArrayList<PotionEffect>(), new ArrayList<PotionEffect>(), new String[] {});
 	}
 	
-	private CustomItem loadTrident8(BitInput input) {
+	private CustomItem loadTrident8(BitInput input) throws UnknownEncodingException {
 		short damage = input.readShort();
 		String name = input.readJavaString();
 		String displayName = input.readJavaString();
@@ -1129,24 +1130,24 @@ public class ItemSet implements ItemSetBase {
 		map.put(item.getItemDamage(), item);
 	}
 
-	private CustomRecipe loadRecipe(BitInput input) {
+	private CustomRecipe loadRecipe(BitInput input) throws UnknownEncodingException {
 		byte encoding = input.readByte();
 		ItemStack result = loadResult(input);
 		if (encoding == RecipeEncoding.SHAPED_RECIPE)
 			return loadShapedRecipe(input, result);
 		if (encoding == RecipeEncoding.SHAPELESS_RECIPE)
 			return loadShapelessRecipe(input, result);
-		throw new IllegalArgumentException("Unknown recipe encoding: " + encoding);
+		throw new UnknownEncodingException("Recipe", encoding);
 	}
 
-	private CustomRecipe loadShapelessRecipe(BitInput input, ItemStack result) {
+	private CustomRecipe loadShapelessRecipe(BitInput input, ItemStack result) throws UnknownEncodingException {
 		Ingredient[] ingredients = new Ingredient[(int) input.readNumber((byte) 4, false)];
 		for (int index = 0; index < ingredients.length; index++)
 			ingredients[index] = loadIngredient(input);
 		return new ShapelessCustomRecipe(ingredients, result);
 	}
 
-	private CustomRecipe loadShapedRecipe(BitInput input, ItemStack result) {
+	private CustomRecipe loadShapedRecipe(BitInput input, ItemStack result) throws UnknownEncodingException {
 		Ingredient[] ingredients = new Ingredient[9];
 		for (int index = 0; index < ingredients.length; index++)
 			ingredients[index] = loadIngredient(input);
@@ -1154,7 +1155,7 @@ public class ItemSet implements ItemSetBase {
 	}
 
 	@SuppressWarnings("deprecation")
-	private ItemStack loadResult(BitInput input) {
+	private ItemStack loadResult(BitInput input) throws UnknownEncodingException {
 		byte encoding = input.readByte();
 		byte amount = (byte) (1 + input.readNumber((byte) 6, false));
 		if (encoding == RecipeEncoding.Result.VANILLA_SIMPLE)
@@ -1171,10 +1172,10 @@ public class ItemSet implements ItemSetBase {
 			throw new UnsupportedOperationException("Advanced vanilla results are not yet supported");
 		if (encoding == RecipeEncoding.Result.CUSTOM)
 			return getItem(input.readJavaString()).create(amount);
-		throw new IllegalArgumentException("Unknown result encoding: " + encoding);
+		throw new UnknownEncodingException("Result", encoding);
 	}
 
-	private Ingredient loadIngredient(BitInput input) {
+	private Ingredient loadIngredient(BitInput input) throws UnknownEncodingException {
 		byte encoding = input.readByte();
 		if (encoding == RecipeEncoding.Ingredient.NONE)
 			return new NoIngredient();
@@ -1187,7 +1188,7 @@ public class ItemSet implements ItemSetBase {
 			throw new UnsupportedOperationException("Advanced vanilla ingredients are not yet supported.");
 		if (encoding == RecipeEncoding.Ingredient.CUSTOM)
 			return new CustomIngredient(getItem(input.readJavaString()));
-		throw new IllegalArgumentException("Unknown ingredient encoding: " + encoding);
+		throw new UnknownEncodingException("Ingredient", encoding);
 	}
 
 	private void register(CustomRecipe recipe, int index) {

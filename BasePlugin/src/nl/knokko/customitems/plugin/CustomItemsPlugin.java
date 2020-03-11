@@ -37,6 +37,7 @@ import nl.knokko.customitems.plugin.data.PluginData;
 import nl.knokko.customitems.plugin.multisupport.crazyenchantments.CrazyEnchantmentsSupport;
 import nl.knokko.customitems.plugin.projectile.ProjectileManager;
 import nl.knokko.customitems.plugin.set.ItemSet;
+import nl.knokko.customitems.trouble.UnknownEncodingException;
 import nl.knokko.util.bits.BitInput;
 import nl.knokko.util.bits.ByteArrayBitInput;
 
@@ -166,6 +167,9 @@ public class CustomItemsPlugin extends JavaPlugin {
 				Bukkit.getLogger().log(Level.SEVERE, "The custom item set " + file + " is too big");
 				set = new ItemSet();
 			}
+		} catch (UnknownEncodingException outdated) {
+			Bukkit.getLogger().log(Level.SEVERE, "Failed to load the custom item set " + file + " because this plug-in version is outdated. Please install a newer version.");
+			set = new ItemSet();
 		} catch (Exception ex) {
 			Bukkit.getLogger().log(Level.SEVERE, "Failed to load the custom item set " + file, ex);
 			set = new ItemSet();
