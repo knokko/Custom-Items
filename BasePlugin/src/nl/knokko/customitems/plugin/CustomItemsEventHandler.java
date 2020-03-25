@@ -1688,11 +1688,11 @@ public class CustomItemsEventHandler implements Listener {
 		}
 	}
 
-	@EventHandler
+	@EventHandler(priority=EventPriority.HIGHEST, ignoreCancelled=true)
 	public void fixShulkerBoxes(BlockBreakEvent event) {
 		Block block = event.getBlock();
 		if (block.getState() instanceof ShulkerBox) {
-			if (event.getPlayer().getGameMode() != GameMode.CREATIVE) {
+			if (event.getPlayer().getGameMode() != GameMode.CREATIVE && event.isDropItems()) {
 				ShulkerBox shulker = (ShulkerBox) block.getState();
 				event.setDropItems(false);
 
