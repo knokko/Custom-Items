@@ -548,7 +548,7 @@ public class CustomItemsEventHandler implements Listener {
 									event.getPlayer().getInventory().setItemInMainHand(null);
 								}
 							} else if (interestingWarnings()) {
-								Bukkit.getLogger().warning("Interesting custom main shear: " + customMain);
+								Bukkit.getLogger().warning("Interesting custom main shear: " + main);
 							}
 						} else if (customOff != null) {
 							if (customOff.forbidDefaultUse(off))
@@ -560,7 +560,7 @@ public class CustomItemsEventHandler implements Listener {
 									event.getPlayer().getInventory().setItemInOffHand(null);
 								}
 							} else if (interestingWarnings()) {
-								Bukkit.getLogger().warning("Interesting custom off shear: " + customOff);
+								Bukkit.getLogger().warning("Interesting custom off shear: " + off);
 							}
 						}
 	}
@@ -639,7 +639,7 @@ public class CustomItemsEventHandler implements Listener {
 	
 						target.addPotionEffects(pe);
 					} else if (interestingWarnings()) {
-						Bukkit.getLogger().warning("Interesting item: " + custom);
+						Bukkit.getLogger().warning("Interesting item: " + helmet);
 					}
 				}
 	
@@ -652,7 +652,7 @@ public class CustomItemsEventHandler implements Listener {
 						}
 						target.addPotionEffects(pe);
 					} else if (interestingWarnings()) {
-						Bukkit.getLogger().warning("Interesting item: " + custom);
+						Bukkit.getLogger().warning("Interesting item: " + chest);
 					}
 				}
 	
@@ -665,7 +665,7 @@ public class CustomItemsEventHandler implements Listener {
 						}
 						target.addPotionEffects(pe);
 					} else if (interestingWarnings()) {
-						Bukkit.getLogger().warning("Interesting item: " + custom);
+						Bukkit.getLogger().warning("Interesting item: " + legs);
 					}
 				}
 	
@@ -678,7 +678,7 @@ public class CustomItemsEventHandler implements Listener {
 						}
 						target.addPotionEffects(pe);
 					} else if (interestingWarnings()) {
-						Bukkit.getLogger().warning("Interesting item: " + custom);
+						Bukkit.getLogger().warning("Interesting item: " + boots);
 					}
 	
 				}
