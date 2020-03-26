@@ -25,6 +25,7 @@ package nl.knokko.customitems.editor.menu.edit.item.attribute;
 
 import java.util.List;
 
+import nl.knokko.customitems.editor.Checks;
 import nl.knokko.customitems.editor.HelpButtons;
 import nl.knokko.customitems.editor.menu.edit.EditProps;
 import nl.knokko.customitems.editor.menu.edit.EnumSelect;
@@ -58,6 +59,8 @@ public class AttributesOverview extends GuiMenu {
 
 	public AttributesOverview(AttributeModifier exampleModifier, AttributeModifier[] currentAttributes, GuiComponent returnMenu, Receiver receiver) {
 		this.current = currentAttributes;
+		Checks.notNull(exampleModifier);
+		Checks.nonNull(currentAttributes);
 		this.receiver = receiver;
 		this.returnMenu = returnMenu;
 		this.exampleModifier = exampleModifier;
@@ -78,12 +81,12 @@ public class AttributesOverview extends GuiMenu {
 			state.getWindow().setMainComponent(returnMenu);
 		}), 0.05f, 0.8f, 0.2f, 0.9f);
 		addComponent(new DynamicTextButton("New Attribute", EditProps.BUTTON, EditProps.HOVER, () -> {
-			float y = 0.8f - (getComponents().size() - 4) * 0.125f;
+			float y = 0.8f - (getComponents().size() - 5) * 0.125f;
 			addComponent(new Entry(exampleModifier), 0.325f, y, 1f, y + 0.1f);
 		}), 0.05f, 0.5f, 0.3f, 0.6f);
 		addComponent(new DynamicTextButton("Apply", EditProps.SAVE_BASE, EditProps.SAVE_HOVER, () -> {
 			List<SubComponent> components = getComponents();
-			AttributeModifier[] result = new AttributeModifier[components.size() - 4];
+			AttributeModifier[] result = new AttributeModifier[components.size() - 5];
 			int index = 0;
 			for (SubComponent component : components) {
 				if (component.getComponent() instanceof Entry) {

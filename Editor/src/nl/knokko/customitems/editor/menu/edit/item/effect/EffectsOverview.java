@@ -53,7 +53,7 @@ public class EffectsOverview extends GuiMenu {
 			state.getWindow().setMainComponent(returnMenu);
 		}), 0.05f, 0.8f, 0.2f, 0.9f);
 		addComponent(new DynamicTextButton("New Effect", EditProps.BUTTON, EditProps.HOVER, () -> {
-			float y = 0.8f - (getComponents().size() - 4) * 0.125f;
+			float y = 0.8f - (getComponents().size() - 5) * 0.125f;
 			addComponent(new Entry(EXAMPLE_EFFECT), 0.4f, y, 1f, y + 0.1f);
 		}), 0.05f, 0.5f, 0.3f, 0.6f);
 		addComponent(new DynamicTextButton("Apply", EditProps.SAVE_BASE, EditProps.SAVE_HOVER, () -> {

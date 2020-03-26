@@ -25,6 +25,7 @@ package nl.knokko.customitems.editor.menu.edit.item.enchantment;
 
 import java.util.List;
 
+import nl.knokko.customitems.editor.Checks;
 import nl.knokko.customitems.editor.HelpButtons;
 import nl.knokko.customitems.editor.menu.edit.EditProps;
 import nl.knokko.customitems.editor.menu.edit.EnumSelect;
@@ -58,6 +59,8 @@ public class EnchantmentsOverview extends GuiMenu {
 		this.receiver = receiver;
 		this.returnMenu = returnMenu;
 		this.errorComponent = new DynamicTextComponent("", EditProps.ERROR);
+		
+		Checks.nonNull(current);
 	}
 	
 	@Override
@@ -74,12 +77,12 @@ public class EnchantmentsOverview extends GuiMenu {
 			state.getWindow().setMainComponent(returnMenu);
 		}), 0.05f, 0.8f, 0.2f, 0.9f);
 		addComponent(new DynamicTextButton("New Enchantment", EditProps.BUTTON, EditProps.HOVER, () -> {
-			float y = 0.8f - (getComponents().size() - 4) * 0.125f;
+			float y = 0.8f - (getComponents().size() - 5) * 0.125f;
 			addComponent(new Entry(EXAMPLE_ENCHANTMENT), 0.4f, y, 1f, y + 0.1f);
 		}), 0.05f, 0.5f, 0.3f, 0.6f);
 		addComponent(new DynamicTextButton("Apply", EditProps.SAVE_BASE, EditProps.SAVE_HOVER, () -> {
 			List<SubComponent> components = getComponents();
-			Enchantment[] result = new Enchantment[components.size() - 4];
+			Enchantment[] result = new Enchantment[components.size() - 5];
 			int index = 0;
 			for (SubComponent component : components) {
 				if (component.getComponent() instanceof Entry) {

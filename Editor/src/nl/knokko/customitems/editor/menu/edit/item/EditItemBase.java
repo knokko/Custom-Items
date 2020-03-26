@@ -26,6 +26,7 @@ package nl.knokko.customitems.editor.menu.edit.item;
 import java.util.ArrayList;
 import java.util.List;
 
+import nl.knokko.customitems.editor.Checks;
 import nl.knokko.customitems.editor.menu.edit.EditMenu;
 import nl.knokko.customitems.editor.menu.edit.EditProps;
 import nl.knokko.customitems.editor.menu.edit.EnumSelect;
@@ -142,6 +143,13 @@ public abstract class EditItemBase extends GuiMenu {
 			targetEffects = DEFAULT_TARGET_EFFECTS;
 			commands = new String[] {};
 		}
+		
+		Checks.nonNull(lore);
+		Checks.nonNull(attributes);
+		Checks.nonNull(enchantments);
+		Checks.nonNull(playerEffects);
+		Checks.nonNull(targetEffects);
+		Checks.nonNull(commands);
 	}
 
 	@Override
@@ -325,6 +333,7 @@ public abstract class EditItemBase extends GuiMenu {
 		addComponent(new DynamicTextButton("Change...", EditProps.BUTTON, EditProps.HOVER, () -> {
 			state.getWindow().setMainComponent(new AttributesOverview(getExampleAttributeModifier(), attributes,
 					EditItemBase.this, (AttributeModifier[] attributes) -> {
+						Checks.nonNull(attributes);
 						this.attributes = attributes;
 					}));
 		}), BUTTON_X, 0.5f, BUTTON_X + 0.1f, 0.55f);
@@ -334,6 +343,7 @@ public abstract class EditItemBase extends GuiMenu {
 		addComponent(new DynamicTextButton("Change...", EditProps.BUTTON, EditProps.HOVER, () -> {
 			state.getWindow().setMainComponent(
 					new EnchantmentsOverview(enchantments, EditItemBase.this, (Enchantment[] enchantments) -> {
+						Checks.nonNull(enchantments);
 						this.enchantments = enchantments;
 					}));
 		}), BUTTON_X, 0.44f, BUTTON_X + 0.1f, 0.49f);
