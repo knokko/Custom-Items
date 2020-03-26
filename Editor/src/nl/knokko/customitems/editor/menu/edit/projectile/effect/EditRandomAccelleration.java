@@ -18,4 +18,9 @@ public class EditRandomAccelleration extends EditAccelleration {
 	protected ProjectileAccelleration create(float minAccelleration, float maxAccelleration) {
 		return new RandomAccelleration(minAccelleration, maxAccelleration);
 	}
+
+	@Override
+	protected String getURLEnd() {
+		return "edit%20menu/projectiles/effects/edit/random%20accellerate.html";
+	}
 }

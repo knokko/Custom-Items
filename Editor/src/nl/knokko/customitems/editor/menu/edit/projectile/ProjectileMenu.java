@@ -1,5 +1,6 @@
 package nl.knokko.customitems.editor.menu.edit.projectile;
 
+import nl.knokko.customitems.editor.HelpButtons;
 import nl.knokko.customitems.editor.menu.edit.EditMenu;
 import nl.knokko.customitems.editor.menu.edit.EditProps;
 import nl.knokko.customitems.editor.menu.edit.projectile.cover.ProjectileCoverCollectionEdit;
@@ -34,6 +35,8 @@ public class ProjectileMenu extends GuiMenu {
 		addComponent(new DynamicTextButton("Projectiles", EditProps.BUTTON, EditProps.HOVER, () -> {
 			state.getWindow().setMainComponent(projectileOverview);
 		}), 0.7f, 0.45f, 0.9f, 0.55f);
+		
+		HelpButtons.addHelpLink(this, "edit%20menu/projectiles/index.html");
 	}
 	
 	@Override

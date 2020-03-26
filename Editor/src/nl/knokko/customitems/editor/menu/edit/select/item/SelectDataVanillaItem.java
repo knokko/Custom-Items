@@ -27,6 +27,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Locale;
 
+import nl.knokko.customitems.editor.HelpButtons;
 import nl.knokko.customitems.editor.menu.edit.EditProps;
 import nl.knokko.customitems.item.CIMaterial;
 import nl.knokko.gui.color.GuiColor;
@@ -90,6 +91,8 @@ public class SelectDataVanillaItem extends GuiMenu {
 			return selected != null;
 		}), 0.1f, 0.05f, 0.2f, 0.15f);
 		addComponent(list, 0.35f, 0f, 1f, 1f);
+		
+		HelpButtons.addHelpLink(this, "edit%20menu/recipes/vanilla%20data.html");
 	}
 	
 	@Override

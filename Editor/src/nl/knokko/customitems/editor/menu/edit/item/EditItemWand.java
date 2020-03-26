@@ -2,6 +2,7 @@ package nl.knokko.customitems.editor.menu.edit.item;
 
 import static nl.knokko.customitems.editor.menu.edit.EditProps.*;
 
+import nl.knokko.customitems.editor.HelpButtons;
 import nl.knokko.customitems.editor.menu.edit.CollectionSelect;
 import nl.knokko.customitems.editor.menu.edit.EditMenu;
 import nl.knokko.customitems.editor.set.item.CustomWand;
@@ -83,6 +84,8 @@ public class EditItemWand extends EditItemBase {
 		
 		addComponent(new DynamicTextComponent("Cooldown:", LABEL), LABEL_X2 - 0.13f, 0.56f, LABEL_X2, 0.61f);
 		addComponent(cooldownField, BUTTON_X2, 0.56f, BUTTON_X2 + 0.05f, 0.61f);
+		
+		HelpButtons.addHelpLink(this, "edit%20menu/items/edit/wand.html");
 	}
 
 	@Override

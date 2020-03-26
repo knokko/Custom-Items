@@ -3,6 +3,7 @@ package nl.knokko.customitems.editor.menu.edit.projectile.effect;
 import java.awt.image.BufferedImage;
 import java.util.Collection;
 
+import nl.knokko.customitems.editor.HelpButtons;
 import nl.knokko.customitems.editor.menu.edit.CollectionEdit;
 import nl.knokko.customitems.editor.menu.edit.EditProps;
 import nl.knokko.customitems.editor.set.ItemSet;
@@ -28,6 +29,8 @@ public class ProjectileEffectCollectionEdit extends CollectionEdit<ProjectileEff
 		addComponent(new DynamicTextButton("Add", EditProps.SAVE_BASE, EditProps.SAVE_HOVER, () -> {
 			state.getWindow().setMainComponent(new CreateProjectileEffect(collection, set, this));
 		}), 0.025f, 0.2f, 0.15f, 0.3f);
+		
+		HelpButtons.addHelpLink(this, "edit%20menu/projectiles/effects/overview.html");
 	}
 	
 	private static class ProjectileEffectActionHandler implements ActionHandler<ProjectileEffect> {

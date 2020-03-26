@@ -1,5 +1,6 @@
 package nl.knokko.customitems.editor.menu.edit.item;
 
+import nl.knokko.customitems.editor.HelpButtons;
 import nl.knokko.customitems.editor.menu.edit.EditMenu;
 import nl.knokko.customitems.editor.menu.edit.EditProps;
 import nl.knokko.customitems.editor.set.item.CustomShears;
@@ -40,6 +41,8 @@ public class EditItemShears extends EditItemTool {
 		super.addComponents();
 		addComponent(new DynamicTextComponent("Durability loss on shearing:", EditProps.LABEL), 0.55f, 0.35f, 0.84f, 0.425f);
 		addComponent(shearDurabilityLoss, 0.85f, 0.35f, 0.9f, 0.425f);
+		
+		HelpButtons.addHelpLink(this, "edit%20menu/items/edit/shear.html");
 	}
 	
 	@Override

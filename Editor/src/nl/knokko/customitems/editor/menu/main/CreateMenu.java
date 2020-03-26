@@ -27,6 +27,7 @@ import java.io.File;
 import java.io.IOException;
 
 import nl.knokko.customitems.editor.Editor;
+import nl.knokko.customitems.editor.HelpButtons;
 import nl.knokko.customitems.editor.menu.edit.EditMenu;
 import nl.knokko.customitems.editor.menu.edit.EditProps;
 import nl.knokko.customitems.editor.set.ItemSet;
@@ -65,6 +66,8 @@ public class CreateMenu extends GuiMenu {
 			else
 				state.getWindow().setMainComponent(new EditMenu(new ItemSet(fileName.getText())));
 		}), 0.35f, 0.25f, 0.65f, 0.35f);
+		
+		HelpButtons.addHelpLink(this, "main%20menu/create.html");
 	}
 	
 	public static String testFileName(String name) {

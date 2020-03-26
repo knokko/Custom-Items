@@ -1,5 +1,6 @@
 package nl.knokko.customitems.editor.menu.edit.projectile.cover;
 
+import nl.knokko.customitems.editor.HelpButtons;
 import nl.knokko.customitems.editor.menu.edit.EditMenu;
 import nl.knokko.customitems.editor.menu.edit.EditProps;
 import nl.knokko.customitems.editor.menu.edit.item.EditCustomModel;
@@ -44,6 +45,8 @@ public class EditCustomProjectileCover extends EditProjectileCover {
 				customModel = array;
 			}, customModel));
 		}), 0.6f, 0.11f, 0.7f, 0.19f);
+		
+		HelpButtons.addHelpLink(this, "edit%20menu/projectiles/covers/edit/custom.html");
 	}
 
 	@Override

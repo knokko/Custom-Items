@@ -5,6 +5,7 @@ import java.util.Collection;
 
 import static nl.knokko.customitems.editor.menu.edit.EditProps.*;
 
+import nl.knokko.customitems.editor.HelpButtons;
 import nl.knokko.customitems.editor.set.ItemSet;
 import nl.knokko.customitems.projectile.effects.ProjectileEffect;
 import nl.knokko.customitems.projectile.effects.ProjectileEffects;
@@ -108,6 +109,8 @@ public class EditProjectileEffects extends GuiMenu {
 			}
 			
 		}), 0.025f, 0.2f, 0.2f, 0.3f);
+		
+		HelpButtons.addHelpLink(this, "edit%20menu/projectiles/effects/waves/edit.html");
 	}
 	
 	@Override

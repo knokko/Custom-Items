@@ -4,6 +4,7 @@ import static nl.knokko.customitems.editor.menu.edit.EditProps.*;
 
 import java.util.Collection;
 
+import nl.knokko.customitems.editor.HelpButtons;
 import nl.knokko.customitems.editor.menu.edit.EnumSelect;
 import nl.knokko.customitems.particle.CIParticle;
 import nl.knokko.customitems.projectile.effects.ProjectileEffect;
@@ -86,5 +87,7 @@ public class EditSimpleParticles extends EditProjectileEffect {
 				errorComponent.setText(error);
 			}
 		}), 0.025f, 0.2f, 0.175f, 0.3f);
+		
+		HelpButtons.addHelpLink(this, "edit%20menu/projectiles/effects/edit/particles.html");
 	}
 }

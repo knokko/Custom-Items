@@ -23,6 +23,7 @@
  *******************************************************************************/
 package nl.knokko.customitems.editor.menu.edit.recipe;
 
+import nl.knokko.customitems.editor.HelpButtons;
 import nl.knokko.customitems.editor.menu.edit.EditMenu;
 import nl.knokko.customitems.editor.menu.edit.EditProps;
 import nl.knokko.customitems.editor.menu.edit.recipe.ingredient.IngredientComponent;
@@ -88,6 +89,8 @@ public class ShapedRecipeEdit extends GuiMenu {
 		addComponent(ingredientsComponent, 0.05f, 0.1f, 0.65f, 0.6f);
 		addComponent(errorComponent, 0.35f, 0.85f, 0.95f, 0.95f);
 		addComponent(resultComponent, 0.75f, 0.275f, 0.95f, 0.425f);
+		
+		HelpButtons.addHelpLink(this, "edit%20menu/recipes/shaped.html");
 	}
 	
 	@Override

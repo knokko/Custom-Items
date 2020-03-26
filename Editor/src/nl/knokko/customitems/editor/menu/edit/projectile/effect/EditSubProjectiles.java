@@ -3,6 +3,7 @@ package nl.knokko.customitems.editor.menu.edit.projectile.effect;
 import static nl.knokko.customitems.editor.menu.edit.EditProps.*;
 import java.util.Collection;
 
+import nl.knokko.customitems.editor.HelpButtons;
 import nl.knokko.customitems.editor.menu.edit.CollectionSelect;
 import nl.knokko.customitems.editor.set.ItemSet;
 import nl.knokko.customitems.projectile.CIProjectile;
@@ -96,5 +97,7 @@ public class EditSubProjectiles extends EditProjectileEffect {
 				errorComponent.setText(error);
 			}
 		}), 0.025f, 0.2f, 0.175f, 0.3f);
+		
+		HelpButtons.addHelpLink(this, "edit%20menu/projectiles/effects/edit/projectile.html");
 	}
 }

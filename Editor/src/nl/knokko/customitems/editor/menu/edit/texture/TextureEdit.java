@@ -30,6 +30,7 @@ import java.io.IOException;
 
 import javax.imageio.ImageIO;
 
+import nl.knokko.customitems.editor.HelpButtons;
 import nl.knokko.customitems.editor.menu.edit.EditMenu;
 import nl.knokko.customitems.editor.menu.edit.EditProps;
 import nl.knokko.customitems.editor.menu.main.CreateMenu;
@@ -117,6 +118,8 @@ public class TextureEdit extends GuiMenu {
 			} else
 				errorComponent.setText("You have to select an image before you can create this.");
 		}), 0.4f, 0.3f, 0.6f, 0.4f);
+		
+		HelpButtons.addHelpLink(this, "edit%20menu/textures/edit.html");
 	}
 	
 	public static DynamicTextButton createImageSelect(ImageListener listener, DynamicTextComponent errorComponent, GuiComponent returnMenu) {

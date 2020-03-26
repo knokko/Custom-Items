@@ -1,5 +1,6 @@
 package nl.knokko.customitems.editor.menu.edit.item;
 
+import nl.knokko.customitems.editor.HelpButtons;
 import nl.knokko.customitems.editor.menu.edit.EditMenu;
 import nl.knokko.customitems.editor.menu.edit.EditProps;
 import nl.knokko.customitems.editor.set.ItemSet;
@@ -63,6 +64,8 @@ public class EditItemTrident extends EditItemTool {
 								customThrowingModel = array;
 							}, customThrowingModel));
 		}), BUTTON_X, -0.04f, BUTTON_X + 0.1f, 0.01f);
+		
+		HelpButtons.addHelpLink(this, "edit%20menu/items/edit/trident.html");
 	}
 	
 	@Override

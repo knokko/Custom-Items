@@ -2,6 +2,7 @@ package nl.knokko.customitems.editor.menu.edit.item;
 
 import java.awt.image.BufferedImage;
 
+import nl.knokko.customitems.editor.HelpButtons;
 import nl.knokko.customitems.editor.menu.commandhelp.CommandBlockHelpOverview;
 import nl.knokko.customitems.editor.menu.edit.*;
 import nl.knokko.customitems.editor.set.item.*;
@@ -26,6 +27,8 @@ public class ItemCollectionEdit extends CollectionEdit<CustomItem> {
 		addComponent(new DynamicTextButton("Command block help", EditProps.BUTTON, EditProps.HOVER, () -> {
 			state.getWindow().setMainComponent(new CommandBlockHelpOverview(menu.getSet(), this));
 		}), 0.025f, 0.1f, 0.275f, 0.2f);
+		
+		HelpButtons.addHelpLink(this, "edit%20menu/items/overview.html");
 	}
 	
 	private static class ItemActionHandler implements ActionHandler<CustomItem> {

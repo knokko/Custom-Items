@@ -1,6 +1,7 @@
 package nl.knokko.customitems.editor.menu.edit.drops;
 
 import nl.knokko.customitems.drops.Drop;
+import nl.knokko.customitems.editor.HelpButtons;
 import nl.knokko.customitems.editor.menu.edit.CollectionSelect;
 import nl.knokko.customitems.editor.menu.edit.EditProps;
 import nl.knokko.customitems.editor.set.ItemSet;
@@ -83,6 +84,8 @@ public class SelectDrop extends GuiMenu {
 				errorComponent.setText(error);
 			}
 		}), 0.025f, 0.1f, 0.2f, 0.2f);
+		
+		HelpButtons.addHelpLink(this, "edit%20menu/drops/drop.html");
 	}
 	
 	@Override

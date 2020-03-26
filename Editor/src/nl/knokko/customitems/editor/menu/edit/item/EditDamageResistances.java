@@ -2,6 +2,7 @@ package nl.knokko.customitems.editor.menu.edit.item;
 
 import nl.knokko.customitems.damage.DamageResistances;
 import nl.knokko.customitems.damage.DamageSource;
+import nl.knokko.customitems.editor.HelpButtons;
 import nl.knokko.customitems.editor.menu.edit.EditProps;
 import nl.knokko.gui.color.GuiColor;
 import nl.knokko.gui.component.menu.GuiMenu;
@@ -58,6 +59,8 @@ public class EditDamageResistances extends GuiMenu {
 			addComponent(new DynamicTextComponent("%", EditProps.LABEL), x + 0.17f, y, x + 0.19f, y + 0.1f);
 		}
 		addComponent(errorComponent, 0.05f, 0.9f, 0.95f, 1f);
+		
+		HelpButtons.addHelpLink(this, "edit%20menu/items/edit/damage%20resistances.html");
 	}
 	
 	@Override

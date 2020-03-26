@@ -23,6 +23,7 @@
  *******************************************************************************/
 package nl.knokko.customitems.editor.menu.edit.texture;
 
+import nl.knokko.customitems.editor.HelpButtons;
 import nl.knokko.customitems.editor.menu.edit.EditMenu;
 import nl.knokko.customitems.editor.menu.edit.EditProps;
 import nl.knokko.gui.color.GuiColor;
@@ -48,6 +49,8 @@ public class TextureCreate extends GuiMenu {
 		addComponent(new DynamicTextButton("Load bow texture", EditProps.BUTTON, EditProps.HOVER, () -> {
 			state.getWindow().setMainComponent(new BowTextureEdit(menu, null, null));
 		}), 0.5f, 0.45f, 0.75f, 0.55f);
+		
+		HelpButtons.addHelpLink(this, "edit%20menu/textures/type%20selection.html");
 	}
 	
 	@Override

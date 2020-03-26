@@ -2,6 +2,7 @@ package nl.knokko.customitems.editor.menu.edit.projectile;
 
 import java.awt.image.BufferedImage;
 
+import nl.knokko.customitems.editor.HelpButtons;
 import nl.knokko.customitems.editor.menu.edit.CollectionEdit;
 import nl.knokko.customitems.editor.menu.edit.EditMenu;
 import nl.knokko.customitems.editor.menu.edit.EditProps;
@@ -24,6 +25,8 @@ public class ProjectileCollectionEdit extends CollectionEdit<CIProjectile> {
 		addComponent(new DynamicTextButton("Create", EditProps.BUTTON, EditProps.HOVER, () -> {
 			state.getWindow().setMainComponent(new EditProjectile(menu, null, null));
 		}), 0.025f, 0.2f, 0.2f, 0.3f);
+		
+		HelpButtons.addHelpLink(this, "edit%20menu/projectiles/overview.html");
 	}
 	
 	private static class ProjectileActionHandler implements ActionHandler<CIProjectile> {

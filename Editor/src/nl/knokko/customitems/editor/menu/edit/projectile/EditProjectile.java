@@ -5,6 +5,7 @@ import static nl.knokko.customitems.editor.menu.edit.EditProps.*;
 import java.util.ArrayList;
 import java.util.Collection;
 
+import nl.knokko.customitems.editor.HelpButtons;
 import nl.knokko.customitems.editor.menu.edit.CollectionSelect;
 import nl.knokko.customitems.editor.menu.edit.EditMenu;
 import nl.knokko.customitems.editor.menu.edit.projectile.effect.ProjectileEffectCollectionEdit;
@@ -188,6 +189,8 @@ public class EditProjectile extends GuiMenu {
 				errorComponent.setText(error);
 			}
 		}), 0.025f, 0.1f, 0.2f, 0.2f);
+		
+		HelpButtons.addHelpLink(this, "edit%20menu/projectiles/edit.html");
 	}
 	
 	@Override

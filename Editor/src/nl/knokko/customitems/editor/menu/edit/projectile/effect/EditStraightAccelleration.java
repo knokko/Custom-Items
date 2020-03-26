@@ -18,4 +18,9 @@ public class EditStraightAccelleration extends EditAccelleration {
 	protected ProjectileAccelleration create(float minAccelleration, float maxAccelleration) {
 		return new StraightAccelleration(minAccelleration, maxAccelleration);
 	}
+
+	@Override
+	protected String getURLEnd() {
+		return "edit%20menu/projectiles/effects/edit/straight%20accellerate.html";
+	}
 }

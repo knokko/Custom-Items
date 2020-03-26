@@ -23,6 +23,7 @@
  *******************************************************************************/
 package nl.knokko.customitems.editor.menu.edit.item;
 
+import nl.knokko.customitems.editor.HelpButtons;
 import nl.knokko.customitems.editor.menu.edit.EditMenu;
 import nl.knokko.customitems.editor.menu.edit.EditProps;
 import nl.knokko.customitems.editor.set.item.SimpleCustomItem;
@@ -63,6 +64,8 @@ public class EditItemSimple extends EditItemBase {
 		super.addComponents();
 		addComponent(new DynamicTextComponent("Max stacksize:", EditProps.LABEL), 0.71f, 0.35f, 0.895f, 0.45f);
 		addComponent(maxStacksize, 0.9f, 0.35f, 0.975f, 0.45f);
+		
+		HelpButtons.addHelpLink(this, "edit%20menu/items/edit/simple.html");
 	}
 
 	@Override

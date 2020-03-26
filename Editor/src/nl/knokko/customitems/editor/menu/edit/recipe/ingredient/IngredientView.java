@@ -23,6 +23,7 @@
  *******************************************************************************/
 package nl.knokko.customitems.editor.menu.edit.recipe.ingredient;
 
+import nl.knokko.customitems.editor.HelpButtons;
 import nl.knokko.customitems.editor.menu.edit.EditProps;
 import nl.knokko.customitems.editor.menu.edit.select.item.*;
 import nl.knokko.customitems.editor.set.ItemSet;
@@ -79,6 +80,8 @@ public class IngredientView extends GuiMenu {
 			component.setIngredient(new NoIngredient());
 			state.getWindow().setMainComponent(component.getMenu());
 		}), 0.75f, 0.15f, 0.95f, 0.25f);
+		
+		HelpButtons.addHelpLink(this, "edit%20menu/recipes/type%20select.html");
 	}
 	
 	@Override

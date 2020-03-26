@@ -24,6 +24,7 @@
 package nl.knokko.customitems.editor.menu.edit.item;
 
 import nl.knokko.customitems.damage.DamageResistances;
+import nl.knokko.customitems.editor.HelpButtons;
 import nl.knokko.customitems.editor.menu.edit.EditMenu;
 import nl.knokko.customitems.editor.menu.edit.EditProps;
 import nl.knokko.customitems.editor.set.item.CustomArmor;
@@ -209,6 +210,8 @@ public class EditItemArmor extends EditItemTool {
 		addComponent(blue, 0.85f, 0.12f, 0.9f, 0.19f);
 		errorComponent.setProperties(EditProps.LABEL);
 		errorComponent.setText("Hint: Use attribute modifiers to set the armor (toughness) of this piece.");
+		
+		HelpButtons.addHelpLink(this, "edit%20menu/items/edit/armor.html");
 	}
 	
 	private boolean showColors() {

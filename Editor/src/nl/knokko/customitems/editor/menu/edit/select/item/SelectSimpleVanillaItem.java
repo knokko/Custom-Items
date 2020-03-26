@@ -27,6 +27,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Locale;
 
+import nl.knokko.customitems.editor.HelpButtons;
 import nl.knokko.customitems.editor.menu.edit.EditProps;
 import nl.knokko.customitems.item.CIMaterial;
 import nl.knokko.gui.color.GuiColor;
@@ -69,6 +70,8 @@ public class SelectSimpleVanillaItem extends GuiMenu {
 		addComponent(new DynamicTextComponent("Search:", EditProps.LABEL), 0.1f, 0.525f, 0.25f, 0.625f);
 		addComponent(filterField, 0.1f, 0.4f, 0.25f, 0.5f);
 		addComponent(list, 0.35f, 0f, 1f, 1f);
+		
+		HelpButtons.addHelpLink(this, "edit%20menu/recipes/simple%20vanilla.html");
 	}
 	
 	@Override

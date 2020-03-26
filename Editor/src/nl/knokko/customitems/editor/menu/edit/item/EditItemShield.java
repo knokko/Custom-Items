@@ -1,5 +1,6 @@
 package nl.knokko.customitems.editor.menu.edit.item;
 
+import nl.knokko.customitems.editor.HelpButtons;
 import nl.knokko.customitems.editor.menu.edit.EditMenu;
 import nl.knokko.customitems.editor.menu.edit.EditProps;
 import nl.knokko.customitems.editor.set.ItemSet;
@@ -41,6 +42,8 @@ public class EditItemShield extends EditItemTool {
 								customBlockingModel = array;
 							}, customBlockingModel));
 		}), BUTTON_X, 0.02f, BUTTON_X + 0.1f, 0.07f);
+		
+		HelpButtons.addHelpLink(this, "edit%20menu/items/edit/shield.html");
 	}
 	
 	@Override

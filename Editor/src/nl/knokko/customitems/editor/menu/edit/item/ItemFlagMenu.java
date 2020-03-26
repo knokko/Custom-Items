@@ -23,6 +23,7 @@
  *******************************************************************************/
 package nl.knokko.customitems.editor.menu.edit.item;
 
+import nl.knokko.customitems.editor.HelpButtons;
 import nl.knokko.customitems.editor.menu.edit.EditProps;
 import nl.knokko.customitems.item.ItemFlag;
 import nl.knokko.gui.color.GuiColor;
@@ -69,6 +70,8 @@ public class ItemFlagMenu extends GuiMenu {
 		if (itemEdit instanceof EditItemTool && !((EditItemTool) itemEdit).durability.getText().equals("-1")) {
 			addComponent(new DynamicTextComponent("Notice: it is recommended for breakable custom tools to keep the 'hide unbreakable' checked", EditProps.LABEL), 0.05f, 0.025f, 0.95f, 0.1f);
 		}
+		
+		HelpButtons.addHelpLink(this, "edit%20menu/items/edit/flags.html");
 	}
 	
 	@Override

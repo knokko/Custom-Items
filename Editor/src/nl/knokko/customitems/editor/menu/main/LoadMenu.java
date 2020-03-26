@@ -29,6 +29,7 @@ import java.io.IOException;
 import java.util.Calendar;
 
 import nl.knokko.customitems.editor.Editor;
+import nl.knokko.customitems.editor.HelpButtons;
 import nl.knokko.customitems.editor.menu.edit.EditMenu;
 import nl.knokko.customitems.editor.menu.edit.EditProps;
 import nl.knokko.customitems.editor.set.ItemSet;
@@ -62,6 +63,8 @@ public class LoadMenu extends GuiMenu {
 		addComponent(new DynamicTextButton("Refresh", EditProps.BUTTON, EditProps.HOVER, () -> {
 			setList.refresh();
 		}), 0.35f, 0.75f, 0.55f, 0.85f);
+		
+		HelpButtons.addHelpLink(this, "main%20menu/edit/selection.html");
 	}
 	
 	@Override
@@ -91,6 +94,8 @@ public class LoadMenu extends GuiMenu {
 			addComponent(new DynamicTextButton("Refresh", EditProps.BUTTON, EditProps.HOVER, () -> {
 				setList.refresh();
 			}), 0.05f, 0.6f, 0.25f, 0.7f);
+			
+			HelpButtons.addHelpLink(this, "main%20menu/edit/backup.html");
 		}
 		
 		@Override

@@ -25,6 +25,7 @@ package nl.knokko.customitems.editor.menu.edit.select.item;
 
 import java.util.Collection;
 
+import nl.knokko.customitems.editor.HelpButtons;
 import nl.knokko.customitems.editor.menu.edit.EditProps;
 import nl.knokko.customitems.editor.set.ItemSet;
 import nl.knokko.customitems.editor.set.item.CustomItem;
@@ -60,6 +61,8 @@ public class SelectCustomItem extends GuiMenu {
 			}), 0.35f, 0.9f - index * 0.1f, 0.35f + Math.min(0.65f, item.getName().length() * 0.015f), 1f - index * 0.1f);
 			index++;
 		}
+		
+		HelpButtons.addHelpLink(this, "edit%20menu/recipes/custom.html");
 	}
 	
 	@Override

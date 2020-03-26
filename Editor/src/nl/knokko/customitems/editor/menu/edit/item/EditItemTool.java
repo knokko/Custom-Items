@@ -23,6 +23,7 @@
  *******************************************************************************/
 package nl.knokko.customitems.editor.menu.edit.item;
 
+import nl.knokko.customitems.editor.HelpButtons;
 import nl.knokko.customitems.editor.menu.edit.EditMenu;
 import nl.knokko.customitems.editor.menu.edit.EditProps;
 import nl.knokko.customitems.editor.menu.edit.recipe.ingredient.IngredientComponent;
@@ -138,6 +139,8 @@ public class EditItemTool extends EditItemBase {
 			errorComponent.setProperties(EditProps.LABEL);
 			errorComponent.setText("Hint: Set the 'Max uses' to -1 to make it unbreakable.");
 		}
+		
+		HelpButtons.addHelpLink(this, "edit%20menu/items/edit/tool.html");
 	}
 	
 	protected String create(short damage, long maxUses, int entityHitDurabilityLoss, int blockBreakDurabilityLoss) {

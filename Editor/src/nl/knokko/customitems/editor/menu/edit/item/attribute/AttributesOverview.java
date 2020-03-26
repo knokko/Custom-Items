@@ -25,6 +25,7 @@ package nl.knokko.customitems.editor.menu.edit.item.attribute;
 
 import java.util.List;
 
+import nl.knokko.customitems.editor.HelpButtons;
 import nl.knokko.customitems.editor.menu.edit.EditProps;
 import nl.knokko.customitems.editor.menu.edit.EnumSelect;
 import nl.knokko.customitems.item.AttributeModifier;
@@ -104,6 +105,8 @@ public class AttributesOverview extends GuiMenu {
 			float y = 0.8f - index * 0.125f;
 			addComponent(new Entry(current[index]), 0.325f, y, 1f, y + 0.1f);
 		}
+		
+		HelpButtons.addHelpLink(this, "edit%20menu/items/edit/attributes.html");
 	}
 	
 	private class Entry extends GuiMenu {

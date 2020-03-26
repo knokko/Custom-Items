@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.LinkedList;
 
+import nl.knokko.customitems.editor.HelpButtons;
 import nl.knokko.customitems.editor.menu.edit.EditMenu;
 import nl.knokko.customitems.editor.menu.edit.EditProps;
 import nl.knokko.customitems.editor.menu.edit.SafeCollectionEdit;
@@ -62,6 +63,8 @@ public class ShapelessRecipeCollectionEdit extends SafeCollectionEdit<Ingredient
 		}), 0.025f, 0.55f, 0.175f, 0.65f);
 		addComponent(new DynamicTextComponent("Result", EditProps.LABEL), 0.025f, 0.4f, 0.175f, 0.5f);
 		addComponent(result, 0.025f, 0.3f, 0.175f, 0.4f);
+		
+		HelpButtons.addHelpLink(this, "edit%20menu/recipes/shapeless.html");
 	}
 
 	@Override

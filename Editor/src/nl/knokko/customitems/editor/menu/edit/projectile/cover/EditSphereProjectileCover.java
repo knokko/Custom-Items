@@ -1,5 +1,6 @@
 package nl.knokko.customitems.editor.menu.edit.projectile.cover;
 
+import nl.knokko.customitems.editor.HelpButtons;
 import nl.knokko.customitems.editor.menu.edit.EditMenu;
 import nl.knokko.customitems.editor.menu.edit.EditProps;
 import nl.knokko.customitems.editor.menu.edit.item.TextureSelectButton;
@@ -51,6 +52,8 @@ public class EditSphereProjectileCover extends EditProjectileCover {
 		addComponent(scale, 0.6f, 0.21f, 0.75f, 0.29f);
 		addComponent(new DynamicTextComponent("Texture:", EditProps.LABEL), 0.45f, 0.1f, 0.59f, 0.2f);
 		addComponent(texture, 0.6f, 0.11f, 0.8f, 0.19f);
+		
+		HelpButtons.addHelpLink(this, "edit%20menu/projectiles/covers/edit/sphere.html");
 	}
 
 	@Override

@@ -3,6 +3,7 @@ package nl.knokko.customitems.editor.menu.edit.drops.block;
 import java.awt.image.BufferedImage;
 
 import nl.knokko.customitems.drops.BlockDrop;
+import nl.knokko.customitems.editor.HelpButtons;
 import nl.knokko.customitems.editor.menu.edit.CollectionEdit;
 import nl.knokko.customitems.editor.menu.edit.EditMenu;
 import nl.knokko.customitems.editor.menu.edit.EditProps;
@@ -25,6 +26,8 @@ public class BlockDropCollectionEdit extends CollectionEdit<BlockDrop> {
 		addComponent(new DynamicTextButton("New block drop", EditProps.BUTTON, EditProps.HOVER, () -> {
 			state.getWindow().setMainComponent(new EditBlockDrop(menu.getSet(), this, null, null));
 		}), 0.025f, 0.2f, 0.2f, 0.3f);
+		
+		HelpButtons.addHelpLink(this, "edit%20menu/drops/blocks.html");
 	}
 
 	private static class BlockDropActionHandler implements ActionHandler<BlockDrop> {

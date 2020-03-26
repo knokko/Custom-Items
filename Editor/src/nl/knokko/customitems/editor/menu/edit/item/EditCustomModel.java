@@ -10,6 +10,7 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.util.Scanner;
 
+import nl.knokko.customitems.editor.HelpButtons;
 import nl.knokko.customitems.editor.menu.commandhelp.CommandBlockHelpOverview;
 import nl.knokko.customitems.editor.menu.edit.EditProps;
 import nl.knokko.customitems.editor.menu.edit.item.EditCustomModel.ByteArrayFileConverter;
@@ -105,6 +106,8 @@ public class EditCustomModel extends GuiMenu {
 			addComponent(new DynamicTextComponent("Default Parent:", EditProps.LABEL), 0.8f, 0.325f, 0.975f, 0.425f);
 			addComponent(parent, 0.8f, 0.2f, 0.975f, 0.3f);
 		}
+		
+		HelpButtons.addHelpLink(this, "edit%20menu/items/edit/model.html");
 	}
 	
 	@Override

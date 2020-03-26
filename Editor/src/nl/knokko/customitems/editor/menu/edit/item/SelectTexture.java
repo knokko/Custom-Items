@@ -25,6 +25,7 @@ package nl.knokko.customitems.editor.menu.edit.item;
 
 import java.util.Collection;
 
+import nl.knokko.customitems.editor.HelpButtons;
 import nl.knokko.customitems.editor.menu.edit.EditProps;
 import nl.knokko.customitems.editor.set.ItemSet;
 import nl.knokko.customitems.editor.set.item.NamedImage;
@@ -74,6 +75,8 @@ public class SelectTexture extends GuiMenu {
 			state.getWindow().setMainComponent(createMenuFactory.getCreateMenu(set, this));
 		}), 0.1f, 0.3f, 0.35f, 0.4f);
 		addComponent(textureList, 0.4f, 0.1f, 0.85f, 0.9f);
+		
+		HelpButtons.addHelpLink(this, "edit%20menu/items/edit/texture.html");
 	}
 	
 	protected class TextureList extends GuiMenu {

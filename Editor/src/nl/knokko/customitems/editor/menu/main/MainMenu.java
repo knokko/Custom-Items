@@ -28,6 +28,8 @@ import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
+
+import nl.knokko.customitems.editor.HelpButtons;
 import nl.knokko.customitems.editor.menu.commandhelp.CommandBlockHelpOverview;
 import nl.knokko.customitems.editor.menu.edit.EditProps;
 import nl.knokko.gui.color.GuiColor;
@@ -77,6 +79,8 @@ public class MainMenu extends GuiMenu {
 				}
 				openWebpage(url);
 		}), 0.05f, 0.53f, 0.25f, 0.58f);
+		
+		HelpButtons.addHelpLink(this, "main%20menu/index.html");
 	}
 	
 	@Override

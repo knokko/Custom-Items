@@ -25,6 +25,7 @@ package nl.knokko.customitems.editor.menu.edit.item.enchantment;
 
 import java.util.List;
 
+import nl.knokko.customitems.editor.HelpButtons;
 import nl.knokko.customitems.editor.menu.edit.EditProps;
 import nl.knokko.customitems.editor.menu.edit.EnumSelect;
 import nl.knokko.customitems.item.Enchantment;
@@ -100,6 +101,8 @@ public class EnchantmentsOverview extends GuiMenu {
 			float y = 0.8f - index * 0.125f;
 			addComponent(new Entry(current[index]), 0.6f, y, 1f, y + 0.1f);
 		}
+		
+		HelpButtons.addHelpLink(this, "edit%20menu/items/edit/enchantments.html");
 	}
 	
 	private class Entry extends GuiMenu {

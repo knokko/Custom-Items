@@ -2,6 +2,7 @@ package nl.knokko.customitems.editor.menu.edit.texture;
 
 import java.awt.image.BufferedImage;
 
+import nl.knokko.customitems.editor.HelpButtons;
 import nl.knokko.customitems.editor.menu.edit.*;
 import nl.knokko.customitems.editor.set.item.NamedImage;
 import nl.knokko.customitems.editor.set.item.texture.BowTextures;
@@ -23,6 +24,8 @@ public class TextureCollectionEdit extends CollectionEdit<NamedImage> {
 		addComponent(new DynamicTextButton("Load texture", EditProps.BUTTON, EditProps.HOVER, () -> {
 			state.getWindow().setMainComponent(new TextureCreate(menu));
 		}), 0.025f, 0.1f, 0.2f, 0.2f);
+		
+		HelpButtons.addHelpLink(this, "edit%20menu/textures/overview.html");
 	}
 	
 	private static class TextureActionHandler implements ActionHandler<NamedImage> {

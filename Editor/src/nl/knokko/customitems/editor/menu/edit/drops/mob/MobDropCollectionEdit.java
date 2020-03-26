@@ -3,6 +3,7 @@ package nl.knokko.customitems.editor.menu.edit.drops.mob;
 import java.awt.image.BufferedImage;
 
 import nl.knokko.customitems.drops.EntityDrop;
+import nl.knokko.customitems.editor.HelpButtons;
 import nl.knokko.customitems.editor.menu.edit.*;
 import nl.knokko.customitems.editor.set.item.CustomItem;
 import nl.knokko.gui.component.GuiComponent;
@@ -23,6 +24,8 @@ public class MobDropCollectionEdit extends CollectionEdit<EntityDrop> {
 		addComponent(new DynamicTextButton("New mob drop", EditProps.BUTTON, EditProps.HOVER, () -> {
 			state.getWindow().setMainComponent(new EditMobDrop(menu.getSet(), this, null, null));
 		}), 0.025f, 0.2f, 0.2f, 0.3f);
+		
+		HelpButtons.addHelpLink(this, "edit%20menu/drops/mobs.html");
 	}
 	
 	private static class MobDropActionHandler implements ActionHandler<EntityDrop> {

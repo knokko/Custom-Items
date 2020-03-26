@@ -3,6 +3,7 @@ package nl.knokko.customitems.editor.menu.edit.drops.block;
 import nl.knokko.customitems.drops.BlockDrop;
 import nl.knokko.customitems.drops.BlockType;
 import nl.knokko.customitems.drops.Drop;
+import nl.knokko.customitems.editor.HelpButtons;
 import nl.knokko.customitems.editor.menu.edit.EditProps;
 import nl.knokko.customitems.editor.menu.edit.drops.SelectDrop;
 import nl.knokko.customitems.editor.set.ItemSet;
@@ -90,6 +91,8 @@ public class EditBlockDrop extends GuiMenu {
 				}
 			}), 0.025f, 0.1f, 0.2f, 0.2f);
 		}
+		
+		HelpButtons.addHelpLink(this, "edit%20menu/drops/blocks.html");
 	}
 
 	@Override

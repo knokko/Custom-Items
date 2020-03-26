@@ -1,5 +1,6 @@
 package nl.knokko.customitems.editor.menu.edit.drops;
 
+import nl.knokko.customitems.editor.HelpButtons;
 import nl.knokko.customitems.editor.menu.edit.EditMenu;
 import nl.knokko.customitems.editor.menu.edit.EditProps;
 import nl.knokko.customitems.editor.menu.edit.drops.block.BlockDropCollectionEdit;
@@ -28,6 +29,8 @@ public class DropsMenu extends GuiMenu {
 		addComponent(new DynamicTextButton("Mob drops", EditProps.BUTTON, EditProps.HOVER, () -> {
 			state.getWindow().setMainComponent(new MobDropCollectionEdit(editMenu));
 		}), 0.7f, 0.5f, 0.9f, 0.6f);
+		
+		HelpButtons.addHelpLink(this, "edit%20menu/drops/index.html");
 	}
 	
 	@Override

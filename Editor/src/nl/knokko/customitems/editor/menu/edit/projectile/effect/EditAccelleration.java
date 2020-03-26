@@ -4,6 +4,7 @@ import static nl.knokko.customitems.editor.menu.edit.EditProps.*;
 
 import java.util.Collection;
 
+import nl.knokko.customitems.editor.HelpButtons;
 import nl.knokko.customitems.projectile.effects.ProjectileAccelleration;
 import nl.knokko.customitems.projectile.effects.ProjectileEffect;
 import nl.knokko.gui.component.GuiComponent;
@@ -65,7 +66,11 @@ public abstract class EditAccelleration extends EditProjectileEffect {
 				}
 			}
 		}), 0.025f, 0.2f, 0.175f, 0.3f);
+		
+		HelpButtons.addHelpLink(this, getURLEnd());
 	}
+	
+	protected abstract String getURLEnd();
 	
 	protected abstract ProjectileAccelleration create(float minAccelleration, float maxAccelleration);
 }

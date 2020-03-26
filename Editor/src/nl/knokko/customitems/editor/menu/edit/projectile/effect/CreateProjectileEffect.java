@@ -2,6 +2,7 @@ package nl.knokko.customitems.editor.menu.edit.projectile.effect;
 
 import java.util.Collection;
 
+import nl.knokko.customitems.editor.HelpButtons;
 import nl.knokko.customitems.editor.menu.edit.EditProps;
 import nl.knokko.customitems.editor.set.ItemSet;
 import nl.knokko.customitems.projectile.effects.ProjectileEffect;
@@ -50,6 +51,8 @@ public class CreateProjectileEffect extends GuiMenu {
 		addComponent(new DynamicTextButton("Launch (another) projectile", EditProps.CHOOSE_BASE, EditProps.CHOOSE_HOVER, () -> {
 			state.getWindow().setMainComponent(new EditSubProjectiles(null, null, set, backingCollection, returnMenu));
 		}), 0.5f, 0.08f, 0.9f, 0.18f);
+		
+		HelpButtons.addHelpLink(this, "edit%20menu/projectiles/effects/create.html");
 	}
 
 	@Override

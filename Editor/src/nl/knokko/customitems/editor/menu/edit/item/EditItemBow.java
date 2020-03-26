@@ -23,6 +23,7 @@
  *******************************************************************************/
 package nl.knokko.customitems.editor.menu.edit.item;
 
+import nl.knokko.customitems.editor.HelpButtons;
 import nl.knokko.customitems.editor.menu.edit.EditMenu;
 import nl.knokko.customitems.editor.menu.edit.EditProps;
 import nl.knokko.customitems.editor.set.item.CustomBow;
@@ -92,6 +93,8 @@ public class EditItemBow extends EditItemTool {
 		addComponent(knockbackStrength, 0.9f, 0.095f, 0.95f, 0.17f);
 		addComponent(new DynamicTextComponent("Arrow gravity", EditProps.LABEL), 0.8f, 0.02f, 0.95f, 0.095f);
 		addComponent(gravity, 0.75f, 0.02f, 0.775f, 0.045f);
+		
+		HelpButtons.addHelpLink(this, "edit%20menu/items/edit/bow.html");
 	}
 
 	@Override

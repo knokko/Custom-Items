@@ -3,6 +3,8 @@ package nl.knokko.customitems.editor.menu.edit.projectile.effect;
 import java.util.Collection;
 
 import static nl.knokko.customitems.editor.menu.edit.EditProps.*;
+
+import nl.knokko.customitems.editor.HelpButtons;
 import nl.knokko.customitems.projectile.effects.ColoredRedstone;
 import nl.knokko.customitems.projectile.effects.ProjectileEffect;
 import nl.knokko.gui.component.GuiComponent;
@@ -156,6 +158,8 @@ public class EditColoredRedstone extends EditProjectileEffect {
 				errorComponent.setText(error);
 			}
 		}), 0.025f, 0.2f, 0.175f, 0.3f);
+		
+		HelpButtons.addHelpLink(this, "edit%20menu/projectiles/effects/edit/colored.html");
 	}
 	
 	private static IntEditField colorField(int initialValue) {
