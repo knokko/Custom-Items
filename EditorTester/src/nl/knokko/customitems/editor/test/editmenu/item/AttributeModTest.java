@@ -48,8 +48,8 @@ public class AttributeModTest {
 			String attribute1, String slot1, String op1, String value1,
 			String attribute2, String slot2, String op2, String value2, int numChangeButtons) {
 		test.clickNearest("Change...", "Attribute modifiers: ", numChangeButtons);
-		test.assertComponentsWithTexts("Cancel", "New Attribute", "Apply");
-		test.click("New Attribute");
+		test.assertComponentsWithTexts("Cancel", "Add new", "Apply");
+		test.click("Add new");
 		BufferedImage deleteImage = (BufferedImage) test.getComponentWithText(defaultSlot).getState().getWindow().getTextureLoader().loadTexture("nl/knokko/gui/images/icons/delete.png").getImage();
 		test.assertImageShown(deleteImage);
 		test.assertComponentsWithTexts(defaultAttribute, defaultSlot, defaultOp, "Value: ", defaultValue);
@@ -64,18 +64,18 @@ public class AttributeModTest {
 		test.click(defaultValue);
 		test.backspace(defaultValue.length());
 		test.type(value1);
-		test.click("New Attribute");
+		test.click("Add new");
 		
 		// Click nearest to make sure we edit the right attribute
-		test.clickNearest(defaultAttribute, "New Attribute", attribute1.equals(defaultAttribute) ? 2 : 1);
+		test.clickNearest(defaultAttribute, "Add new", attribute1.equals(defaultAttribute) ? 2 : 1);
 		test.click(attribute2);
-		test.clickNearest(defaultSlot, "New Attribute", slot1.equals(defaultSlot) ? 2 : 1);
+		test.clickNearest(defaultSlot, "Add new", slot1.equals(defaultSlot) ? 2 : 1);
 		test.delay(30);
 		test.click(slot2);
-		test.clickNearest(defaultOp, "New Attribute", op1.equals(defaultOp) ? 2 : 1);
+		test.clickNearest(defaultOp, "Add new", op1.equals(defaultOp) ? 2 : 1);
 		test.delay(30);
 		test.click(op2);
-		test.clickNearest(defaultValue, "New Attribute", value1.equals(defaultValue) ? 2 : 1);
+		test.clickNearest(defaultValue, "Add new", value1.equals(defaultValue) ? 2 : 1);
 		
 		// Better too many backspaces than too few
 		test.backspace(15);
@@ -83,7 +83,7 @@ public class AttributeModTest {
 		test.assertComponentWithText(value2);
 		test.click("Apply");
 		test.clickNearest("Change...", "Attribute modifiers: ", numChangeButtons);
-		test.assertComponentsWithTexts("Cancel", "New Attribute", "Apply", attribute1, slot1, op1, value1,
+		test.assertComponentsWithTexts("Cancel", "Add new", "Apply", attribute1, slot1, op1, value1,
 				attribute2, slot2, op2, value2);
 		test.click(value2);
 		test.backspace(1);
@@ -92,7 +92,7 @@ public class AttributeModTest {
 		test.assertComponentWithText(modifiedValue2);
 		test.click("Apply");
 		test.clickNearest("Change...", "Attribute modifiers: ", numChangeButtons);
-		test.assertComponentsWithTexts("Cancel", "New Attribute", "Apply");
+		test.assertComponentsWithTexts("Cancel", "Add new", "Apply");
 		test.click(modifiedValue2);
 		test.backspace(1);
 		test.type(value2.charAt(value2.length() - 1));

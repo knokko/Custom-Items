@@ -24,6 +24,7 @@
 package nl.knokko.customitems.editor.menu.edit.item;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import nl.knokko.customitems.editor.Checks;
@@ -31,9 +32,6 @@ import nl.knokko.customitems.editor.menu.edit.EditMenu;
 import nl.knokko.customitems.editor.menu.edit.EditProps;
 import nl.knokko.customitems.editor.menu.edit.EnumSelect;
 import nl.knokko.customitems.editor.menu.edit.item.SelectTexture.CreateMenuFactory;
-import nl.knokko.customitems.editor.menu.edit.item.attribute.AttributesOverview;
-import nl.knokko.customitems.editor.menu.edit.item.effect.EffectsOverview;
-import nl.knokko.customitems.editor.menu.edit.item.enchantment.EnchantmentsOverview;
 import nl.knokko.customitems.editor.menu.edit.texture.BowTextureEdit;
 import nl.knokko.customitems.editor.menu.edit.texture.TextureEdit;
 import nl.knokko.customitems.editor.set.ItemDamageClaim;
@@ -331,21 +329,26 @@ public abstract class EditItemBase extends GuiMenu {
 
 	private void addAttributesComponent() {
 		addComponent(new DynamicTextButton("Change...", EditProps.BUTTON, EditProps.HOVER, () -> {
-			state.getWindow().setMainComponent(new AttributesOverview(getExampleAttributeModifier(), attributes,
-					EditItemBase.this, (AttributeModifier[] attributes) -> {
+			state.getWindow().setMainComponent(new AttributeCollectionEdit(Arrays.asList(attributes),
+					newAttributes -> {
 						Checks.nonNull(attributes);
-						this.attributes = attributes;
-					}));
+						this.attributes = newAttributes.toArray(new AttributeModifier[newAttributes.size()]);
+					}, EditItemBase.this, getExampleAttributeModifier()));
 		}), BUTTON_X, 0.5f, BUTTON_X + 0.1f, 0.55f);
 	}
 
 	private void addEnchantmentsComponent() {
 		addComponent(new DynamicTextButton("Change...", EditProps.BUTTON, EditProps.HOVER, () -> {
+			/*
 			state.getWindow().setMainComponent(
 					new EnchantmentsOverview(enchantments, EditItemBase.this, (Enchantment[] enchantments) -> {
 						Checks.nonNull(enchantments);
 						this.enchantments = enchantments;
-					}));
+					}));*/
+			state.getWindow().setMainComponent(new EnchantmentCollectionEdit(
+					Arrays.asList(enchantments), newEnchantments -> {
+						enchantments = newEnchantments.toArray(new Enchantment[newEnchantments.size()]);
+					}, EditItemBase.this));
 		}), BUTTON_X, 0.44f, BUTTON_X + 0.1f, 0.49f);
 	}
 
@@ -353,15 +356,15 @@ public abstract class EditItemBase extends GuiMenu {
 	private void addEffectsComponent() {
 		addComponent(new DynamicTextButton("Change...", EditProps.BUTTON, EditProps.HOVER, () -> {
 			state.getWindow().setMainComponent(
-					new EffectsOverview(playerEffects, EditItemBase.this, (List<PotionEffect> playerEffects) -> {
-						this.playerEffects = playerEffects;
-				}));
+					new EffectsCollectionEdit(playerEffects, newEffects -> {
+						playerEffects = new ArrayList<>(newEffects);
+				}, EditItemBase.this));
 		}), BUTTON_X, 0.2f, BUTTON_X + 0.1f, 0.25f);
 		addComponent(new DynamicTextButton("Change...", EditProps.BUTTON, EditProps.HOVER, () -> {
 			state.getWindow().setMainComponent(
-					new EffectsOverview(targetEffects, EditItemBase.this, (List<PotionEffect> targetEffects) -> {
-						this.targetEffects = targetEffects;
-				}));
+					new EffectsCollectionEdit(targetEffects, newEffects -> {
+						targetEffects = new ArrayList<>(newEffects);
+				}, EditItemBase.this));
 		}), BUTTON_X, 0.14f, BUTTON_X + 0.1f, 0.19f);
 	}
 	
