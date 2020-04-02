@@ -135,7 +135,7 @@ public class EditMenu extends GuiMenu {
 				if(error != null)
 					setError(error);
 				else
-					state.getWindow().setMainComponent(MainMenu.INSTANCE);
+					state.getWindow().setMainComponent(new AfterExportMenu(this));
 			}
 		}), 0.1f, 0.4f, 0.35f, 0.5f);
 		addComponent(new DynamicTextButton("Export for 1.13", EditProps.SAVE_BASE, EditProps.SAVE_HOVER, () -> {
@@ -147,7 +147,7 @@ public class EditMenu extends GuiMenu {
 				if(error != null)
 					setError(error);
 				else
-					state.getWindow().setMainComponent(MainMenu.INSTANCE);
+					state.getWindow().setMainComponent(new AfterExportMenu(this));
 			}
 		}), 0.1f, 0.27f, 0.35f, 0.37f);
 		addComponent(new DynamicTextButton("Export for 1.14", EditProps.SAVE_BASE, EditProps.SAVE_HOVER, () -> {
@@ -159,7 +159,7 @@ public class EditMenu extends GuiMenu {
 				if(error != null)
 					setError(error);
 				else
-					state.getWindow().setMainComponent(MainMenu.INSTANCE);
+					state.getWindow().setMainComponent(new AfterExportMenu(this));
 			}
 		}), 0.1f, 0.14f, 0.35f, 0.24f);
 		addComponent(new DynamicTextButton("Export for 1.15", EditProps.SAVE_BASE, EditProps.SAVE_HOVER, () -> {
@@ -171,7 +171,7 @@ public class EditMenu extends GuiMenu {
 				if(error != null)
 					setError(error);
 				else
-					state.getWindow().setMainComponent(MainMenu.INSTANCE);
+					state.getWindow().setMainComponent(new AfterExportMenu(this));
 			}
 		}), 0.1f, 0.02f, 0.35f, 0.12f);
 		addComponent(new DynamicTextButton("Textures", EditProps.BUTTON, EditProps.HOVER, () -> {
