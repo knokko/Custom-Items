@@ -32,7 +32,7 @@ import nl.knokko.gui.util.TextBuilder.Properties;
 
 public class EditProps {
 	
-	public static final Font FONT = new Font("TimesRoman", Font.BOLD, 40);
+	public static final Font FONT = new Font("Open Sans, Lucida Sans", Font.BOLD, 40);
 	
 	public static final Properties ERROR = Properties.createLabel(Color.RED, 2048, 256);
 	
