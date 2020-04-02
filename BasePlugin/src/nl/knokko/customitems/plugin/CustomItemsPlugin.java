@@ -127,6 +127,11 @@ public class CustomItemsPlugin extends JavaPlugin {
 						customItemsCounter++;
 					if (name.contains("Knokko") && name.contains("Core") && name.indexOf("Knokko") < name.indexOf("Core"))
 						knokkoCoreCounter++;
+					if (name.equals("Editor.jar"))
+						set.addError("It looks like you put the Editor in the "
+								+ "plugins folder. However, it's not a plug-in. "
+								+ "You should instead download it to your computer "
+								+ "and double-click it.");
 				}
 			}
 			
