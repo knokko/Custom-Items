@@ -67,4 +67,9 @@ public class AttributeCollectionEdit extends QuickCollectionEdit<AttributeModifi
 	protected AttributeModifier addNew() {
 		return exampleModifier;
 	}
+
+	@Override
+	protected String getHelpPage() {
+		return "edit%20menu/items/edit/attributes.html";
+	}
 }

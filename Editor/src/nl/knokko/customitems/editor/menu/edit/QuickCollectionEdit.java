@@ -5,6 +5,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.function.Consumer;
 
+import nl.knokko.customitems.editor.HelpButtons;
 import nl.knokko.gui.color.GuiColor;
 import nl.knokko.gui.component.GuiComponent;
 import nl.knokko.gui.component.menu.GuiMenu;
@@ -57,6 +58,8 @@ public abstract class QuickCollectionEdit<T> extends GuiMenu {
 			ownCollection.add(addNew());
 			refresh();
 		}), 0.025f, 0.6f, 0.2f, 0.7f);
+		
+		HelpButtons.addHelpLink(this, getHelpPage());
 	}
 	
 	@Override
@@ -88,4 +91,6 @@ public abstract class QuickCollectionEdit<T> extends GuiMenu {
 	protected abstract void addRowComponents(int itemIndex, float minY, float maxY);
 	
 	protected abstract T addNew();
+	
+	protected abstract String getHelpPage();
 }

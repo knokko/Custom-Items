@@ -52,4 +52,9 @@ public class EffectsCollectionEdit extends QuickCollectionEdit<PotionEffect> {
 	protected PotionEffect addNew() {
 		return new PotionEffect(EffectType.HEAL, 1, 1);
 	}
+
+	@Override
+	protected String getHelpPage() {
+		return "edit%20menu/items/edit/effects.html";
+	}
 }

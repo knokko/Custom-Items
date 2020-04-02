@@ -42,4 +42,9 @@ public class EnchantmentCollectionEdit extends QuickCollectionEdit<Enchantment> 
 	protected Enchantment addNew() {
 		return new Enchantment(EnchantmentType.DURABILITY, 2);
 	}
+
+	@Override
+	protected String getHelpPage() {
+		return "edit%20menu/items/edit/enchantments.html";
+	}
 }
