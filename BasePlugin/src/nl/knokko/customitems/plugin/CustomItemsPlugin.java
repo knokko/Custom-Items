@@ -155,21 +155,15 @@ public class CustomItemsPlugin extends JavaPlugin {
 			return;
 		}
 		
-		int indexDot1 = bukkitVersion.indexOf('.', indexMC);
-		if (indexDot1 == -1) {
-			set.addError("Can't parse mc version (1)");
+		int indexBracket = bukkitVersion.indexOf(')', indexMC);
+		if (indexBracket == -1) {
+			set.addError("Can't parse mc version");
 			return;
 		}
 		
-		int indexDot2 = bukkitVersion.indexOf('.', indexDot1 + 1);
-		if (indexDot2 == -1) {
-			set.addError("Can't parse mc version (2)");
-			return;
-		}
+		String mcVersion = bukkitVersion.substring(indexMC + 4, indexBracket);
 		
-		String mcVersion = bukkitVersion.substring(indexMC + 4, indexDot2);
-		
-		if (!mcVersion.equals(coreMcVersion)) {
+		if (!mcVersion.startsWith(coreMcVersion)) {
 			set.addError("It looks like you are using KnokkoCore for mc " + coreMcVersion + " on a mc " + mcVersion + " server. This will probably go wrong.");
 		}
 		
