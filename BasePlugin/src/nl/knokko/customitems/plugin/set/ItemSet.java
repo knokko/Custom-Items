@@ -39,6 +39,7 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.material.MaterialData;
 
 import nl.knokko.core.plugin.item.ItemHelper;
+import nl.knokko.core.plugin.item.UnknownMaterialException;
 import nl.knokko.customitems.damage.DamageResistances;
 import nl.knokko.customitems.drops.*;
 import nl.knokko.customitems.encoding.ItemEncoding;
@@ -98,7 +99,7 @@ public class ItemSet implements ItemSetBase {
 		errors = new ArrayList<>();
 	}
 
-	public ItemSet(BitInput input) throws UnknownEncodingException, IntegrityException {
+	public ItemSet(BitInput input) throws UnknownEncodingException, IntegrityException, UnknownMaterialException {
 		customItemMap = new EnumMap<>(CIMaterial.class);
 		byte encoding = input.readByte();
 		
@@ -129,7 +130,7 @@ public class ItemSet implements ItemSetBase {
 		return !errors.isEmpty();
 	}
 
-	private void load1(BitInput input) throws UnknownEncodingException {
+	private void load1(BitInput input) throws UnknownEncodingException, UnknownMaterialException {
 		// Items
 		int itemSize = input.readInt();
 		items = new CustomItem[itemSize];
@@ -149,7 +150,7 @@ public class ItemSet implements ItemSetBase {
 
 	// Just like the ItemSet of Editor doesn't have export2, this doesn't have load2
 
-	private void load3(BitInput input) throws UnknownEncodingException {
+	private void load3(BitInput input) throws UnknownEncodingException, UnknownMaterialException {
 		
 		// Items
 		int itemSize = input.readInt();
@@ -176,7 +177,7 @@ public class ItemSet implements ItemSetBase {
 	
 	// Since ENCODING_4 is editor-only, there is no load4 method
 	
-	private void load5(BitInput input) throws UnknownEncodingException {
+	private void load5(BitInput input) throws UnknownEncodingException, UnknownMaterialException {
 		
 		// Projectiles
 		int numProjectileCovers = input.readInt();
@@ -219,7 +220,7 @@ public class ItemSet implements ItemSetBase {
 			register(EntityDrop.load(input, this));
 	}
 	
-	private void load6(BitInput input) throws UnknownEncodingException, IntegrityException {
+	private void load6(BitInput input) throws UnknownEncodingException, IntegrityException, UnknownMaterialException {
 		
 		long expectedHash = input.readLong();
 		byte[] content;
@@ -1211,7 +1212,7 @@ public class ItemSet implements ItemSetBase {
 		map.put(item.getItemDamage(), item);
 	}
 
-	private CustomRecipe loadRecipe(BitInput input) throws UnknownEncodingException {
+	private CustomRecipe loadRecipe(BitInput input) throws UnknownEncodingException, UnknownMaterialException {
 		byte encoding = input.readByte();
 		ItemStack result = loadResult(input);
 		if (encoding == RecipeEncoding.SHAPED_RECIPE)
@@ -1236,7 +1237,7 @@ public class ItemSet implements ItemSetBase {
 	}
 
 	@SuppressWarnings("deprecation")
-	private ItemStack loadResult(BitInput input) throws UnknownEncodingException {
+	private ItemStack loadResult(BitInput input) throws UnknownEncodingException, UnknownMaterialException {
 		byte encoding = input.readByte();
 		byte amount = (byte) (1 + input.readNumber((byte) 6, false));
 		if (encoding == RecipeEncoding.Result.VANILLA_SIMPLE)

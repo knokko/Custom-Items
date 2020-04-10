@@ -30,11 +30,9 @@ import java.util.logging.Level;
 
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.file.FileConfiguration;
-import org.bukkit.entity.Entity;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.java.JavaPlugin;
 
-import nl.knokko.core.plugin.entity.EntityDamageHelper;
 import nl.knokko.customitems.plugin.command.CommandCustomItems;
 import nl.knokko.customitems.plugin.data.PluginData;
 import nl.knokko.customitems.plugin.multisupport.crazyenchantments.CrazyEnchantmentsSupport;
@@ -177,11 +175,8 @@ public class CustomItemsPlugin extends JavaPlugin {
 		
 		// I'm afraid I need to update the next line each time KnokkoCore updates
 		try {
-			EntityDamageHelper.class.getDeclaredMethod("causeFakeProjectileDamage", 
-					Entity.class, Entity.class, float.class,
-					double.class, double.class, double.class,
-					double.class, double.class, double.class);
-		} catch (NoSuchMethodException | NoClassDefFoundError outdated) {
+			Class.forName("nl.knokko.core.plugin.item.UnknownMaterialException");
+		} catch (ClassNotFoundException outdated) {
 			set.addError("It looks like your KnokkoCore is outdated. Please install a newer version.");
 		}
 	}
@@ -269,9 +264,18 @@ public class CustomItemsPlugin extends JavaPlugin {
 				set.addError("It looks like KnokkoCore is outdated or not installed at all.");
 			}
 		} catch (Throwable t) {
-			Bukkit.getLogger().log(Level.SEVERE, "Failed to load the custom item set " + file, t);
-			set = new ItemSet();
-			set.addError("An error occured while trying to load the item set " + file + ". Check the console for the stacktrace.");
+			
+			// Can't use proper catch clause because that would cause a ClassDefNotFoundError
+			// if KnokkoCore is outdated.
+			if (t.getClass().getSimpleName().equals("UnknownMaterialException")) {
+				Bukkit.getLogger().log(Level.SEVERE, "Item set uses " + t.getMessage());
+				set = new ItemSet();
+				set.addError("You are using " + t.getMessage() + ", which doesn't exist in this version of bukkit/minecraft. Perhaps it was renamed.");
+			} else {
+				Bukkit.getLogger().log(Level.SEVERE, "Failed to load the custom item set " + file, t);
+				set = new ItemSet();
+				set.addError("An error occured while trying to load the item set " + file + ". Check the console for the stacktrace.");
+			}
 		}
 	}
 
