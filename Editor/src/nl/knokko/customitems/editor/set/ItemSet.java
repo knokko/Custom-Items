@@ -2977,8 +2977,16 @@ public class ItemSet implements ItemSetBase {
 
 		// Items
 		output.addInt(items.size());
-		for (CustomItem item : items)
-			item.export(output);
+
+		// Tools can have non-tools as repair item, so the non-tools must be exported first.
+		// This way, that all repair items are available once the tools are being loaded.
+		for (CustomItem noTool : items)
+			if (!(noTool instanceof CustomTool))
+				noTool.export(output);
+
+		for (CustomItem tool : items)
+			if (tool instanceof CustomTool)
+				tool.export(output);
 
 		// Recipes
 		output.addInt(recipes.size());
