@@ -33,7 +33,29 @@ public class CrazyEnchantmentsSupport {
 	public static void onEnable() {
 		try {
 			Class.forName("me.badbones69.crazyenchantments.Main");
-			Bukkit.getPluginManager().registerEvents((Listener) Class.forName("nl.knokko.customitems.plugin.multisupport.crazyenchantments.CrazyEnchantmentsEventHandler").newInstance(), CustomItemsPlugin.getInstance());
+			
+			
+			// Check whether we should use new support or legacy support
+			try {
+				Class.forName(
+						"me.badbones69.crazyenchantments.api.enums.CEnchantments"
+				);
+				
+				Bukkit.getLogger().info("Loading new CrazyEnchantments support");
+				
+				// Load support for the newer versions
+				Bukkit.getPluginManager().registerEvents((Listener) Class.forName(
+						"nl.knokko.customitems.plugin.multisupport.crazyenchantments.CrazyEnchantmentsEventHandler"
+				).newInstance(), CustomItemsPlugin.getInstance());
+			} catch (ClassNotFoundException useLegacy) {
+				
+				Bukkit.getLogger().info("Loading legacy CrazyEnchantments support");
+				
+				// Load support for the legacy versions
+				Bukkit.getPluginManager().registerEvents((Listener) Class.forName(
+						"nl.knokko.customitems.plugin.multisupport.crazyenchantments.CrazyEnchantmentsEventHandlerLegacy"
+				).newInstance(), CustomItemsPlugin.getInstance());
+			}
 		} catch (ClassNotFoundException ex) {
 			Bukkit.getLogger().info("Can't load class me.badbones69.crazyenchantments.Main, so I assume Crazy Enchantments is not installed.");
 		} catch (InstantiationException e) {
