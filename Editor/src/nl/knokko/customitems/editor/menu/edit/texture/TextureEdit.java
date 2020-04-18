@@ -27,6 +27,7 @@ import java.awt.Color;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
+import java.util.Locale;
 
 import javax.imageio.ImageIO;
 
@@ -156,7 +157,7 @@ public class TextureEdit extends GuiMenu {
 				}
 				return returnMenu;
 			}, (File file) -> {
-				return file.getName().endsWith(".png");
+				return file.getName().toLowerCase(Locale.ROOT).endsWith(".png");
 			}, EditProps.CANCEL_BASE, EditProps.CANCEL_HOVER, EditProps.CHOOSE_BASE, EditProps.CHOOSE_HOVER, 
 					EditProps.BACKGROUND, EditProps.BACKGROUND2));
 		});
