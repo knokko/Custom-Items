@@ -14,6 +14,7 @@ import java.util.UUID;
 import java.util.logging.Level;
 
 import org.bukkit.Bukkit;
+import org.bukkit.Sound;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
@@ -153,6 +154,8 @@ public class PluginData {
 	private void fire(Player player, PlayerData data, CustomItem weapon, ItemStack weaponStack) {
 		if (weapon instanceof CustomWand) {
 			CustomWand wand = (CustomWand) weapon;
+			
+			player.getWorld().playSound(player.getLocation(), Sound.ENTITY_BLAZE_SHOOT, 1f, 1f);
 			
 			for (int counter = 0; counter < wand.amountPerShot; counter++)
 				CustomItemsPlugin.getInstance().getProjectileManager().fireProjectile(player, wand.projectile);
