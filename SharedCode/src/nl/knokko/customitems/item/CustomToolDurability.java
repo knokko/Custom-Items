@@ -39,7 +39,7 @@ public class CustomToolDurability {
 		Category toolCategory = itemType.getMainCategory();
 		if (toolCategory == Category.SWORD || toolCategory == Category.TRIDENT) return 2;
 		else if (toolCategory == Category.PICKAXE || toolCategory == Category.AXE
-				|| toolCategory == Category.SHOVEL) return 1;
+				|| toolCategory == Category.SHOVEL || toolCategory == Category.SHEAR) return 1;
 		return 0;
 	}
 }
