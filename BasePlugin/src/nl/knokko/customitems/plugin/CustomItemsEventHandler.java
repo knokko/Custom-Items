@@ -99,6 +99,7 @@ import nl.knokko.customitems.damage.DamageSource;
 import nl.knokko.customitems.drops.Drop;
 import nl.knokko.customitems.effect.PotionEffect;
 import nl.knokko.customitems.item.CIMaterial;
+import nl.knokko.customitems.item.CustomItemType;
 import nl.knokko.customitems.plugin.recipe.CustomRecipe;
 import nl.knokko.customitems.plugin.recipe.ShapedCustomRecipe;
 import nl.knokko.customitems.plugin.recipe.ShapelessCustomRecipe;
@@ -583,22 +584,34 @@ public class CustomItemsEventHandler implements Listener {
 				event.getBlock().getWorld().dropItemNaturally(event.getBlock().getLocation(), ((CustomItem) drop.getItemToDrop()).create(amountToDrop));
 			}
 		}
-		if (cancelDefaultDrops) {
-			event.setDropItems(false);
-		}
-
+		
 		ItemStack item = event.getPlayer().getInventory().getItemInMainHand();
+		CustomItem custom = null;
 		if (CustomItem.isCustom(item)) {
-			CustomItem custom = set.getItem(item);
-			if (custom != null) {
-				
-				// Delay this to avoid messing around with other plug-ins
-				Bukkit.getScheduler().scheduleSyncDelayedTask(plugin(), () -> {
-					custom.onBlockBreak(event.getPlayer(), item, event.getBlock());
-				});
-			} else if (interestingWarnings()) {
+			custom = set.getItem(item);
+			if (custom == null && interestingWarnings())
 				Bukkit.getLogger().warning("Interesting item: " + item);
-			}
+		}
+		
+		// Simple custom items with shear internal type should have normal drops
+		// instead of shear drops
+		if (custom != null && custom.getItemType() == CustomItemType.SHEARS && !(custom instanceof CustomShears)) {
+			cancelDefaultDrops = true;
+			
+			for (ItemStack normalDrop : event.getBlock().getDrops())
+				event.getBlock().getWorld().dropItemNaturally(event.getBlock().getLocation(), normalDrop);
+		}
+		
+		if (cancelDefaultDrops)
+			event.setDropItems(false);
+		
+		if (custom != null) {
+			final CustomItem finalCustom = custom;
+			
+			// Delay this to avoid messing around with other plug-ins
+			Bukkit.getScheduler().scheduleSyncDelayedTask(plugin(), () -> {
+				finalCustom.onBlockBreak(event.getPlayer(), item, event.getBlock());
+			});
 		}
 	}
 
