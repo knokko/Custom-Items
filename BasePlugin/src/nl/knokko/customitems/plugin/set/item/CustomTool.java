@@ -26,6 +26,7 @@ package nl.knokko.customitems.plugin.set.item;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
@@ -61,13 +62,13 @@ public class CustomTool extends CustomItem {
 	
 	protected final long maxDurability;
 	
-	private final boolean allowEnchanting;
-	private final boolean allowAnvil;
+	protected final boolean allowEnchanting;
+	protected final boolean allowAnvil;
 	
-	private final Ingredient repairItem;
+	protected final Ingredient repairItem;
 	
-	private final int entityHitDurabilityLoss;
-	private final int blockBreakDurabilityLoss;
+	protected final int entityHitDurabilityLoss;
+	protected final int blockBreakDurabilityLoss;
 
 	public CustomTool(CustomItemType itemType, short itemDamage, String name, String displayName, String[] lore, 
 			AttributeModifier[] attributes, Enchantment[] defaultEnchantments, long maxDurability, boolean allowEnchanting, boolean allowAnvil, 
@@ -147,8 +148,8 @@ public class CustomTool extends CustomItem {
 	}
 	
 	@Override
-	public void onBlockBreak(Player player, ItemStack tool, Block block) {
-		if (blockBreakDurabilityLoss != 0 && decreaseDurability(tool, blockBreakDurabilityLoss)) {
+	public void onBlockBreak(Player player, ItemStack tool, Block block, Material old) {
+		if (old.isSolid() && blockBreakDurabilityLoss != 0 && decreaseDurability(tool, blockBreakDurabilityLoss)) {
 			CustomItemsEventHandler.playBreakSound(player);
 			player.getInventory().setItemInMainHand(null);
 		}

@@ -23,6 +23,33 @@
  *******************************************************************************/
 package nl.knokko.customitems.plugin;
 
+import static org.bukkit.enchantments.Enchantment.ARROW_FIRE;
+import static org.bukkit.enchantments.Enchantment.ARROW_INFINITE;
+import static org.bukkit.enchantments.Enchantment.ARROW_KNOCKBACK;
+import static org.bukkit.enchantments.Enchantment.BINDING_CURSE;
+import static org.bukkit.enchantments.Enchantment.DAMAGE_ARTHROPODS;
+import static org.bukkit.enchantments.Enchantment.DAMAGE_UNDEAD;
+import static org.bukkit.enchantments.Enchantment.DEPTH_STRIDER;
+import static org.bukkit.enchantments.Enchantment.DURABILITY;
+import static org.bukkit.enchantments.Enchantment.FIRE_ASPECT;
+import static org.bukkit.enchantments.Enchantment.FROST_WALKER;
+import static org.bukkit.enchantments.Enchantment.KNOCKBACK;
+import static org.bukkit.enchantments.Enchantment.LOOT_BONUS_BLOCKS;
+import static org.bukkit.enchantments.Enchantment.LOOT_BONUS_MOBS;
+import static org.bukkit.enchantments.Enchantment.LUCK;
+import static org.bukkit.enchantments.Enchantment.LURE;
+import static org.bukkit.enchantments.Enchantment.MENDING;
+import static org.bukkit.enchantments.Enchantment.OXYGEN;
+import static org.bukkit.enchantments.Enchantment.PROTECTION_EXPLOSIONS;
+import static org.bukkit.enchantments.Enchantment.PROTECTION_FALL;
+import static org.bukkit.enchantments.Enchantment.PROTECTION_FIRE;
+import static org.bukkit.enchantments.Enchantment.PROTECTION_PROJECTILE;
+import static org.bukkit.enchantments.Enchantment.SILK_TOUCH;
+import static org.bukkit.enchantments.Enchantment.SWEEPING_EDGE;
+import static org.bukkit.enchantments.Enchantment.THORNS;
+import static org.bukkit.enchantments.Enchantment.VANISHING_CURSE;
+import static org.bukkit.enchantments.Enchantment.WATER_WORKER;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -38,6 +65,7 @@ import java.util.logging.Level;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.GameMode;
+import org.bukkit.Material;
 import org.bukkit.Sound;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.block.Block;
@@ -113,8 +141,6 @@ import nl.knokko.customitems.plugin.set.item.CustomShield;
 import nl.knokko.customitems.plugin.set.item.CustomTool;
 import nl.knokko.customitems.plugin.set.item.CustomTrident;
 import nl.knokko.customitems.plugin.set.item.CustomWand;
-
-import static org.bukkit.enchantments.Enchantment.*;
 
 @SuppressWarnings("deprecation")
 public class CustomItemsEventHandler implements Listener {
@@ -608,9 +634,11 @@ public class CustomItemsEventHandler implements Listener {
 		if (custom != null) {
 			final CustomItem finalCustom = custom;
 			
+			Material oldType = event.getBlock().getType();
+			
 			// Delay this to avoid messing around with other plug-ins
 			Bukkit.getScheduler().scheduleSyncDelayedTask(plugin(), () -> {
-				finalCustom.onBlockBreak(event.getPlayer(), item, event.getBlock());
+				finalCustom.onBlockBreak(event.getPlayer(), item, event.getBlock(), oldType);
 			});
 		}
 	}

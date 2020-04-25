@@ -2,10 +2,16 @@ package nl.knokko.customitems.plugin.set.item;
 
 import java.util.List;
 
+import org.bukkit.Material;
+import org.bukkit.block.Block;
+import org.bukkit.entity.Player;
+import org.bukkit.inventory.ItemStack;
+
 import nl.knokko.customitems.effect.PotionEffect;
 import nl.knokko.customitems.item.AttributeModifier;
 import nl.knokko.customitems.item.CustomItemType;
 import nl.knokko.customitems.item.Enchantment;
+import nl.knokko.customitems.plugin.CustomItemsEventHandler;
 import nl.knokko.customitems.plugin.recipe.ingredient.Ingredient;
 
 public class CustomShears extends CustomTool {
@@ -24,5 +30,14 @@ public class CustomShears extends CustomTool {
 	
 	public int getShearDurabilityLoss() {
 		return shearDurabilityLoss;
+	}
+	
+	@Override
+	public void onBlockBreak(Player player, ItemStack tool, Block block, Material old) {
+		// Only lose durability when breaking non-solid blocks because we shear it
+		if (!old.isSolid() && blockBreakDurabilityLoss != 0 && decreaseDurability(tool, blockBreakDurabilityLoss)) {
+			CustomItemsEventHandler.playBreakSound(player);
+			player.getInventory().setItemInMainHand(null);
+		}
 	}
 }
