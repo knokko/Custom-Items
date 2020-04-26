@@ -41,7 +41,13 @@ import org.bukkit.material.MaterialData;
 import nl.knokko.core.plugin.item.ItemHelper;
 import nl.knokko.core.plugin.item.UnknownMaterialException;
 import nl.knokko.customitems.damage.DamageResistances;
-import nl.knokko.customitems.drops.*;
+import nl.knokko.customitems.drops.BlockDrop;
+import nl.knokko.customitems.drops.BlockType;
+import nl.knokko.customitems.drops.CIEntityType;
+import nl.knokko.customitems.drops.Drop;
+import nl.knokko.customitems.drops.EntityDrop;
+import nl.knokko.customitems.effect.EffectType;
+import nl.knokko.customitems.effect.PotionEffect;
 import nl.knokko.customitems.encoding.ItemEncoding;
 import nl.knokko.customitems.encoding.RecipeEncoding;
 import nl.knokko.customitems.encoding.SetEncoding;
@@ -57,17 +63,32 @@ import nl.knokko.customitems.item.EnchantmentType;
 import nl.knokko.customitems.item.ItemFlag;
 import nl.knokko.customitems.item.ItemSetBase;
 import nl.knokko.customitems.item.WandCharges;
-import nl.knokko.customitems.plugin.recipe.*;
-import nl.knokko.customitems.plugin.recipe.ingredient.*;
-import nl.knokko.customitems.plugin.set.item.*;
+import nl.knokko.customitems.plugin.recipe.CustomRecipe;
+import nl.knokko.customitems.plugin.recipe.ShapedCustomRecipe;
+import nl.knokko.customitems.plugin.recipe.ShapelessCustomRecipe;
+import nl.knokko.customitems.plugin.recipe.ingredient.CustomIngredient;
+import nl.knokko.customitems.plugin.recipe.ingredient.DataVanillaIngredient;
+import nl.knokko.customitems.plugin.recipe.ingredient.Ingredient;
+import nl.knokko.customitems.plugin.recipe.ingredient.NoIngredient;
+import nl.knokko.customitems.plugin.recipe.ingredient.SimpleVanillaIngredient;
+import nl.knokko.customitems.plugin.set.item.BooleanRepresentation;
+import nl.knokko.customitems.plugin.set.item.CustomArmor;
+import nl.knokko.customitems.plugin.set.item.CustomBow;
+import nl.knokko.customitems.plugin.set.item.CustomHoe;
+import nl.knokko.customitems.plugin.set.item.CustomItem;
+import nl.knokko.customitems.plugin.set.item.CustomShears;
+import nl.knokko.customitems.plugin.set.item.CustomShield;
+import nl.knokko.customitems.plugin.set.item.CustomTool;
+import nl.knokko.customitems.plugin.set.item.CustomTrident;
+import nl.knokko.customitems.plugin.set.item.CustomWand;
+import nl.knokko.customitems.plugin.set.item.SimpleCustomItem;
 import nl.knokko.customitems.projectile.CIProjectile;
 import nl.knokko.customitems.projectile.ProjectileCover;
 import nl.knokko.customitems.trouble.IntegrityException;
 import nl.knokko.customitems.trouble.UnknownEncodingException;
 import nl.knokko.util.bits.BitInput;
+import nl.knokko.util.bits.BooleanArrayBitOutput;
 import nl.knokko.util.bits.ByteArrayBitInput;
-import nl.knokko.customitems.effect.EffectType;
-import nl.knokko.customitems.effect.PotionEffect;
 
 public class ItemSet implements ItemSetBase {
 
@@ -277,8 +298,49 @@ public class ItemSet implements ItemSetBase {
 		for (int counter = 0; counter < numMobDrops; counter++)
 			register(EntityDrop.load(input, this));
 	}
-
+	
 	private CustomItem loadItem(BitInput input) throws UnknownEncodingException {
+		
+		BooleanArrayBitOutput rememberBits = new BooleanArrayBitOutput();
+		
+		class BitInputTracker extends BitInput {
+			
+			@Override
+			public boolean readDirectBoolean() {
+				boolean result = input.readDirectBoolean();
+				rememberBits.addBoolean(result);
+				return result;
+			}
+			
+			@Override
+			public byte readDirectByte() {
+				byte result = input.readDirectByte();
+				rememberBits.addByte(result);
+				return result;
+			}
+
+			@Override
+			public void increaseCapacity(int booleans) {
+				input.increaseCapacity(booleans);
+			}
+
+			@Override
+			public void terminate() {
+				input.terminate();
+			}
+
+			@Override
+			public void skip(long amount) {
+				input.skip(amount);
+			}
+		}
+		
+		CustomItem result = loadItemInternal(new BitInputTracker());
+		result.setBooleanRepresentation(new BooleanRepresentation(rememberBits.getBytes()));
+		return result;
+	}
+
+	private CustomItem loadItemInternal(BitInput input) throws UnknownEncodingException {
 		byte encoding = input.readByte();
 		switch (encoding) {
 		case ItemEncoding.ENCODING_SIMPLE_1 : return loadSimpleItem1(input);
