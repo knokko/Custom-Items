@@ -54,9 +54,9 @@ public class CreateItem extends GuiMenu {
 		}), 0.5f, 0.8f, 0.7f, 0.9f);
 		
 		// The row for later minecraft versions
-		addComponent(new DynamicTextButton("Trident (1.13+)", EditProps.CHOOSE_BASE, EditProps.CHOOSE_HOVER, () -> {
+		addComponent(new DynamicTextButton("Trident (1.13 and 1.14)", EditProps.CHOOSE_BASE, EditProps.CHOOSE_HOVER, () -> {
 			state.getWindow().setMainComponent(new EditItemTrident(menu, null, null));
-		}), 0f, 0.65f, 0.2f, 0.75f);
+		}), 0f, 0.65f, 0.23f, 0.75f);
 		
 		// The row for the special stuff
 		addComponent(new DynamicTextButton("Wand", EditProps.CHOOSE_BASE, EditProps.CHOOSE_HOVER, () -> {
