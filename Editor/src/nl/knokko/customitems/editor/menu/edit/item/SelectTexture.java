@@ -24,6 +24,7 @@
 package nl.knokko.customitems.editor.menu.edit.item;
 
 import java.util.Collection;
+import java.util.Locale;
 
 import nl.knokko.customitems.editor.HelpButtons;
 import nl.knokko.customitems.editor.menu.edit.EditProps;
@@ -33,7 +34,9 @@ import nl.knokko.gui.color.GuiColor;
 import nl.knokko.gui.component.GuiComponent;
 import nl.knokko.gui.component.menu.GuiMenu;
 import nl.knokko.gui.component.image.SimpleImageComponent;
+import nl.knokko.gui.component.text.TextEditField;
 import nl.knokko.gui.component.text.dynamic.DynamicTextButton;
+import nl.knokko.gui.component.text.dynamic.DynamicTextComponent;
 
 public class SelectTexture extends GuiMenu {
 
@@ -44,6 +47,7 @@ public class SelectTexture extends GuiMenu {
 	private final ItemSet set;
 	
 	private final TextureList textureList;
+	private final TextEditField searchField;
 
 	public SelectTexture(ItemSet set, GuiComponent returnMenu, TextureFilter filter, 
 			CreateMenuFactory createMenuFactory, ReturnAction returnAction) {
@@ -52,7 +56,9 @@ public class SelectTexture extends GuiMenu {
 		this.filter = filter;
 		this.createMenuFactory = createMenuFactory;
 		this.set = set;
+		
 		this.textureList = new TextureList();
+		this.searchField = new TextEditField("", EditProps.EDIT_BASE, EditProps.EDIT_ACTIVE);
 	}
 
 	@Override
@@ -73,10 +79,33 @@ public class SelectTexture extends GuiMenu {
 		}), 0.1f, 0.6f, 0.3f, 0.7f);
 		addComponent(new DynamicTextButton("Load texture...", EditProps.BUTTON, EditProps.HOVER, () -> {
 			state.getWindow().setMainComponent(createMenuFactory.getCreateMenu(set, this));
-		}), 0.1f, 0.3f, 0.35f, 0.4f);
+		}), 0.1f, 0.4f, 0.35f, 0.5f);
+		addComponent(new DynamicTextComponent("Search:", EditProps.LABEL), 0.1f, 0.2f, 0.2f, 0.3f);
+		addComponent(searchField, 0.1f, 0.1f, 0.3f, 0.2f);
+		searchField.setFocus();
 		addComponent(textureList, 0.4f, 0.1f, 0.85f, 0.9f);
 		
 		HelpButtons.addHelpLink(this, "edit%20menu/items/edit/texture.html");
+	}
+	
+	@Override
+	public void keyPressed(int key) {
+		String prev = searchField.getText();
+		super.keyPressed(key);
+		String next = searchField.getText();
+		if (!prev.equals(next)) {
+			textureList.refresh();
+		}
+	}
+	
+	@Override
+	public void keyPressed(char key) {
+		String prev = searchField.getText();
+		super.keyPressed(key);
+		String next = searchField.getText();
+		if (!prev.equals(next)) {
+			textureList.refresh();
+		}
 	}
 	
 	protected class TextureList extends GuiMenu {
@@ -100,7 +129,7 @@ public class SelectTexture extends GuiMenu {
 			Collection<NamedImage> textures = set.getBackingTextures();
 			int index = 0;
 			for (NamedImage texture : textures) {
-				if (filter.approve(texture)) {
+				if (filter.approve(texture) && texture.getName().toLowerCase(Locale.ROOT).contains(searchField.getText().toLowerCase(Locale.ROOT))) {
 					addComponent(
 							new SimpleImageComponent(state.getWindow().getTextureLoader().loadTexture(texture.getImage())),
 							0f, 0.9f - index * 0.15f, 0.25f, 1f - index * 0.15f);
