@@ -26,6 +26,7 @@ package nl.knokko.customitems.editor.menu.edit.texture;
 import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Consumer;
 
 import nl.knokko.customitems.editor.HelpButtons;
 import nl.knokko.customitems.editor.menu.edit.EditMenu;
@@ -48,6 +49,7 @@ public class BowTextureEdit extends GuiMenu {
 
 	protected final ItemSet set;
 	protected final GuiComponent returnMenu;
+	protected final Consumer<BowTextures> afterSave;
 	protected final PullTextures pullTextures;
 	protected final DynamicTextComponent errorComponent;
 	protected final WrapperComponent<SimpleImageComponent> defaultTexture;
@@ -58,14 +60,16 @@ public class BowTextureEdit extends GuiMenu {
 	protected BufferedImage defaultImage;
 	protected final List<Entry> pulls;
 	
-	public BowTextureEdit(EditMenu menu, BowTextures oldValues, BowTextures toModify) {
-		this(menu.getSet(), menu.getTextureOverview(), oldValues, toModify);
+	public BowTextureEdit(EditMenu menu, Consumer<BowTextures> afterSave, 
+			BowTextures oldValues, BowTextures toModify) {
+		this(menu.getSet(), menu.getTextureOverview(), afterSave, oldValues, toModify);
 	}
 
 	public BowTextureEdit(ItemSet set, GuiComponent returnMenu, 
-			BowTextures oldValues, BowTextures toModify) {
+			Consumer<BowTextures> afterSave, BowTextures oldValues, BowTextures toModify) {
 		this.set = set;
 		this.returnMenu = returnMenu;
+		this.afterSave = afterSave;
 		this.oldValues = oldValues;
 		this.toModify = toModify;
 		pullTextures = new PullTextures();
@@ -122,6 +126,7 @@ public class BowTextureEdit extends GuiMenu {
 						errorComponent.setText(error);
 					} else {
 						state.getWindow().setMainComponent(returnMenu);
+						afterSave.accept(toModify);
 					}
 				}
 			}), 0.1f, 0.1f, 0.25f, 0.2f);
@@ -134,11 +139,13 @@ public class BowTextureEdit extends GuiMenu {
 					for (int index = 0; index < entries.length; index++) {
 						entries[index] = pulls.get(index).clone();
 					}
-					String error = set.addBowTexture(new BowTextures(nameField.getText(), defaultImage, entries), true);
+					BowTextures toAdd = new BowTextures(nameField.getText(), defaultImage, entries);
+					String error = set.addBowTexture(toAdd, true);
 					if (error != null) {
 						errorComponent.setText(error);
 					} else {
 						state.getWindow().setMainComponent(returnMenu);
+						afterSave.accept(toAdd);
 					}
 				}
 			}), 0.1f, 0.1f, 0.25f, 0.2f);

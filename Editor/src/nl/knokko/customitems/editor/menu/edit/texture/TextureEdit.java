@@ -28,6 +28,7 @@ import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 import java.util.Locale;
+import java.util.function.Consumer;
 
 import javax.imageio.ImageIO;
 
@@ -51,6 +52,7 @@ public class TextureEdit extends GuiMenu {
 	
 	protected final ItemSet itemSet;
 	protected final GuiComponent returnMenu;
+	protected final Consumer<NamedImage> afterSave;
 	protected final NamedImage oldValues, toModify;
 	protected final DynamicTextComponent errorComponent;
 	
@@ -58,12 +60,15 @@ public class TextureEdit extends GuiMenu {
 	protected BufferedImage image;
 	protected WrapperComponent<SimpleImageComponent> wrapper;
 	
-	public TextureEdit(EditMenu menu, NamedImage oldValues, NamedImage toModify) {
-		this(menu.getSet(), menu.getTextureOverview(), oldValues, toModify);
+	public TextureEdit(EditMenu menu, Consumer<NamedImage> afterSave, 
+			NamedImage oldValues, NamedImage toModify) {
+		this(menu.getSet(), menu.getTextureOverview(), afterSave, oldValues, toModify);
 	}
 
-	public TextureEdit(ItemSet set, GuiComponent returnMenu, NamedImage oldValues, NamedImage toModify) {
+	public TextureEdit(ItemSet set, GuiComponent returnMenu, Consumer<NamedImage> afterSave,
+			NamedImage oldValues, NamedImage toModify) {
 		this.itemSet = set;
+		this.afterSave = afterSave;
 		this.returnMenu = returnMenu;
 		this.oldValues = oldValues;
 		this.toModify = toModify;
@@ -105,15 +110,20 @@ public class TextureEdit extends GuiMenu {
 						error = itemSet.changeTexture(toModify, name.getText(), image, true);
 						if(error != null)
 							errorComponent.setText(error);
-						else
+						else {
 							state.getWindow().setMainComponent(returnMenu);
+							afterSave.accept(toModify);
+						}
 					}
 					else {
-						error = itemSet.addTexture(new NamedImage(name.getText(), image), true);
+						NamedImage textureToAdd = new NamedImage(name.getText(), image);
+						error = itemSet.addTexture(textureToAdd, true);
 						if(error != null)
 							errorComponent.setText(error);
-						else
+						else {
 							state.getWindow().setMainComponent(returnMenu);
+							afterSave.accept(textureToAdd);
+						}
 					}
 				}
 			} else

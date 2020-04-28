@@ -54,17 +54,17 @@ public class TextureCollectionEdit extends CollectionEdit<NamedImage> {
 		@Override
 		public GuiComponent createEditMenu(NamedImage texture, GuiComponent returnMenu) {
 			if (texture instanceof BowTextures)
-				return new BowTextureEdit(menu, (BowTextures) texture, (BowTextures) texture);
+				return new BowTextureEdit(menu, modified -> {}, (BowTextures) texture, (BowTextures) texture);
 			else
-				return new TextureEdit(menu, texture, texture);
+				return new TextureEdit(menu, modified -> {}, texture, texture);
 		}
 		
 		@Override
 		public GuiComponent createCopyMenu(NamedImage texture, GuiComponent returnMenu) {
 			if (texture instanceof BowTextures)
-				return new BowTextureEdit(menu, (BowTextures) texture, null);
+				return new BowTextureEdit(menu, copied -> {}, (BowTextures) texture, null);
 			else
-				return new TextureEdit(menu, texture, null);
+				return new TextureEdit(menu, copied -> {}, texture, null);
 		}
 
 		@Override
