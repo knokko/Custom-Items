@@ -103,11 +103,12 @@ public abstract class EditItemBase extends GuiMenu {
 	public EditItemBase(EditMenu menu, CustomItem oldValues, CustomItem toModify, Category category) {
 		this.menu = menu;
 		this.toModify = toModify;
-		CreateMenuFactory textureCreateFactory = (set, returnMenu) -> {
+		CreateMenuFactory textureCreateFactory = (set, returnMenu, afterSave) -> {
 			if (this instanceof EditItemBow)
-				return new BowTextureEdit(set, returnMenu, null, null);
+				return new BowTextureEdit(set, returnMenu, 
+						bowTextures -> afterSave.accept(bowTextures), null, null);
 			else
-				return new TextureEdit(set, returnMenu, null, null);
+				return new TextureEdit(set, returnMenu, afterSave, null, null);
 		};
 		if (oldValues != null) {
 			name = new TextEditField(oldValues.getName(), EditProps.EDIT_BASE, EditProps.EDIT_ACTIVE);
@@ -299,7 +300,7 @@ public abstract class EditItemBase extends GuiMenu {
 	}
 
 	protected String getDisplayName() {
-		return displayName.getText().replaceAll("&", "ง");
+		return displayName.getText().replace('&', 'ยง');
 	}
 	
 	protected class TextureSelect extends TextureSelectButton {
@@ -319,7 +320,7 @@ public abstract class EditItemBase extends GuiMenu {
 			state.getWindow().setMainComponent(new TextArrayEditMenu(EditItemBase.this, (String[] newLore) -> {
 				lore = newLore;
 				for (int index = 0; index < lore.length; index++)
-					lore[index] = lore[index].replaceAll("&", "ง");
+					lore[index] = lore[index].replace('&', 'ยง');
 			}, EditProps.BACKGROUND, EditProps.CANCEL_BASE, EditProps.CANCEL_HOVER, EditProps.SAVE_BASE,
 					EditProps.SAVE_HOVER, EditProps.EDIT_BASE, EditProps.EDIT_ACTIVE, lore));
 		}), BUTTON_X, 0.56f, BUTTON_X + 0.1f, 0.61f);
@@ -373,7 +374,7 @@ public abstract class EditItemBase extends GuiMenu {
 			state.getWindow().setMainComponent(new TextArrayEditMenu(EditItemBase.this, (String[] newCommands) -> {
 				commands = newCommands;
 				for (int index = 0; index < commands.length; index++)
-					commands[index] = commands[index].replaceAll("&", "ง");
+					commands[index] = commands[index].replace('&', 'ยง');
 			}, EditProps.BACKGROUND, EditProps.CANCEL_BASE, EditProps.CANCEL_HOVER, EditProps.SAVE_BASE,
 					EditProps.SAVE_HOVER, EditProps.EDIT_BASE, EditProps.EDIT_ACTIVE, commands));
 		}), BUTTON_X, 0.08f, BUTTON_X + 0.1f, 0.13f);
