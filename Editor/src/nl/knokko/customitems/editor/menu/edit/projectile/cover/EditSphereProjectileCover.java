@@ -103,8 +103,8 @@ public class EditSphereProjectileCover extends EditProjectileCover {
 
 		public TextureSelect(NamedImage initial) {
 			super(initial, menu.getSet(), 
-					(set, returnMenu) -> new TextureEdit(set, returnMenu, 
-							newImage -> {}, null, null));
+					(set, returnMenu, afterSave) -> new TextureEdit(set, returnMenu, 
+							afterSave, null, null));
 		}
 
 		@Override
