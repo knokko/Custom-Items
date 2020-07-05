@@ -82,6 +82,7 @@ import nl.knokko.customitems.effect.EffectType;
 import nl.knokko.customitems.effect.PotionEffect;
 
 import static nl.knokko.customitems.MCVersions.*;
+import static nl.knokko.customitems.NameHelper.versionName;
 import static nl.knokko.customitems.encoding.SetEncoding.*;
 
 public class ItemSet implements ItemSetBase {
@@ -2413,23 +2414,45 @@ public class ItemSet implements ItemSetBase {
 		}
 	}
 	
-	private int ingredientVersion(Ingredient ingredient) {
+	private int firstIngredientVersion(Ingredient ingredient) {
 		if (ingredient instanceof NoIngredient || ingredient instanceof CustomItemIngredient) {
-			return VERSION1_12;
+			return FIRST_VERSION;
 		} else if (ingredient instanceof SimpleVanillaIngredient) {
-			return ((SimpleVanillaIngredient) ingredient).getType().version;
+			return ((SimpleVanillaIngredient) ingredient).getType().firstVersion;
 		} else {
-			return ((DataVanillaIngredient) ingredient).getType().version;
+			return ((DataVanillaIngredient) ingredient).getType().firstVersion;
 		}
 	}
 	
-	private int resultVersion(Result result) {
-		if (result instanceof CustomItemResult) {
-			return VERSION1_12;
-		} else if (result instanceof SimpleVanillaResult) {
-			return ((SimpleVanillaResult) result).getType().version;
+	private int lastIngredientVersion(Ingredient ingredient) {
+		if (ingredient instanceof NoIngredient || ingredient instanceof CustomItemIngredient) {
+			return LAST_VERSION;
+		} else if (ingredient instanceof SimpleVanillaIngredient) {
+			return ((SimpleVanillaIngredient) ingredient).getType().lastVersion;
 		} else {
-			return ((DataVanillaResult) result).getType().version;
+			// Minecraft got rid of metadata after minecraft 1.12
+			return VERSION1_12;
+		}
+	}
+	
+	private int firstResultVersion(Result result) {
+		if (result instanceof CustomItemResult) {
+			return FIRST_VERSION;
+		} else if (result instanceof SimpleVanillaResult) {
+			return ((SimpleVanillaResult) result).getType().firstVersion;
+		} else {
+			return ((DataVanillaResult) result).getType().firstVersion;
+		}
+	}
+	
+	private int lastResultVersion(Result result) {
+		if (result instanceof CustomItemResult) {
+			return LAST_VERSION;
+		} else if (result instanceof SimpleVanillaResult) {
+			return ((SimpleVanillaResult) result).getType().lastVersion;
+		} else {
+			// Minecraft got rid of metadata after minecraft 1.12
+			return VERSION1_12;
 		}
 	}
 	
@@ -2439,27 +2462,33 @@ public class ItemSet implements ItemSetBase {
 		for (CustomItem item : items) {
 			for (Enchantment enchant : item.getDefaultEnchantments()) {
 				if (enchant.getType().version > version) {
-					return "The item " + item.getName() + " has enchantment " + enchant.getType().getName() + ", which was added after minecraft 1." + version;
+					return "The item " + item.getName() + " has enchantment " + enchant.getType().getName() + ", which was added after minecraft " + versionName(version);
 				}
 			}
 			if (item instanceof CustomTool) {
 				CustomTool tool = (CustomTool) item;
-				if (ingredientVersion(tool.getRepairItem()) > version) {
-					return "The repair item " + tool.getRepairItem() + " for " + tool.getName() + " was added after minecraft 1." + version;
+				if (firstIngredientVersion(tool.getRepairItem()) > version) {
+					return "The repair item " + tool.getRepairItem() + " for " + tool.getName() + " was added after minecraft " + versionName(version);
+				}
+				if (lastIngredientVersion(tool.getRepairItem()) < version) {
+					return "The repair item " + tool.getRepairItem() + " for " + tool.getName() + " no longer exists in minecraft " + versionName(version);
 				}
 				
 				if (item instanceof CustomArmor) {
 					CustomArmor armor = (CustomArmor) item;
 					DamageSource[] sources = DamageSource.values();
 					for (DamageSource source : sources) {
-						if (source.version > version && armor.getDamageResistances().getResistance(source) != 0) {
-							return "Armor " + item.getName() + " has a damage resistance against " + source + ", which was added after minecraft 1." + version;
+						if ((source.firstVersion > version || source.lastVersion < version) && armor.getDamageResistances().getResistance(source) != 0) {
+							return "Armor " + item.getName() + " has a damage resistance against " + source + ", which doesn't exist in minecraft " + versionName(version);
 						}
 					}
 				}
 				
-				if (item.getItemType().version > version) {
-					return "The item " + item.getName() + " is a " + item.getItemType() + ", which were added after minecraft 1." + version;
+				if (item.getItemType().firstVersion > version) {
+					return "The item " + item.getName() + " is a " + item.getItemType() + ", which were added after minecraft " + versionName(version);
+				}
+				if (item.getItemType().lastVersion < version) {
+					return "The item " + item.getName() + " is a " + item.getItemType() + ", which is not available in minecraft " + versionName(version);
 				}
 			}
 		}
@@ -2468,33 +2497,42 @@ public class ItemSet implements ItemSetBase {
 			if (recipe instanceof ShapedRecipe) {
 				ShapedRecipe shaped = (ShapedRecipe) recipe;
 				for (Ingredient ingredient : shaped.getIngredients()) {
-					if (ingredientVersion(ingredient) > version) {
-						return "The ingredient " + ingredient + " used for " + shaped.getResult() + " was added after minecraft 1." + version;
+					if (firstIngredientVersion(ingredient) > version) {
+						return "The ingredient " + ingredient + " used for " + shaped.getResult() + " was added after minecraft " + versionName(version);
+					}
+					if (lastIngredientVersion(ingredient) < version) {
+						return "The ingredient " + ingredient + " used for " + shaped.getResult() + " no longer exists in minecraft " + versionName(version);
 					}
 				}
 			} else {
 				ShapelessRecipe shapeless = (ShapelessRecipe) recipe;
 				for (Ingredient ingredient : shapeless.getIngredients()) {
-					if (ingredientVersion(ingredient) > version) {
-						return "The ingredient " + ingredient + " used for " + shapeless.getResult() + " was added after minecraft 1." + version;
+					if (firstIngredientVersion(ingredient) > version) {
+						return "The ingredient " + ingredient + " used for " + shapeless.getResult() + " was added after minecraft " + versionName(version);
+					}
+					if (lastIngredientVersion(ingredient) < version) {
+						return "The ingredient " + ingredient + " used for " + shapeless.getResult() + " no longer exists in minecraft " + versionName(version);
 					}
 				}
 			}
 			
-			if (resultVersion(recipe.getResult()) > version) {
-				return "The crafting recipe result " + recipe.getResult() + " was added after minecraft 1." + version;
+			if (firstResultVersion(recipe.getResult()) > version) {
+				return "The crafting recipe result " + recipe.getResult() + " was added after minecraft " + versionName(version);
+			}
+			if (lastResultVersion(recipe.getResult()) < version) {
+				return "The crafting recipe result " + recipe.getResult() + " no longer exists in minecraft " + versionName(version);
 			}
 		}
 		
 		for (BlockDrop drop : blockDrops) {
-			if (drop.getBlock().version > version) {
-				return "There is a block drop for " + drop.getBlock() + ", but this block was added after minecraft 1." + version;
+			if (drop.getBlock().firstVersion > version || drop.getBlock().lastVersion < version) {
+				return "There is a block drop for " + drop.getBlock() + ", but this block doesn't exist in minecraft " + versionName(version);
 			}
 		}
 		
 		for (EntityDrop drop : mobDrops) {
-			if (drop.getEntityType().version > version) {
-				return "There is a mob drop for " + drop.getEntityType() + ", but this mob was added after minecraft 1." + version;
+			if (drop.getEntityType().firstVersion > version || drop.getEntityType().lastVersion < version) {
+				return "There is a mob drop for " + drop.getEntityType() + ", but this mob doesn't exist in minecraft " + versionName(version);
 			}
 		}
 		
@@ -3624,7 +3662,7 @@ public class ItemSet implements ItemSetBase {
 			if (item.getRepairItem() instanceof CustomItemIngredient
 					&& !(((CustomItemIngredient) item.getRepairItem()).getItem().getClass() == SimpleCustomItem.class))
 				return "Only vanilla items and simple custom items are allowed as repair item.";
-			if (item.allowAnvilActions() && item.getDisplayName().contains("ง"))
+			if (item.allowAnvilActions() && item.getDisplayName().contains("ยง"))
 				return "Items with color codes in their display name can not allow anvil actions";
 			if (item.allowEnchanting() && item.getDefaultEnchantments().length > 0)
 				return "You can't allow enchanting on items that have default enchantments";
@@ -3699,7 +3737,7 @@ public class ItemSet implements ItemSetBase {
 		if (!bypassChecks()) {
 			if (checkClass && item.getClass() != CustomTool.class)
 				return "Use the appropriate method to change this class";
-			if (allowAnvil && newDisplayName.contains("ง"))
+			if (allowAnvil && newDisplayName.contains("ยง"))
 				return "Items with color codes in their display name can not allow anvil actions";
 			if (repairItem instanceof CustomItemIngredient
 					&& !(((CustomItemIngredient) repairItem).getItem().getClass() == SimpleCustomItem.class))
