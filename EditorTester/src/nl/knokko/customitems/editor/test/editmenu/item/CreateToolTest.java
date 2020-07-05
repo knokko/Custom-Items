@@ -86,9 +86,13 @@ public class CreateToolTest {
 		}
 		if (repairItemCategory.equals("Vanilla item with datavalue")) {
 			
-			// Exclude the version suffix (for instance 1.12 to 1.16)
+			// Exclude the version suffix, if there is one (for instance 1.12 to 1.16)
 			int indexBracket = repairItem.indexOf(" (");
-			test.assertComponentWithText(repairItem.substring(0, indexBracket) + "(0)");
+			if (indexBracket != -1) {
+				test.assertComponentWithText(repairItem.substring(0, indexBracket) + "(0)");
+			} else {
+				test.assertComponentWithText(repairItem + "(0)");
+			}
 		} else if (repairItem != null){
 			
 			// Exclude the version suffix, if there is one (for instance 1.12 to 1.16)

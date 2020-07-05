@@ -22,7 +22,11 @@ public class NameHelper {
 		if (firstMcVersion == lastMcVersion) {
 			return niceName + " (" + versionName(firstMcVersion) + ")";
 		} else {
-			return niceName + " (" + versionName(firstMcVersion) + " to " + versionName(lastMcVersion) + ")";
+			if (firstMcVersion == MCVersions.FIRST_VERSION && lastMcVersion == MCVersions.LAST_VERSION) {
+				return niceName;
+			} else {
+				return niceName + " (" + versionName(firstMcVersion) + " to " + versionName(lastMcVersion) + ")";
+			}
 		}
 	}
 }
