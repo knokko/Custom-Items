@@ -72,7 +72,7 @@ public class ExploreEditMenuTest {
 		test.click("Simple Item");
 		test.assertComponentsWithTexts("Cancel", "Create", "Name: ", "Internal item type: ",
 				"INTERNAL item damage: ", "Display name: ", "Lore: ", "Attribute modifiers: ",
-				"Default enchantments: ", "Texture: ", "", "Diamond hoe", "1", "Change...", "None", 
+				"Default enchantments: ", "Texture: ", "", "Diamond hoe (1.12 to 1.16)", "1", "Change...", "None", 
 				"Max stacksize:", "64");
 		
 		// Now look into recipes

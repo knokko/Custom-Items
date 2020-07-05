@@ -47,7 +47,7 @@ public class CreateSimpleItemTest {
 		test.click("Simple Item");
 		test.assertComponentsWithTexts("Cancel", "Create", "Name: ", "Internal item type: ", 
 				"INTERNAL item damage: ", "Display name: ", "Lore: ", "Attribute modifiers: ",
-				"Default enchantments: ", "Texture: ", "", "Item flags: ", "Diamond hoe", "1", "Change...",
+				"Default enchantments: ", "Texture: ", "", "Item flags: ", "Diamond hoe (1.12 to 1.16)", "1", "Change...",
 				"None", "Max stacksize:", "64");
 		ItemNameTest.test(test, itemName);
 		SimpleTextureTest.test(test, textureName);

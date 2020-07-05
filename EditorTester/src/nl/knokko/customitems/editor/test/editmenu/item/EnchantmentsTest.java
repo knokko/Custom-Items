@@ -11,10 +11,10 @@ public class EnchantmentsTest {
 		test.clickNearest("Change...", "Default enchantments: ", numChangeButtons);
 		test.assertComponentsWithTexts("Cancel", "Add new", "Apply");
 		test.click("Add new");
-		test.assertComponentsWithTexts("Durability", "Level: ", "2");
+		test.assertComponentsWithTexts("Durability (1.12 to 1.16)", "Level: ", "2");
 		BufferedImage deleteImage = (BufferedImage) test.getComponentWithText("Level: ").getState().getWindow().getTextureLoader().loadTexture("nl/knokko/gui/images/icons/delete.png").getImage();
 		test.assertImageShown(deleteImage);
-		test.click("Durability");
+		test.click("Durability (1.12 to 1.16)");
 		test.click(enchantment1);
 		test.click("2");
 		test.backspace(1);
@@ -24,7 +24,7 @@ public class EnchantmentsTest {
 		test.clickNearestImage("Add new", deleteImage, 2);
 		test.assertComponentsWithTexts(enchantment1, level1);
 		test.click("Add new");
-		test.click("Durability");
+		test.click("Durability (1.12 to 1.16)");
 		test.click(enchantment2);
 		test.clickNearest("2", "Add new", level1.equals("2") ? 2 : 1);
 		test.backspace(1);

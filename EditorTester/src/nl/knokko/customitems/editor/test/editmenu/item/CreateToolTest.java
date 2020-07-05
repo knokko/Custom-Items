@@ -85,9 +85,18 @@ public class CreateToolTest {
 			}
 		}
 		if (repairItemCategory.equals("Vanilla item with datavalue")) {
-			test.assertComponentWithText(repairItem + "(0)");
+			
+			// Exclude the version suffix (for instance 1.12 to 1.16)
+			int indexBracket = repairItem.indexOf(" (");
+			test.assertComponentWithText(repairItem.substring(0, indexBracket) + "(0)");
 		} else if (repairItem != null){
-			test.assertComponentWithText(repairItem);
+			
+			// Exclude the version suffix, if there is one (for instance 1.12 to 1.16)
+			int indexBracket = repairItem.indexOf(" (");
+			if (indexBracket != -1)
+				test.assertComponentWithText(repairItem.substring(0, indexBracket));
+			else
+				test.assertComponentWithText(repairItem);
 		} else {
 			test.assertComponentWithText("None");
 		}
