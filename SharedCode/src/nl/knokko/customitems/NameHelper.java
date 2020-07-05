@@ -1,9 +1,5 @@
 package nl.knokko.customitems;
 
-import static nl.knokko.customitems.MCVersions.VERSION1_12;
-import static nl.knokko.customitems.MCVersions.VERSION1_13;
-import static nl.knokko.customitems.MCVersions.VERSION1_14;
-
 import java.util.Locale;
 
 public class NameHelper {
@@ -16,13 +12,17 @@ public class NameHelper {
 		return name.charAt(0) + name.substring(1).toLowerCase(Locale.ROOT).replaceAll("_", " ");
 	}
 	
-	public static String getNiceEnumName(String name, int mcVersion) {
-		String niceName= getNiceEnumName(name);
-		switch(mcVersion) {
-		case VERSION1_12: return niceName;
-		case VERSION1_13: return niceName + " (1.13+)";
-		case VERSION1_14: return niceName + " (1.14+)";
-		default: throw new Error("Unknown minecraft version: " + mcVersion);
+	public static String versionName(int version) {
+		// This dirty trick will work for now
+		return "1." + version;
+	}
+	
+	public static String getNiceEnumName(String name, int firstMcVersion, int lastMcVersion) {
+		String niceName = getNiceEnumName(name);
+		if (firstMcVersion == lastMcVersion) {
+			return niceName + " (" + versionName(firstMcVersion) + ")";
+		} else {
+			return niceName + " (" + versionName(firstMcVersion) + " to " + versionName(lastMcVersion) + ")";
 		}
 	}
 }

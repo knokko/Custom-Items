@@ -59,6 +59,7 @@ public enum EnchantmentType {
 	ARROW_INFINITE("infinity", 51),
 	LUCK("luck_of_the_sea", 61),
 	LURE("lure", 62),
+	
 	LOYALTY("loyalty", 65, VERSION1_13),
 	CHANNELING("channeling", 68, VERSION1_13),
 	RIPTIDE("riptide", 67, VERSION1_13),
@@ -67,7 +68,9 @@ public enum EnchantmentType {
 	// Numeric IDs seem to have been removed completely in minecraft 1.14
 	MULTSHOT("multishot", -1, VERSION1_14),
 	PIERCING("piercing", -1, VERSION1_14),
-	QUICK_CHARGE("quick_charge", -1, VERSION1_14);
+	QUICK_CHARGE("quick_charge", -1, VERSION1_14),
+	
+	SOUL_SPEED("soul_speed", -1, VERSION1_16);
 	
 	private final String niceName;
 	
@@ -88,7 +91,8 @@ public enum EnchantmentType {
 	
 	@Override
 	public String toString() {
-		return NameHelper.getNiceEnumName(name(), version);
+		// It looks like no enchantments have been renamed or removed
+		return NameHelper.getNiceEnumName(name(), version, VERSION1_16);
 	}
 	
 	public String getName() {
