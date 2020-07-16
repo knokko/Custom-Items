@@ -34,14 +34,4 @@ public class NoIngredient implements Ingredient {
 	public boolean accept(ItemStack item) {
 		return item == null || ItemHelper.getMaterialName(item).equals(CIMaterial.AIR.name());
 	}
-
-	@Override
-	public CIMaterial getType() {
-		return CIMaterial.AIR;
-	}
-
-	@Override
-	public short getData() {
-		return 0;
-	}
 }

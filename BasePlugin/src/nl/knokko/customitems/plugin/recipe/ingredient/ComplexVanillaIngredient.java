@@ -45,14 +45,4 @@ public class ComplexVanillaIngredient implements Ingredient {
 	public boolean accept(ItemStack item) {
 		return item != null && ItemHelper.getMaterialName(item).equals(type.name()) && item.getData().getData() == data && item.getDurability() == durability;
 	}
-
-	@Override
-	public CIMaterial getType() {
-		return type;
-	}
-
-	@Override
-	public short getData() {
-		return data;
-	}
 }

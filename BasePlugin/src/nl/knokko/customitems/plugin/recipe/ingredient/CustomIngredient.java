@@ -25,7 +25,6 @@ package nl.knokko.customitems.plugin.recipe.ingredient;
 
 import org.bukkit.inventory.ItemStack;
 
-import nl.knokko.customitems.item.CIMaterial;
 import nl.knokko.customitems.plugin.set.item.CustomItem;
 
 public class CustomIngredient implements Ingredient {
@@ -41,14 +40,4 @@ public class CustomIngredient implements Ingredient {
     public boolean accept(ItemStack item) {
         return this.item.is(item);
     }
-
-	@Override
-	public CIMaterial getType() {
-		return item.getMaterial();
-	}
-
-	@Override
-	public short getData() {
-		return Short.MAX_VALUE;
-	}
 }

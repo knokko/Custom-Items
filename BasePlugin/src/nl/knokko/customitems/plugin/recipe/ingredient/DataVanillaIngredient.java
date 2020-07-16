@@ -45,14 +45,4 @@ public class DataVanillaIngredient implements Ingredient {
 		return item != null && !CustomItem.isCustom(item)
 				&& ItemHelper.getMaterialName(item).equals(type.name()) && item.getData().getData() == data;
 	}
-
-	@Override
-	public CIMaterial getType() {
-		return type;
-	}
-
-	@Override
-	public short getData() {
-		return Short.MAX_VALUE;
-	}
 }
