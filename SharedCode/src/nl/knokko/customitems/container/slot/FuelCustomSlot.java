@@ -4,18 +4,18 @@ import nl.knokko.customitems.container.fuel.CustomFuelRegistry;
 
 public class FuelCustomSlot implements CustomSlot {
 	
-	private final int id;
+	private final String name;
 	
 	// TODO Add possibility for vanilla fuel registry
 	private final CustomFuelRegistry fuelRegistry;
 	
-	public FuelCustomSlot(int id, CustomFuelRegistry fuelRegistry) {
-		this.id = id;
+	public FuelCustomSlot(String name, CustomFuelRegistry fuelRegistry) {
+		this.name = name;
 		this.fuelRegistry = fuelRegistry;
 	}
 	
-	public int getId() {
-		return id;
+	public String getName() {
+		return name;
 	}
 	
 	public CustomFuelRegistry getRegistry() {
