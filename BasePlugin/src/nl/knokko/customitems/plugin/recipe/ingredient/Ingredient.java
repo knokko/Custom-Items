@@ -25,7 +25,9 @@ package nl.knokko.customitems.plugin.recipe.ingredient;
 
 import org.bukkit.inventory.ItemStack;
 
-public interface Ingredient {
+import nl.knokko.customitems.recipe.SCIngredient;
+
+public interface Ingredient extends SCIngredient {
     
     boolean accept(ItemStack item);
 }

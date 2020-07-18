@@ -23,9 +23,10 @@
  *******************************************************************************/
 package nl.knokko.customitems.editor.set.recipe.ingredient;
 
+import nl.knokko.customitems.recipe.SCIngredient;
 import nl.knokko.util.bits.BitOutput;
 
-public interface Ingredient {
+public interface Ingredient extends SCIngredient {
 	
 	void save(BitOutput output);
 	
