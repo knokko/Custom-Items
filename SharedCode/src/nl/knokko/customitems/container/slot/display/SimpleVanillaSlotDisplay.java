@@ -6,8 +6,9 @@ public class SimpleVanillaSlotDisplay extends SlotDisplay {
 	
 	private final CIMaterial material;
 
-	public SimpleVanillaSlotDisplay(CIMaterial material, String displayName, String[] lore) {
-		super(displayName, lore);
+	public SimpleVanillaSlotDisplay(CIMaterial material, String displayName, 
+			String[] lore, int amount) {
+		super(displayName, lore, amount);
 		this.material = material;
 	}
 	

@@ -8,8 +8,8 @@ public class DataVanillaSlotDisplay extends SlotDisplay {
 	private final byte data;
 
 	public DataVanillaSlotDisplay(CIMaterial material, byte data, 
-			String displayName, String[] lore) {
-		super(displayName, lore);
+			String displayName, String[] lore, int amount) {
+		super(displayName, lore, amount);
 		this.material = material;
 		this.data = data;
 	}

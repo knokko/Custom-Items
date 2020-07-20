@@ -5,9 +5,12 @@ public abstract class SlotDisplay {
 	protected final String displayName;
 	protected final String[] lore;
 	
-	public SlotDisplay(String displayName, String[] lore) {
+	protected final int amount;
+	
+	public SlotDisplay(String displayName, String[] lore, int amount) {
 		this.displayName = displayName;
 		this.lore = lore;
+		this.amount = amount;
 	}
 	
 	public String getDisplayName() {
@@ -16,5 +19,9 @@ public abstract class SlotDisplay {
 	
 	public String[] getLore() {
 		return lore;
+	}
+	
+	public int getAmount() {
+		return amount;
 	}
 }
