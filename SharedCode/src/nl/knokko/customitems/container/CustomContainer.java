@@ -14,6 +14,12 @@ import nl.knokko.customitems.recipe.ContainerRecipe.OutputEntry;
 
 public class CustomContainer {
 	
+	// A bukkit/minecraft limitation only allows inventories with a width of 9 slots
+	private static final int WIDTH = 9;
+	
+	private String name;
+	private String displayName;
+	
 	private CustomSlot[][] slots;
 	
 	// TODO Perhaps allow vanilla registries to be used as well
@@ -24,18 +30,35 @@ public class CustomContainer {
 	private VanillaContainerType type;
 	private boolean persistentStorage;
 	
-	public CustomContainer() {
-		this(new ArrayList<>(), FuelMode.ALL, new CustomSlot[9][6], 
+	public CustomContainer(String name) {
+		this(name, name, new ArrayList<>(), FuelMode.ALL, new CustomSlot[9][6], 
 				VanillaContainerType.CRAFTING_TABLE, false);
 	}
 	
-	public CustomContainer(Collection<ContainerRecipe> recipes, FuelMode fuelMode, 
+	public CustomContainer(String name, String displayName, 
+			Collection<ContainerRecipe> recipes, FuelMode fuelMode, 
 			CustomSlot[][] slots, VanillaContainerType type, boolean persistentStorage) {
 		this.recipes = recipes;
 		this.fuelMode = fuelMode;
 		this.slots = slots;
 		this.type = type;
 		this.persistentStorage = persistentStorage;
+	}
+	
+	public String getName() {
+		return name;
+	}
+	
+	public String getDisplayName() {
+		return displayName;
+	}
+	
+	public void setName(String newName) {
+		name = newName;
+	}
+	
+	public void setDisplayName(String newName) {
+		displayName = newName;
 	}
 	
 	public VanillaContainerType getVanillaType() {
@@ -62,37 +85,25 @@ public class CustomContainer {
 		return fuelMode;
 	}
 	
-	public void resize(int newWidth, int newHeight) {
+	public void resize(int newHeight) {
 		
-		int oldWidth = getWidth();
 		int oldHeight = getHeight();
 		
-		CustomSlot[][] newSlots = new CustomSlot[oldWidth][oldHeight];
-		for (int x = 0; x < oldWidth && x < newWidth; x++) {
+		CustomSlot[][] newSlots = new CustomSlot[WIDTH][oldHeight];
+		for (int x = 0; x < WIDTH; x++) {
 			for (int y = 0; y < oldHeight && y < newHeight; y++) {
 				newSlots[x][y] = slots[x][y];
 			}
 		}
 		
-		for (int x = oldWidth; x < newWidth; x++) {
-			for (int y = 0; y < newHeight; y++) {
-				newSlots[x][y] = new EmptyCustomSlot();
-			}
-		}
-		
 		for (int y = oldHeight; y < newHeight; y++) {
-			for (int x = 0; x < newWidth; x++) {
+			for (int x = 0; x < WIDTH; x++) {
 				newSlots[x][y] = new EmptyCustomSlot();
 			}
 		}
 			
 		slots = newSlots;
-		oldWidth = newWidth;
 		oldHeight = newHeight;
-	}
-	
-	public int getWidth() {
-		return slots.length;
 	}
 	
 	public int getHeight() {
