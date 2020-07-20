@@ -23,4 +23,20 @@ public class IndicatorDomain {
 	public int getEnd() {
 		return end;
 	}
+	
+	public int getStacksize(int currentProgress, int maxProgress) {
+		int scaledBegin = begin * maxProgress / MAX;
+		int scaledEnd = end * maxProgress / MAX;
+		
+		int computedResult = (currentProgress - scaledBegin) * 64 / (scaledEnd - scaledBegin);
+		
+		if (computedResult < 0) {
+			return 0;
+		}
+		if (computedResult > 64) {
+			return 64;
+		}
+		
+		return computedResult;
+	}
 }
