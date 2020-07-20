@@ -53,6 +53,10 @@ public class ContainerRecipe {
 	public static class OutputEntry {
 		
 		public String outputSlotName;
+		/**
+		 * One of the results of a recipe. In the plug-in, this should be of type
+		 * ItemStack. In the editor, this should be of type Result.
+		 */
 		public Object result;
 		
 		public OutputEntry(String outputSlotName, Object result) {
