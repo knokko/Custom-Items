@@ -41,6 +41,8 @@ import org.bukkit.material.MaterialData;
 import nl.knokko.core.plugin.item.ItemHelper;
 import nl.knokko.core.plugin.item.UnknownMaterialException;
 import nl.knokko.customitems.container.CustomContainer;
+import nl.knokko.customitems.container.VanillaContainerType;
+import nl.knokko.customitems.container.fuel.FuelMode;
 import nl.knokko.customitems.container.slot.CustomSlot;
 import nl.knokko.customitems.container.slot.DecorationCustomSlot;
 import nl.knokko.customitems.container.slot.display.SimpleVanillaSlotDisplay;
@@ -161,7 +163,11 @@ public class ItemSet implements ItemSetBase {
 	
 	private CustomContainer testContainer() {
 		
-		CustomContainer testContainer = new CustomContainer("test_container");
+		CustomContainer testContainer = new CustomContainer(
+				"test_container", "Test Container", new ArrayList<>(), 
+				FuelMode.ALL, new CustomSlot[9][5], 
+				VanillaContainerType.FURNACE, true
+		);
 		
 		CustomSlot border = new DecorationCustomSlot(new SimpleVanillaSlotDisplay(
 				CIMaterial.BRICK, "", new String[0], 1

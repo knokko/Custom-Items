@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.nio.file.Files;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedList;
@@ -136,6 +137,7 @@ public class PluginData {
 	private long currentTick;
 	
 	// Non-persisting data
+	private Collection<TempContainerInstance> tempContainers;
 	private List<Player> shootingPlayers;
 
 	private PluginData() {
@@ -156,15 +158,13 @@ public class PluginData {
 	}
 	
 	private void init() {
+		tempContainers = new LinkedList<>();
 		shootingPlayers = new LinkedList<>();
 		
 		CustomItemsPlugin plugin = CustomItemsPlugin.getInstance();
-		Bukkit.getScheduler().scheduleSyncRepeatingTask(plugin, () -> {
-			update();
-		}, 1, 1);
-		Bukkit.getScheduler().scheduleSyncRepeatingTask(plugin, () -> {
-			clean();
-		}, 200, 40);
+		Bukkit.getScheduler().scheduleSyncRepeatingTask(plugin, this::update, 1, 1);
+		Bukkit.getScheduler().scheduleSyncRepeatingTask(plugin, this::quickClean, 50, 10);
+		Bukkit.getScheduler().scheduleSyncRepeatingTask(plugin, this::clean, 200, 40);
 	}
 	
 	private void update() {
@@ -191,6 +191,18 @@ public class PluginData {
 				}
 			} else {
 				iterator.remove();
+			}
+		}
+	}
+	
+	private void quickClean() {
+		Iterator<TempContainerInstance> tempIterator = tempContainers.iterator();
+		while (tempIterator.hasNext()) {
+			TempContainerInstance tempInstance = tempIterator.next();
+			if (tempInstance.viewer.getOpenInventory() != tempInstance.instance.getInventory()) {
+				tempIterator.remove();
+				tempInstance.instance.dropAllItems(tempInstance.viewer.getLocation());
+				Bukkit.broadcastMessage("Closed temp container session");
 			}
 		}
 	}
@@ -249,6 +261,7 @@ public class PluginData {
 	}
 	
 	private void cleanEmptyContainers() {
+		
 		// Clean up any empty custom containers
 		Iterator<Entry<ContainerLocation, ContainerInstance>> entryIterator = persistentContainers.entrySet().iterator();
 		entryLoop:
@@ -256,6 +269,11 @@ public class PluginData {
 			
 			Entry<ContainerLocation, ContainerInstance> entry = entryIterator.next();
 			ContainerInstance instance = entry.getValue();
+			
+			// Don't close it if anyone is still viewing it
+			if (!instance.getInventory().getViewers().isEmpty()) {
+				continue;
+			}
 			
 			// Check if its still burning or still has some crafting progress
 			if (instance.getCurrentCraftingProgress() != 0 || instance.isAnySlotBurning()) {
@@ -323,43 +341,6 @@ public class PluginData {
 		return CustomItemsPlugin.getInstance().getSet().getContainerInfo(container);
 	}
 	
-	public ContainerInstance startTempSession(Player player, CustomContainer container) {
-		PlayerData pd = getPlayerData(player);
-		if (pd.containerSession != null) {
-			throw new IllegalStateException("The player " + player.getName() + " is already in a container session");
-		}
-		
-		ContainerInstance session = new ContainerInstance(infoFor(container));
-		pd.containerSession = session;
-		return session;
-	}
-	
-	public ContainerInstance startPersistentSession(Player player, Location containerLocation,
-			CustomContainer container) {
-		
-		PlayerData pd = getPlayerData(player);
-		if (pd.containerSession != null) {
-			throw new IllegalStateException("The player " + player.getName() + " is already in a container session");
-		}
-		
-		ContainerInstance session = getPersistentContainerData(container, containerLocation);
-		pd.containerSession = session;
-		
-		return session;
-	}
-	
-	public ContainerInstance getContainerSession(Player player) {
-		return getPlayerData(player).containerSession;
-	}
-	
-	public void closeContainerSession(Player player) {
-		PlayerData pd = getPlayerData(player);
-		if (pd.containerSession == null) {
-			throw new IllegalStateException("The player " + player.getName() + " doesn't have an open container session");
-		}
-		pd.containerSession = null;
-	}
-	
 	private PlayerData getPlayerData(Player player) {
 		PlayerData data = playerData.get(player.getUniqueId());
 		if (data == null) {
@@ -369,24 +350,60 @@ public class PluginData {
 		return data;
 	}
 	
-	private ContainerInstance getPersistentContainerData(CustomContainer container, 
-			Location loc) {
-		
-		ContainerLocation containerLocation = new ContainerLocation(loc, container);
-		ContainerInstance instance = persistentContainers.get(containerLocation);
-		if (instance == null) {
-			instance = new ContainerInstance(infoFor(container));
-			persistentContainers.put(containerLocation, instance);
-		}
-		
-		return instance;
-	}
-	
 	/**
 	 * @return The number of ticks passed since the first use of this plug-in of at least version 6.0
 	 */
 	public long getCurrentTick() {
 		return currentTick;
+	}
+	
+	public ContainerInstance getCustomContainer(Player viewer) {
+		
+		// Check temp sessions
+		for (TempContainerInstance temp : tempContainers) {
+			if (temp.instance.getInventory().getViewers().contains(viewer)) {
+				return temp.instance;
+			}
+		}
+		
+		for (ContainerInstance persistent : persistentContainers.values()) {
+			if (persistent.getInventory().getViewers().contains(viewer)) {
+				return persistent;
+			}
+		}
+		
+		return null;
+	}
+	
+	public ContainerInstance getCustomContainer(Location location, Player newViewer, CustomContainer prototype) {
+		
+		/*
+		 * There are 2 kinds of custom containers: those with persistent storage
+		 * that is shared between players and saved when the server stops (for
+		 * instance furnaces). And there are those without persistent storage that
+		 * allocate space when the player opens it and drops all items when the
+		 * player closes it (like crafting table).
+		 */
+		if (prototype.hasPersistentStorage()) {
+			
+			// Container storage is shared between players, so we need to check if
+			// there is an existing inventory
+			ContainerLocation key = new ContainerLocation(location, prototype);
+			ContainerInstance instance = persistentContainers.get(key);
+			if (instance == null) {
+				instance = new ContainerInstance(infoFor(prototype));
+				persistentContainers.put(key, instance);
+			}
+			return instance;
+		} else {
+			
+			// Not shared between players, so just create a new instance
+			TempContainerInstance tempInstance = new TempContainerInstance(
+					new ContainerInstance(infoFor(prototype)), newViewer
+			);
+			tempContainers.add(tempInstance);
+			return tempInstance.instance;
+		}
 	}
 	
 	private static class ContainerLocation {
@@ -399,17 +416,17 @@ public class PluginData {
 		ContainerLocation(UUID worldId, CustomContainer type, int x, int y, int z){
 			this.worldId = worldId;
 			this.type = type;
+			if (worldId == null) throw new NullPointerException("worldId");
+			if (type == null) throw new NullPointerException("type");
 			this.x = x;
 			this.y = y;
 			this.z = z;
 		}
 		
 		ContainerLocation(Location location, CustomContainer type) {
-			this.worldId = location.getWorld().getUID();
-			this.x = location.getBlockX();
-			this.y = location.getBlockY();
-			this.z = location.getBlockZ();
-			this.type = type;
+			this(location.getWorld().getUID(), type, 
+					location.getBlockX(), location.getBlockY(), location.getBlockZ()
+			);
 		}
 		
 		@Override
@@ -427,6 +444,17 @@ public class PluginData {
 			} else {
 				return false;
 			}
+		}
+	}
+	
+	private static class TempContainerInstance {
+		
+		final ContainerInstance instance;
+		final Player viewer;
+		
+		TempContainerInstance(ContainerInstance instance, Player viewer) {
+			this.instance = instance;
+			this.viewer = viewer;
 		}
 	}
 	

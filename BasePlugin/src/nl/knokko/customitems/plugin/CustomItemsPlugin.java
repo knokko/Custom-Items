@@ -80,6 +80,7 @@ public class CustomItemsPlugin extends JavaPlugin {
 		projectileManager = new ProjectileManager();
 		getCommand("customitems").setExecutor(new CommandCustomItems(languageFile));
 		Bukkit.getPluginManager().registerEvents(new CustomItemsEventHandler(), this);
+		Bukkit.getPluginManager().registerEvents(new ContainerEventHandler(), this);
 		Bukkit.getPluginManager().registerEvents(projectileManager, this);
 		CustomItemPickups.start();
 		CrazyEnchantmentsSupport.onEnable();
@@ -88,7 +89,6 @@ public class CustomItemsPlugin extends JavaPlugin {
 	@Override
 	public void onDisable() {
 		data.saveData();
-		ContainerEventHandler.onDisable();
 		projectileManager.destroyCustomProjectiles();
 		instance = null;
 		super.onDisable();

@@ -11,6 +11,7 @@ import java.util.function.Function;
 import java.util.stream.StreamSupport;
 
 import org.bukkit.Bukkit;
+import org.bukkit.Location;
 import org.bukkit.configuration.InvalidConfigurationException;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.inventory.Inventory;
@@ -397,6 +398,20 @@ public class ContainerInstance {
 	
 	public Inventory getInventory() {
 		return inventory;
+	}
+	
+	public void dropAllItems(Location location) {
+		dropAllItems(location, typeInfo.getInputSlots());
+		dropAllItems(location, typeInfo.getOutputSlots());
+		dropAllItems(location, typeInfo.getFuelSlots());
+	}
+	
+	private void dropAllItems(Location location, Iterable<Entry<String, Integer>> slots) {
+		slots.forEach(entry -> {
+			ItemStack stack = inventory.getItem(entry.getValue());
+			location.getWorld().dropItem(location, stack);
+			inventory.setItem(entry.getValue(), null);
+		});
 	}
 	
 	/**

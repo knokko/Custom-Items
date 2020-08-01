@@ -6,7 +6,6 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.logging.Logger;
 
-import nl.knokko.customitems.plugin.container.ContainerInstance;
 import nl.knokko.customitems.plugin.set.ItemSet;
 import nl.knokko.customitems.plugin.set.item.CustomItem;
 import nl.knokko.customitems.plugin.set.item.CustomWand;
@@ -53,8 +52,6 @@ class PlayerData {
 	
 	// Non-persisting data
 	
-	ContainerInstance containerSession;
-	
 	private long lastShootTick;
 	
 	public PlayerData() {
@@ -79,10 +76,6 @@ class PlayerData {
 			output.addString(entry.getKey().getName());
 			entry.getValue().save1(output, entry.getKey(), currentTick);
 		}
-	}
-	
-	public ContainerInstance getContainerSession() {
-		return containerSession;
 	}
 	
 	public void setShooting(long currentTick) {

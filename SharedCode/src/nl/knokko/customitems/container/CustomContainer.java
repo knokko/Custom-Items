@@ -38,11 +38,19 @@ public class CustomContainer {
 	public CustomContainer(String name, String displayName, 
 			Collection<ContainerRecipe> recipes, FuelMode fuelMode, 
 			CustomSlot[][] slots, VanillaContainerType type, boolean persistentStorage) {
+		this.name = name;
+		this.displayName = displayName;
 		this.recipes = recipes;
 		this.fuelMode = fuelMode;
 		this.slots = slots;
 		this.type = type;
 		this.persistentStorage = persistentStorage;
+		
+		for (int x = 0; x < WIDTH; x++) {
+			for (int y = 0; y < slots[x].length; y++) {
+				slots[x][y] = new EmptyCustomSlot();
+			}
+		}
 	}
 	
 	public String getName() {
