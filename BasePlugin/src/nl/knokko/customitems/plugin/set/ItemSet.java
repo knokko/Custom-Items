@@ -40,8 +40,18 @@ import org.bukkit.material.MaterialData;
 
 import nl.knokko.core.plugin.item.ItemHelper;
 import nl.knokko.core.plugin.item.UnknownMaterialException;
+import nl.knokko.customitems.container.CustomContainer;
+import nl.knokko.customitems.container.slot.CustomSlot;
+import nl.knokko.customitems.container.slot.DecorationCustomSlot;
+import nl.knokko.customitems.container.slot.display.SimpleVanillaSlotDisplay;
 import nl.knokko.customitems.damage.DamageResistances;
-import nl.knokko.customitems.drops.*;
+import nl.knokko.customitems.drops.BlockDrop;
+import nl.knokko.customitems.drops.BlockType;
+import nl.knokko.customitems.drops.CIEntityType;
+import nl.knokko.customitems.drops.Drop;
+import nl.knokko.customitems.drops.EntityDrop;
+import nl.knokko.customitems.effect.EffectType;
+import nl.knokko.customitems.effect.PotionEffect;
 import nl.knokko.customitems.encoding.ItemEncoding;
 import nl.knokko.customitems.encoding.RecipeEncoding;
 import nl.knokko.customitems.encoding.SetEncoding;
@@ -57,28 +67,45 @@ import nl.knokko.customitems.item.EnchantmentType;
 import nl.knokko.customitems.item.ItemFlag;
 import nl.knokko.customitems.item.ItemSetBase;
 import nl.knokko.customitems.item.WandCharges;
-import nl.knokko.customitems.plugin.recipe.*;
-import nl.knokko.customitems.plugin.recipe.ingredient.*;
-import nl.knokko.customitems.plugin.set.item.*;
+import nl.knokko.customitems.plugin.container.ContainerInfo;
+import nl.knokko.customitems.plugin.recipe.CustomRecipe;
+import nl.knokko.customitems.plugin.recipe.ShapedCustomRecipe;
+import nl.knokko.customitems.plugin.recipe.ShapelessCustomRecipe;
+import nl.knokko.customitems.plugin.recipe.ingredient.CustomIngredient;
+import nl.knokko.customitems.plugin.recipe.ingredient.DataVanillaIngredient;
+import nl.knokko.customitems.plugin.recipe.ingredient.Ingredient;
+import nl.knokko.customitems.plugin.recipe.ingredient.NoIngredient;
+import nl.knokko.customitems.plugin.recipe.ingredient.SimpleVanillaIngredient;
+import nl.knokko.customitems.plugin.set.item.CustomArmor;
+import nl.knokko.customitems.plugin.set.item.CustomBow;
+import nl.knokko.customitems.plugin.set.item.CustomHoe;
+import nl.knokko.customitems.plugin.set.item.CustomItem;
+import nl.knokko.customitems.plugin.set.item.CustomShears;
+import nl.knokko.customitems.plugin.set.item.CustomShield;
+import nl.knokko.customitems.plugin.set.item.CustomTool;
+import nl.knokko.customitems.plugin.set.item.CustomTrident;
+import nl.knokko.customitems.plugin.set.item.CustomWand;
+import nl.knokko.customitems.plugin.set.item.SimpleCustomItem;
 import nl.knokko.customitems.projectile.CIProjectile;
 import nl.knokko.customitems.projectile.ProjectileCover;
 import nl.knokko.customitems.trouble.IntegrityException;
 import nl.knokko.customitems.trouble.UnknownEncodingException;
 import nl.knokko.util.bits.BitInput;
 import nl.knokko.util.bits.ByteArrayBitInput;
-import nl.knokko.customitems.effect.EffectType;
-import nl.knokko.customitems.effect.PotionEffect;
 
 public class ItemSet implements ItemSetBase {
 
 	private CustomRecipe[] recipes;
 
 	private final Map<CIMaterial, Map<Short, ItemDamageClaim>> customItemMap;
+	private final Map<String, ContainerInfo> containerInfo;
 
 	private CustomItem[] items;
 	
 	private ProjectileCover[] projectileCovers;
 	private CIProjectile[] projectiles;
+	
+	private Collection<CustomContainer> containers;
 	
 	private Drop[][] blockDropMap;
 	private EntityDrop[][] mobDropMap;
@@ -87,11 +114,15 @@ public class ItemSet implements ItemSetBase {
 
 	public ItemSet() {
 		customItemMap = new EnumMap<>(CIMaterial.class);
+		containerInfo = new HashMap<>();
+		
 		items = new CustomItem[0];
 		recipes = new CustomRecipe[0];
 		
 		projectileCovers = new ProjectileCover[0];
 		projectiles = new CIProjectile[0];
+		
+		containers = new ArrayList<>(0);
 		
 		blockDropMap = new Drop[BlockType.AMOUNT][0];
 		mobDropMap = new EntityDrop[CIEntityType.AMOUNT][0];
@@ -101,6 +132,8 @@ public class ItemSet implements ItemSetBase {
 
 	public ItemSet(BitInput input) throws UnknownEncodingException, IntegrityException, UnknownMaterialException {
 		customItemMap = new EnumMap<>(CIMaterial.class);
+		containerInfo = new HashMap<>();
+		
 		byte encoding = input.readByte();
 		
 		// Note that ENCODING_2 and ENCODING_4 are editor-only
@@ -116,6 +149,29 @@ public class ItemSet implements ItemSetBase {
 			throw new UnknownEncodingException("ItemSet", encoding);
 		
 		errors = new ArrayList<>(0);
+		
+		// TODO Create new encoding for custom containers and load them properly
+		addCustomContainer(testContainer());
+	}
+	
+	private void addCustomContainer(CustomContainer toAdd) {
+		containerInfo.put(toAdd.getName(), new ContainerInfo(toAdd));
+		containers.add(toAdd);
+	}
+	
+	private CustomContainer testContainer() {
+		
+		CustomContainer testContainer = new CustomContainer("test_container");
+		
+		CustomSlot border = new DecorationCustomSlot(new SimpleVanillaSlotDisplay(
+				CIMaterial.BRICK, "", new String[0], 1
+		));
+		
+		for (int x = 0; x < 9; x++) {
+			testContainer.setSlot(border, x, 0);
+		}
+		
+		return testContainer;
 	}
 	
 	public void addError(String error) {
@@ -146,6 +202,9 @@ public class ItemSet implements ItemSetBase {
 		// There are no drops in this encoding
 		blockDropMap = new Drop[BlockType.AMOUNT][0];
 		mobDropMap = new EntityDrop[CIEntityType.AMOUNT][0];
+		
+		// There are no custom containers in this encoding
+		containers = new ArrayList<>(0);
 	}
 
 	// Just like the ItemSet of Editor doesn't have export2, this doesn't have load2
@@ -173,6 +232,9 @@ public class ItemSet implements ItemSetBase {
 		mobDropMap = new EntityDrop[CIEntityType.AMOUNT][0];
 		for (int counter = 0; counter < numMobDrops; counter++)
 			register(EntityDrop.load(input, this));
+		
+		// There are no custom containers in this encoding
+		containers = new ArrayList<>(0);
 	}
 	
 	// Since ENCODING_4 is editor-only, there is no load4 method
@@ -218,6 +280,9 @@ public class ItemSet implements ItemSetBase {
 		mobDropMap = new EntityDrop[CIEntityType.AMOUNT][0];
 		for (int counter = 0; counter < numMobDrops; counter++)
 			register(EntityDrop.load(input, this));
+		
+		// There are no custom containers in this encoding
+		containers = new ArrayList<>(0);
 	}
 	
 	private void load6(BitInput input) throws UnknownEncodingException, IntegrityException, UnknownMaterialException {
@@ -276,6 +341,9 @@ public class ItemSet implements ItemSetBase {
 		mobDropMap = new EntityDrop[CIEntityType.AMOUNT][0];
 		for (int counter = 0; counter < numMobDrops; counter++)
 			register(EntityDrop.load(input, this));
+		
+		// There are no custom containers in this encoding
+		containers = new ArrayList<>(0);
 	}
 
 	private CustomItem loadItem(BitInput input) throws UnknownEncodingException {
@@ -1379,6 +1447,18 @@ public class ItemSet implements ItemSetBase {
 			return (ProjectileCover) claim;
 		else
 			return null;
+	}
+	
+	public ContainerInfo getContainerInfo(CustomContainer container) {
+		return getContainerInfo(container.getName());
+	}
+	
+	public ContainerInfo getContainerInfo(String containerName) {
+		return containerInfo.get(containerName);
+	}
+	
+	public Iterable<CustomContainer> getContainers() {
+		return containers;
 	}
 
 	/**

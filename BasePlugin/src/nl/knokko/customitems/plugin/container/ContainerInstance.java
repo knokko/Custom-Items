@@ -4,8 +4,15 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Map.Entry;
+import java.util.function.BiConsumer;
+import java.util.function.Consumer;
+import java.util.function.Function;
+import java.util.stream.StreamSupport;
 
 import org.bukkit.Bukkit;
+import org.bukkit.configuration.InvalidConfigurationException;
+import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
@@ -18,15 +25,21 @@ import nl.knokko.customitems.container.CustomContainer;
 import nl.knokko.customitems.container.IndicatorDomain;
 import nl.knokko.customitems.container.fuel.FuelEntry;
 import nl.knokko.customitems.container.fuel.FuelMode;
-import nl.knokko.customitems.container.slot.*;
-import nl.knokko.customitems.container.slot.display.*;
+import nl.knokko.customitems.container.slot.display.CustomItemSlotDisplay;
+import nl.knokko.customitems.container.slot.display.DataVanillaSlotDisplay;
+import nl.knokko.customitems.container.slot.display.SimpleVanillaSlotDisplay;
+import nl.knokko.customitems.container.slot.display.SlotDisplay;
 import nl.knokko.customitems.item.CIMaterial;
+import nl.knokko.customitems.plugin.container.ContainerInfo.DecorationProps;
+import nl.knokko.customitems.plugin.container.ContainerInfo.IndicatorProps;
 import nl.knokko.customitems.plugin.recipe.ingredient.Ingredient;
 import nl.knokko.customitems.plugin.set.item.CustomItem;
 import nl.knokko.customitems.plugin.util.ItemUtils;
 import nl.knokko.customitems.recipe.ContainerRecipe;
 import nl.knokko.customitems.recipe.ContainerRecipe.InputEntry;
 import nl.knokko.customitems.recipe.ContainerRecipe.OutputEntry;
+import nl.knokko.util.bits.BitInput;
+import nl.knokko.util.bits.BitOutput;
 
 /**
  * An in-game instance of a custom container. While the CustomContainer class defines
@@ -66,91 +79,361 @@ public class ContainerInstance {
 		return stack;
 	}
 	
-	private static Inventory createInventory(CustomContainer type) {
-		Inventory inv = Bukkit.createInventory(null, 9 * type.getHeight(), type.getDisplayName());
-		int invIndex = 0;
-		for (int y = 0; y < type.getHeight(); y++) {
-			for (int x = 0; x < 9; x++) {
-				CustomSlot slot = type.getSlot(x, y);
-				if (slot instanceof DecorationCustomSlot) {
-					SlotDisplay display = ((DecorationCustomSlot) slot).getDisplay();
-					ItemStack stack = fromDisplay(display);
-					
-					inv.setItem(invIndex, stack);
-				}
-				invIndex++;
-			}
+	private static Inventory createInventory(ContainerInfo typeInfo) {
+		CustomContainer container = typeInfo.getContainer();
+		Inventory inv = Bukkit.createInventory(null, 9 * container.getHeight(), 
+				container.getDisplayName());
+		
+		for (DecorationProps decoration : typeInfo.getDecorations()) {
+			ItemStack stack = fromDisplay(decoration.getSlotDisplay());
+			inv.setItem(decoration.getInventoryIndex(), stack);
 		}
 		
 		return inv;
 	}
+	
+	public static void discard1(BitInput input) {
+		
+		// TODO Perhaps drop the items rather than discarding them
+		// Discard the item stacks for all 3 slot types: input, output and fuel
+		for (int slotTypeCounter = 0; slotTypeCounter < 3; slotTypeCounter++) {
+			
+			// Discard all their slots
+			int numSlots = input.readInt();
+			for (int slotCounter = 0; slotCounter < numSlots; slotCounter++) {
+				// Discard 2 strings: the name of the slot and the string 
+				// representation of the ItemStack it contained
+				input.readString();
+				input.readString();
+			}
+		}
+		
+		// Discard the remaining fuel burn times
+		int numBurningFuelSlots = input.readInt();
+		for (int counter = 0; counter < numBurningFuelSlots; counter++) {
+			
+			// Discard slot name (String), remaining burn time and max burn time (int)
+			input.readString();
+			input.readInt();
+			input.readInt();
+		}
+		
+		// Discard remaining crafting progress
+		input.readInt();
+	}
+	
+	public static ContainerInstance load1(BitInput input, ContainerInfo typeInfo) {
+		
+		ContainerInstance instance = new ContainerInstance(typeInfo);
+		Inventory inv = instance.inventory;
+		
+		class StringStack {
+			
+			final String slotName;
+			final ItemStack stack;
+			
+			StringStack(String slotName, ItemStack stack) {
+				this.slotName = slotName;
+				this.stack = stack;
+			}
+			
+			private boolean putSimple(Function<String, Integer> getSlot, Inventory dest) {
+				Integer rightSlot = getSlot.apply(slotName);
+				if (rightSlot != null) {
+					dest.setItem(rightSlot, stack);
+					return true;
+				} else {
+					return false;
+				}
+			}
+			
+			private void putInEmptySlot(
+					Iterable<Integer> firstSlots, Iterable<Integer> secondSlots,
+					Iterable<Integer> thirdSlots) {
+				
+				// Use the preferred/first slots whenever possible
+				for (Integer slotIndex : firstSlots) {
+					if (ItemUtils.isEmpty(inv.getItem(slotIndex))) {
+						inv.setItem(slotIndex, stack);
+						return;
+					}
+				}
+				
+				// Fall back to the second choice type of slots
+				for (int fuelSlot : secondSlots) {
+					if (ItemUtils.isEmpty(inv.getItem(fuelSlot))) {
+						inv.setItem(fuelSlot, stack);
+						return;
+					}
+				}
+				
+				// The third choice type slots are the last resort
+				for (Integer slotIndex : thirdSlots) {
+					if (ItemUtils.isEmpty(inv.getItem(slotIndex))) {
+						inv.setItem(slotIndex, stack);
+						return;
+					}
+				}
+				
+				// If this line is reached, this item will be discarded
+				// I don't know a better way to resolve this
+			}
+		}
+		
+		class FuelEntry {
+			
+			final String slotName;
+			final int remainingBurnTime;
+			final int fullBurnTime;
+			
+			FuelEntry(String slotName, int remainingBurnTime, int fullBurnTime) {
+				this.slotName = slotName;
+				this.remainingBurnTime = remainingBurnTime;
+				this.fullBurnTime = fullBurnTime;
+			}
+		}
+		
+		class SlotReader {
+			
+			Collection<StringStack> readSlots(BitInput input) {
+				
+				int numNonEmptySlots = input.readInt();
+				Collection<StringStack> slotStacks = new ArrayList<>();
+				for (int counter = 0; counter < numNonEmptySlots; counter++) {
+					String slotName = input.readString();
+					String itemStackString = input.readString();
+					
+					YamlConfiguration dummyConfig = new YamlConfiguration();
+					try {
+						dummyConfig.loadFromString(itemStackString);
+					} catch (InvalidConfigurationException e) {
+						throw new IllegalArgumentException("Bad item stack string: " + itemStackString);
+					}
+					ItemStack slotStack = dummyConfig.getItemStack("theStack");
+					
+					slotStacks.add(new StringStack(slotName, slotStack));
+				}
+				
+				return slotStacks;
+			}
+		}
+		
+		SlotReader sr = new SlotReader();
+		Collection<StringStack> inputStacks = sr.readSlots(input);
+		Collection<StringStack> outputStacks = sr.readSlots(input);
+		Collection<StringStack> fuelStacks = sr.readSlots(input);
+		
+		int numBurningFuelSlots = input.readInt();
+		Collection<FuelEntry> fuelBurnDurations = new ArrayList<>(numBurningFuelSlots);
+		for (int counter = 0; counter < numBurningFuelSlots; counter++) {
+			
+			String fuelSlotName = input.readString();
+			int remainingBurnTime = input.readInt();
+			int fullBurnTime = input.readInt();
+			fuelBurnDurations.add(new FuelEntry(fuelSlotName, remainingBurnTime, fullBurnTime));
+		}
+		
+		int craftingProgress = input.readInt();
+		
+		/* Now that we have gathered all information, it's time to distribute the
+		 * loaded item stacks over the container slots. This process is complex
+		 * because the container might not have the exact same configuration as the
+		 * moment when it was saved: the server owner might have changed it
+		 * (via the editor) in the meantime.
+		 */
+		
+		// But first the simple cases
+		inputStacks.removeIf(inputStack -> inputStack.putSimple(typeInfo::getInputSlotIndex, inv));
+		outputStacks.removeIf(outputStack -> outputStack.putSimple(typeInfo::getOutputSlotIndex, inv));
+		fuelStacks.removeIf(fuelStack -> fuelStack.putSimple(typeInfo::getFuelSlotIndex, inv));
+		
+		// Now the annoying cases where the slot is changed or renamed
+		for (StringStack inputStack : inputStacks) {
+			inputStack.putInEmptySlot(
+					takeValues(typeInfo.getInputSlots()), 
+					takeValues(typeInfo.getOutputSlots()), 
+					takeValues(typeInfo.getFuelSlots())
+			);
+		}
+		
+		for (StringStack outputStack : outputStacks) {
+			outputStack.putInEmptySlot(
+					takeValues(typeInfo.getOutputSlots()), 
+					takeValues(typeInfo.getFuelSlots()), 
+					takeValues(typeInfo.getInputSlots())
+			);
+		}
+		
+		for (StringStack fuelStack : fuelStacks) {
+			fuelStack.putInEmptySlot(
+					takeValues(typeInfo.getFuelSlots()), 
+					takeValues(typeInfo.getOutputSlots()), 
+					takeValues(typeInfo.getInputSlots())
+			);
+		}
+		
+		/*
+		 * If fuel slots are renamed, the fuel burn time is hard to load as well.
+		 * The trick of finding another fuel slot could be used here, but this can
+		 * cause the situation where the burn time of one fuel slot would be given
+		 * to another fuel slot. If that other fuel slot is very hard to get burning,
+		 * this could give a very powerful advantage to a player.
+		 * 
+		 * I think simply discarding the burn time of renamed fuel slots is the best
+		 * option here.
+		 */
+		for (FuelEntry fuel : fuelBurnDurations) {
+			FuelBurnEntry entry = instance.fuelSlots.get(fuel.slotName);
+			if (entry != null) {
+				entry.remainingBurnTime = fuel.remainingBurnTime;
+				entry.maxBurnTime = fuel.fullBurnTime;
+			} else {
+				Bukkit.getLogger().warning("Discarding burn duration for fuel slot "+ fuel.slotName + " for container " + instance.typeInfo.getContainer().getName());
+			}
+		}
+		
+		// This one is simple
+		instance.currentCraftingProgress = craftingProgress;
+		
+		return instance;
+	}
+	
+	private static <T> Iterable<Integer> takeValues(Iterable<Entry<T, Integer>> entries) {
+		return StreamSupport.stream(entries.spliterator(), false).map(entry -> entry.getValue())::iterator;
+	}
 
-	private final CustomContainer type;
+	private final ContainerInfo typeInfo;
 	
 	private final Inventory inventory;
 	
-	private final Map<String, Integer> inputSlots;
-	private final Map<String, Integer> outputSlots;
-	
 	// Will stay empty if there are no fuel slots
-	private final Collection<FuelSlotEntry> fuelSlots;
-	
-	private final Collection<FuelIndicator> fuelIndicators;
-	private final Collection<ProgressIndicator> progressIndicators;
+	private final Map<String, FuelBurnEntry> fuelSlots;
 	
 	// Will be ignored if the crafting for this container type is instant
 	private int currentCraftingProgress;
 	
 	private ContainerRecipe currentRecipe;
 	
-	public ContainerInstance(CustomContainer type) {
-		this.type = type;
-		this.inventory = createInventory(type);
+	public ContainerInstance(ContainerInfo typeInfo) {
+		this.typeInfo = typeInfo;
+		this.inventory = createInventory(typeInfo);
 		
-		this.inputSlots = new HashMap<>();
-		this.outputSlots = new HashMap<>();
-		this.fuelSlots = new ArrayList<>();
+		this.fuelSlots = new HashMap<>();
+		this.initFuelSlots();
 		
 		this.currentCraftingProgress = 0;
-		
-		this.fuelIndicators = new ArrayList<>();
-		this.progressIndicators = new ArrayList<>();
-		
-		initSlotMaps();
 	}
 	
-	private void initSlotMaps() {
-		int invIndex = 0;
-		for (int y = 0; y < type.getHeight(); y++) {
-			for (int x = 0; x < 9; x++) {
-				
-				CustomSlot slot = type.getSlot(x, y);
-				if (slot instanceof FuelCustomSlot) {
-					fuelSlots.add(new FuelSlotEntry((FuelCustomSlot) slot, invIndex));
-				} else if (slot instanceof FuelIndicatorCustomSlot) {
-					fuelIndicators.add(new FuelIndicator(invIndex, (FuelIndicatorCustomSlot) slot));
-				} else if (slot instanceof InputCustomSlot) {
-					inputSlots.put(((InputCustomSlot) slot).getName(), invIndex);
-				} else if (slot instanceof OutputCustomSlot) {
-					outputSlots.put(((OutputCustomSlot) slot).getName(), invIndex);
-				} else if (slot instanceof ProgressIndicatorCustomSlot) {
-					progressIndicators.add(new ProgressIndicator(invIndex, (ProgressIndicatorCustomSlot) slot));
-				}
-				invIndex++;
-			}
+	private void initFuelSlots() {
+		for (Entry<String, Integer> fuelSlot : typeInfo.getFuelSlots()) {
+			fuelSlots.put(fuelSlot.getKey(), new FuelBurnEntry());
 		}
 	}
 	
+	public void save1(BitOutput output) {
+		
+		// Since the container layout of type could change, we need to be careful
+		// We will store entries of (slotName, itemStack) to store all items
+		BiConsumer<String, Integer> stackSaver = (slotName, invIndex) -> {
+			output.addString(slotName);
+			ItemStack itemStack = inventory.getItem(invIndex);
+			
+			// Serializing item stacks is a little effort
+			YamlConfiguration dummyConfiguration = new YamlConfiguration();
+			dummyConfiguration.set("theStack", itemStack);
+			output.addString(dummyConfiguration.saveToString());
+		};
+		
+		Consumer<Iterable<Entry<String, Integer>>> slotsSaver = collection -> {
+			
+			int numNonEmptySlots = 0;
+			for (Entry<String, Integer> entry : collection) {
+				ItemStack stack = inventory.getItem(entry.getValue());
+				if (!ItemUtils.isEmpty(stack)) {
+					numNonEmptySlots++;
+				}
+			}
+			
+			output.addInt(numNonEmptySlots);
+			for (Entry<String, Integer> entry : collection) {
+				ItemStack stack = inventory.getItem(entry.getValue());
+				if (!ItemUtils.isEmpty(stack)) {
+					stackSaver.accept(entry.getKey(), entry.getValue());
+				}
+			}
+		};
+		
+		slotsSaver.accept(typeInfo.getInputSlots());
+		slotsSaver.accept(typeInfo.getOutputSlots());
+		slotsSaver.accept(typeInfo.getFuelSlots());
+		
+		int numBurningFuelSlots = 0;
+		for (FuelBurnEntry burn : fuelSlots.values()) {
+			if (burn.remainingBurnTime != 0) {
+				numBurningFuelSlots++;
+			}
+		}
+		
+		// The fuel slots have a bit more data to store
+		output.addInt(numBurningFuelSlots);
+		fuelSlots.forEach((slotName, fuel) -> {
+			if (fuel.remainingBurnTime != 0) {
+				output.addString(slotName);
+				output.addInt(fuel.remainingBurnTime);
+				output.addInt(fuel.maxBurnTime);
+			}
+		});
+		
+		// Finally, we need to store the progress within the current crafting recipe
+		output.addInt(currentCraftingProgress);
+		
+		// We don't need to store for which recipe that progress is, because it can
+		// be derived from the contents of the inventory slots
+	}
+	
 	public CustomContainer getType() {
-		return type;
+		return typeInfo.getContainer();
+	}
+	
+	public Inventory getInventory() {
+		return inventory;
+	}
+	
+	/**
+	 * @return true if at least 1 of the fuel slots is burning
+	 */
+	public boolean isAnySlotBurning() {
+		for (FuelBurnEntry entry : fuelSlots.values()) {
+			if (entry.remainingBurnTime != 0) {
+				return true;
+			}
+		}
+		
+		return false;
 	}
 	
 	public ItemStack getInput(String inputSlotName) {
-		return inventory.getItem(inputSlots.get(inputSlotName));
+		return inventory.getItem(typeInfo.getInputSlotIndex(inputSlotName));
 	}
 	
 	public ItemStack getOutput(String outputSlotName) {
-		return inventory.getItem(outputSlots.get(outputSlotName));
+		return inventory.getItem(typeInfo.getOutputSlotIndex(outputSlotName));
+	}
+	
+	public ItemStack getFuel(String fuelSlotName) {
+		return inventory.getItem(typeInfo.getFuelSlotIndex(fuelSlotName));
+	}
+	
+	public void setInput(String inputSlotName, ItemStack newStack) {
+		inventory.setItem(typeInfo.getInputSlotIndex(inputSlotName), newStack);
+	}
+	
+	public void setOutput(String outputSlotName, ItemStack newStack) {
+		inventory.setItem(typeInfo.getOutputSlotIndex(outputSlotName), newStack);
+	}
+	
+	public void setFuel(String fuelSlotName, ItemStack newStack) {
+		inventory.setItem(typeInfo.getFuelSlotIndex(fuelSlotName), newStack);
 	}
 	
 	public int getCurrentCraftingProgress() {
@@ -162,7 +445,7 @@ public class ContainerInstance {
 		currentRecipe = null;
 		
 		candidateLoop:
-		for (ContainerRecipe candidate : type.getRecipes()) {
+		for (ContainerRecipe candidate : typeInfo.getContainer().getRecipes()) {
 			for (InputEntry input : candidate.getInputs()) {
 				ItemStack inSlot = getInput(input.inputSlotName);
 				Ingredient ingredient = (Ingredient) input.ingredient;
@@ -204,7 +487,7 @@ public class ContainerInstance {
 					// Decrease the stacksize of all relevant input slots by 1
 					for (InputEntry input : currentRecipe.getInputs()) {
 						
-						int invIndex = inputSlots.get(input.inputSlotName);
+						int invIndex = typeInfo.getInputSlotIndex(input.inputSlotName);
 						ItemStack inputItem = inventory.getItem(invIndex);
 						inputItem.setAmount(inputItem.getAmount() - 1);
 						
@@ -218,7 +501,7 @@ public class ContainerInstance {
 					// Add the results to the output slots
 					for (OutputEntry output : currentRecipe.getOutputs()) {
 						
-						int invIndex = outputSlots.get(output.outputSlotName);
+						int invIndex = typeInfo.getOutputSlotIndex(output.outputSlotName);
 						ItemStack outputItem = inventory.getItem(invIndex);
 						ItemStack result = (ItemStack) output.result;
 						
@@ -235,14 +518,14 @@ public class ContainerInstance {
 					currentCraftingProgress = 0;
 				}
 
-				for (ProgressIndicator indicator : progressIndicators) {
+				for (IndicatorProps indicator : typeInfo.getCraftingIndicators()) {
 					
-					IndicatorDomain domain = indicator.props.getDomain();
+					IndicatorDomain domain = indicator.getIndicatorDomain();
 					int newStacksize = domain.getStacksize(currentCraftingProgress, currentRecipe.getDuration());
 					
-					ItemStack newItemStack = fromDisplay(indicator.props.getDisplay());
+					ItemStack newItemStack = fromDisplay(indicator.getSlotDisplay());
 					newItemStack.setAmount(newStacksize);
-					inventory.setItem(indicator.invIndex, newItemStack);
+					inventory.setItem(indicator.getInventoryIndex(), newItemStack);
 				}
 			}
 		}
@@ -251,45 +534,45 @@ public class ContainerInstance {
 		decrementBurnTimes();
 	}
 	
-	private void updateFuelIndicator(FuelSlotEntry fuel) {
+	private void updateFuelIndicator(String fuelSlotName) {
 		
-		for (FuelIndicator indicator : fuelIndicators) {
+		for (IndicatorProps indicator : typeInfo.getFuelIndicators(fuelSlotName)) {
 			
-			// Only update the indicators for this fuel slot
-			if (indicator.props.getFuelSlotName().equals(fuel.props.getName())) {
-				
-				ItemStack indicatingStack = fromDisplay(indicator.props.getDisplay());
-				IndicatorDomain domain = indicator.props.getDomain();
-				int indicatingStacksize = domain.getStacksize(fuel.remainingBurnTime, fuel.maxBurnTime);
-				indicatingStack.setAmount(indicatingStacksize);
-				
-				inventory.setItem(indicator.invIndex, indicatingStack);
-			}
+			ItemStack indicatingStack = fromDisplay(indicator.getSlotDisplay());
+			IndicatorDomain domain = indicator.getIndicatorDomain();
+			
+			FuelBurnEntry burn = fuelSlots.get(fuelSlotName);
+			int indicatingStacksize = domain.getStacksize(burn.remainingBurnTime, burn.maxBurnTime);
+			indicatingStack.setAmount(indicatingStacksize);
+			
+			inventory.setItem(indicator.getInventoryIndex(), indicatingStack);
 		}
 	}
 	
 	private void decrementBurnTimes() {
-		for (FuelSlotEntry fuelSlot : fuelSlots) {
-			if (fuelSlot.remainingBurnTime > 0) {
-				fuelSlot.remainingBurnTime--;
-				updateFuelIndicator(fuelSlot);
+		for (Entry<String, FuelBurnEntry> burnEntry : fuelSlots.entrySet()) {
+			FuelBurnEntry burn = burnEntry.getValue();
+			String fuelSlotName = burnEntry.getKey();
+			if (burn.remainingBurnTime > 0) {
+				burn.remainingBurnTime--;
+				updateFuelIndicator(fuelSlotName);
 			}
 		}
 	}
 	
 	private boolean isBurning() {
-		if (type.getFuelMode() == FuelMode.ALL) {
+		if (typeInfo.getContainer().getFuelMode() == FuelMode.ALL) {
 			
-			for (FuelSlotEntry fuel : fuelSlots) {
+			for (FuelBurnEntry fuel : fuelSlots.values()) {
 				if (fuel.remainingBurnTime == 0) {
 					return false;
 				}
 			}
 			return true;
 			
-		} else if (type.getFuelMode() == FuelMode.ANY) {
+		} else if (typeInfo.getContainer().getFuelMode() == FuelMode.ANY) {
 			
-			for (FuelSlotEntry fuel : fuelSlots) {
+			for (FuelBurnEntry fuel : fuelSlots.values()) {
 				if (fuel.remainingBurnTime != 0) {
 					return true;
 				}
@@ -297,16 +580,16 @@ public class ContainerInstance {
 			return false;
 			
 		} else {
-			throw new Error("Unknown FuelMode: " + type.getFuelMode());
+			throw new Error("Unknown FuelMode: " + typeInfo.getContainer().getFuelMode());
 		}
 	}
 	
-	private boolean isFuel(FuelSlotEntry slot, ItemStack candidateFuel) {
-		return getBurnTime(slot, candidateFuel) != null;
+	private boolean isFuel(String fuelSlotName, FuelBurnEntry slot, ItemStack candidateFuel) {
+		return getBurnTime(fuelSlotName, slot, candidateFuel) != null;
 	}
 	
-	private Integer getBurnTime(FuelSlotEntry slot, ItemStack fuel) {
-		for (FuelEntry registryEntry : slot.props.getRegistry().getEntries()) {
+	private Integer getBurnTime(String fuelSlotName, FuelBurnEntry slot, ItemStack fuel) {
+		for (FuelEntry registryEntry : typeInfo.getFuelRegistry(fuelSlotName)) {
 			Ingredient ingredient = (Ingredient) registryEntry.getFuel();
 			if (ingredient.accept(fuel)) {
 				return registryEntry.getBurnTime();
@@ -317,16 +600,19 @@ public class ContainerInstance {
 	}
 	
 	private boolean canStartBurning() {
-		if (type.getFuelMode() == FuelMode.ALL) {
+		if (typeInfo.getContainer().getFuelMode() == FuelMode.ALL) {
 			
-			for (FuelSlotEntry fuel : fuelSlots) {
+			for (Entry<String, FuelBurnEntry> fuelEntry : fuelSlots.entrySet()) {
+				
+				String fuelSlotName = fuelEntry.getKey();
+				FuelBurnEntry fuel = fuelEntry.getValue();
 				
 				// If this slot is not yet burning, check if it contains fuel
 				if (fuel.remainingBurnTime == 0) {
-					ItemStack fuelStack = inventory.getItem(fuel.invIndex);
+					ItemStack fuelStack = getFuel(fuelSlotName);
 					
 					// If this slot doesn't contain proper fuel, it's lost
-					if (!isFuel(fuel, fuelStack)) {
+					if (!isFuel(fuelSlotName, fuel, fuelStack)) {
 						return false;
 					}
 				}
@@ -335,9 +621,12 @@ public class ContainerInstance {
 			
 			// If we reach this line, all fuel slots are either burning or have fuel
 			return true;
-		} else if (type.getFuelMode() == FuelMode.ANY) {
+		} else if (typeInfo.getContainer().getFuelMode() == FuelMode.ANY) {
 			
-			for (FuelSlotEntry fuel : fuelSlots) {
+			for (Entry<String, FuelBurnEntry> fuelEntry : fuelSlots.entrySet()) {
+				
+				String fuelSlotName = fuelEntry.getKey();
+				FuelBurnEntry fuel = fuelEntry.getValue();
 				
 				// If it's already burning, we are already done
 				if (fuel.remainingBurnTime != 0) {
@@ -345,8 +634,8 @@ public class ContainerInstance {
 				}
 				
 				// Check if it could start burning
-				ItemStack fuelCandidate = inventory.getItem(fuel.invIndex);
-				if (isFuel(fuel, fuelCandidate)) {
+				ItemStack fuelCandidate = getFuel(fuelSlotName);
+				if (isFuel(fuelSlotName, fuel, fuelCandidate)) {
 					return true;
 				}
 			}
@@ -354,7 +643,7 @@ public class ContainerInstance {
 			// If not a single candidate was found, return false
 			return false;
 		} else {
-			throw new Error("Unknown FuelMode: " + type.getFuelMode());
+			throw new Error("Unknown FuelMode: " + typeInfo.getContainer().getFuelMode());
 		}
 	}
 	
@@ -362,44 +651,50 @@ public class ContainerInstance {
 	 * Should only be called when canStartBurning() returned true
 	 */
 	private void startBurning() {
-		if (type.getFuelMode() == FuelMode.ALL) {
+		if (typeInfo.getContainer().getFuelMode() == FuelMode.ALL) {
 			
 			// Make sure all fuel slots are burning
-			for (FuelSlotEntry fuel : fuelSlots) {
+			for (Entry<String, FuelBurnEntry> fuelEntry : fuelSlots.entrySet()) {
+				
+				String fuelSlotName = fuelEntry.getKey();
+				FuelBurnEntry fuel = fuelEntry.getValue();
 				
 				// Start burning if it isn't burning yet
 				if (fuel.remainingBurnTime == 0) {
 					
-					ItemStack fuelStack = inventory.getItem(fuel.invIndex);
-					fuel.remainingBurnTime = getBurnTime(fuel, fuelStack);
+					ItemStack fuelStack = getFuel(fuelSlotName);
+					fuel.remainingBurnTime = getBurnTime(fuelSlotName, fuel, fuelStack);
 					fuel.maxBurnTime = fuel.remainingBurnTime;
 					fuelStack.setAmount(fuelStack.getAmount() - 1);
 					
-					inventory.setItem(fuel.invIndex, fuelStack);
-					updateFuelIndicator(fuel);
+					setFuel(fuelSlotName, fuelStack);
+					updateFuelIndicator(fuelSlotName);
 				}
 			}
-		} else if (type.getFuelMode() == FuelMode.ANY) {
+		} else if (typeInfo.getContainer().getFuelMode() == FuelMode.ANY) {
 			
 			// Start burning the first best valid fuel
-			for (FuelSlotEntry fuel : fuelSlots) {
+			for (Entry<String, FuelBurnEntry> fuelEntry : fuelSlots.entrySet()) {
 				
-				ItemStack fuelStack = inventory.getItem(fuel.invIndex);
-				Integer burnTime = getBurnTime(fuel, fuelStack);
+				String fuelSlotName = fuelEntry.getKey();
+				FuelBurnEntry fuel = fuelEntry.getValue();
+				
+				ItemStack fuelStack = getFuel(fuelSlotName);
+				Integer burnTime = getBurnTime(fuelSlotName, fuel, fuelStack);
 				if (burnTime != null) {
 					fuel.remainingBurnTime = burnTime;
 					fuel.maxBurnTime = burnTime;
 					fuelStack.setAmount(fuelStack.getAmount() - 1);
 					
-					inventory.setItem(fuel.invIndex, fuelStack);
-					updateFuelIndicator(fuel);
+					setFuel(fuelSlotName, fuelStack);
+					updateFuelIndicator(fuelSlotName);
 					return;
 				}
 			}
 			
-			throw new IllegalStateException("Couldn't start burning " + type.getName());
+			throw new IllegalStateException("Couldn't start burning " + typeInfo.getContainer().getName());
 		} else {
-			throw new Error("Unknown FuelMode: " + type.getFuelMode());
+			throw new Error("Unknown FuelMode: " + typeInfo.getContainer().getFuelMode());
 		}
 	}
 	
@@ -418,41 +713,14 @@ public class ContainerInstance {
 		}
 	}
 	
-	private static class FuelSlotEntry {
-		
-		final FuelCustomSlot props;
-		final int invIndex;
+	private static class FuelBurnEntry {
 		
 		int remainingBurnTime;
 		int maxBurnTime;
 		
-		FuelSlotEntry(FuelCustomSlot props, int invIndex) {
-			this.props = props;
-			this.invIndex = invIndex;
+		FuelBurnEntry() {
 			this.remainingBurnTime = 0;
 			this.maxBurnTime = 0;
-		}
-	}
-	
-	private static class FuelIndicator {
-		
-		final int invIndex;
-		final FuelIndicatorCustomSlot props;
-		
-		FuelIndicator(int invIndex, FuelIndicatorCustomSlot props) {
-			this.invIndex = invIndex;
-			this.props = props;
-		}
-	}
-	
-	private static class ProgressIndicator {
-		
-		final int invIndex;
-		final ProgressIndicatorCustomSlot props;
-		
-		ProgressIndicator(int invIndex, ProgressIndicatorCustomSlot props) {
-			this.invIndex = invIndex;
-			this.props = props;
 		}
 	}
 }
