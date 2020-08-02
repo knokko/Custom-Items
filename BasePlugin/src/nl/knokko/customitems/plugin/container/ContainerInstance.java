@@ -316,6 +316,7 @@ public class ContainerInstance {
 	private ContainerRecipe currentRecipe;
 	
 	public ContainerInstance(ContainerInfo typeInfo) {
+		if (typeInfo == null) throw new NullPointerException("typeInfo");
 		this.typeInfo = typeInfo;
 		this.inventory = createInventory(typeInfo);
 		
@@ -486,6 +487,7 @@ public class ContainerInstance {
 			break;
 		}
 		
+		int oldCraftingProgress = currentCraftingProgress;
 		if (oldRecipe != currentRecipe) {
 			currentCraftingProgress = 0;
 		}
@@ -532,15 +534,21 @@ public class ContainerInstance {
 					}
 					currentCraftingProgress = 0;
 				}
-
-				for (IndicatorProps indicator : typeInfo.getCraftingIndicators()) {
-					
+			}
+		}
+		
+		if (oldCraftingProgress != currentCraftingProgress) {
+			for (IndicatorProps indicator : typeInfo.getCraftingIndicators()) {
+				
+				if (currentCraftingProgress > 0) {
 					IndicatorDomain domain = indicator.getIndicatorDomain();
 					int newStacksize = domain.getStacksize(currentCraftingProgress, currentRecipe.getDuration());
 					
 					ItemStack newItemStack = fromDisplay(indicator.getSlotDisplay());
 					newItemStack.setAmount(newStacksize);
 					inventory.setItem(indicator.getInventoryIndex(), newItemStack);
+				} else {
+					inventory.setItem(indicator.getInventoryIndex(), null);
 				}
 			}
 		}
@@ -558,7 +566,11 @@ public class ContainerInstance {
 			
 			FuelBurnEntry burn = fuelSlots.get(fuelSlotName);
 			int indicatingStacksize = domain.getStacksize(burn.remainingBurnTime, burn.maxBurnTime);
-			indicatingStack.setAmount(indicatingStacksize);
+			if (indicatingStacksize > 0) {
+				indicatingStack.setAmount(indicatingStacksize);
+			} else {
+				indicatingStack = null;
+			}
 			
 			inventory.setItem(indicator.getInventoryIndex(), indicatingStack);
 		}

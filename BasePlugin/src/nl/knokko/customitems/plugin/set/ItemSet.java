@@ -38,14 +38,25 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.material.MaterialData;
 
+import com.google.common.collect.Lists;
+
 import nl.knokko.core.plugin.item.ItemHelper;
 import nl.knokko.core.plugin.item.UnknownMaterialException;
 import nl.knokko.customitems.container.CustomContainer;
+import nl.knokko.customitems.container.IndicatorDomain;
 import nl.knokko.customitems.container.VanillaContainerType;
+import nl.knokko.customitems.container.fuel.CustomFuelRegistry;
+import nl.knokko.customitems.container.fuel.FuelEntry;
 import nl.knokko.customitems.container.fuel.FuelMode;
 import nl.knokko.customitems.container.slot.CustomSlot;
 import nl.knokko.customitems.container.slot.DecorationCustomSlot;
+import nl.knokko.customitems.container.slot.FuelCustomSlot;
+import nl.knokko.customitems.container.slot.FuelIndicatorCustomSlot;
+import nl.knokko.customitems.container.slot.InputCustomSlot;
+import nl.knokko.customitems.container.slot.OutputCustomSlot;
+import nl.knokko.customitems.container.slot.ProgressIndicatorCustomSlot;
 import nl.knokko.customitems.container.slot.display.SimpleVanillaSlotDisplay;
+import nl.knokko.customitems.container.slot.display.SlotDisplay;
 import nl.knokko.customitems.damage.DamageResistances;
 import nl.knokko.customitems.drops.BlockDrop;
 import nl.knokko.customitems.drops.BlockType;
@@ -90,6 +101,9 @@ import nl.knokko.customitems.plugin.set.item.CustomWand;
 import nl.knokko.customitems.plugin.set.item.SimpleCustomItem;
 import nl.knokko.customitems.projectile.CIProjectile;
 import nl.knokko.customitems.projectile.ProjectileCover;
+import nl.knokko.customitems.recipe.ContainerRecipe;
+import nl.knokko.customitems.recipe.ContainerRecipe.InputEntry;
+import nl.knokko.customitems.recipe.ContainerRecipe.OutputEntry;
 import nl.knokko.customitems.trouble.IntegrityException;
 import nl.knokko.customitems.trouble.UnknownEncodingException;
 import nl.knokko.util.bits.BitInput;
@@ -165,18 +179,90 @@ public class ItemSet implements ItemSetBase {
 		
 		CustomContainer testContainer = new CustomContainer(
 				"test_container", "Test Container", new ArrayList<>(), 
-				FuelMode.ALL, new CustomSlot[9][5], 
+				FuelMode.ALL, new CustomSlot[9][6], 
 				VanillaContainerType.FURNACE, true
 		);
 		
-		CustomSlot border = new DecorationCustomSlot(new SimpleVanillaSlotDisplay(
-				CIMaterial.BRICK, "", new String[0], 1
+		CustomSlot blue = new DecorationCustomSlot(new SimpleVanillaSlotDisplay(
+				CIMaterial.PRISMARINE, "", new String[0], 1
 		));
 		
-		for (int x = 0; x < 9; x++) {
-			testContainer.setSlot(border, x, 0);
-		}
+		CustomSlot red = new DecorationCustomSlot(new SimpleVanillaSlotDisplay(
+				CIMaterial.REDSTONE_BLOCK, "", new String[0], 1
+		));
 		
+		CustomSlot coal = new DecorationCustomSlot(new SimpleVanillaSlotDisplay(
+				CIMaterial.COAL_BLOCK, "", new String[0], 1
+		));
+		
+		// Input slot + border
+		testContainer.setSlot(new InputCustomSlot("theInput"), 1, 1);
+		testContainer.setSlot(blue, 0, 0);
+		testContainer.setSlot(blue, 0, 1);
+		testContainer.setSlot(blue, 0, 2);
+		testContainer.setSlot(blue, 1, 2);
+		testContainer.setSlot(blue, 2, 2);
+		testContainer.setSlot(blue, 2, 1);
+		testContainer.setSlot(blue, 2, 0);
+		testContainer.setSlot(blue, 1, 0);
+		
+		// Fuel slot + border
+		Collection<FuelEntry> fuelRegistryEntries = new ArrayList<>(1);
+		fuelRegistryEntries.add(new FuelEntry(
+				new SimpleVanillaIngredient(CIMaterial.OBSIDIAN), 500
+		));
+		testContainer.setSlot(new FuelCustomSlot("obsidianFuel", new CustomFuelRegistry(
+				"obsidianFuel", fuelRegistryEntries)), 1, 4);
+		testContainer.setSlot(coal, 0, 3);
+		testContainer.setSlot(coal, 0, 4);
+		testContainer.setSlot(coal, 0, 5);
+		testContainer.setSlot(coal, 1, 5);
+		testContainer.setSlot(coal, 2, 5);
+		testContainer.setSlot(coal, 2, 4);
+		testContainer.setSlot(coal, 2, 3);
+		testContainer.setSlot(coal, 1, 3);
+		
+		// Output slot + border
+		testContainer.setSlot(new OutputCustomSlot("theOutput"), 7, 3);
+		testContainer.setSlot(red, 6, 2);
+		testContainer.setSlot(red, 6, 3);
+		testContainer.setSlot(red, 6, 4);
+		testContainer.setSlot(red, 7, 4);
+		testContainer.setSlot(red, 8, 4);
+		testContainer.setSlot(red, 8, 3);
+		testContainer.setSlot(red, 8, 2);
+		testContainer.setSlot(red, 7, 2);
+		
+		// Fuel indicator
+		testContainer.setSlot(new FuelIndicatorCustomSlot("obsidianFuel",
+				new SimpleVanillaSlotDisplay(CIMaterial.BLAZE_POWDER, "", new String[0], 64),
+				new IndicatorDomain()), 
+		4, 5);
+		
+		// Progress indicators
+		SlotDisplay progressIndicator = new SimpleVanillaSlotDisplay(
+				CIMaterial.ARROW, "", new String[0], 1
+		);
+		testContainer.setSlot(new ProgressIndicatorCustomSlot(
+				progressIndicator, new IndicatorDomain(0, 33)), 
+		3, 3);
+		testContainer.setSlot(new ProgressIndicatorCustomSlot(
+				progressIndicator, new IndicatorDomain(33, 67)), 
+		4, 3);
+		testContainer.setSlot(new ProgressIndicatorCustomSlot(
+				progressIndicator, new IndicatorDomain(67, 100)), 
+		5, 3);
+		
+		// The recipes
+		testContainer.getRecipes().add(new ContainerRecipe(
+				Lists.newArrayList(new InputEntry("theInput", 
+						new SimpleVanillaIngredient(CIMaterial.BONE))),
+				Lists.newArrayList(new OutputEntry("theOutput",
+						ItemHelper.createStack(CIMaterial.APPLE.name(), 1))),
+				60
+		));
+		
+		// Finally return the result
 		return testContainer;
 	}
 	

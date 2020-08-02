@@ -56,6 +56,7 @@ public class ContainerInfo {
 				if (slot instanceof FuelCustomSlot) {
 					FuelCustomSlot fuelSlot = (FuelCustomSlot) slot;
 					fuelSlots.put(fuelSlot.getName(), invIndex);
+					System.out.println("The name of the fuelSlot is " + fuelSlot.getName());
 					fuelRegistries.put(fuelSlot.getName(), fuelSlot.getRegistry());
 				} else if (slot instanceof FuelIndicatorCustomSlot) {
 					FuelIndicatorCustomSlot indicatorSlot = (FuelIndicatorCustomSlot) slot;
@@ -101,7 +102,10 @@ public class ContainerInfo {
 	}
 	
 	public Iterable<IndicatorProps> getFuelIndicators(String fuelSlotName) {
-		return fuelIndicators.get(fuelSlotName);
+		Collection<IndicatorProps> result = fuelIndicators.get(fuelSlotName);
+		if (result == null) 
+			throw new IllegalArgumentException("Bad fuelSlotName " + fuelSlotName);
+		return result;
 	}
 	
 	public Iterable<FuelEntry> getFuelRegistry(String fuelSlotName) {

@@ -32,7 +32,6 @@ public class ContainerEventHandler implements Listener {
 		
 		if (event.getWhoClicked() instanceof Player) {
 			ContainerInstance customContainer = pluginData().getCustomContainer((Player) event.getWhoClicked());
-			System.out.println("customContainer is " + customContainer);
 			if (customContainer != null) {
 				
 				int slotIndex = event.getRawSlot();
@@ -40,16 +39,12 @@ public class ContainerEventHandler implements Listener {
 				if (slotIndex < 9 * containerType.getHeight()) {
 					CustomSlot slot = customContainer.getType().getSlot(slotIndex % 9, slotIndex / 9);
 					
-					System.out.println("slot is " + slot);
-					
 					// Make sure slots can only be used the way they should be used
 					if (isTake(event.getAction())) {
-						System.out.println("It's a take action");
 						if (!slot.canTakeItems()) {
 							event.setCancelled(true);
 						}
 					} else if (isInsert(event.getAction())) {
-						System.out.println("It's an insert action");
 						if (!slot.canInsertItems()) {
 							event.setCancelled(true);
 						}

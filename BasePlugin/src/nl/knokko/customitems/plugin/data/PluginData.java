@@ -171,6 +171,7 @@ public class PluginData {
 		currentTick++;
 		
 		updateShooting();
+		updateContainers();
 	}
 	
 	private void updateShooting() {
@@ -193,6 +194,11 @@ public class PluginData {
 				iterator.remove();
 			}
 		}
+	}
+	
+	private void updateContainers() {
+		persistentContainers.values().forEach(ContainerInstance::update);
+		tempContainers.forEach(temp -> temp.instance.update());
 	}
 	
 	private void quickClean() {
