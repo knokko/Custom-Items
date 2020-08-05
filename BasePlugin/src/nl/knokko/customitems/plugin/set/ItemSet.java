@@ -55,6 +55,7 @@ import nl.knokko.customitems.container.slot.FuelIndicatorCustomSlot;
 import nl.knokko.customitems.container.slot.InputCustomSlot;
 import nl.knokko.customitems.container.slot.OutputCustomSlot;
 import nl.knokko.customitems.container.slot.ProgressIndicatorCustomSlot;
+import nl.knokko.customitems.container.slot.display.DataVanillaSlotDisplay;
 import nl.knokko.customitems.container.slot.display.SimpleVanillaSlotDisplay;
 import nl.knokko.customitems.container.slot.display.SlotDisplay;
 import nl.knokko.customitems.damage.DamageResistances;
@@ -179,32 +180,22 @@ public class ItemSet implements ItemSetBase {
 		
 		CustomContainer testContainer = new CustomContainer(
 				"test_container", "Test Container", new ArrayList<>(), 
-				FuelMode.ALL, new CustomSlot[9][6], 
+				FuelMode.ALL, new CustomSlot[9][5], 
 				VanillaContainerType.FURNACE, true
 		);
 		
-		CustomSlot blue = new DecorationCustomSlot(new SimpleVanillaSlotDisplay(
-				CIMaterial.PRISMARINE, "", new String[0], 1
-		));
-		
-		CustomSlot red = new DecorationCustomSlot(new SimpleVanillaSlotDisplay(
-				CIMaterial.REDSTONE_BLOCK, "", new String[0], 1
-		));
-		
-		CustomSlot coal = new DecorationCustomSlot(new SimpleVanillaSlotDisplay(
-				CIMaterial.COAL_BLOCK, "", new String[0], 1
-		));
+		// Set all unusable slots to glass panes (the used ones will be overwritten)
+		SlotDisplay glassPane = new DataVanillaSlotDisplay(
+				CIMaterial.STAINED_GLASS_PANE, (byte) 7, "", new String[0], 1
+		);
+		for (int x = 0; x < 9; x++) {
+			for (int y = 0; y < testContainer.getHeight(); y++) {
+				testContainer.setSlot(new DecorationCustomSlot(glassPane), x, y);
+			}
+		}
 		
 		// Input slot + border
 		testContainer.setSlot(new InputCustomSlot("theInput"), 1, 1);
-		testContainer.setSlot(blue, 0, 0);
-		testContainer.setSlot(blue, 0, 1);
-		testContainer.setSlot(blue, 0, 2);
-		testContainer.setSlot(blue, 1, 2);
-		testContainer.setSlot(blue, 2, 2);
-		testContainer.setSlot(blue, 2, 1);
-		testContainer.setSlot(blue, 2, 0);
-		testContainer.setSlot(blue, 1, 0);
 		
 		// Fuel slot + border
 		Collection<FuelEntry> fuelRegistryEntries = new ArrayList<>(1);
@@ -212,46 +203,34 @@ public class ItemSet implements ItemSetBase {
 				new SimpleVanillaIngredient(CIMaterial.OBSIDIAN), 500
 		));
 		testContainer.setSlot(new FuelCustomSlot("obsidianFuel", new CustomFuelRegistry(
-				"obsidianFuel", fuelRegistryEntries)), 1, 4);
-		testContainer.setSlot(coal, 0, 3);
-		testContainer.setSlot(coal, 0, 4);
-		testContainer.setSlot(coal, 0, 5);
-		testContainer.setSlot(coal, 1, 5);
-		testContainer.setSlot(coal, 2, 5);
-		testContainer.setSlot(coal, 2, 4);
-		testContainer.setSlot(coal, 2, 3);
-		testContainer.setSlot(coal, 1, 3);
+				"obsidianFuel", fuelRegistryEntries)), 1, 3);
 		
 		// Output slot + border
-		testContainer.setSlot(new OutputCustomSlot("theOutput"), 7, 3);
-		testContainer.setSlot(red, 6, 2);
-		testContainer.setSlot(red, 6, 3);
-		testContainer.setSlot(red, 6, 4);
-		testContainer.setSlot(red, 7, 4);
-		testContainer.setSlot(red, 8, 4);
-		testContainer.setSlot(red, 8, 3);
-		testContainer.setSlot(red, 8, 2);
-		testContainer.setSlot(red, 7, 2);
+		testContainer.setSlot(new OutputCustomSlot("theOutput"), 7, 2);
 		
 		// Fuel indicator
 		testContainer.setSlot(new FuelIndicatorCustomSlot("obsidianFuel",
-				new SimpleVanillaSlotDisplay(CIMaterial.BLAZE_POWDER, "", new String[0], 64),
-				new IndicatorDomain()), 
-		4, 5);
+				new SimpleVanillaSlotDisplay(CIMaterial.TORCH, "", new String[0], 64),
+				glassPane, new IndicatorDomain()), 
+		3, 4);
 		
 		// Progress indicators
 		SlotDisplay progressIndicator = new SimpleVanillaSlotDisplay(
-				CIMaterial.ARROW, "", new String[0], 1
+				CIMaterial.BLAZE_POWDER, "", new String[0], 1
 		);
+		SlotDisplay progressPlaceholder = glassPane;
 		testContainer.setSlot(new ProgressIndicatorCustomSlot(
-				progressIndicator, new IndicatorDomain(0, 33)), 
-		3, 3);
+				progressIndicator, progressPlaceholder, new IndicatorDomain(0, 25)), 
+		2, 2);
 		testContainer.setSlot(new ProgressIndicatorCustomSlot(
-				progressIndicator, new IndicatorDomain(33, 67)), 
-		4, 3);
+				progressIndicator, progressPlaceholder, new IndicatorDomain(25, 50)), 
+		3, 2);
 		testContainer.setSlot(new ProgressIndicatorCustomSlot(
-				progressIndicator, new IndicatorDomain(67, 100)), 
-		5, 3);
+				progressIndicator, progressPlaceholder, new IndicatorDomain(50, 75)), 
+		4, 2);
+		testContainer.setSlot(new ProgressIndicatorCustomSlot(
+				progressIndicator, progressPlaceholder, new IndicatorDomain(75, 100)), 
+		5, 2);
 		
 		// The recipes
 		testContainer.getRecipes().add(new ContainerRecipe(

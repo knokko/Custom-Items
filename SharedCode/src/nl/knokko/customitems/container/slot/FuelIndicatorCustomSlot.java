@@ -8,12 +8,14 @@ public class FuelIndicatorCustomSlot implements CustomSlot {
 	private final String fuelSlotName;
 	
 	private final SlotDisplay display;
+	private final SlotDisplay placeholder;
 	private final IndicatorDomain domain;
 	
 	public FuelIndicatorCustomSlot(String fuelSlotName, SlotDisplay display,
-			IndicatorDomain domain) {
+			SlotDisplay placeholder, IndicatorDomain domain) {
 		this.fuelSlotName = fuelSlotName;
 		this.display = display;
+		this.placeholder = placeholder;
 		this.domain = domain;
 	}
 	
@@ -23,6 +25,10 @@ public class FuelIndicatorCustomSlot implements CustomSlot {
 	
 	public SlotDisplay getDisplay() {
 		return display;
+	}
+	
+	public SlotDisplay getPlaceholder() {
+		return placeholder;
 	}
 	
 	public IndicatorDomain getDomain() {

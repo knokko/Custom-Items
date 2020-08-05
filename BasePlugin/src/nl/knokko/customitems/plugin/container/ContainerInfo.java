@@ -65,14 +65,20 @@ public class ContainerInfo {
 						indicators = new ArrayList<>(1);
 						fuelIndicators.put(indicatorSlot.getFuelSlotName(), indicators);
 					}
-					indicators.add(new IndicatorProps(invIndex, indicatorSlot.getDisplay(), indicatorSlot.getDomain()));
+					indicators.add(new IndicatorProps(invIndex, 
+							indicatorSlot.getDisplay(), indicatorSlot.getPlaceholder(), 
+							indicatorSlot.getDomain()
+					));
 				} else if (slot instanceof InputCustomSlot) {
 					inputSlots.put(((InputCustomSlot) slot).getName(), invIndex);
 				} else if (slot instanceof OutputCustomSlot) {
 					outputSlots.put(((OutputCustomSlot) slot).getName(), invIndex);
 				} else if (slot instanceof ProgressIndicatorCustomSlot) {
 					ProgressIndicatorCustomSlot indicatorSlot = (ProgressIndicatorCustomSlot) slot;
-					craftingIndicators.add(new IndicatorProps(invIndex, indicatorSlot.getDisplay(), indicatorSlot.getDomain()));
+					craftingIndicators.add(new IndicatorProps(invIndex, 
+							indicatorSlot.getDisplay(), indicatorSlot.getPlaceHolder(),
+							indicatorSlot.getDomain()
+					));
 				} else if (slot instanceof DecorationCustomSlot) {
 					decorations.add(new DecorationProps(invIndex, ((DecorationCustomSlot) slot).getDisplay()));
 				}
@@ -133,11 +139,14 @@ public class ContainerInfo {
 		private final int invIndex;
 		
 		private final SlotDisplay display;
+		private final SlotDisplay placeholder;
 		private final IndicatorDomain domain;
 		
-		private IndicatorProps(int invIndex, SlotDisplay display, IndicatorDomain domain) {
+		private IndicatorProps(int invIndex, SlotDisplay display, 
+				SlotDisplay placeholder, IndicatorDomain domain) {
 			this.invIndex = invIndex;
 			this.display = display;
+			this.placeholder = placeholder;
 			this.domain = domain;
 		}
 		
@@ -147,6 +156,10 @@ public class ContainerInfo {
 		
 		public SlotDisplay getSlotDisplay() {
 			return display;
+		}
+		
+		public SlotDisplay getPlaceholder() {
+			return placeholder;
 		}
 		
 		public IndicatorDomain getIndicatorDomain() {

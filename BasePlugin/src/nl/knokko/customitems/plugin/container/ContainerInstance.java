@@ -69,6 +69,7 @@ public class ContainerInstance {
 				MaterialData data = stack.getData();
 				data.setData(((DataVanillaSlotDisplay) display).getData());
 				stack.setData(data);
+				stack.setDurability(data.getData());
 			}
 		}
 		
@@ -89,6 +90,14 @@ public class ContainerInstance {
 			ItemStack stack = fromDisplay(decoration.getSlotDisplay());
 			inv.setItem(decoration.getInventoryIndex(), stack);
 		}
+		for (IndicatorProps indicator : typeInfo.getCraftingIndicators()) {
+			inv.setItem(indicator.getInventoryIndex(), fromDisplay(indicator.getPlaceholder()));
+		}
+		typeInfo.getFuelSlots().forEach(entry -> {
+			for (IndicatorProps indicator : typeInfo.getFuelIndicators(entry.getKey())) {
+				inv.setItem(indicator.getInventoryIndex(), fromDisplay(indicator.getPlaceholder()));
+			}
+		});
 		
 		return inv;
 	}
@@ -548,7 +557,10 @@ public class ContainerInstance {
 					newItemStack.setAmount(newStacksize);
 					inventory.setItem(indicator.getInventoryIndex(), newItemStack);
 				} else {
-					inventory.setItem(indicator.getInventoryIndex(), null);
+					inventory.setItem(
+							indicator.getInventoryIndex(), 
+							fromDisplay(indicator.getPlaceholder()
+					));
 				}
 			}
 		}
@@ -569,7 +581,7 @@ public class ContainerInstance {
 			if (indicatingStacksize > 0) {
 				indicatingStack.setAmount(indicatingStacksize);
 			} else {
-				indicatingStack = null;
+				indicatingStack = fromDisplay(indicator.getPlaceholder());
 			}
 			
 			inventory.setItem(indicator.getInventoryIndex(), indicatingStack);
