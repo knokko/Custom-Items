@@ -54,4 +54,9 @@ public class SetEncoding {
 	 * Added file integrity check
 	 */
 	public static final byte ENCODING_6 = 5;
+	
+	/**
+	 * Added custom containers and fuel registries
+	 */
+	public static final byte ENCODING_7 = 6;
 }

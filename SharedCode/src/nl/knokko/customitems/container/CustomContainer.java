@@ -4,15 +4,62 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.function.Function;
+import java.util.function.Supplier;
 
+import nl.knokko.customitems.container.fuel.CustomFuelRegistry;
 import nl.knokko.customitems.container.fuel.FuelMode;
 import nl.knokko.customitems.container.slot.CustomSlot;
 import nl.knokko.customitems.container.slot.EmptyCustomSlot;
+import nl.knokko.customitems.item.CustomItem;
 import nl.knokko.customitems.recipe.ContainerRecipe;
 import nl.knokko.customitems.recipe.ContainerRecipe.InputEntry;
 import nl.knokko.customitems.recipe.ContainerRecipe.OutputEntry;
+import nl.knokko.customitems.recipe.SCIngredient;
+import nl.knokko.customitems.trouble.UnknownEncodingException;
+import nl.knokko.util.bits.BitInput;
+import nl.knokko.util.bits.BitOutput;
 
 public class CustomContainer {
+	
+	public static CustomContainer load1(
+			BitInput input,
+			Function<String, CustomItem> itemByName,
+			Function<String, CustomFuelRegistry> fuelRegistryByName,
+			Supplier<SCIngredient> loadIngredient,
+			Supplier<Object> loadResult
+	) throws UnknownEncodingException {
+		
+		String name = input.readString();
+		String displayName = input.readString();
+		
+		int numRecipes = input.readInt();
+		Collection<ContainerRecipe> recipes = new ArrayList<>(numRecipes);
+		for (int recipeCounter = 0; recipeCounter < numRecipes; recipeCounter++) {
+			recipes.add(ContainerRecipe.load(input, loadIngredient, loadResult));
+		}
+		
+		FuelMode fuelMode;
+		if (input.readBoolean())
+			fuelMode = FuelMode.ANY;
+		else
+			fuelMode = FuelMode.ALL;
+		
+		int width = 9;
+		int height = input.readInt();
+		CustomSlot[][] slots = new CustomSlot[width][height];
+		for (int y = 0; y < height; y++) {
+			for (int x = 0; x < width; x++) {
+				slots[x][y] = CustomSlot.load(input, itemByName, fuelRegistryByName);
+			}
+		}
+		
+		VanillaContainerType vanillaType = VanillaContainerType.valueOf(input.readString());
+		boolean persistentStorage = input.readBoolean();
+		
+		return new CustomContainer(name, displayName, recipes, fuelMode,
+				slots, vanillaType, persistentStorage);
+	}
 	
 	// A bukkit/minecraft limitation only allows inventories with a width of 9 slots
 	private static final int WIDTH = 9;
@@ -51,6 +98,10 @@ public class CustomContainer {
 				slots[x][y] = new EmptyCustomSlot();
 			}
 		}
+	}
+	
+	public void save(BitOutput output) {
+		
 	}
 	
 	public String getName() {

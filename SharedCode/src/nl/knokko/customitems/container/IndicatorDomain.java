@@ -1,8 +1,17 @@
 package nl.knokko.customitems.container;
 
+import nl.knokko.util.bits.BitInput;
+import nl.knokko.util.bits.BitOutput;
+
 public class IndicatorDomain {
 
 	private static final int MAX = 100;
+	
+	public static IndicatorDomain load(BitInput input) {
+		int begin = input.readInt();
+		int end = input.readInt();
+		return new IndicatorDomain(begin, end);
+	}
 	
 	private final int begin;
 	private final int end;
@@ -14,6 +23,11 @@ public class IndicatorDomain {
 	public IndicatorDomain(int begin, int end) {
 		this.begin = begin;
 		this.end = end;
+	}
+	
+	public void save(BitOutput output) {
+		output.addInt(begin);
+		output.addInt(end);
 	}
 	
 	public int getBegin() {

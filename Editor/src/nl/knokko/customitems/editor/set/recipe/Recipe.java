@@ -48,7 +48,7 @@ public abstract class Recipe {
 		throw new IllegalArgumentException("Unknown ingredient encoding: " + encoding);
 	}
 	
-	private static Result loadResult(BitInput input, ItemSet set) {
+	public static Result loadResult(BitInput input, ItemSet set) {
 		byte encoding = input.readByte();
 		if (encoding == RecipeEncoding.Result.VANILLA_SIMPLE)
 			return new SimpleVanillaResult(input);

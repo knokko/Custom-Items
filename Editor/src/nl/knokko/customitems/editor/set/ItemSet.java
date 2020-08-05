@@ -23,6 +23,18 @@
  *******************************************************************************/
 package nl.knokko.customitems.editor.set;
 
+import static nl.knokko.customitems.MCVersions.FIRST_VERSION;
+import static nl.knokko.customitems.MCVersions.LAST_VERSION;
+import static nl.knokko.customitems.MCVersions.VERSION1_12;
+import static nl.knokko.customitems.NameHelper.versionName;
+import static nl.knokko.customitems.encoding.SetEncoding.ENCODING_1;
+import static nl.knokko.customitems.encoding.SetEncoding.ENCODING_2;
+import static nl.knokko.customitems.encoding.SetEncoding.ENCODING_3;
+import static nl.knokko.customitems.encoding.SetEncoding.ENCODING_4;
+import static nl.knokko.customitems.encoding.SetEncoding.ENCODING_5;
+import static nl.knokko.customitems.encoding.SetEncoding.ENCODING_6;
+import static nl.knokko.customitems.encoding.SetEncoding.ENCODING_7;
+
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.FileOutputStream;
@@ -44,46 +56,77 @@ import javax.imageio.ImageIO;
 import javax.imageio.stream.MemoryCacheImageOutputStream;
 
 import nl.knokko.customitems.MCVersions;
+import nl.knokko.customitems.container.CustomContainer;
+import nl.knokko.customitems.container.fuel.CustomFuelRegistry;
+import nl.knokko.customitems.container.fuel.FuelEntry;
+import nl.knokko.customitems.container.fuel.FuelMode;
+import nl.knokko.customitems.container.slot.CustomSlot;
 import nl.knokko.customitems.damage.DamageResistances;
 import nl.knokko.customitems.damage.DamageSource;
-import nl.knokko.customitems.drops.*;
+import nl.knokko.customitems.drops.BlockDrop;
+import nl.knokko.customitems.drops.BlockType;
+import nl.knokko.customitems.drops.CIEntityType;
+import nl.knokko.customitems.drops.Drop;
+import nl.knokko.customitems.drops.EntityDrop;
 import nl.knokko.customitems.editor.Editor;
-import nl.knokko.customitems.editor.set.item.*;
+import nl.knokko.customitems.editor.set.item.CustomArmor;
+import nl.knokko.customitems.editor.set.item.CustomBow;
+import nl.knokko.customitems.editor.set.item.CustomHoe;
+import nl.knokko.customitems.editor.set.item.CustomItem;
+import nl.knokko.customitems.editor.set.item.CustomShears;
+import nl.knokko.customitems.editor.set.item.CustomShield;
+import nl.knokko.customitems.editor.set.item.CustomTool;
+import nl.knokko.customitems.editor.set.item.CustomTrident;
+import nl.knokko.customitems.editor.set.item.CustomWand;
+import nl.knokko.customitems.editor.set.item.NamedImage;
+import nl.knokko.customitems.editor.set.item.SimpleCustomItem;
 import nl.knokko.customitems.editor.set.item.texture.BowTextures;
-import nl.knokko.customitems.editor.set.projectile.cover.*;
-import nl.knokko.customitems.editor.set.recipe.*;
-import nl.knokko.customitems.editor.set.recipe.ingredient.*;
-import nl.knokko.customitems.editor.set.recipe.result.*;
+import nl.knokko.customitems.editor.set.projectile.cover.CustomProjectileCover;
+import nl.knokko.customitems.editor.set.projectile.cover.EditorProjectileCover;
+import nl.knokko.customitems.editor.set.projectile.cover.SphereProjectileCover;
+import nl.knokko.customitems.editor.set.recipe.Recipe;
+import nl.knokko.customitems.editor.set.recipe.ShapedRecipe;
+import nl.knokko.customitems.editor.set.recipe.ShapelessRecipe;
+import nl.knokko.customitems.editor.set.recipe.ingredient.CustomItemIngredient;
+import nl.knokko.customitems.editor.set.recipe.ingredient.DataVanillaIngredient;
+import nl.knokko.customitems.editor.set.recipe.ingredient.Ingredient;
+import nl.knokko.customitems.editor.set.recipe.ingredient.NoIngredient;
+import nl.knokko.customitems.editor.set.recipe.ingredient.SimpleVanillaIngredient;
+import nl.knokko.customitems.editor.set.recipe.result.CustomItemResult;
+import nl.knokko.customitems.editor.set.recipe.result.DataVanillaResult;
+import nl.knokko.customitems.editor.set.recipe.result.Result;
+import nl.knokko.customitems.editor.set.recipe.result.SimpleVanillaResult;
+import nl.knokko.customitems.effect.EffectType;
+import nl.knokko.customitems.effect.PotionEffect;
 import nl.knokko.customitems.encoding.ItemEncoding;
 import nl.knokko.customitems.encoding.RecipeEncoding;
 import nl.knokko.customitems.item.AttributeModifier;
+import nl.knokko.customitems.item.AttributeModifier.Attribute;
+import nl.knokko.customitems.item.AttributeModifier.Operation;
+import nl.knokko.customitems.item.AttributeModifier.Slot;
 import nl.knokko.customitems.item.CustomItemType;
 import nl.knokko.customitems.item.CustomItemType.Category;
-import nl.knokko.customitems.projectile.CIProjectile;
-import nl.knokko.customitems.projectile.ProjectileCover;
-import nl.knokko.customitems.projectile.effects.ProjectileEffect;
-import nl.knokko.customitems.projectile.effects.ProjectileEffects;
-import nl.knokko.customitems.trouble.IntegrityException;
-import nl.knokko.customitems.trouble.UnknownEncodingException;
 import nl.knokko.customitems.item.CustomToolDurability;
 import nl.knokko.customitems.item.Enchantment;
 import nl.knokko.customitems.item.EnchantmentType;
 import nl.knokko.customitems.item.ItemFlag;
 import nl.knokko.customitems.item.ItemSetBase;
 import nl.knokko.customitems.item.WandCharges;
+import nl.knokko.customitems.projectile.CIProjectile;
+import nl.knokko.customitems.projectile.ProjectileCover;
+import nl.knokko.customitems.projectile.effects.ProjectileEffect;
+import nl.knokko.customitems.projectile.effects.ProjectileEffects;
+import nl.knokko.customitems.recipe.ContainerRecipe;
+import nl.knokko.customitems.recipe.ContainerRecipe.InputEntry;
+import nl.knokko.customitems.recipe.ContainerRecipe.OutputEntry;
+import nl.knokko.customitems.trouble.IntegrityException;
+import nl.knokko.customitems.trouble.UnknownEncodingException;
 import nl.knokko.gui.keycode.KeyCode;
 import nl.knokko.gui.window.input.WindowInput;
-import nl.knokko.customitems.item.AttributeModifier.*;
 import nl.knokko.util.bits.BitInput;
 import nl.knokko.util.bits.BitOutput;
 import nl.knokko.util.bits.ByteArrayBitInput;
 import nl.knokko.util.bits.ByteArrayBitOutput;
-import nl.knokko.customitems.effect.EffectType;
-import nl.knokko.customitems.effect.PotionEffect;
-
-import static nl.knokko.customitems.MCVersions.*;
-import static nl.knokko.customitems.NameHelper.versionName;
-import static nl.knokko.customitems.encoding.SetEncoding.*;
 
 public class ItemSet implements ItemSetBase {
 
@@ -94,6 +137,21 @@ public class ItemSet implements ItemSetBase {
 		if (encoding == RecipeEncoding.SHAPELESS_RECIPE)
 			return new ShapelessRecipe(input, this);
 		throw new UnknownEncodingException("Recipe", encoding);
+	}
+	
+	private CustomFuelRegistry loadFuelRegistry1(BitInput input) {
+		return CustomFuelRegistry.load1(input, () -> Recipe.loadIngredient(input, this));
+	}
+	
+	private void loadCustomSlot(BitInput input) {
+		
+	}
+	
+	private ContainerRecipe loadContainerRecipe(BitInput input) throws UnknownEncodingException {
+		return ContainerRecipe.load(input, 
+				() -> Recipe.loadIngredient(input, this), 
+				() -> Recipe.loadResult(input, this)
+		);
 	}
 
 	private CustomItem loadItem(BitInput input, boolean checkCustomModel) throws UnknownEncodingException {
@@ -1389,6 +1447,8 @@ public class ItemSet implements ItemSetBase {
 	private Collection<EntityDrop> mobDrops;
 	private Collection<EditorProjectileCover> projectileCovers;
 	private Collection<CIProjectile> projectiles;
+	private Collection<CustomFuelRegistry> fuelRegistries;
+	private Collection<CustomContainer> containers;
 
 	public ItemSet(String fileName) {
 		this.fileName = fileName;
@@ -1399,6 +1459,8 @@ public class ItemSet implements ItemSetBase {
 		mobDrops = new ArrayList<>();
 		projectileCovers = new ArrayList<>();
 		projectiles = new ArrayList<>();
+		fuelRegistries = new ArrayList<>();
+		containers = new ArrayList<>();
 	}
 
 	public ItemSet(String fileName, BitInput input) throws UnknownEncodingException, IntegrityException {
@@ -1416,6 +1478,8 @@ public class ItemSet implements ItemSetBase {
 			load5(input);
 		else if (encoding == ENCODING_6)
 			load6(input);
+		else if (encoding == ENCODING_7)
+			load7(input);
 		else
 			throw new UnknownEncodingException("ItemSet", encoding);
 	}
@@ -1463,6 +1527,10 @@ public class ItemSet implements ItemSetBase {
 		// Projectiles (there are no projectiles in this encoding)
 		projectileCovers = new ArrayList<>();
 		projectiles = new ArrayList<>();
+		
+		// Containers (there are no containers in this encoding)
+		fuelRegistries = new ArrayList<>();
+		containers = new ArrayList<>();
 	}
 
 	private void load2(BitInput input) throws UnknownEncodingException {
@@ -1500,6 +1568,10 @@ public class ItemSet implements ItemSetBase {
 		// Projectiles (there are no projectiles in this encoding)
 		projectileCovers = new ArrayList<>();
 		projectiles = new ArrayList<>();
+		
+		// Containers (there are no containers in this encoding)
+		fuelRegistries = new ArrayList<>();
+		containers = new ArrayList<>();
 	}
 	
 	private void load3(BitInput input) throws UnknownEncodingException {
@@ -1544,6 +1616,10 @@ public class ItemSet implements ItemSetBase {
 		// Projectiles (there are no projectiles in this encoding)
 		projectileCovers = new ArrayList<>();
 		projectiles = new ArrayList<>();
+		
+		// Containers (there are no containers in this encoding)
+		fuelRegistries = new ArrayList<>();
+		containers = new ArrayList<>();
 	}
 	
 	private void load4(BitInput input) throws UnknownEncodingException {
@@ -1588,6 +1664,10 @@ public class ItemSet implements ItemSetBase {
 		// Projectiles (there are no projectiles in this encoding)
 		projectileCovers = new ArrayList<>();
 		projectiles = new ArrayList<>();
+		
+		// Containers (there are no containers in this encoding)
+		fuelRegistries = new ArrayList<>();
+		containers = new ArrayList<>();
 	}
 	
 	private void load5(BitInput input) throws UnknownEncodingException {
@@ -1643,6 +1723,10 @@ public class ItemSet implements ItemSetBase {
 		mobDrops = new ArrayList<>(numMobDrops);
 		for (int counter = 0; counter < numMobDrops; counter++)
 			mobDrops.add(EntityDrop.load(input, this));
+		
+		// Containers (there are no containers in this encoding)
+		fuelRegistries = new ArrayList<>();
+		containers = new ArrayList<>();
 	}
 	
 	private void load6(BitInput input) throws UnknownEncodingException, IntegrityException {
@@ -1713,6 +1797,93 @@ public class ItemSet implements ItemSetBase {
 		mobDrops = new ArrayList<>(numMobDrops);
 		for (int counter = 0; counter < numMobDrops; counter++)
 			mobDrops.add(EntityDrop.load(input, this));
+		
+		// Containers (there are no containers in this encoding)
+		fuelRegistries = new ArrayList<>();
+		containers = new ArrayList<>();
+	}
+	
+	private void load7(BitInput input) throws UnknownEncodingException, IntegrityException {
+		// Check integrity
+		long expectedHash = input.readLong();
+		byte[] remaining;
+		try {
+			// Catch undefined behavior when the remaining size is wrong
+			remaining = input.readByteArray();
+		} catch (Throwable t) {
+			throw new IntegrityException(t);
+		}
+		long actualHash = hash(remaining);
+		if (expectedHash != actualHash)
+			throw new IntegrityException(expectedHash, actualHash);
+		
+		input = new ByteArrayBitInput(remaining);
+		
+		// Textures
+		int textureAmount = input.readInt();
+		textures = new ArrayList<NamedImage>(textureAmount);
+		for (int counter = 0; counter < textureAmount; counter++) {
+			byte textureType = input.readByte();
+			if (textureType == NamedImage.ENCODING_BOW)
+				textures.add(new BowTextures(input));
+			else if (textureType == NamedImage.ENCODING_SIMPLE)
+				textures.add(new NamedImage(input));
+			else
+				throw new UnknownEncodingException("Texture", textureType);
+		}
+		
+		// Projectile covers
+		int numProjectileCovers = input.readInt();
+		projectileCovers = new ArrayList<>(numProjectileCovers);
+		for (int counter = 0; counter < numProjectileCovers; counter++)
+			projectileCovers.add(EditorProjectileCover.fromBits(input, this));
+		
+		// Projectiles
+		int numProjectiles = input.readInt();
+		projectiles = new ArrayList<>(numProjectiles);
+		for (int counter = 0; counter < numProjectiles; counter++)
+			projectiles.add(CIProjectile.fromBits(input, this));
+		
+		// Notify the projectile effects that all projectiles have been loaded
+		for (CIProjectile projectile : projectiles)
+			projectile.afterProjectilesAreLoaded(this);
+
+		// Items
+		int itemAmount = input.readInt();
+		// System.out.println("amount of items is " + itemAmount);
+		items = new ArrayList<CustomItem>(itemAmount);
+		for (int counter = 0; counter < itemAmount; counter++)
+			items.add(loadItem(input, true));
+
+		// Recipes
+		int recipeAmount = input.readInt();
+		recipes = new ArrayList<Recipe>(recipeAmount);
+		for (int counter = 0; counter < recipeAmount; counter++)
+			recipes.add(loadRecipe(input));
+		
+		// Drops
+		int numBlockDrops = input.readInt();
+		blockDrops = new ArrayList<>(numBlockDrops);
+		for (int counter = 0; counter < numBlockDrops; counter++)
+			blockDrops.add(BlockDrop.load(input, this));
+		
+		int numMobDrops = input.readInt();
+		mobDrops = new ArrayList<>(numMobDrops);
+		for (int counter = 0; counter < numMobDrops; counter++)
+			mobDrops.add(EntityDrop.load(input, this));
+		
+		// Custom containers and fuel registries
+		int numFuelRegistries = input.readInt();
+		fuelRegistries = new ArrayList<>(numFuelRegistries);
+		for (int counter = 0; counter < numFuelRegistries; counter++) {
+			fuelRegistries.add(loadFuelRegistry1(input));
+		}
+		
+		int numContainers = input.readInt();
+		containers = new ArrayList<>(numContainers);
+		for (int counter = 0; counter < numContainers; counter++) {
+			containers.add(loadContainer1(input));
+		}
 	}
 
 	/**
