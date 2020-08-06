@@ -1,7 +1,6 @@
 package nl.knokko.customitems.editor.menu.edit.container;
 
 import java.awt.image.BufferedImage;
-import java.util.Collection;
 
 import nl.knokko.customitems.container.fuel.CustomFuelRegistry;
 import nl.knokko.customitems.editor.menu.edit.CollectionEdit;
@@ -11,7 +10,7 @@ import nl.knokko.gui.component.GuiComponent;
 public class FuelRegistryCollectionEdit extends CollectionEdit<CustomFuelRegistry> {
 
 	public FuelRegistryCollectionEdit(EditMenu menu) {
-		super(new FuelRegistryActionHandler(), collectionToModify);
+		super(new FuelRegistryActionHandler(), menu.getSet().getBackingFuelRegistries());
 	}
 
 	private static class FuelRegistryActionHandler implements ActionHandler<CustomFuelRegistry> {
