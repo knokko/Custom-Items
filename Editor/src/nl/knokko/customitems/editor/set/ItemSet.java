@@ -58,9 +58,6 @@ import javax.imageio.stream.MemoryCacheImageOutputStream;
 import nl.knokko.customitems.MCVersions;
 import nl.knokko.customitems.container.CustomContainer;
 import nl.knokko.customitems.container.fuel.CustomFuelRegistry;
-import nl.knokko.customitems.container.fuel.FuelEntry;
-import nl.knokko.customitems.container.fuel.FuelMode;
-import nl.knokko.customitems.container.slot.CustomSlot;
 import nl.knokko.customitems.damage.DamageResistances;
 import nl.knokko.customitems.damage.DamageSource;
 import nl.knokko.customitems.drops.BlockDrop;
@@ -116,9 +113,6 @@ import nl.knokko.customitems.projectile.CIProjectile;
 import nl.knokko.customitems.projectile.ProjectileCover;
 import nl.knokko.customitems.projectile.effects.ProjectileEffect;
 import nl.knokko.customitems.projectile.effects.ProjectileEffects;
-import nl.knokko.customitems.recipe.ContainerRecipe;
-import nl.knokko.customitems.recipe.ContainerRecipe.InputEntry;
-import nl.knokko.customitems.recipe.ContainerRecipe.OutputEntry;
 import nl.knokko.customitems.trouble.IntegrityException;
 import nl.knokko.customitems.trouble.UnknownEncodingException;
 import nl.knokko.gui.keycode.KeyCode;
@@ -139,17 +133,14 @@ public class ItemSet implements ItemSetBase {
 		throw new UnknownEncodingException("Recipe", encoding);
 	}
 	
-	private CustomFuelRegistry loadFuelRegistry1(BitInput input) {
-		return CustomFuelRegistry.load1(input, () -> Recipe.loadIngredient(input, this));
+	private CustomFuelRegistry loadFuelRegistry(BitInput input) throws UnknownEncodingException {
+		return CustomFuelRegistry.load(input, () -> Recipe.loadIngredient(input, this));
 	}
 	
-	private void loadCustomSlot(BitInput input) {
-		
-	}
-	
-	private ContainerRecipe loadContainerRecipe(BitInput input) throws UnknownEncodingException {
-		return ContainerRecipe.load(input, 
-				() -> Recipe.loadIngredient(input, this), 
+	private CustomContainer loadContainer(BitInput input) throws UnknownEncodingException {
+		return CustomContainer.load(input, 
+				this::getCustomItemByName, this::getFuelRegistryByName, 
+				() -> Recipe.loadIngredient(input, this),
 				() -> Recipe.loadResult(input, this)
 		);
 	}
@@ -1876,13 +1867,13 @@ public class ItemSet implements ItemSetBase {
 		int numFuelRegistries = input.readInt();
 		fuelRegistries = new ArrayList<>(numFuelRegistries);
 		for (int counter = 0; counter < numFuelRegistries; counter++) {
-			fuelRegistries.add(loadFuelRegistry1(input));
+			fuelRegistries.add(loadFuelRegistry(input));
 		}
 		
 		int numContainers = input.readInt();
 		containers = new ArrayList<>(numContainers);
 		for (int counter = 0; counter < numContainers; counter++) {
-			containers.add(loadContainer1(input));
+			containers.add(loadContainer(input));
 		}
 	}
 
@@ -3224,7 +3215,7 @@ public class ItemSet implements ItemSetBase {
 			File file = new File(Editor.getFolder() + "/" + fileName + ".cisb");// cisb stands for Custom Item Set
 																				// Builder
 			ByteArrayBitOutput output = new ByteArrayBitOutput();
-			save6(output);
+			save7(output);
 			output.terminate();
 			byte[] bytes = output.getBytes();
 			OutputStream mainOutput = Files.newOutputStream(file.toPath());
@@ -3444,6 +3435,7 @@ public class ItemSet implements ItemSetBase {
 	}
 	
 	// Add integrity check
+	@SuppressWarnings("unused")
 	private void save6(BitOutput outerOutput) {
 		outerOutput.addByte(ENCODING_6);
 		
@@ -3496,6 +3488,78 @@ public class ItemSet implements ItemSetBase {
 		output.addInt(mobDrops.size());
 		for (EntityDrop drop : mobDrops)
 			drop.save(output);
+		
+		// Finish the integrity work
+		byte[] contentBytes = output.getBytes();
+		outerOutput.addLong(hash(contentBytes));
+		outerOutput.addByteArray(contentBytes);
+	}
+	
+	// Add custom containers
+	private void save7(BitOutput outerOutput) {
+		outerOutput.addByte(ENCODING_7);
+		
+		// Prepare integrity
+		ByteArrayBitOutput output = new ByteArrayBitOutput();
+		
+		output.addInt(textures.size());
+		for (NamedImage texture : textures) {
+			if (texture instanceof BowTextures)
+				output.addByte(NamedImage.ENCODING_BOW);
+			else
+				output.addByte(NamedImage.ENCODING_SIMPLE);
+			texture.save(output);
+		}
+		
+		output.addInt(projectileCovers.size());
+		for (EditorProjectileCover cover : projectileCovers)
+			cover.toBits(output);
+		
+		output.addInt(projectiles.size());
+		for (CIProjectile projectile : projectiles)
+			projectile.toBits(output);
+		
+		output.addInt(items.size());
+
+		// Save the normal items before the tools so that tools can use normal items as
+		// repair item
+		List<CustomItem> sorted = new ArrayList<CustomItem>(items.size());
+		for (CustomItem item : items) {
+			if (!(item instanceof CustomTool)) {
+				sorted.add(item);
+			}
+		}
+		for (CustomItem item : items) {
+			if (item instanceof CustomTool) {
+				sorted.add(item);
+			}
+		}
+		for (CustomItem item : sorted)
+			item.save2(output);
+
+		output.addInt(recipes.size());
+		for (Recipe recipe : recipes)
+			recipe.save(output);
+		
+		output.addInt(blockDrops.size());
+		for (BlockDrop drop : blockDrops)
+			drop.save(output);
+		
+		output.addInt(mobDrops.size());
+		for (EntityDrop drop : mobDrops)
+			drop.save(output);
+		
+		output.addInt(fuelRegistries.size());
+		for (CustomFuelRegistry registry : fuelRegistries)
+			registry.save(output, scIngredient -> ((Ingredient)scIngredient).save(output));
+		
+		output.addInt(containers.size());
+		for (CustomContainer container : containers) {
+			container.save(output, 
+					ingredient -> ((Ingredient)ingredient).save(output),
+					result -> ((Result)result).save(output)
+			);
+		}
 		
 		// Finish the integrity work
 		byte[] contentBytes = output.getBytes();
@@ -4934,6 +4998,14 @@ public class ItemSet implements ItemSetBase {
 	public Collection<EditorProjectileCover> getBackingProjectileCovers(){
 		return projectileCovers;
 	}
+	
+	public Collection<CustomFuelRegistry> getBackingFuelRegistries() {
+		return fuelRegistries;
+	}
+	
+	public Collection<CustomContainer> getBackingContainers() {
+		return containers;
+	}
 
 	/**
 	 * Attempts to find an available internal item damage for the given internal item type. If there is an
@@ -5018,5 +5090,12 @@ public class ItemSet implements ItemSetBase {
 	
 	public boolean hasProjectile(String name) {
 		return getProjectileByName(name) != null;
+	}
+	
+	public CustomFuelRegistry getFuelRegistryByName(String name) {
+		for (CustomFuelRegistry registry : fuelRegistries)
+			if (registry.getName().equals(name))
+				return registry;
+		return null;
 	}
 }

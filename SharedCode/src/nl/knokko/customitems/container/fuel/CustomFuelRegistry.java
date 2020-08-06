@@ -6,12 +6,24 @@ import java.util.function.Consumer;
 import java.util.function.Supplier;
 
 import nl.knokko.customitems.recipe.SCIngredient;
+import nl.knokko.customitems.trouble.UnknownEncodingException;
 import nl.knokko.util.bits.BitInput;
 import nl.knokko.util.bits.BitOutput;
 
 public class CustomFuelRegistry {
 	
-	public static CustomFuelRegistry load1(BitInput input, 
+	public static CustomFuelRegistry load(
+			BitInput input, Supplier<SCIngredient> loadIngredient
+	) throws UnknownEncodingException {
+		
+		byte encoding = input.readByte();
+		switch (encoding) {
+		case Encodings.ENCODING1: return load1(input, loadIngredient);
+		default: throw new UnknownEncodingException("CustomFuelRegistry", encoding);
+		}
+	}
+	
+	private static CustomFuelRegistry load1(BitInput input, 
 			Supplier<SCIngredient> loadIngredient) {
 		
 		String name = input.readString();
@@ -35,7 +47,8 @@ public class CustomFuelRegistry {
 		this.entries = entries;
 	}
 	
-	public void save1(BitOutput output, Consumer<SCIngredient> saveIngredient) {
+	public void save(BitOutput output, Consumer<SCIngredient> saveIngredient) {
+		output.addByte(Encodings.ENCODING1);
 		output.addString(name);
 		output.addInt(entries.size());
 		for (FuelEntry entry : entries) {
@@ -64,5 +77,10 @@ public class CustomFuelRegistry {
 	
 	public Iterable<FuelEntry> getEntries() {
 		return entries;
+	}
+	
+	private static class Encodings {
+		
+		static final byte ENCODING1 = 1;
 	}
 }

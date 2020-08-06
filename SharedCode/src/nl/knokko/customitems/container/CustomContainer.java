@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
@@ -22,7 +23,23 @@ import nl.knokko.util.bits.BitOutput;
 
 public class CustomContainer {
 	
-	public static CustomContainer load1(
+	public static CustomContainer load(
+			BitInput input,
+			Function<String, CustomItem> itemByName,
+			Function<String, CustomFuelRegistry> fuelRegistryByName,
+			Supplier<SCIngredient> loadIngredient,
+			Supplier<Object> loadResult
+	) throws UnknownEncodingException {
+		
+		byte encoding = input.readByte();
+		switch (encoding) {
+		case Encodings.ENCODING1: return load1(input, itemByName, fuelRegistryByName,
+				loadIngredient, loadResult);
+		default: throw new UnknownEncodingException("Container", encoding);
+		}
+	}
+	
+	private static CustomContainer load1(
 			BitInput input,
 			Function<String, CustomItem> itemByName,
 			Function<String, CustomFuelRegistry> fuelRegistryByName,
@@ -95,13 +112,40 @@ public class CustomContainer {
 		
 		for (int x = 0; x < WIDTH; x++) {
 			for (int y = 0; y < slots[x].length; y++) {
-				slots[x][y] = new EmptyCustomSlot();
+				if (slots[x][y] == null) {
+					slots[x][y] = new EmptyCustomSlot();
+				}
 			}
 		}
 	}
 	
-	public void save(BitOutput output) {
-		
+	public void save(
+			BitOutput output,
+			Consumer<SCIngredient> saveIngredient, Consumer<Object> saveResult
+	) {
+		save1(output, saveIngredient, saveResult);
+	}
+	
+	private void save1(
+			BitOutput output,
+			Consumer<SCIngredient> saveIngredient, Consumer<Object> saveResult
+	) {
+		output.addByte(Encodings.ENCODING1);
+		output.addString(name);
+		output.addString(displayName);
+		output.addInt(recipes.size());
+		for (ContainerRecipe recipe : recipes) {
+			recipe.save(output, saveIngredient, saveResult);
+		}
+		output.addBoolean(fuelMode == FuelMode.ANY);
+		output.addInt(getHeight());
+		for (int y = 0; y < getHeight(); y++) {
+			for (int x = 0; x < 9; x++) {
+				slots[x][y].save(output);
+			}
+		}
+		output.addString(type.name());
+		output.addBoolean(persistentStorage);
 	}
 	
 	public String getName() {
@@ -201,5 +245,10 @@ public class CustomContainer {
 		}
 		
 		return slotNames;
+	}
+	
+	private static class Encodings {
+		
+		static final byte ENCODING1 = 1;
 	}
 }
