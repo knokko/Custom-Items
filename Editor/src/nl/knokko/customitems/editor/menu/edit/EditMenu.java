@@ -25,6 +25,7 @@ package nl.knokko.customitems.editor.menu.edit;
 
 import nl.knokko.customitems.MCVersions;
 import nl.knokko.customitems.editor.HelpButtons;
+import nl.knokko.customitems.editor.menu.edit.container.ContainerPortal;
 import nl.knokko.customitems.editor.menu.edit.drops.DropsMenu;
 import nl.knokko.customitems.editor.menu.edit.item.ItemCollectionEdit;
 import nl.knokko.customitems.editor.menu.edit.projectile.ProjectileMenu;
@@ -49,6 +50,7 @@ public class EditMenu extends GuiMenu {
 	protected final GuiComponent recipeOverview;
 	protected final GuiComponent dropsMenu;
 	protected final ProjectileMenu projectileMenu;
+	protected final ContainerPortal containerPortal;
 
 	public EditMenu(ItemSet set) {
 		this.set = set;
@@ -57,6 +59,7 @@ public class EditMenu extends GuiMenu {
 		recipeOverview = new RecipeCollectionEdit(this);
 		dropsMenu = new DropsMenu(this);
 		projectileMenu = new ProjectileMenu(this);
+		containerPortal = new ContainerPortal(this);
 		
 		errorComponent = new DynamicTextComponent("", EditProps.ERROR);
 	}
@@ -89,6 +92,10 @@ public class EditMenu extends GuiMenu {
 	
 	public ProjectileMenu getProjectileMenu() {
 		return projectileMenu;
+	}
+	
+	public ContainerPortal getContainerPortal() {
+		return containerPortal;
 	}
 	
 	@Override
@@ -189,6 +196,9 @@ public class EditMenu extends GuiMenu {
 		addComponent(new DynamicTextButton("Projectiles", EditProps.BUTTON, EditProps.HOVER, () -> {
 			state.getWindow().setMainComponent(projectileMenu);
 		}), 0.6f, 0.15f, 0.875f, 0.25f);
+		addComponent(new DynamicTextButton("Containers", EditProps.BUTTON, EditProps.HOVER, () -> {
+			state.getWindow().setMainComponent(containerPortal);
+		}), 0.6f, 0f, 0.875f, 0.1f);
 		
 		HelpButtons.addHelpLink(this, "edit%20menu/index.html");
 	}

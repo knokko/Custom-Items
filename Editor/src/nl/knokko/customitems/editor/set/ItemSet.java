@@ -58,6 +58,9 @@ import javax.imageio.stream.MemoryCacheImageOutputStream;
 import nl.knokko.customitems.MCVersions;
 import nl.knokko.customitems.container.CustomContainer;
 import nl.knokko.customitems.container.fuel.CustomFuelRegistry;
+import nl.knokko.customitems.container.fuel.FuelEntry;
+import nl.knokko.customitems.container.slot.CustomSlot;
+import nl.knokko.customitems.container.slot.FuelCustomSlot;
 import nl.knokko.customitems.damage.DamageResistances;
 import nl.knokko.customitems.damage.DamageSource;
 import nl.knokko.customitems.drops.BlockDrop;
@@ -101,6 +104,7 @@ import nl.knokko.customitems.item.AttributeModifier;
 import nl.knokko.customitems.item.AttributeModifier.Attribute;
 import nl.knokko.customitems.item.AttributeModifier.Operation;
 import nl.knokko.customitems.item.AttributeModifier.Slot;
+import nl.knokko.customitems.item.CIMaterial;
 import nl.knokko.customitems.item.CustomItemType;
 import nl.knokko.customitems.item.CustomItemType.Category;
 import nl.knokko.customitems.item.CustomToolDurability;
@@ -2698,6 +2702,20 @@ public class ItemSet implements ItemSetBase {
 			}
 		}
 		
+		for (CustomFuelRegistry fuelRegistry : fuelRegistries) {
+			for (FuelEntry entry : fuelRegistry.getEntries()) {
+				CIMaterial material = null;
+				if (entry.getFuel() instanceof SimpleVanillaIngredient) {
+					material = ((SimpleVanillaIngredient)entry.getFuel()).getType();
+				} else if (entry.getFuel() instanceof DataVanillaIngredient) {
+					material = ((DataVanillaIngredient)entry.getFuel()).getType();
+				}
+				if (material != null && (material.firstVersion > version || material.lastVersion < version)) {
+					return "The fuel registry " + fuelRegistry.getName() + " uses " + material + ", which is not in this mc version";
+				}
+			}
+		}
+		
 		return null;
 	}
 	
@@ -4452,6 +4470,17 @@ public class ItemSet implements ItemSetBase {
 					return "There is a block drop for " + drop.getBlock() + " that drops this item.";
 				}
 			}
+			for (CustomFuelRegistry registry : fuelRegistries) {
+				for (FuelEntry entry : registry.getEntries()) {
+					if (entry.getFuel() instanceof CustomItemIngredient) {
+						
+						CustomItemIngredient ingredient = (CustomItemIngredient) entry.getFuel();
+						if (ingredient.getItem() == item) {
+							return "The fuel registry " + registry.getName() + " uses this item as fuel";
+						}
+					}
+				}
+			}
 		}
 		if (!items.remove(item)) {
 			return "This item is not in the item set";
@@ -4938,6 +4967,84 @@ public class ItemSet implements ItemSetBase {
 		if (!projectiles.remove(toRemove) && !bypassChecks())
 			return "The projectile to remove was not in the list of projectiles";
 		return null;
+	}
+	
+	/**
+	 * Attempts to add the given fuel registry to the list of fuel registries. If
+	 * the fuel registry can be added, it will be added. If not, the reason why not
+	 * will be returned as string.
+	 * @param toAdd The fuel registry to be added
+	 * @return null if the fuel registry was added successfully, or the reason if
+	 * it was not added successfully
+	 */
+	public String addFuelRegistry(CustomFuelRegistry toAdd) {
+		if (!bypassChecks()) {
+			for (CustomFuelRegistry existing : fuelRegistries) {
+				if (existing.getName().equals(toAdd.getName())) {
+					return "There is already a fuel registry with name " + toAdd.getName();
+				}
+			}
+		}
+		fuelRegistries.add(toAdd);
+		return null;
+	}
+	
+	/**
+	 * Attempts to change the name and entries of the given fuel registry. If it is
+	 * changed successfully, this method returns null. If it couldn't be changed,
+	 * the reason will be returned.
+	 * @param toModify The fuel registry that is to be modified
+	 * @param newName The new name of the fuel registry
+	 * @param newEntries The new entries of the fuel registry
+	 * @return The reason the fuel registry coudldn't be changed, or null if it was
+	 * changed successfully
+	 */
+	public String changeFuelRegistry(CustomFuelRegistry toModify, String newName, 
+			Collection<FuelEntry> newEntries) {
+		if (!bypassChecks()) {
+			for (CustomFuelRegistry existing : fuelRegistries) {
+				if (existing != toModify && existing.getName().equals(newName)) {
+					return "There exists another fuel registry with name " + newName;
+				}
+			}
+		}
+		
+		toModify.setName(newName);
+		toModify.setEntries(newEntries);
+		return null;
+	}
+	
+	/**
+	 * Attempts to remove the given fuel registry from the list of fuel registries.
+	 * If it was removed successfully, null will be returned. If not, the reason
+	 * why it couldn't be removed will be returned as string.
+	 * @param toRemove The fuel registry that should be removed
+	 * @return The reason why the fuel registry couldn't be removed, or null if it
+	 * was removed successfully
+	 */
+	public String removeFuelRegistry(CustomFuelRegistry toRemove) {
+		if (!bypassChecks()) {
+			for (CustomContainer container : containers) {
+				for (int x = 0; x < 9; x++) {
+					for (int y = 0; y < container.getHeight(); y++) {
+						
+						CustomSlot slot = container.getSlot(x, y);
+						if (slot instanceof FuelCustomSlot) {
+							FuelCustomSlot fuel = (FuelCustomSlot) slot;
+							if (fuel.getRegistry() == toRemove) {
+								return "This fuel registry is in use by container " + container.getName();
+							}
+						}
+					}
+				}
+			}
+		}
+		
+		if (fuelRegistries.remove(toRemove) || bypassChecks()) {
+			return null;
+		} else {
+			return "The fuel registry to remove wasn't in the list of fuel registries";
+		}
 	}
 
 	/**
