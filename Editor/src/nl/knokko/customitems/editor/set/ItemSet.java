@@ -57,10 +57,20 @@ import javax.imageio.stream.MemoryCacheImageOutputStream;
 
 import nl.knokko.customitems.MCVersions;
 import nl.knokko.customitems.container.CustomContainer;
+import nl.knokko.customitems.container.VanillaContainerType;
 import nl.knokko.customitems.container.fuel.CustomFuelRegistry;
 import nl.knokko.customitems.container.fuel.FuelEntry;
+import nl.knokko.customitems.container.fuel.FuelMode;
 import nl.knokko.customitems.container.slot.CustomSlot;
+import nl.knokko.customitems.container.slot.DecorationCustomSlot;
 import nl.knokko.customitems.container.slot.FuelCustomSlot;
+import nl.knokko.customitems.container.slot.FuelIndicatorCustomSlot;
+import nl.knokko.customitems.container.slot.InputCustomSlot;
+import nl.knokko.customitems.container.slot.OutputCustomSlot;
+import nl.knokko.customitems.container.slot.ProgressIndicatorCustomSlot;
+import nl.knokko.customitems.container.slot.display.DataVanillaSlotDisplay;
+import nl.knokko.customitems.container.slot.display.SimpleVanillaSlotDisplay;
+import nl.knokko.customitems.container.slot.display.SlotDisplay;
 import nl.knokko.customitems.damage.DamageResistances;
 import nl.knokko.customitems.damage.DamageSource;
 import nl.knokko.customitems.drops.BlockDrop;
@@ -117,6 +127,9 @@ import nl.knokko.customitems.projectile.CIProjectile;
 import nl.knokko.customitems.projectile.ProjectileCover;
 import nl.knokko.customitems.projectile.effects.ProjectileEffect;
 import nl.knokko.customitems.projectile.effects.ProjectileEffects;
+import nl.knokko.customitems.recipe.ContainerRecipe;
+import nl.knokko.customitems.recipe.ContainerRecipe.InputEntry;
+import nl.knokko.customitems.recipe.ContainerRecipe.OutputEntry;
 import nl.knokko.customitems.trouble.IntegrityException;
 import nl.knokko.customitems.trouble.UnknownEncodingException;
 import nl.knokko.gui.keycode.KeyCode;
@@ -2716,6 +2729,63 @@ public class ItemSet implements ItemSetBase {
 			}
 		}
 		
+		for (CustomContainer container : containers) {
+			if (
+					container.getVanillaType().firstVersion > version ||
+					container.getVanillaType().lastVersion < version
+			) {
+				return "The vanilla type of container " + container.getName() + " isn't available in this mc version";
+			}
+			
+			for (CustomSlot slot : container.getSlots()) {
+				SlotDisplay[] displays = {};
+				if (slot instanceof DecorationCustomSlot) {
+					DecorationCustomSlot decorationSlot = (DecorationCustomSlot) slot;
+					displays = new SlotDisplay[] {
+							decorationSlot.getDisplay()
+					};
+				} else if (slot instanceof FuelIndicatorCustomSlot) {
+					FuelIndicatorCustomSlot indicatorSlot = (FuelIndicatorCustomSlot) slot;
+					displays = new SlotDisplay[] {
+							indicatorSlot.getDisplay(),
+							indicatorSlot.getPlaceholder()
+					};
+				} else if (slot instanceof ProgressIndicatorCustomSlot) {
+					ProgressIndicatorCustomSlot indicatorSlot = (ProgressIndicatorCustomSlot) slot;
+					displays = new SlotDisplay[] {
+							indicatorSlot.getDisplay(),
+							indicatorSlot.getPlaceHolder()
+					};
+				}
+				
+				for (SlotDisplay display : displays) {
+					if (display.getAmount() <= 0) {
+						return "One of the slot displays an item with a stacksize of 0 or lower";
+					} else if (display.getAmount() > 64) {
+						return "One of the slot displays an item with a stacksize larger than 64";
+					}
+					
+					CIMaterial material = null;
+					if (display instanceof SimpleVanillaSlotDisplay) {
+						material = ((SimpleVanillaSlotDisplay) display).getMaterial();
+					} else if (display instanceof DataVanillaSlotDisplay) {
+						if (version > VERSION1_12) {
+							return "One of the slots uses an item with a datavalue, but those aren't used after mc 1.12 anymore";
+						}
+						material = ((DataVanillaSlotDisplay) display).getMaterial();
+					}
+					
+					if (material != null) {
+						if (material.firstVersion > version) {
+							return "One of the slots uses " + material + ", which is not yet available in this mc version";
+						} else if (material.lastVersion < version) {
+							return "One of the slots uses " + material + ", which is no longer available in this mc version";
+						}
+					}
+				}
+			}
+		}
+		
 		return null;
 	}
 	
@@ -4225,6 +4295,113 @@ public class ItemSet implements ItemSetBase {
 		
 		return null;
 	}
+	
+	private String validateSlot(CustomSlot slot, 
+			Iterable<CustomSlot> allSlots) {
+		
+		if (slot == null) {
+			return "A slot is null";
+		}
+		if (slot instanceof FuelCustomSlot) {
+			FuelCustomSlot fuelSlot = (FuelCustomSlot) slot;
+			for (CustomSlot otherSlot : allSlots) {
+				if (otherSlot != fuelSlot && otherSlot instanceof FuelCustomSlot) {
+					FuelCustomSlot otherFuelSlot = (FuelCustomSlot) otherSlot;
+					if (otherFuelSlot.getName().equals(fuelSlot.getName())) {
+						return "There are multiple fuel slots with name " + fuelSlot.getName();
+					}
+				}
+			}
+		} else if (slot instanceof FuelIndicatorCustomSlot) {
+			FuelIndicatorCustomSlot indicator = (FuelIndicatorCustomSlot) slot;
+			if (indicator.getDomain().getBegin() < 0) {
+				return "The indicator " + indicator.getFuelSlotName() + " starts before 0%";
+			} else if (indicator.getDomain().getEnd() > 100) {
+				return "The indicator " + indicator.getFuelSlotName() + " ends after 100%";
+			}
+			boolean foundFuelSlot = false;
+			outerLoop:
+			for (CustomSlot otherSlot : allSlots) {
+				if (otherSlot instanceof FuelCustomSlot) {
+					FuelCustomSlot fuelSlot = (FuelCustomSlot) otherSlot;
+					if (fuelSlot.getName().equals(indicator.getFuelSlotName())) {
+						foundFuelSlot = true;
+						break outerLoop;
+					}
+				}
+			}
+			if (!foundFuelSlot) {
+				return "There is a fuel indicator slot with name " + indicator.getFuelSlotName() + ", but no fuel slot with that name";
+			}
+		} else if (slot instanceof InputCustomSlot) {
+			InputCustomSlot inputSlot = (InputCustomSlot) slot;
+			for (CustomSlot otherSlot : allSlots) {
+				if (otherSlot != slot && otherSlot instanceof InputCustomSlot) {
+					InputCustomSlot otherInputSlot = (InputCustomSlot) otherSlot;
+					if (otherInputSlot.getName().equals(inputSlot.getName())) {
+						return "There are multiple input slots with name " + inputSlot.getName();
+					}
+				}
+			}
+		} else if (slot instanceof OutputCustomSlot) {
+			OutputCustomSlot outputSlot = (OutputCustomSlot) slot;
+			for (CustomSlot otherSlot : allSlots) {
+				if (otherSlot != slot && otherSlot instanceof OutputCustomSlot) {
+					OutputCustomSlot otherOutputSlot = (OutputCustomSlot) otherSlot;
+					if (outputSlot.getName().equals(otherOutputSlot.getName())) {
+						return "There are multiple output slots with name " + outputSlot.getName();
+					}
+				}
+			}
+		} else if (slot instanceof ProgressIndicatorCustomSlot) {
+			ProgressIndicatorCustomSlot indicator = (ProgressIndicatorCustomSlot) slot;
+			if (indicator.getDomain().getBegin() < 0) {
+				return "There is a crafting progress indicator that starts before 0%";
+			} else if (indicator.getDomain().getEnd() > 100) {
+				return "There is a crafting progress indicator that ends after 100%";
+			}
+		} else {
+			return "Unknown custom slot class: " + slot.getClass();
+		}
+		
+		return null;
+	}
+	
+	private String validateContainerRecipe(
+			ContainerRecipe recipe, Iterable<CustomSlot> slots
+	) {
+		inputLoop:
+		for (InputEntry entry : recipe.getInputs()) {
+			for (CustomSlot slot : slots) {
+				if (slot instanceof InputCustomSlot) {
+					InputCustomSlot inputSlot = (InputCustomSlot) slot;
+					if (inputSlot.getName().equals(entry.inputSlotName)) {
+						continue inputLoop;
+					}
+				}
+			}
+			return "One of the recipes needs an input slot with name " + entry.inputSlotName + ", but no such slot was found";
+		}
+	
+		outputLoop:
+		for (OutputEntry entry : recipe.getOutputs()) {
+			for (CustomSlot slot : slots) {
+				if (slot instanceof OutputCustomSlot) {
+					OutputCustomSlot outputSlot = (OutputCustomSlot) slot;
+					if (outputSlot.getName().equals(entry.outputSlotName)) {
+						continue outputLoop;
+					}
+				}
+			}
+			return "One of the recipes needs an output slot with name " + entry.outputSlotName + ", but no such slot was found";
+		}
+		
+		if (recipe.getDuration() < 0) {
+			return "One of the recipes has a negative duration";
+		}
+		
+		return null;
+	}
 
 	private String addItem(CustomItem item) {
 		if (!bypassChecks()) {
@@ -5044,6 +5221,146 @@ public class ItemSet implements ItemSetBase {
 			return null;
 		} else {
 			return "The fuel registry to remove wasn't in the list of fuel registries";
+		}
+	}
+	
+	/**
+	 * Attempts to add the given container to the list of containers. Returns null
+	 * if it was added successfully and returns the reason as string if not.
+	 * @param toAdd The container to be added to the list of containers
+	 * @return The reason the container couldn't be added, or null if it was added
+	 * successfully
+	 */
+	public String addContainer(CustomContainer toAdd) {
+		if (!bypassChecks()) {
+			
+			for (CustomContainer existing : containers) {
+				if (existing.getName().equals(toAdd.getName())) {
+					return "There is already a container with name " + toAdd.getName();
+				}
+			}
+			
+			if (toAdd.getHeight() < 1) {
+				return "The height must be a positive integer";
+			} else if (toAdd.getHeight() > 6) {
+				return "The height can be at most 6";
+			}
+			
+			if (toAdd.getFuelMode() == null) {
+				return "You must choose a fuel mode";
+			}
+			if (toAdd.getVanillaType() == null) {
+				return "You must choose a vanilla type";
+			}
+			
+			for (CustomSlot slot : toAdd.getSlots()) {
+				String slotError = validateSlot(slot, toAdd.getSlots());
+				if (slotError != null) {
+					return slotError;
+				}
+			}
+			
+			for (ContainerRecipe recipe : toAdd.getRecipes()) {
+				String recipeError = validateContainerRecipe(recipe, toAdd.getSlots());
+				if (recipeError != null) {
+					return recipeError;
+				}
+			}
+		}
+		
+		containers.add(toAdd);
+		return null;
+	}
+	
+	/**
+	 * Attempts to modify the given container (set all its properties to the values
+	 * passed to the rest of the parameters). If the container was changed
+	 * successfully, null will be returned. Otherwise the reason it couldn't be
+	 * changed will be returned.
+	 * @param toModify The container to be modified
+	 * @param newName The (new) name for the container
+	 * @param newDisplayName The (new) display name for the container
+	 * @param newRecipes The (new) recipes for the container
+	 * @param newFuelMode The (new) fuel mode for the container
+	 * @param newSlots The (new) slots for the container
+	 * @param newVanillaType The (new) vanilla type of the container
+	 * @param becomesPersistent Whether or not the container should get 
+	 * persistent storage
+	 * @return The reason the container couldn't be changed, or null if it was
+	 * changed successfully
+	 */
+	public String changeContainer(CustomContainer toModify, String newName,
+			String newDisplayName, Collection<ContainerRecipe> newRecipes,
+			FuelMode newFuelMode, CustomSlot[][] newSlots, 
+			VanillaContainerType newVanillaType, boolean becomesPersistent) {
+		
+		if (!bypassChecks()) {
+			
+			for (CustomContainer existing : containers) {
+				if (existing != toModify && existing.getName().equals(newName)) {
+					return "There is another container with name " + newName;
+				}
+			}
+			
+			if (newSlots[0].length < 1) {
+				return "The height must be a positive integer";
+			} else if (newSlots[0].length > 6) {
+				return "The height can be at most 6";
+			}
+			
+			if (newFuelMode == null) {
+				return "You must choose a fuel mode";
+			}
+			if (newVanillaType == null) {
+				return "You must choose a vanilla type";
+			}
+			
+			for (CustomSlot slot : CustomContainer.slotIterable(newSlots)) {
+				String slotError = validateSlot(slot, CustomContainer.slotIterable(newSlots));
+				if (slotError != null) {
+					return slotError;
+				}
+			}
+			
+			for (ContainerRecipe recipe : newRecipes) {
+				String recipeError = validateContainerRecipe(recipe, CustomContainer.slotIterable(newSlots));
+				if (recipeError != null) {
+					return recipeError;
+				}
+			}
+		}
+		
+		toModify.setName(newName);
+		toModify.setDisplayName(newDisplayName);
+		toModify.getRecipes().clear();
+		toModify.getRecipes().addAll(newRecipes);
+		toModify.setFuelMode(newFuelMode);
+		toModify.setVanillaType(newVanillaType);
+		toModify.setPersistentStorage(becomesPersistent);
+		toModify.resize(newSlots[0].length);
+		for (int x = 0; x < 9; x++) {
+			for (int y = 0; y < newSlots[x].length; y++) {
+				toModify.setSlot(newSlots[x][y], x, y);
+			}
+		}
+		
+		return null;
+	}
+	
+	/**
+	 * Removes the given container from the list of containers. Currently, this
+	 * operation can't really fail because no other objects depend on containers.
+	 * @param toRemove The container to be removed
+	 * @return null if the container was removed successfully, or a string
+	 * indicating that the given container wasn't in the list of containers
+	 */
+	public String removeContainer(CustomContainer toRemove) {
+		// Since nothing depends on the presence of custom containers,
+		// almost no checks are needed
+		if (containers.remove(toRemove)) {
+			return null;
+		} else {
+			return "This container wasn't in the list of containers";
 		}
 	}
 
