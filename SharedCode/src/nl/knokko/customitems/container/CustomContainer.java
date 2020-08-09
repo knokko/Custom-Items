@@ -2,8 +2,7 @@ package nl.knokko.customitems.container;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.Iterator;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Supplier;
@@ -14,14 +13,42 @@ import nl.knokko.customitems.container.slot.CustomSlot;
 import nl.knokko.customitems.container.slot.EmptyCustomSlot;
 import nl.knokko.customitems.item.CustomItem;
 import nl.knokko.customitems.recipe.ContainerRecipe;
-import nl.knokko.customitems.recipe.ContainerRecipe.InputEntry;
-import nl.knokko.customitems.recipe.ContainerRecipe.OutputEntry;
 import nl.knokko.customitems.recipe.SCIngredient;
 import nl.knokko.customitems.trouble.UnknownEncodingException;
 import nl.knokko.util.bits.BitInput;
 import nl.knokko.util.bits.BitOutput;
 
 public class CustomContainer {
+	
+	public static Iterable<CustomSlot> slotIterable(CustomSlot[][] slots) {
+		return new Iterable<CustomSlot>() {
+			
+			@Override
+			public Iterator<CustomSlot> iterator() {
+				return new Iterator<CustomSlot>() {
+					
+					int x = 0;
+					int y = 0;
+
+					@Override
+					public boolean hasNext() {
+						return y < slots[x].length;
+					}
+
+					@Override
+					public CustomSlot next() {
+						CustomSlot result = slots[x][y];
+						x++;
+						if (x == 9) {
+							x = 0;
+							y++;
+						}
+						return result;
+					}
+				};
+			}
+		};
+	}
 	
 	public static CustomContainer load(
 			BitInput input,
@@ -217,34 +244,16 @@ public class CustomContainer {
 		return slots[x][y];
 	}
 	
+	public Iterable<CustomSlot> getSlots() {
+		return slotIterable(slots);
+	}
+	
 	public void setSlot(CustomSlot newSlot, int x, int y) {
 		slots[x][y] = newSlot;
 	}
 	
 	public Collection<ContainerRecipe> getRecipes() {
 		return recipes;
-	}
-	
-	public Set<String> getRequiredInputSlotNames() {
-		Set<String> slotNames = new HashSet<>();
-		for (ContainerRecipe recipe : recipes) {
-			for (InputEntry input : recipe.getInputs()) {
-				slotNames.add(input.inputSlotName);
-			}
-		}
-		
-		return slotNames;
-	}
-	
-	public Set<String> getRequiredOutputSlotNames() {
-		Set<String> slotNames = new HashSet<>();
-		for (ContainerRecipe recipe : recipes) {
-			for (OutputEntry output : recipe.getOutputs()) {
-				slotNames.add(output.outputSlotName);
-			}
-		}
-		
-		return slotNames;
 	}
 	
 	private static class Encodings {

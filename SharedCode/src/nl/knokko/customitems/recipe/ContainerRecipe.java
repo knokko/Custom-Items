@@ -111,8 +111,8 @@ public class ContainerRecipe {
 	
 	public static class InputEntry {
 		
-		public String inputSlotName;
-		public SCIngredient ingredient;
+		public final String inputSlotName;
+		public final SCIngredient ingredient;
 		
 		public InputEntry(String inputSlotName, SCIngredient ingredient) {
 			this.inputSlotName = inputSlotName;
@@ -122,12 +122,12 @@ public class ContainerRecipe {
 	
 	public static class OutputEntry {
 		
-		public String outputSlotName;
+		public final String outputSlotName;
 		/**
 		 * One of the results of a recipe. In the plug-in, this should be of type
 		 * ItemStack. In the editor, this should be of type Result.
 		 */
-		public Object result;
+		public final Object result;
 		
 		public OutputEntry(String outputSlotName, Object result) {
 			this.outputSlotName = outputSlotName;
