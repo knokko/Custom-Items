@@ -49,26 +49,37 @@ public class ContainerRecipe {
 		}
 		
 		int recipeDuration = input.readInt();
+		int experience = input.readInt();
 		
-		return new ContainerRecipe(inputs, outputs, recipeDuration);
+		return new ContainerRecipe(inputs, outputs, recipeDuration, experience);
 	}
 	
 	private final Collection<InputEntry> inputs;
 	private final Collection<OutputEntry> outputs;
 	
 	private int duration;
+	private int experience;
 	
 	public ContainerRecipe() {
 		this.inputs = new ArrayList<>(1);
 		this.outputs = new ArrayList<>(1);
 		this.duration = 0;
+		this.experience = 0;
 	}
 	
 	public ContainerRecipe(Collection<InputEntry> inputs, 
-			Collection<OutputEntry> outputs, int duration) {
+			Collection<OutputEntry> outputs, int duration, int experience) {
 		this.inputs = inputs;
 		this.outputs = outputs;
 		this.duration = duration;
+		this.experience = experience;
+	}
+	
+	@Override
+	public ContainerRecipe clone() {
+		return new ContainerRecipe(new ArrayList<>(inputs), 
+				new ArrayList<>(outputs), duration, experience
+		);
 	}
 	
 	public void save(
@@ -91,6 +102,7 @@ public class ContainerRecipe {
 		}
 		
 		output.addInt(duration);
+		output.addInt(experience);
 	}
 	
 	public Collection<InputEntry> getInputs() {
@@ -109,29 +121,53 @@ public class ContainerRecipe {
 		duration = newDuration;
 	}
 	
+	public int getExperience() {
+		return experience;
+	}
+	
+	public void setExperience(int newExperience) {
+		experience = newExperience;
+	}
+	
 	public static class InputEntry {
 		
-		public final String inputSlotName;
-		public final SCIngredient ingredient;
+		private final String inputSlotName;
+		private final SCIngredient ingredient;
 		
 		public InputEntry(String inputSlotName, SCIngredient ingredient) {
 			this.inputSlotName = inputSlotName;
 			this.ingredient = ingredient;
 		}
+		
+		public String getInputSlotName() {
+			return inputSlotName;
+		}
+		
+		public SCIngredient getIngredient() {
+			return ingredient;
+		}
 	}
 	
 	public static class OutputEntry {
 		
-		public final String outputSlotName;
+		private final String outputSlotName;
 		/**
 		 * One of the results of a recipe. In the plug-in, this should be of type
 		 * ItemStack. In the editor, this should be of type Result.
 		 */
-		public final Object result;
+		private final Object result;
 		
 		public OutputEntry(String outputSlotName, Object result) {
 			this.outputSlotName = outputSlotName;
 			this.result = result;
+		}
+		
+		public String getOutputSlotName() {
+			return outputSlotName;
+		}
+		
+		public Object getResult() {
+			return result;
 		}
 	}
 	
