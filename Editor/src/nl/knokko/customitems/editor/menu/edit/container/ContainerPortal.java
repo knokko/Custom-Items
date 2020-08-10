@@ -31,10 +31,9 @@ public class ContainerPortal extends GuiMenu {
 			state.getWindow().setMainComponent(new FuelRegistryCollectionEdit(menu));
 		}), 0.7f, 0.6f, 0.95f, 0.7f);
 		
-		/* TODO Add once ready
 		addComponent(new DynamicTextButton("Containers", EditProps.BUTTON, EditProps.HOVER, () -> {
-			state.getWindow().setMainComponent(projectileOverview);
-		}), 0.7f, 0.45f, 0.9f, 0.55f);*/
+			state.getWindow().setMainComponent(new ContainerCollectionEdit(menu));
+		}), 0.7f, 0.45f, 0.9f, 0.55f);
 		
 		// TODO Make the actual webpage!
 		HelpButtons.addHelpLink(this, "edit%20menu/containers/index.html");

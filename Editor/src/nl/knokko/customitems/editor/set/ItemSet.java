@@ -4375,12 +4375,13 @@ public class ItemSet implements ItemSetBase {
 			for (CustomSlot slot : slots) {
 				if (slot instanceof InputCustomSlot) {
 					InputCustomSlot inputSlot = (InputCustomSlot) slot;
-					if (inputSlot.getName().equals(entry.inputSlotName)) {
+					if (inputSlot.getName().equals(entry.getInputSlotName())) {
 						continue inputLoop;
 					}
 				}
 			}
-			return "One of the recipes needs an input slot with name " + entry.inputSlotName + ", but no such slot was found";
+			return "One of the recipes needs an input slot with name " 
+					+ entry.getInputSlotName() + ", but no such slot was found";
 		}
 	
 		outputLoop:
@@ -4388,12 +4389,12 @@ public class ItemSet implements ItemSetBase {
 			for (CustomSlot slot : slots) {
 				if (slot instanceof OutputCustomSlot) {
 					OutputCustomSlot outputSlot = (OutputCustomSlot) slot;
-					if (outputSlot.getName().equals(entry.outputSlotName)) {
+					if (outputSlot.getName().equals(entry.getOutputSlotName())) {
 						continue outputLoop;
 					}
 				}
 			}
-			return "One of the recipes needs an output slot with name " + entry.outputSlotName + ", but no such slot was found";
+			return "One of the recipes needs an output slot with name " + entry.getOutputSlotName() + ", but no such slot was found";
 		}
 		
 		if (recipe.getDuration() < 0) {
