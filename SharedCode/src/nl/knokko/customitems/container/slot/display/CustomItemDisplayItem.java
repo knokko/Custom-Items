@@ -6,27 +6,29 @@ import nl.knokko.customitems.item.CustomItem;
 import nl.knokko.util.bits.BitInput;
 import nl.knokko.util.bits.BitOutput;
 
-public class CustomItemSlotDisplay extends SlotDisplay {
+public class CustomItemDisplayItem implements SlotDisplayItem {
 	
-	public static CustomItemSlotDisplay load1(BitInput input, 
+	public static CustomItemDisplayItem load1(BitInput input, 
 			Function<String, CustomItem> itemByName) {
 		CustomItem item = itemByName.apply(input.readString());
-		int amount = input.readInt();
-		return new CustomItemSlotDisplay(item, amount);
+		return new CustomItemDisplayItem(item);
 	}
 
 	private final CustomItem item;
 	
-	public CustomItemSlotDisplay(CustomItem item, int amount) {
-		super(item.getDisplayName(), item.getLore(), amount);
+	public CustomItemDisplayItem(CustomItem item) {
 		this.item = item;
 	}
 	
 	@Override
+	public String toString() {
+		return item.getName();
+	}
+	
+	@Override
 	public void save(BitOutput output) {
-		output.addByte(SlotDisplay.Encodings.CUSTOM1);
+		output.addByte(SlotDisplayItem.Encodings.CUSTOM1);
 		output.addString(item.getName());
-		output.addInt(amount);
 	}
 	
 	public CustomItem getItem() {

@@ -55,8 +55,8 @@ import nl.knokko.customitems.container.slot.FuelIndicatorCustomSlot;
 import nl.knokko.customitems.container.slot.InputCustomSlot;
 import nl.knokko.customitems.container.slot.OutputCustomSlot;
 import nl.knokko.customitems.container.slot.ProgressIndicatorCustomSlot;
-import nl.knokko.customitems.container.slot.display.DataVanillaSlotDisplay;
-import nl.knokko.customitems.container.slot.display.SimpleVanillaSlotDisplay;
+import nl.knokko.customitems.container.slot.display.DataVanillaDisplayItem;
+import nl.knokko.customitems.container.slot.display.SimpleVanillaDisplayItem;
 import nl.knokko.customitems.container.slot.display.SlotDisplay;
 import nl.knokko.customitems.damage.DamageResistances;
 import nl.knokko.customitems.drops.BlockDrop;
@@ -185,8 +185,9 @@ public class ItemSet implements ItemSetBase {
 		);
 		
 		// Set all unusable slots to glass panes (the used ones will be overwritten)
-		SlotDisplay glassPane = new DataVanillaSlotDisplay(
-				CIMaterial.STAINED_GLASS_PANE, (byte) 7, "", new String[0], 1
+		SlotDisplay glassPane = new SlotDisplay(
+				new DataVanillaDisplayItem(CIMaterial.STAINED_GLASS_PANE, (byte) 7), 
+				"", new String[0], 1
 		);
 		for (int x = 0; x < 9; x++) {
 			for (int y = 0; y < testContainer.getHeight(); y++) {
@@ -210,13 +211,14 @@ public class ItemSet implements ItemSetBase {
 		
 		// Fuel indicator
 		testContainer.setSlot(new FuelIndicatorCustomSlot("obsidianFuel",
-				new SimpleVanillaSlotDisplay(CIMaterial.TORCH, "", new String[0], 64),
-				glassPane, new IndicatorDomain()), 
+				new SlotDisplay(new SimpleVanillaDisplayItem(CIMaterial.TORCH), 
+						"", new String[0], 64), glassPane, new IndicatorDomain()), 
 		3, 4);
 		
 		// Progress indicators
-		SlotDisplay progressIndicator = new SimpleVanillaSlotDisplay(
-				CIMaterial.BLAZE_POWDER, "", new String[0], 1
+		SlotDisplay progressIndicator = new SlotDisplay(
+				new SimpleVanillaDisplayItem(CIMaterial.BLAZE_POWDER), 
+				"", new String[0], 1
 		);
 		SlotDisplay progressPlaceholder = glassPane;
 		testContainer.setSlot(new ProgressIndicatorCustomSlot(
@@ -238,7 +240,7 @@ public class ItemSet implements ItemSetBase {
 						new SimpleVanillaIngredient(CIMaterial.BONE))),
 				Lists.newArrayList(new OutputEntry("theOutput",
 						ItemHelper.createStack(CIMaterial.APPLE.name(), 1))),
-				60
+				60, 60
 		));
 		
 		// Finally return the result

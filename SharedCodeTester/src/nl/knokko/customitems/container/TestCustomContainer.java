@@ -18,9 +18,10 @@ import nl.knokko.customitems.container.slot.FuelIndicatorCustomSlot;
 import nl.knokko.customitems.container.slot.InputCustomSlot;
 import nl.knokko.customitems.container.slot.OutputCustomSlot;
 import nl.knokko.customitems.container.slot.ProgressIndicatorCustomSlot;
-import nl.knokko.customitems.container.slot.display.CustomItemSlotDisplay;
-import nl.knokko.customitems.container.slot.display.DataVanillaSlotDisplay;
-import nl.knokko.customitems.container.slot.display.SimpleVanillaSlotDisplay;
+import nl.knokko.customitems.container.slot.display.CustomItemDisplayItem;
+import nl.knokko.customitems.container.slot.display.DataVanillaDisplayItem;
+import nl.knokko.customitems.container.slot.display.SimpleVanillaDisplayItem;
+import nl.knokko.customitems.container.slot.display.SlotDisplay;
 import nl.knokko.customitems.item.CIMaterial;
 import nl.knokko.customitems.recipe.ContainerRecipe;
 import nl.knokko.customitems.recipe.ContainerRecipe.InputEntry;
@@ -60,16 +61,19 @@ public class TestCustomContainer {
 							assertEquals(2, recipe.getInputs().size());
 							Iterator<InputEntry> inputs = recipe.getInputs().iterator();
 							InputEntry input1 = inputs.next();
-							assertEquals("ingot", input1.inputSlotName);
-							assertEquals(1, ((DummyIngredient)input1.ingredient).getId());
+							assertEquals("ingot", input1.getInputSlotName());
+							assertEquals(1, ((DummyIngredient)input1.getIngredient()).getId());
 							InputEntry input2 = inputs.next();
-							assertEquals("dust", input2.inputSlotName);
-							assertEquals(2, ((DummyIngredient)input2.ingredient).getId());
+							assertEquals("dust", input2.getInputSlotName());
+							assertEquals(2, ((DummyIngredient)input2.getIngredient()).getId());
 							
 							assertEquals(1, recipe.getOutputs().size());
 							OutputEntry output = recipe.getOutputs().iterator().next();
-							assertEquals("ingot", output.outputSlotName);
-							assertEquals(3, ((DummyIngredient)output.result).getId());
+							assertEquals("ingot", output.getOutputSlotName());
+							assertEquals(3, ((DummyIngredient)output.getResult()).getId());
+							
+							assertEquals(14, recipe.getDuration());
+							assertEquals(21, recipe.getExperience());
 						}
 						
 						// Slots
@@ -87,15 +91,17 @@ public class TestCustomContainer {
 							FuelIndicatorCustomSlot indicator = (FuelIndicatorCustomSlot) container.getSlot(4, 0);
 							assertEquals("theFuel", indicator.getFuelSlotName());
 							
-							SimpleVanillaSlotDisplay display = (SimpleVanillaSlotDisplay) indicator.getDisplay();
-							assertEquals(CIMaterial.LOG, display.getMaterial());
+							SlotDisplay display = indicator.getDisplay();
+							SimpleVanillaDisplayItem displayItem = (SimpleVanillaDisplayItem) display.getItem();
+							assertEquals(CIMaterial.LOG, displayItem.getMaterial());
 							assertEquals("SomeLog", display.getDisplayName());
 							assertArrayEquals(new String[] {"Just some log"}, display.getLore());
 							assertEquals(1, display.getAmount());
 							
-							DataVanillaSlotDisplay placeholder = (DataVanillaSlotDisplay) indicator.getPlaceholder();
-							assertEquals(CIMaterial.WOOL, placeholder.getMaterial());
-							assertEquals(2, placeholder.getData());
+							SlotDisplay placeholder = indicator.getPlaceholder();
+							DataVanillaDisplayItem placeholderItem = (DataVanillaDisplayItem) placeholder.getItem();
+							assertEquals(CIMaterial.WOOL, placeholderItem.getMaterial());
+							assertEquals(2, placeholderItem.getData());
 							assertEquals("ColoredWool", placeholder.getDisplayName());
 							assertArrayEquals(new String[] {"This wool has some color", "But I don't know which"}, placeholder.getLore());
 							assertEquals(3, placeholder.getAmount());
@@ -105,9 +111,9 @@ public class TestCustomContainer {
 						}
 						{
 							ProgressIndicatorCustomSlot indicator = (ProgressIndicatorCustomSlot) container.getSlot(5, 0);
-							assertEquals("test_item", ((CustomItemSlotDisplay) indicator.getDisplay()).getItem().getName());
+							assertEquals("test_item", ((CustomItemDisplayItem) indicator.getDisplay().getItem()).getItem().getName());
 							assertEquals(5, indicator.getDisplay().getAmount());
-							assertEquals("another", ((CustomItemSlotDisplay) indicator.getPlaceHolder()).getItem().getName());
+							assertEquals("another", ((CustomItemDisplayItem) indicator.getPlaceHolder().getItem()).getItem().getName());
 							assertEquals(2, indicator.getPlaceHolder().getAmount());
 							assertEquals(1, indicator.getDomain().getBegin());
 							assertEquals(2, indicator.getDomain().getEnd());
@@ -128,7 +134,7 @@ public class TestCustomContainer {
 			
 			Collection<OutputEntry> outputs = new ArrayList<>(1);
 			outputs.add(new OutputEntry("ingot", new DummyIngredient(3)));
-			recipes.add(new ContainerRecipe(inputs, outputs, 14));
+			recipes.add(new ContainerRecipe(inputs, outputs, 14, 21));
 		}
 		
 		CustomSlot[][] slots = new CustomSlot[9][2];
@@ -140,15 +146,15 @@ public class TestCustomContainer {
 		slots[3][1] = new InputCustomSlot("dust");
 		slots[5][1] = new FuelCustomSlot("theFuel", fuelRegistry);
 		slots[4][0] = new FuelIndicatorCustomSlot("theFuel", 
-				new SimpleVanillaSlotDisplay(CIMaterial.LOG, "SomeLog", new String[] {
-						"Just some log"
-				}, 1), new DataVanillaSlotDisplay(CIMaterial.WOOL, (byte) 2, 
+				new SlotDisplay(new SimpleVanillaDisplayItem(CIMaterial.LOG), 
+						"SomeLog", new String[] { "Just some log" }, 1), 
+				new SlotDisplay(new DataVanillaDisplayItem(CIMaterial.WOOL, (byte) 2), 
 						"ColoredWool", new String[] {
 								"This wool has some color", "But I don't know which"
 				}, 3), new IndicatorDomain(15, 25));
 		slots[5][0] = new ProgressIndicatorCustomSlot(
-				new CustomItemSlotDisplay(new TestCustomItem("test_item"), 5), 
-				new CustomItemSlotDisplay(new TestCustomItem("another"), 2),
+				new SlotDisplay(new CustomItemDisplayItem(new TestCustomItem("test_item")), "", new String[0], 5), 
+				new SlotDisplay(new CustomItemDisplayItem(new TestCustomItem("another")), "", new String[0], 2),
 				new IndicatorDomain(1, 2));
 		return new CustomContainer(
 				"test_container", "Test Container", 

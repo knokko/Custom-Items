@@ -26,9 +26,9 @@ import nl.knokko.customitems.container.CustomContainer;
 import nl.knokko.customitems.container.IndicatorDomain;
 import nl.knokko.customitems.container.fuel.FuelEntry;
 import nl.knokko.customitems.container.fuel.FuelMode;
-import nl.knokko.customitems.container.slot.display.CustomItemSlotDisplay;
-import nl.knokko.customitems.container.slot.display.DataVanillaSlotDisplay;
-import nl.knokko.customitems.container.slot.display.SimpleVanillaSlotDisplay;
+import nl.knokko.customitems.container.slot.display.CustomItemDisplayItem;
+import nl.knokko.customitems.container.slot.display.DataVanillaDisplayItem;
+import nl.knokko.customitems.container.slot.display.SimpleVanillaDisplayItem;
 import nl.knokko.customitems.container.slot.display.SlotDisplay;
 import nl.knokko.customitems.item.CIMaterial;
 import nl.knokko.customitems.plugin.container.ContainerInfo.DecorationProps;
@@ -53,21 +53,21 @@ public class ContainerInstance {
 	@SuppressWarnings("deprecation")
 	private static ItemStack fromDisplay(SlotDisplay display) {
 		ItemStack stack;
-		if (display instanceof CustomItemSlotDisplay) {
-			stack = ((CustomItem)((CustomItemSlotDisplay) display).getItem()).create(display.getAmount());
+		if (display.getItem() instanceof CustomItemDisplayItem) {
+			stack = ((CustomItem)((CustomItemDisplayItem) display.getItem()).getItem()).create(display.getAmount());
 		} else {
 			CIMaterial material;
-			if (display instanceof DataVanillaSlotDisplay) {
-				material = ((DataVanillaSlotDisplay) display).getMaterial();
-			} else if (display instanceof SimpleVanillaSlotDisplay) {
-				material = ((SimpleVanillaSlotDisplay) display).getMaterial();
+			if (display.getItem() instanceof DataVanillaDisplayItem) {
+				material = ((DataVanillaDisplayItem) display.getItem()).getMaterial();
+			} else if (display.getItem() instanceof SimpleVanillaDisplayItem) {
+				material = ((SimpleVanillaDisplayItem) display.getItem()).getMaterial();
 			} else {
 				throw new Error("Unknown display type: " + display);
 			}
 			stack = ItemHelper.createStack(material.name(), display.getAmount());
-			if (display instanceof DataVanillaSlotDisplay) {
+			if (display.getItem() instanceof DataVanillaDisplayItem) {
 				MaterialData data = stack.getData();
-				data.setData(((DataVanillaSlotDisplay) display).getData());
+				data.setData(((DataVanillaDisplayItem) display.getItem()).getData());
 				stack.setData(data);
 				stack.setDurability(data.getData());
 			}
@@ -472,16 +472,16 @@ public class ContainerInstance {
 		candidateLoop:
 		for (ContainerRecipe candidate : typeInfo.getContainer().getRecipes()) {
 			for (InputEntry input : candidate.getInputs()) {
-				ItemStack inSlot = getInput(input.inputSlotName);
-				Ingredient ingredient = (Ingredient) input.ingredient;
+				ItemStack inSlot = getInput(input.getInputSlotName());
+				Ingredient ingredient = (Ingredient) input.getIngredient();
 				if (!ingredient.accept(inSlot)) {
 					continue candidateLoop;
 				}
 			}
 			
 			for (OutputEntry output : candidate.getOutputs()) {
-				ItemStack outSlot = getOutput(output.outputSlotName);
-				ItemStack result = (ItemStack) output.result;
+				ItemStack outSlot = getOutput(output.getOutputSlotName());
+				ItemStack result = (ItemStack) output.getResult();
 				if (!ItemUtils.isEmpty(outSlot)) {
 					if (!result.isSimilar(outSlot)) {
 						continue candidateLoop;
@@ -513,7 +513,7 @@ public class ContainerInstance {
 					// Decrease the stacksize of all relevant input slots by 1
 					for (InputEntry input : currentRecipe.getInputs()) {
 						
-						int invIndex = typeInfo.getInputSlotIndex(input.inputSlotName);
+						int invIndex = typeInfo.getInputSlotIndex(input.getInputSlotName());
 						ItemStack inputItem = inventory.getItem(invIndex);
 						inputItem.setAmount(inputItem.getAmount() - 1);
 						
@@ -527,9 +527,9 @@ public class ContainerInstance {
 					// Add the results to the output slots
 					for (OutputEntry output : currentRecipe.getOutputs()) {
 						
-						int invIndex = typeInfo.getOutputSlotIndex(output.outputSlotName);
+						int invIndex = typeInfo.getOutputSlotIndex(output.getOutputSlotName());
 						ItemStack outputItem = inventory.getItem(invIndex);
-						ItemStack result = (ItemStack) output.result;
+						ItemStack result = (ItemStack) output.getResult();
 						
 						// If the output slot is empty, set its item to the result
 						// Otherwise increase its amount
