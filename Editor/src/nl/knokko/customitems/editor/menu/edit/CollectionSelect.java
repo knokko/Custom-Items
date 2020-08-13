@@ -1,7 +1,5 @@
 package nl.knokko.customitems.editor.menu.edit;
 
-import java.util.Collection;
-
 import nl.knokko.gui.color.GuiColor;
 import nl.knokko.gui.component.GuiComponent;
 import nl.knokko.gui.component.menu.GuiMenu;
@@ -9,7 +7,7 @@ import nl.knokko.gui.component.text.dynamic.DynamicTextButton;
 
 public class CollectionSelect<T> extends GuiMenu {
 	
-	public static <T> DynamicTextButton createButton(Collection<T> backingCollection, Receiver<T> onSelect,
+	public static <T> DynamicTextButton createButton(Iterable<T> backingCollection, Receiver<T> onSelect,
 			Filter<T> filter, Formatter<T> formatter, T current) {
 		String text = current == null ? "None" : current.toString();
 		return new DynamicTextButton(text, EditProps.BUTTON, EditProps.HOVER, null) {
@@ -24,19 +22,19 @@ public class CollectionSelect<T> extends GuiMenu {
 		};
 	}
 	
-	public static <T> DynamicTextButton createButton(Collection<T> backingCollection, Receiver<T> onSelect,
+	public static <T> DynamicTextButton createButton(Iterable<T> backingCollection, Receiver<T> onSelect,
 			Formatter<T> formatter, T current) {
 		return createButton(backingCollection, onSelect, (T item) -> { return true; }, formatter, current);
 	}
 	
-	private final Collection<T> collection;
+	private final Iterable<T> collection;
 	private final Receiver<T> onSelect;
 	private final Filter<T> filter;
 	private final Formatter<T> formatter;
 	
 	private final GuiComponent returnMenu;
 
-	private CollectionSelect(Collection<T> backingCollection, Receiver<T> onSelect, Filter<T> filter,
+	public CollectionSelect(Iterable<T> backingCollection, Receiver<T> onSelect, Filter<T> filter,
 			Formatter<T> formatter, GuiComponent returnMenu) {
 		this.collection = backingCollection;
 		this.onSelect = onSelect;

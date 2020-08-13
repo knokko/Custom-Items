@@ -30,7 +30,7 @@ public class EnumSelect<T extends Enum<?>> extends GuiMenu {
 	private final EnumFilter<T> filter;
 	private final GuiComponent returnMenu;
 	
-	private EnumSelect(Class<T> enumClass, Receiver<T> receiver, EnumFilter<T> filter, GuiComponent returnMenu) {
+	public EnumSelect(Class<T> enumClass, Receiver<T> receiver, EnumFilter<T> filter, GuiComponent returnMenu) {
 		this.enumClass = enumClass;
 		this.receiver = receiver;
 		this.filter = filter;

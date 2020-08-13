@@ -28,7 +28,7 @@ public class ContainerPortal extends GuiMenu {
 		}), 0.025f, 0.7f, 0.15f, 0.8f);
 		
 		addComponent(new DynamicTextButton("Fuel registries", EditProps.BUTTON, EditProps.HOVER, () -> {
-			state.getWindow().setMainComponent(new FuelRegistryCollectionEdit(menu));
+			state.getWindow().setMainComponent(new FuelRegistryCollectionEdit(this, menu.getSet()));
 		}), 0.7f, 0.6f, 0.95f, 0.7f);
 		
 		addComponent(new DynamicTextButton("Containers", EditProps.BUTTON, EditProps.HOVER, () -> {

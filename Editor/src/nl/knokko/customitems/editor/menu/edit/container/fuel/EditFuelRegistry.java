@@ -5,9 +5,10 @@ import java.util.Collection;
 
 import nl.knokko.customitems.container.fuel.CustomFuelRegistry;
 import nl.knokko.customitems.container.fuel.FuelEntry;
-import nl.knokko.customitems.editor.menu.edit.EditMenu;
 import nl.knokko.customitems.editor.menu.edit.EditProps;
+import nl.knokko.customitems.editor.set.ItemSet;
 import nl.knokko.gui.color.GuiColor;
+import nl.knokko.gui.component.GuiComponent;
 import nl.knokko.gui.component.menu.GuiMenu;
 import nl.knokko.gui.component.text.TextEditField;
 import nl.knokko.gui.component.text.dynamic.DynamicTextButton;
@@ -15,7 +16,8 @@ import nl.knokko.gui.component.text.dynamic.DynamicTextComponent;
 
 public class EditFuelRegistry extends GuiMenu {
 	
-	private final EditMenu menu;
+	private final GuiComponent returnMenu;
+	private final ItemSet set;
 	
 	private final CustomFuelRegistry toModify;
 	
@@ -23,9 +25,10 @@ public class EditFuelRegistry extends GuiMenu {
 	private final Collection<FuelEntry> entries;
 	private final DynamicTextComponent errorComponent;
 	
-	public EditFuelRegistry(EditMenu menu, 
+	public EditFuelRegistry(GuiComponent returnMenu, ItemSet set, 
 			CustomFuelRegistry oldValues, CustomFuelRegistry toModify) {
-		this.menu = menu;
+		this.returnMenu = returnMenu;
+		this.set = set;
 		this.toModify = toModify;
 		
 		if (oldValues != null) {
@@ -52,7 +55,7 @@ public class EditFuelRegistry extends GuiMenu {
 	@Override
 	protected void addComponents() {
 		addComponent(new DynamicTextButton("Cancel", EditProps.CANCEL_BASE, EditProps.CANCEL_HOVER, () -> {
-			state.getWindow().setMainComponent(new FuelRegistryCollectionEdit(menu));
+			state.getWindow().setMainComponent(new FuelRegistryCollectionEdit(returnMenu, set));
 		}), 0.025f, 0.7f, 0.15f, 0.8f);
 		
 		addComponent(errorComponent, 0.025f, 0.9f, 0.97f, 1f);
@@ -61,27 +64,27 @@ public class EditFuelRegistry extends GuiMenu {
 		addComponent(nameField, 0.4f, 0.7f, 0.6f, 0.75f);
 		
 		addComponent(new DynamicTextButton("Entries...", EditProps.BUTTON, EditProps.HOVER, () -> {
-			state.getWindow().setMainComponent(new FuelEntryCollectionEdit(entries, this, menu.getSet()));
+			state.getWindow().setMainComponent(new FuelEntryCollectionEdit(entries, this, set));
 		}), 0.4f, 0.5f, 0.6f, 0.6f);
 		
 		if (toModify != null) {
 			addComponent(new DynamicTextButton("Apply", EditProps.SAVE_BASE, EditProps.SAVE_HOVER, () -> {
-				String error = menu.getSet().changeFuelRegistry(toModify, nameField.getText(), entries);
+				String error = set.changeFuelRegistry(toModify, nameField.getText(), entries);
 				if (error != null) {
 					errorComponent.setText(error);
 					errorComponent.setProperties(EditProps.ERROR);
 				} else {
-					state.getWindow().setMainComponent(new FuelRegistryCollectionEdit(menu));
+					state.getWindow().setMainComponent(new FuelRegistryCollectionEdit(returnMenu, set));
 				}
 			}), 0.025f, 0.1f, 0.15f, 0.2f);
 		} else {
 			addComponent(new DynamicTextButton("Create", EditProps.SAVE_BASE, EditProps.SAVE_HOVER, () -> {
-				String error = menu.getSet().addFuelRegistry(new CustomFuelRegistry(nameField.getText(), entries));
+				String error = set.addFuelRegistry(new CustomFuelRegistry(nameField.getText(), entries));
 				if (error != null) {
 					errorComponent.setProperties(EditProps.ERROR);
 					errorComponent.setText(error);
 				} else
-					state.getWindow().setMainComponent(new FuelRegistryCollectionEdit(menu));
+					state.getWindow().setMainComponent(new FuelRegistryCollectionEdit(returnMenu, set));
 			}), 0.025f, 0.1f, 0.15f, 0.2f);
 		}
 	}

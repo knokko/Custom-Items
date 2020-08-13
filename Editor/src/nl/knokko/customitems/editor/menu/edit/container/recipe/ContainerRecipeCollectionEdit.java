@@ -1,7 +1,6 @@
 package nl.knokko.customitems.editor.menu.edit.container.recipe;
 
 import java.awt.image.BufferedImage;
-import java.util.Collection;
 
 import nl.knokko.customitems.container.CustomContainer;
 import nl.knokko.customitems.editor.menu.edit.CollectionEdit;
@@ -61,8 +60,8 @@ public class ContainerRecipeCollectionEdit extends CollectionEdit<ContainerRecip
 			
 			// If we find an output with a custom item, take it!
 			for (OutputEntry output : item.getOutputs()) {
-				if (output.result instanceof CustomItemResult) {
-					CustomItemResult customResult = (CustomItemResult) output.result;
+				if (output.getResult() instanceof CustomItemResult) {
+					CustomItemResult customResult = (CustomItemResult) output.getResult();
 					return customResult.getItem().getTexture().getImage();
 				}
 			}
@@ -76,7 +75,7 @@ public class ContainerRecipeCollectionEdit extends CollectionEdit<ContainerRecip
 			StringBuilder result = new StringBuilder();
 			result.append('(');
 			for (OutputEntry output : item.getOutputs()) {
-				result.append(output.result);
+				result.append(output.getResult());
 				result.append(',');
 			}
 			result.append(')');

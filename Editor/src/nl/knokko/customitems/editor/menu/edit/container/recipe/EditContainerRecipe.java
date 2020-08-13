@@ -5,7 +5,6 @@ import java.util.Collection;
 
 import nl.knokko.customitems.container.CustomContainer;
 import nl.knokko.customitems.editor.menu.edit.EditProps;
-import nl.knokko.customitems.editor.set.ItemSet;
 import nl.knokko.customitems.recipe.ContainerRecipe;
 import nl.knokko.customitems.recipe.ContainerRecipe.InputEntry;
 import nl.knokko.customitems.recipe.ContainerRecipe.OutputEntry;
@@ -83,7 +82,18 @@ public class EditContainerRecipe extends GuiMenu {
 				return;
 			}
 			
-			// TODO Create or Apply
+			if (toModify == null) {
+				container.getRecipes().add(new ContainerRecipe(inputs, outputs, 
+						duration.getValue(), experience.getValue()));
+			} else {
+				toModify.getInputs().clear();
+				toModify.getInputs().addAll(inputs);
+				toModify.getOutputs().clear();
+				toModify.getOutputs().addAll(outputs);
+				toModify.setDuration(duration.getValue());
+				toModify.setExperience(experience.getValue());
+			}
+			state.getWindow().setMainComponent(returnMenu);
 		}), 0.025f, 0.2f, 0.2f, 0.3f);
 	}
 }

@@ -68,8 +68,8 @@ import nl.knokko.customitems.container.slot.FuelIndicatorCustomSlot;
 import nl.knokko.customitems.container.slot.InputCustomSlot;
 import nl.knokko.customitems.container.slot.OutputCustomSlot;
 import nl.knokko.customitems.container.slot.ProgressIndicatorCustomSlot;
-import nl.knokko.customitems.container.slot.display.DataVanillaSlotDisplay;
-import nl.knokko.customitems.container.slot.display.SimpleVanillaSlotDisplay;
+import nl.knokko.customitems.container.slot.display.DataVanillaDisplayItem;
+import nl.knokko.customitems.container.slot.display.SimpleVanillaDisplayItem;
 import nl.knokko.customitems.container.slot.display.SlotDisplay;
 import nl.knokko.customitems.damage.DamageResistances;
 import nl.knokko.customitems.damage.DamageSource;
@@ -2766,13 +2766,13 @@ public class ItemSet implements ItemSetBase {
 					}
 					
 					CIMaterial material = null;
-					if (display instanceof SimpleVanillaSlotDisplay) {
-						material = ((SimpleVanillaSlotDisplay) display).getMaterial();
-					} else if (display instanceof DataVanillaSlotDisplay) {
+					if (display.getItem() instanceof SimpleVanillaDisplayItem) {
+						material = ((SimpleVanillaDisplayItem) display.getItem()).getMaterial();
+					} else if (display.getItem() instanceof DataVanillaDisplayItem) {
 						if (version > VERSION1_12) {
 							return "One of the slots uses an item with a datavalue, but those aren't used after mc 1.12 anymore";
 						}
-						material = ((DataVanillaSlotDisplay) display).getMaterial();
+						material = ((DataVanillaDisplayItem) display.getItem()).getMaterial();
 					}
 					
 					if (material != null) {
