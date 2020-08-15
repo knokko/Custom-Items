@@ -1,17 +1,16 @@
 package nl.knokko.customitems.editor.menu.edit.container;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 
 import nl.knokko.customitems.container.CustomContainer;
 import nl.knokko.customitems.container.VanillaContainerType;
 import nl.knokko.customitems.container.fuel.FuelMode;
-import nl.knokko.customitems.container.slot.CustomSlot;
-import nl.knokko.customitems.container.slot.EmptyCustomSlot;
 import nl.knokko.customitems.editor.menu.edit.EditMenu;
 import nl.knokko.customitems.editor.menu.edit.EditProps;
 import nl.knokko.customitems.editor.menu.edit.EnumSelect;
+import nl.knokko.customitems.editor.menu.edit.container.recipe.ContainerRecipeCollectionEdit;
+import nl.knokko.customitems.editor.menu.edit.container.slot.SlotsComponent;
 import nl.knokko.customitems.recipe.ContainerRecipe;
 import nl.knokko.gui.color.GuiColor;
 import nl.knokko.gui.component.image.CheckboxComponent;
@@ -26,7 +25,7 @@ public class EditContainer extends GuiMenu {
 	private final CustomContainer toModify;
 	
 	private final Collection<ContainerRecipe> recipes;
-	private CustomSlot[][] slots;
+	private final SlotsComponent slots;
 	private final TextEditField nameField;
 	private final TextEditField displayNameField;
 	private final CheckboxComponent persistentStorage;
@@ -37,6 +36,7 @@ public class EditContainer extends GuiMenu {
 			CustomContainer oldValues, CustomContainer toModify) {
 		this.menu = menu;
 		this.toModify = toModify;
+		this.slots = new SlotsComponent(this, menu.getSet(), oldValues);
 		
 		String initialName;
 		String initialDisplayName;
@@ -53,12 +53,6 @@ public class EditContainer extends GuiMenu {
 			for (ContainerRecipe recipe : oldValues.getRecipes()) {
 				this.recipes.add(recipe.clone());
 			}
-			this.slots = new CustomSlot[9][oldValues.getHeight()];
-			for (int x = 0; x < 9; x++) {
-				for (int y = 0; y < oldValues.getHeight(); y++) {
-					this.slots[x][y] = oldValues.getSlot(x, y);
-				}
-			}
 		} else {
 			initialName = "";
 			initialDisplayName = "";
@@ -66,10 +60,6 @@ public class EditContainer extends GuiMenu {
 			this.fuelMode = FuelMode.ALL;
 			this.vanillaType = VanillaContainerType.FURNACE;
 			// Keep this.recipes empty
-			this.slots = new CustomSlot[9][3];
-			for (CustomSlot[] column : this.slots) {
-				Arrays.fill(column, new EmptyCustomSlot());
-			}
 		}
 		
 		this.nameField = new TextEditField(initialName, EditProps.EDIT_BASE, EditProps.EDIT_ACTIVE);
@@ -82,7 +72,7 @@ public class EditContainer extends GuiMenu {
 		DynamicTextComponent errorComponent = new DynamicTextComponent("", EditProps.ERROR);
 		addComponent(errorComponent, 0.025f, 0.9f, 0.975f, 1f);
 		addComponent(new DynamicTextButton("Cancel", EditProps.CANCEL_BASE, EditProps.CANCEL_HOVER, () -> {
-			state.getWindow().setMainComponent(menu.getContainerPortal());
+			state.getWindow().setMainComponent(new ContainerCollectionEdit(menu));
 		}), 0.025f, 0.7f, 0.2f, 0.8f);
 		
 		addComponent(new DynamicTextComponent("Name:", EditProps.LABEL), 0.05f, 0.6f, 0.15f, 0.65f);
@@ -100,33 +90,36 @@ public class EditContainer extends GuiMenu {
 		addComponent(new DynamicTextComponent("Persistent storage", EditProps.LABEL), 0.05f, 0.3f, 0.25f, 0.35f);
 		addComponent(persistentStorage, 0.275f, 0.3f, 0.3f, 0.325f);
 		addComponent(new DynamicTextButton("Recipes...", EditProps.BUTTON, EditProps.HOVER, () -> {
-			// TODO Go to the recipe overview for this container
+			state.getWindow().setMainComponent(new ContainerRecipeCollectionEdit(
+					CustomContainer.slotIterable(slots.getSlots()), recipes, this)
+			);
 		}), 0.05f, 0.225f, 0.2f, 0.275f);
 		
-		// TODO Add grid for the custom slots, plus buttons to insert/delete rows
+		addComponent(this.slots, 0.36f, 0.1f, 1f, 0.9f);
 		
 		if (toModify != null) {
 			addComponent(new DynamicTextButton("Apply", EditProps.SAVE_BASE, EditProps.SAVE_HOVER, () -> {
 				String error = menu.getSet().changeContainer(toModify, nameField.getText(), 
-						displayNameField.getText(), recipes, fuelMode, slots, 
+						displayNameField.getText(), recipes, fuelMode, slots.getSlots(), 
 						vanillaType, persistentStorage.isChecked()
 				);
 				if (error != null) {
 					errorComponent.setText(error);
 				} else {
-					state.getWindow().setMainComponent(menu.getContainerPortal());
+					state.getWindow().setMainComponent(new ContainerCollectionEdit(menu));
 				}
 			}), 0.025f, 0.1f, 0.175f, 0.2f);
 		} else {
 			addComponent(new DynamicTextButton("Create", EditProps.SAVE_BASE, EditProps.SAVE_HOVER, () -> {
 				String error = menu.getSet().addContainer(new CustomContainer(
 						nameField.getText(), displayNameField.getText(), recipes, 
-						fuelMode, slots, vanillaType, persistentStorage.isChecked())
+						fuelMode, slots.getSlots(), vanillaType, 
+						persistentStorage.isChecked())
 				);
 				if (error != null) {
 					errorComponent.setText(error);
 				} else {
-					state.getWindow().setMainComponent(menu.getContainerPortal());
+					state.getWindow().setMainComponent(new ContainerCollectionEdit(menu));
 				}
 			}), 0.025f, 0.1f, 0.175f, 0.2f);
 		}

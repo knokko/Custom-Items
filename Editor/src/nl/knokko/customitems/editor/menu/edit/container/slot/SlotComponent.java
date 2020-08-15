@@ -14,6 +14,7 @@ import nl.knokko.customitems.container.slot.OutputCustomSlot;
 import nl.knokko.customitems.container.slot.ProgressIndicatorCustomSlot;
 import nl.knokko.customitems.editor.menu.edit.EditProps;
 import nl.knokko.customitems.editor.set.ItemSet;
+import nl.knokko.gui.color.SimpleGuiColor;
 import nl.knokko.gui.component.GuiComponent;
 import nl.knokko.gui.component.state.GuiComponentState;
 import nl.knokko.gui.keycode.KeyCode;
@@ -87,6 +88,14 @@ public class SlotComponent implements GuiComponent {
 			throw new Error("Unknown custom slot class: " + newSlot.getClass());
 		}
 		
+		int maxLength = 15;
+		if (topText.length() > maxLength) {
+			topText = topText.substring(0, maxLength);
+		}
+		if (bottomText.length() > maxLength) {
+			bottomText = bottomText.substring(0, maxLength);
+		}
+		
 		BufferedImage topTextImage = TextBuilder.createTexture(topText, EditProps.LABEL);
 		BufferedImage bottomTextImage = TextBuilder.createTexture(bottomText, EditProps.LABEL);
 		topTextTexture = state.getWindow().getTextureLoader().loadTexture(topTextImage);
@@ -114,7 +123,7 @@ public class SlotComponent implements GuiComponent {
 
 	@Override
 	public void render(GuiRenderer renderer) {
-		renderer.fill(EditProps.BACKGROUND2, 0.05f, 0.05f, 0.95f, 0.95f);
+		renderer.fill(state.isMouseOver() ? SimpleGuiColor.WHITE : EditProps.BACKGROUND2, 0.05f, 0.05f, 0.95f, 0.95f);
 		renderer.renderTexture(topTextTexture, 0.1f, 0.6f, 0.9f, 0.9f);
 		renderer.renderTexture(bottomTextTexture, 0.1f, 0.2f, 0.9f, 0.5f);
 	}

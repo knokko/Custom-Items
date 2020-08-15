@@ -11,6 +11,8 @@ import nl.knokko.customitems.container.slot.FuelIndicatorCustomSlot;
 import nl.knokko.customitems.container.slot.display.SlotDisplay;
 import nl.knokko.customitems.editor.menu.edit.CollectionSelect;
 import nl.knokko.customitems.editor.menu.edit.EditProps;
+import nl.knokko.customitems.editor.set.item.CustomItem;
+import nl.knokko.gui.color.GuiColor;
 import nl.knokko.gui.component.GuiComponent;
 import nl.knokko.gui.component.menu.GuiMenu;
 import nl.knokko.gui.component.text.IntEditField;
@@ -62,12 +64,14 @@ public class CreateFuelIndicatorSlot extends GuiMenu {
 	private final GuiComponent returnMenu;
 	private final Consumer<CustomSlot> submitSlot;
 	private final Iterable<FuelCustomSlot> existingSlots;
+	private final Iterable<CustomItem> customItems;
 	
 	public CreateFuelIndicatorSlot(GuiComponent returnMenu, 
-			Consumer<CustomSlot> submitSlot, Iterable<CustomSlot> existingSlots) {
+			Consumer<CustomSlot> submitSlot, Iterable<CustomSlot> existingSlots, Iterable<CustomItem> customItems) {
 		this.returnMenu = returnMenu;
 		this.submitSlot = submitSlot;
 		this.existingSlots = fuelSlotFilter(existingSlots);
+		this.customItems = customItems;
 	}
 
 	@Override
@@ -88,12 +92,12 @@ public class CreateFuelIndicatorSlot extends GuiMenu {
 		SlotDisplay[] pDisplays = { null, null };
 		addComponent(new DynamicTextButton("Display...", EditProps.BUTTON, EditProps.HOVER, () -> {
 			state.getWindow().setMainComponent(new CreateDisplay(this, 
-					newDisplay -> pDisplays[0] = newDisplay, false)
+					newDisplay -> pDisplays[0] = newDisplay, false, customItems)
 			);
 		}), 0.25f, 0.625f, 0.4f, 0.675f);
 		addComponent(new DynamicTextButton("Placeholder...", EditProps.BUTTON, EditProps.HOVER, () -> {
 			state.getWindow().setMainComponent(new CreateDisplay(this,
-					newPlaceholder -> pDisplays[1] = newPlaceholder, true)
+					newPlaceholder -> pDisplays[1] = newPlaceholder, true, customItems)
 			);
 		}), 0.25f, 0.55f, 0.4f, 0.6f);
 		
@@ -103,7 +107,7 @@ public class CreateFuelIndicatorSlot extends GuiMenu {
 		addComponent(beginField, 0.425f, 0.475f, 0.475f, 0.525f);
 		addComponent(new DynamicTextComponent("% to ", EditProps.LABEL), 0.475f, 0.475f, 0.525f, 0.525f);
 		addComponent(endField, 0.525f, 0.475f, 0.575f, 0.525f);
-		addComponent(new DynamicTextComponent("%", EditProps.LABEL), 0.525f, 0.475f, 0.55f, 0.525f);
+		addComponent(new DynamicTextComponent("%", EditProps.LABEL), 0.575f, 0.475f, 0.6f, 0.525f);
 		
 		addComponent(new DynamicTextButton("Done", EditProps.SAVE_BASE, EditProps.SAVE_HOVER, () -> {
 			
@@ -145,4 +149,8 @@ public class CreateFuelIndicatorSlot extends GuiMenu {
 		}), 0.025f, 0.2f, 0.15f, 0.3f);
 	}
 
+	@Override
+	public GuiColor getBackgroundColor() {
+		return EditProps.BACKGROUND;
+	}
 }

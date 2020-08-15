@@ -40,7 +40,7 @@ public class CreateInputSlot extends GuiMenu {
 		
 		addComponent(new DynamicTextButton("Done", EditProps.SAVE_BASE, EditProps.SAVE_HOVER, () -> {
 			
-			if (!nameField.getText().isEmpty()) {
+			if (nameField.getText().isEmpty()) {
 				errorComponent.setText("You need to choose a name");
 				return;
 			}

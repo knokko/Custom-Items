@@ -55,7 +55,7 @@ public class EditFuelRegistry extends GuiMenu {
 	@Override
 	protected void addComponents() {
 		addComponent(new DynamicTextButton("Cancel", EditProps.CANCEL_BASE, EditProps.CANCEL_HOVER, () -> {
-			state.getWindow().setMainComponent(new FuelRegistryCollectionEdit(returnMenu, set));
+			state.getWindow().setMainComponent(returnMenu);
 		}), 0.025f, 0.7f, 0.15f, 0.8f);
 		
 		addComponent(errorComponent, 0.025f, 0.9f, 0.97f, 1f);

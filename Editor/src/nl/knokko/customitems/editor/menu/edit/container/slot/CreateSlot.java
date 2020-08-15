@@ -38,7 +38,7 @@ public class CreateSlot extends GuiMenu {
 		addComponent(new DynamicTextButton("Decoration", EditProps.BUTTON, EditProps.HOVER, () -> {
 			state.getWindow().setMainComponent(new CreateDisplay(returnMenu, display -> {
 				changeSlot.accept(new DecorationCustomSlot(display));
-			}, true));
+			}, true, set.getBackingItems()));
 		}), 0.6f, 0.6f, 0.8f, 0.65f);
 		addComponent(new DynamicTextButton("Empty", EditProps.BUTTON, EditProps.HOVER, () -> {
 			changeSlot.accept(new EmptyCustomSlot());
@@ -51,7 +51,7 @@ public class CreateSlot extends GuiMenu {
 		}), 0.6f, 0.45f, 0.7f, 0.5f);
 		addComponent(new DynamicTextButton("Fuel indicator", EditProps.BUTTON, EditProps.HOVER, () -> {
 			state.getWindow().setMainComponent(new CreateFuelIndicatorSlot(returnMenu,
-					changeSlot, existingSlots
+					changeSlot, existingSlots, set.getBackingItems()
 			));
 		}), 0.6f, 0.375f, 0.8f, 0.425f);
 		addComponent(new DynamicTextButton("Input", EditProps.BUTTON, EditProps.HOVER, () -> {
@@ -66,7 +66,8 @@ public class CreateSlot extends GuiMenu {
 		}), 0.6f, 0.225f, 0.7f, 0.275f);
 		addComponent(new DynamicTextButton("Crafting progress indicator", EditProps.BUTTON, EditProps.HOVER, () -> {
 			state.getWindow().setMainComponent(new CreateCraftingIndicatorSlot(
-					returnMenu, changeSlot));
+					returnMenu, changeSlot, set.getBackingItems()
+			));
 		}), 0.6f, 0.15f, 0.9f, 0.2f);
 	}
 

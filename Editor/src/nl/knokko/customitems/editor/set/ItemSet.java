@@ -63,6 +63,7 @@ import nl.knokko.customitems.container.fuel.FuelEntry;
 import nl.knokko.customitems.container.fuel.FuelMode;
 import nl.knokko.customitems.container.slot.CustomSlot;
 import nl.knokko.customitems.container.slot.DecorationCustomSlot;
+import nl.knokko.customitems.container.slot.EmptyCustomSlot;
 import nl.knokko.customitems.container.slot.FuelCustomSlot;
 import nl.knokko.customitems.container.slot.FuelIndicatorCustomSlot;
 import nl.knokko.customitems.container.slot.InputCustomSlot;
@@ -4302,7 +4303,30 @@ public class ItemSet implements ItemSetBase {
 		if (slot == null) {
 			return "A slot is null";
 		}
-		if (slot instanceof FuelCustomSlot) {
+		if (slot instanceof DecorationCustomSlot) {
+			DecorationCustomSlot decorationSlot = (DecorationCustomSlot) slot;
+			SlotDisplay display = decorationSlot.getDisplay();
+			if (display == null) {
+				return "There is a decoration slot without display";
+			}
+			if (display.getAmount() < 1) {
+				return "There is a decoration slot with an amount smaller than 1";
+			}
+			if (display.getAmount() > 64) {
+				return "There is a decoration slot with an amount greater than 64";
+			}
+			if (display.getDisplayName() == null) {
+				return "There is a display with a null display name";
+			}
+			if (display.getLore() == null) {
+				return "There is a display with a null lore";
+			}
+			for (String line : display.getLore()) {
+				if (line == null) {
+					return "There is a display with a null line in its lore";
+				}
+			}
+		} else if (slot instanceof FuelCustomSlot) {
 			FuelCustomSlot fuelSlot = (FuelCustomSlot) slot;
 			for (CustomSlot otherSlot : allSlots) {
 				if (otherSlot != fuelSlot && otherSlot instanceof FuelCustomSlot) {
@@ -4360,7 +4384,7 @@ public class ItemSet implements ItemSetBase {
 			} else if (indicator.getDomain().getEnd() > 100) {
 				return "There is a crafting progress indicator that ends after 100%";
 			}
-		} else {
+		} else if (!(slot instanceof EmptyCustomSlot)){
 			return "Unknown custom slot class: " + slot.getClass();
 		}
 		

@@ -12,12 +12,10 @@ import nl.knokko.gui.component.text.dynamic.DynamicTextButton;
 
 public class FuelRegistryCollectionEdit extends CollectionEdit<CustomFuelRegistry> {
 	
-	private final GuiComponent returnMenu;
 	private final ItemSet set;
 
 	public FuelRegistryCollectionEdit(GuiComponent returnMenu, ItemSet set) {
 		super(new FuelRegistryActionHandler(returnMenu, set), set.getBackingFuelRegistries());
-		this.returnMenu = returnMenu;
 		this.set = set;
 	}
 	
@@ -25,7 +23,7 @@ public class FuelRegistryCollectionEdit extends CollectionEdit<CustomFuelRegistr
 	protected void addComponents() {
 		super.addComponents();
 		addComponent(new DynamicTextButton("Add new", EditProps.BUTTON, EditProps.HOVER, () -> {
-			state.getWindow().setMainComponent(new EditFuelRegistry(returnMenu, set, null, null));
+			state.getWindow().setMainComponent(new EditFuelRegistry(this, set, null, null));
 		}), 0.05f, 0.2f, 0.2f, 0.3f);
 	}
 	

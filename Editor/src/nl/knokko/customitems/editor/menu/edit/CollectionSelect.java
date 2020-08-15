@@ -15,7 +15,7 @@ public class CollectionSelect<T> extends GuiMenu {
 			@Override
 			public void click(float x, float y, int button) {
 				state.getWindow().setMainComponent(new CollectionSelect<T>(backingCollection, (T selected) -> {
-					setText(selected.toString());
+					setText(formatter.getName(selected));
 					onSelect.onSelect(selected);
 				}, filter, formatter, state.getWindow().getMainComponent()));
 			}

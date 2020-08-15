@@ -47,6 +47,11 @@ public class CustomFuelRegistry {
 		this.entries = entries;
 	}
 	
+	@Override
+	public String toString() {
+		return name;
+	}
+	
 	public void save(BitOutput output, Consumer<SCIngredient> saveIngredient) {
 		output.addByte(Encodings.ENCODING1);
 		output.addString(name);

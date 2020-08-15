@@ -3,7 +3,7 @@ package nl.knokko.customitems.editor.menu.edit.container.recipe;
 import java.util.ArrayList;
 import java.util.Collection;
 
-import nl.knokko.customitems.container.CustomContainer;
+import nl.knokko.customitems.container.slot.CustomSlot;
 import nl.knokko.customitems.editor.menu.edit.EditProps;
 import nl.knokko.customitems.recipe.ContainerRecipe;
 import nl.knokko.customitems.recipe.ContainerRecipe.InputEntry;
@@ -17,7 +17,8 @@ import nl.knokko.gui.util.Option;
 
 public class EditContainerRecipe extends GuiMenu {
 	
-	private final CustomContainer container;
+	private final Iterable<CustomSlot> slots;
+	private final Collection<ContainerRecipe> recipes;
 	private final GuiComponent returnMenu;
 	private final ContainerRecipe toModify;
 	
@@ -27,9 +28,10 @@ public class EditContainerRecipe extends GuiMenu {
 	private final Collection<InputEntry> inputs;
 	private final Collection<OutputEntry> outputs;
 	
-	public EditContainerRecipe(CustomContainer container, GuiComponent returnMenu,
-			ContainerRecipe oldValues, ContainerRecipe toModify) {
-		this.container = container;
+	public EditContainerRecipe(Iterable<CustomSlot> slots, Collection<ContainerRecipe> recipes, 
+			GuiComponent returnMenu, ContainerRecipe oldValues, ContainerRecipe toModify) {
+		this.slots = slots;
+		this.recipes = recipes;
 		this.returnMenu = returnMenu;
 		this.toModify = toModify;
 		
@@ -68,6 +70,8 @@ public class EditContainerRecipe extends GuiMenu {
 		addComponent(new DynamicTextComponent("Experience:", EditProps.LABEL), 0.05f, 0.525f, 0.2f, 0.575f);
 		addComponent(experienceField, 0.225f, 0.525f, 0.3f, 0.575f);
 		
+		// TODO Add UI to select the ingredients and outputs
+		
 		addComponent(new DynamicTextButton(toModify == null ? "Create" : "Apply", 
 				EditProps.SAVE_BASE, EditProps.SAVE_HOVER, () -> {
 					
@@ -83,7 +87,7 @@ public class EditContainerRecipe extends GuiMenu {
 			}
 			
 			if (toModify == null) {
-				container.getRecipes().add(new ContainerRecipe(inputs, outputs, 
+				recipes.add(new ContainerRecipe(inputs, outputs, 
 						duration.getValue(), experience.getValue()));
 			} else {
 				toModify.getInputs().clear();
