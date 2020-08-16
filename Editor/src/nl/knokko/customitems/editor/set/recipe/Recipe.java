@@ -28,12 +28,13 @@ import nl.knokko.customitems.editor.set.item.CustomItem;
 import nl.knokko.customitems.editor.set.recipe.ingredient.*;
 import nl.knokko.customitems.editor.set.recipe.result.*;
 import nl.knokko.customitems.encoding.RecipeEncoding;
+import nl.knokko.customitems.trouble.UnknownEncodingException;
 import nl.knokko.util.bits.BitInput;
 import nl.knokko.util.bits.BitOutput;
 
 public abstract class Recipe {
 	
-	public static Ingredient loadIngredient(BitInput input, ItemSet set) {
+	public static Ingredient loadIngredient(BitInput input, ItemSet set) throws UnknownEncodingException {
 		byte encoding = input.readByte();
 		if (encoding == RecipeEncoding.Ingredient.NONE)
 			return new NoIngredient();
@@ -45,10 +46,10 @@ public abstract class Recipe {
 			throw new UnsupportedOperationException("Advanced vanilla results are not yet supported");
 		if (encoding == RecipeEncoding.Ingredient.CUSTOM)
 			return new CustomItemIngredient(input, set);
-		throw new IllegalArgumentException("Unknown ingredient encoding: " + encoding);
+		throw new UnknownEncodingException("Ingredient", encoding);
 	}
 	
-	public static Result loadResult(BitInput input, ItemSet set) {
+	public static Result loadResult(BitInput input, ItemSet set) throws UnknownEncodingException {
 		byte encoding = input.readByte();
 		if (encoding == RecipeEncoding.Result.VANILLA_SIMPLE)
 			return new SimpleVanillaResult(input);
@@ -58,7 +59,7 @@ public abstract class Recipe {
 			throw new UnsupportedOperationException("Advanced vanilla results are not yet supported");
 		if (encoding == RecipeEncoding.Result.CUSTOM)
 			return new CustomItemResult(input, set);
-		throw new IllegalArgumentException("Unknown result encoding: " + encoding);
+		throw new UnknownEncodingException("Result", encoding);
 	}
 	
 	protected Result result;
@@ -67,7 +68,7 @@ public abstract class Recipe {
 		this.result = result;
 	}
 	
-	public Recipe(BitInput input, ItemSet set) {
+	public Recipe(BitInput input, ItemSet set) throws UnknownEncodingException {
 		result = loadResult(input, set);
 	}
 	
