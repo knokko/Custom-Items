@@ -5,7 +5,6 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.function.Consumer;
 import java.util.function.Function;
-import java.util.function.Supplier;
 
 import nl.knokko.customitems.container.fuel.CustomFuelRegistry;
 import nl.knokko.customitems.container.fuel.FuelMode;
@@ -15,6 +14,7 @@ import nl.knokko.customitems.item.CustomItem;
 import nl.knokko.customitems.recipe.ContainerRecipe;
 import nl.knokko.customitems.recipe.SCIngredient;
 import nl.knokko.customitems.trouble.UnknownEncodingException;
+import nl.knokko.customitems.util.ExceptionSupplier;
 import nl.knokko.util.bits.BitInput;
 import nl.knokko.util.bits.BitOutput;
 
@@ -54,8 +54,8 @@ public class CustomContainer {
 			BitInput input,
 			Function<String, CustomItem> itemByName,
 			Function<String, CustomFuelRegistry> fuelRegistryByName,
-			Supplier<SCIngredient> loadIngredient,
-			Supplier<Object> loadResult
+			ExceptionSupplier<SCIngredient, UnknownEncodingException> loadIngredient,
+			ExceptionSupplier<Object, UnknownEncodingException> loadResult
 	) throws UnknownEncodingException {
 		
 		byte encoding = input.readByte();
@@ -70,8 +70,8 @@ public class CustomContainer {
 			BitInput input,
 			Function<String, CustomItem> itemByName,
 			Function<String, CustomFuelRegistry> fuelRegistryByName,
-			Supplier<SCIngredient> loadIngredient,
-			Supplier<Object> loadResult
+			ExceptionSupplier<SCIngredient, UnknownEncodingException> loadIngredient,
+			ExceptionSupplier<Object, UnknownEncodingException> loadResult
 	) throws UnknownEncodingException {
 		
 		String name = input.readString();

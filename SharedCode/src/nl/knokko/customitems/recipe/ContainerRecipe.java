@@ -3,9 +3,9 @@ package nl.knokko.customitems.recipe;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.function.Consumer;
-import java.util.function.Supplier;
 
 import nl.knokko.customitems.trouble.UnknownEncodingException;
+import nl.knokko.customitems.util.ExceptionSupplier;
 import nl.knokko.util.bits.BitInput;
 import nl.knokko.util.bits.BitOutput;
 
@@ -13,8 +13,8 @@ public class ContainerRecipe {
 	
 	public static ContainerRecipe load(
 			BitInput input,
-			Supplier<SCIngredient> loadIngredient,
-			Supplier<Object> loadResult
+			ExceptionSupplier<SCIngredient, UnknownEncodingException> loadIngredient,
+			ExceptionSupplier<Object, UnknownEncodingException> loadResult
 	) throws UnknownEncodingException {
 		
 		byte encoding = input.readByte();
@@ -26,9 +26,9 @@ public class ContainerRecipe {
 	
 	private static ContainerRecipe load1(
 			BitInput input,
-			Supplier<SCIngredient> loadIngredient,
-			Supplier<Object> loadResult
-	) {
+			ExceptionSupplier<SCIngredient, UnknownEncodingException> loadIngredient,
+			ExceptionSupplier<Object, UnknownEncodingException> loadResult
+	) throws UnknownEncodingException {
 		
 		int numInputs = input.readInt();
 		Collection<InputEntry> inputs = new ArrayList<>(numInputs);

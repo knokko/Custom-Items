@@ -3,17 +3,18 @@ package nl.knokko.customitems.container.fuel;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.function.Consumer;
-import java.util.function.Supplier;
 
 import nl.knokko.customitems.recipe.SCIngredient;
 import nl.knokko.customitems.trouble.UnknownEncodingException;
+import nl.knokko.customitems.util.ExceptionSupplier;
 import nl.knokko.util.bits.BitInput;
 import nl.knokko.util.bits.BitOutput;
 
 public class CustomFuelRegistry {
 	
 	public static CustomFuelRegistry load(
-			BitInput input, Supplier<SCIngredient> loadIngredient
+			BitInput input, 
+			ExceptionSupplier<SCIngredient, UnknownEncodingException> loadIngredient
 	) throws UnknownEncodingException {
 		
 		byte encoding = input.readByte();
@@ -24,7 +25,8 @@ public class CustomFuelRegistry {
 	}
 	
 	private static CustomFuelRegistry load1(BitInput input, 
-			Supplier<SCIngredient> loadIngredient) {
+			ExceptionSupplier<SCIngredient, UnknownEncodingException> loadIngredient) 
+	throws UnknownEncodingException {
 		
 		String name = input.readString();
 		int numEntries = input.readInt();
