@@ -5,9 +5,11 @@ import java.util.Collection;
 
 import nl.knokko.customitems.container.slot.CustomSlot;
 import nl.knokko.customitems.editor.menu.edit.EditProps;
+import nl.knokko.customitems.editor.set.ItemSet;
 import nl.knokko.customitems.recipe.ContainerRecipe;
 import nl.knokko.customitems.recipe.ContainerRecipe.InputEntry;
 import nl.knokko.customitems.recipe.ContainerRecipe.OutputEntry;
+import nl.knokko.gui.color.GuiColor;
 import nl.knokko.gui.component.GuiComponent;
 import nl.knokko.gui.component.menu.GuiMenu;
 import nl.knokko.gui.component.text.IntEditField;
@@ -17,10 +19,11 @@ import nl.knokko.gui.util.Option;
 
 public class EditContainerRecipe extends GuiMenu {
 	
-	private final Iterable<CustomSlot> slots;
+	private final CustomSlot[][] slots;
 	private final Collection<ContainerRecipe> recipes;
 	private final GuiComponent returnMenu;
 	private final ContainerRecipe toModify;
+	private final ItemSet set;
 	
 	private final DynamicTextComponent errorComponent;
 	private final IntEditField durationField;
@@ -28,12 +31,14 @@ public class EditContainerRecipe extends GuiMenu {
 	private final Collection<InputEntry> inputs;
 	private final Collection<OutputEntry> outputs;
 	
-	public EditContainerRecipe(Iterable<CustomSlot> slots, Collection<ContainerRecipe> recipes, 
-			GuiComponent returnMenu, ContainerRecipe oldValues, ContainerRecipe toModify) {
+	public EditContainerRecipe(CustomSlot[][] slots, Collection<ContainerRecipe> recipes, 
+			GuiComponent returnMenu, ContainerRecipe oldValues, ContainerRecipe toModify,
+			ItemSet set) {
 		this.slots = slots;
 		this.recipes = recipes;
 		this.returnMenu = returnMenu;
 		this.toModify = toModify;
+		this.set = set;
 		
 		this.errorComponent = new DynamicTextComponent("", EditProps.ERROR);
 		
@@ -70,7 +75,8 @@ public class EditContainerRecipe extends GuiMenu {
 		addComponent(new DynamicTextComponent("Experience:", EditProps.LABEL), 0.05f, 0.525f, 0.2f, 0.575f);
 		addComponent(experienceField, 0.225f, 0.525f, 0.3f, 0.575f);
 		
-		// TODO Add UI to select the ingredients and outputs
+		addComponent(new RecipeSlotsGrid(slots, this, inputs, outputs, set), 0.35f, 0.3f, 1f, 0.9f);
+		addComponent(new MissingSlotsComponent(slots, inputs, outputs), 0.35f, 0f, 1f, 0.35f);
 		
 		addComponent(new DynamicTextButton(toModify == null ? "Create" : "Apply", 
 				EditProps.SAVE_BASE, EditProps.SAVE_HOVER, () -> {
@@ -99,5 +105,10 @@ public class EditContainerRecipe extends GuiMenu {
 			}
 			state.getWindow().setMainComponent(returnMenu);
 		}), 0.025f, 0.2f, 0.2f, 0.3f);
+	}
+	
+	@Override
+	public GuiColor getBackgroundColor() {
+		return EditProps.BACKGROUND;
 	}
 }

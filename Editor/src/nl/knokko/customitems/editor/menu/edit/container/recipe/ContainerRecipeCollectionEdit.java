@@ -7,6 +7,7 @@ import nl.knokko.customitems.container.slot.CustomSlot;
 import nl.knokko.customitems.editor.menu.edit.CollectionEdit;
 import nl.knokko.customitems.editor.menu.edit.EditProps;
 import nl.knokko.customitems.editor.menu.edit.container.EditContainer;
+import nl.knokko.customitems.editor.set.ItemSet;
 import nl.knokko.customitems.editor.set.recipe.result.CustomItemResult;
 import nl.knokko.customitems.recipe.ContainerRecipe;
 import nl.knokko.customitems.recipe.ContainerRecipe.OutputEntry;
@@ -16,25 +17,31 @@ import nl.knokko.gui.component.text.dynamic.DynamicTextButton;
 
 public class ContainerRecipeCollectionEdit extends CollectionEdit<ContainerRecipe> {
 	
-	private final Iterable<CustomSlot> slots;
+	private final CustomSlot[][] slots;
 	private final Collection<ContainerRecipe> recipes;
+	private final ItemSet set;
 
 	public ContainerRecipeCollectionEdit(
-			Iterable<CustomSlot> slots, Collection<ContainerRecipe> recipes, EditContainer editMenu
+			CustomSlot[][] slots, Collection<ContainerRecipe> recipes, 
+			EditContainer editMenu, ItemSet set
 	) {
 		super(
-				new ContainerRecipeActionHandler(slots, recipes, editMenu), 
+				new ContainerRecipeActionHandler(slots, 
+						recipes, editMenu, set), 
 				recipes
 		);
 		this.slots = slots;
 		this.recipes = recipes;
+		this.set = set;
 	}
 	
 	@Override
 	protected void addComponents() {
 		super.addComponents();
 		addComponent(new DynamicTextButton("Add recipe", EditProps.BUTTON, EditProps.HOVER, () -> {
-			state.getWindow().setMainComponent(new EditContainerRecipe(slots, recipes, this, null, null));
+			state.getWindow().setMainComponent(new EditContainerRecipe(
+					slots, recipes, this, null, null, set
+			));
 		}), 0.025f, 0.2f, 0.2f, 0.3f);
 	}
 	
@@ -45,15 +52,18 @@ public class ContainerRecipeCollectionEdit extends CollectionEdit<ContainerRecip
 
 	private static class ContainerRecipeActionHandler implements ActionHandler<ContainerRecipe> {
 
-		private final Iterable<CustomSlot> slots;
+		private final CustomSlot[][] slots;
 		private final Collection<ContainerRecipe> recipes;
 		private final EditContainer editMenu;
+		private final ItemSet set;
 		
-		ContainerRecipeActionHandler(Iterable<CustomSlot> slots, 
-				Collection<ContainerRecipe> recipes, EditContainer editMenu) {
+		ContainerRecipeActionHandler(CustomSlot[][] slots, 
+				Collection<ContainerRecipe> recipes, EditContainer editMenu,
+				ItemSet set) {
 			this.slots = slots;
 			this.recipes = recipes;
 			this.editMenu = editMenu;
+			this.set = set;
 		}
 		
 		@Override
@@ -85,7 +95,7 @@ public class ContainerRecipeCollectionEdit extends CollectionEdit<ContainerRecip
 				result.append(',');
 			}
 			result.append(')');
-			return null;
+			return result.toString();
 		}
 		
 		private GuiComponent thisMenu() {
@@ -94,12 +104,12 @@ public class ContainerRecipeCollectionEdit extends CollectionEdit<ContainerRecip
 
 		@Override
 		public GuiComponent createEditMenu(ContainerRecipe itemToEdit, GuiComponent returnMenu) {
-			return new EditContainerRecipe(slots, recipes, thisMenu(), itemToEdit, itemToEdit);
+			return new EditContainerRecipe(slots, recipes, thisMenu(), itemToEdit, itemToEdit, set);
 		}
 
 		@Override
 		public GuiComponent createCopyMenu(ContainerRecipe itemToCopy, GuiComponent returnMenu) {
-			return new EditContainerRecipe(slots, recipes, thisMenu(), itemToCopy, null);
+			return new EditContainerRecipe(slots, recipes, thisMenu(), itemToCopy, null, set);
 		}
 
 		@Override

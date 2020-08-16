@@ -91,7 +91,7 @@ public class EditContainer extends GuiMenu {
 		addComponent(persistentStorage, 0.275f, 0.3f, 0.3f, 0.325f);
 		addComponent(new DynamicTextButton("Recipes...", EditProps.BUTTON, EditProps.HOVER, () -> {
 			state.getWindow().setMainComponent(new ContainerRecipeCollectionEdit(
-					CustomContainer.slotIterable(slots.getSlots()), recipes, this)
+					slots.getSlots(), recipes, this, menu.getSet())
 			);
 		}), 0.05f, 0.225f, 0.2f, 0.275f);
 		

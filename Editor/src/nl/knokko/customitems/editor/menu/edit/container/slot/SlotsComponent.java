@@ -100,7 +100,6 @@ public class SlotsComponent extends GuiMenu {
 			// Add a + button for each row, to insert a new empty row below it
 			addComponent(new DynamicTextButton("+", EditProps.SAVE_BASE, EditProps.SAVE_HOVER, () -> {
 				CustomSlot[][] newSlots = new CustomSlot[9][numRows + 1];
-				System.out.println("fixedY is " + fixedY);
 				for (int x = 0; x < 9; x++) {
 					for (int newY = 0; newY <= fixedY; newY++) {
 						newSlots[x][newY] = slots[x][newY];

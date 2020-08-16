@@ -46,6 +46,7 @@ public class ChooseResult extends GuiMenu {
 	
 	private final ResultListener listener;
 	private final GuiComponent returnMenu;
+	private final boolean allowEmpty;
 	private final ItemSet set;
 	
 	private final DynamicTextComponent errorComponent;
@@ -53,9 +54,11 @@ public class ChooseResult extends GuiMenu {
 	
 	private Result current;
 
-	public ChooseResult(GuiComponent returnMenu, ResultListener listener, ItemSet set) {
+	public ChooseResult(GuiComponent returnMenu, ResultListener listener, 
+			boolean allowEmpty, ItemSet set) {
 		this.listener = listener;
 		this.returnMenu = returnMenu;
+		this.allowEmpty = allowEmpty;
 		this.set = set;
 		errorComponent = new DynamicTextComponent("", EditProps.ERROR);
 		amountField = new TextEditField("1", EditProps.EDIT_BASE, EditProps.EDIT_ACTIVE);
@@ -84,8 +87,14 @@ public class ChooseResult extends GuiMenu {
 				current = new DataVanillaResult(material, data, (byte) 1);
 			}));
 		}), 0.6f, 0.4f, 0.8f, 0.5f);
-		addComponent(new DynamicTextComponent("Amount: ", EditProps.LABEL), 0.4f, 0.25f, 0.55f, 0.35f);
-		addComponent(amountField, 0.6f, 0.25f, 0.7f, 0.35f);
+		if (allowEmpty) {
+			addComponent(new DynamicTextButton("Nothing", EditProps.BUTTON, EditProps.HOVER, () -> {
+				listener.onSelect(null);
+				state.getWindow().setMainComponent(returnMenu);
+			}), 0.6f, 0.25f, 0.8f, 0.35f);
+		}
+		addComponent(new DynamicTextComponent("Amount: ", EditProps.LABEL), 0.4f, 0.1f, 0.55f, 0.2f);
+		addComponent(amountField, 0.6f, 0.1f, 0.7f, 0.2f);
 		addComponent(new ConditionalTextButton("Select", EditProps.BUTTON, EditProps.HOVER, () -> {
 			try {
 				int amount = Integer.parseInt(amountField.getText());

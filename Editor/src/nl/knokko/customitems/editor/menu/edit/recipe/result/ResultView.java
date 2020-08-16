@@ -49,7 +49,7 @@ public class ResultView extends GuiMenu {
 		addComponent(new DynamicTextButton("Change", EditProps.BUTTON, EditProps.HOVER, () -> {
 			state.getWindow().setMainComponent(new ChooseResult(component.getMenu(), (Result result) -> {
 				component.setResult(result);
-			}, set));
+			}, false, set));
 		}), 0.1f, 0.3f, 0.25f, 0.4f);
 		String[] info = component.getResult().getInfo();
 		for (int index = 0; index < info.length; index++)
