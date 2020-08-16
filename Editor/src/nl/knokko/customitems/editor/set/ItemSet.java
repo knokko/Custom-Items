@@ -3250,6 +3250,7 @@ public class ItemSet implements ItemSetBase {
 	}
 	
 	// Add integrity checks
+	@SuppressWarnings("unused")
 	private void export6(BitOutput outerOutput) {
 		outerOutput.addByte(ENCODING_6);
 		
