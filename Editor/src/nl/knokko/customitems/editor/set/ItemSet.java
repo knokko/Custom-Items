@@ -2201,7 +2201,7 @@ public class ItemSet implements ItemSetBase {
 			File file = new File(Editor.getFolder() + "/" + fileName + ".cis");// cis stands for Custom Item Set
 			OutputStream fileOutput = Files.newOutputStream(file.toPath());
 			ByteArrayBitOutput output = new ByteArrayBitOutput();
-			export6(output);
+			export7(output);
 			output.terminate();
 			
 			byte[] bytes = output.getBytes();
@@ -2825,7 +2825,7 @@ public class ItemSet implements ItemSetBase {
 		}
 		try {
 			ByteArrayBitOutput output = new ByteArrayBitOutput();
-			export6(output);
+			export7(output);
 			output.terminate();
 			
 			byte[] bytes = output.getBytes();
@@ -3290,6 +3290,68 @@ public class ItemSet implements ItemSetBase {
 		output.addInt(mobDrops.size());
 		for (EntityDrop drop : mobDrops)
 			drop.save(output);
+		
+		// Finish the integrity stuff
+		byte[] contentBytes = output.getBytes();
+		outerOutput.addLong(hash(contentBytes));
+		outerOutput.addByteArray(contentBytes);
+	}
+	
+	// Add custom containers
+	private void export7(BitOutput outerOutput) {
+		outerOutput.addByte(ENCODING_7);
+		
+		ByteArrayBitOutput output = new ByteArrayBitOutput();
+		
+		// Projectiles
+		output.addInt(projectileCovers.size());
+		for (EditorProjectileCover cover : projectileCovers)
+			cover.export(output);
+		
+		output.addInt(projectiles.size());
+		for (CIProjectile projectile : projectiles)
+			projectile.toBits(output);
+
+		// Items
+		output.addInt(items.size());
+
+		// Tools can have non-tools as repair item, so the non-tools must be exported first.
+		// This way, that all repair items are available once the tools are being loaded.
+		for (CustomItem noTool : items)
+			if (!(noTool instanceof CustomTool))
+				noTool.export(output);
+
+		for (CustomItem tool : items)
+			if (tool instanceof CustomTool)
+				tool.export(output);
+
+		// Recipes
+		output.addInt(recipes.size());
+		for (Recipe recipe : recipes)
+			recipe.save(output);
+		
+		// Drops
+		output.addInt(blockDrops.size());
+		for (BlockDrop drop : blockDrops)
+			drop.save(output);
+		
+		output.addInt(mobDrops.size());
+		for (EntityDrop drop : mobDrops)
+			drop.save(output);
+		
+		// Fuel registries
+		output.addInt(fuelRegistries.size());
+		for (CustomFuelRegistry registry : fuelRegistries)
+			registry.save(output, scIngredient -> ((Ingredient)scIngredient).save(output));
+		
+		// Custom containers
+		output.addInt(containers.size());
+		for (CustomContainer container : containers) {
+			container.save(output, 
+					ingredient -> ((Ingredient)ingredient).save(output),
+					result -> ((Result)result).save(output)
+			);
+		}
 		
 		// Finish the integrity stuff
 		byte[] contentBytes = output.getBytes();
