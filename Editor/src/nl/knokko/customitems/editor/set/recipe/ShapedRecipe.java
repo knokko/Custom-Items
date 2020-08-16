@@ -29,6 +29,7 @@ import nl.knokko.customitems.editor.set.recipe.ingredient.CustomItemIngredient;
 import nl.knokko.customitems.editor.set.recipe.ingredient.Ingredient;
 import nl.knokko.customitems.editor.set.recipe.result.Result;
 import nl.knokko.customitems.encoding.RecipeEncoding;
+import nl.knokko.customitems.trouble.UnknownEncodingException;
 import nl.knokko.util.bits.BitInput;
 import nl.knokko.util.bits.BitOutput;
 
@@ -41,7 +42,7 @@ public class ShapedRecipe extends Recipe {
 		this.ingredients = ingredients;
 	}
 	
-	public ShapedRecipe(BitInput input, ItemSet set) {
+	public ShapedRecipe(BitInput input, ItemSet set) throws UnknownEncodingException {
 		super(input, set);
 		ingredients = new Ingredient[9];
 		for (int index = 0; index < ingredients.length; index++)
