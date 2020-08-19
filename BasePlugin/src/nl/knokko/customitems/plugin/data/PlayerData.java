@@ -54,6 +54,8 @@ class PlayerData {
 	
 	private long lastShootTick;
 	
+	PassiveLocation containerSelectionLocation;
+	
 	public PlayerData() {
 		wandsData = new HashMap<>();
 		
@@ -158,6 +160,6 @@ class PlayerData {
 		 * charges, there is no reason to keep data about this player because the absence of a player
 		 * entry also indicates this.
 		 */
-		return !isShooting(currentTick) && wandsData.isEmpty();
+		return !isShooting(currentTick) && wandsData.isEmpty() && containerSelectionLocation == null;
 	}
 }

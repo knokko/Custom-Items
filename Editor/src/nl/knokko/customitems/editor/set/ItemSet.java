@@ -5334,6 +5334,10 @@ public class ItemSet implements ItemSetBase {
 				}
 			}
 			
+			if (toAdd.getSelectionIcon() == null) {
+				return "You need to choose a celection icon";
+			}
+			
 			if (toAdd.getHeight() < 1) {
 				return "The height must be a positive integer";
 			} else if (toAdd.getHeight() > 6) {
@@ -5384,7 +5388,7 @@ public class ItemSet implements ItemSetBase {
 	 * changed successfully
 	 */
 	public String changeContainer(CustomContainer toModify, String newName,
-			String newDisplayName, Collection<ContainerRecipe> newRecipes,
+			SlotDisplay newSelectionIcon, Collection<ContainerRecipe> newRecipes,
 			FuelMode newFuelMode, CustomSlot[][] newSlots, 
 			VanillaContainerType newVanillaType, boolean becomesPersistent) {
 		
@@ -5394,6 +5398,10 @@ public class ItemSet implements ItemSetBase {
 				if (existing != toModify && existing.getName().equals(newName)) {
 					return "There is another container with name " + newName;
 				}
+			}
+			
+			if (newSelectionIcon == null) {
+				return "You need to choose a selection icon";
 			}
 			
 			if (newSlots[0].length < 1) {
@@ -5425,7 +5433,7 @@ public class ItemSet implements ItemSetBase {
 		}
 		
 		toModify.setName(newName);
-		toModify.setDisplayName(newDisplayName);
+		toModify.setSelectionIcon(newSelectionIcon);
 		toModify.getRecipes().clear();
 		toModify.getRecipes().addAll(newRecipes);
 		toModify.setFuelMode(newFuelMode);

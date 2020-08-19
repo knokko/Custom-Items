@@ -6,10 +6,12 @@ import java.util.Collection;
 import nl.knokko.customitems.container.CustomContainer;
 import nl.knokko.customitems.container.VanillaContainerType;
 import nl.knokko.customitems.container.fuel.FuelMode;
+import nl.knokko.customitems.container.slot.display.SlotDisplay;
 import nl.knokko.customitems.editor.menu.edit.EditMenu;
 import nl.knokko.customitems.editor.menu.edit.EditProps;
 import nl.knokko.customitems.editor.menu.edit.EnumSelect;
 import nl.knokko.customitems.editor.menu.edit.container.recipe.ContainerRecipeCollectionEdit;
+import nl.knokko.customitems.editor.menu.edit.container.slot.CreateDisplay;
 import nl.knokko.customitems.editor.menu.edit.container.slot.SlotsComponent;
 import nl.knokko.customitems.recipe.ContainerRecipe;
 import nl.knokko.gui.color.GuiColor;
@@ -27,8 +29,8 @@ public class EditContainer extends GuiMenu {
 	private final Collection<ContainerRecipe> recipes;
 	private final SlotsComponent slots;
 	private final TextEditField nameField;
-	private final TextEditField displayNameField;
 	private final CheckboxComponent persistentStorage;
+	private SlotDisplay selectionIcon;
 	private FuelMode fuelMode;
 	private VanillaContainerType vanillaType;
 	
@@ -39,12 +41,11 @@ public class EditContainer extends GuiMenu {
 		this.slots = new SlotsComponent(this, menu.getSet(), oldValues);
 		
 		String initialName;
-		String initialDisplayName;
 		boolean initialPersistentStorage;
 		this.recipes = new ArrayList<>();
 		if (oldValues != null) {
 			initialName = oldValues.getName();
-			initialDisplayName = oldValues.getDisplayName();
+			this.selectionIcon = oldValues.getSelectionIcon();
 			initialPersistentStorage = oldValues.hasPersistentStorage();
 			this.fuelMode = oldValues.getFuelMode();
 			this.vanillaType = oldValues.getVanillaType();
@@ -55,7 +56,7 @@ public class EditContainer extends GuiMenu {
 			}
 		} else {
 			initialName = "";
-			initialDisplayName = "";
+			this.selectionIcon = null;
 			initialPersistentStorage = true;
 			this.fuelMode = FuelMode.ALL;
 			this.vanillaType = VanillaContainerType.FURNACE;
@@ -63,7 +64,6 @@ public class EditContainer extends GuiMenu {
 		}
 		
 		this.nameField = new TextEditField(initialName, EditProps.EDIT_BASE, EditProps.EDIT_ACTIVE);
-		this.displayNameField = new TextEditField(initialDisplayName, EditProps.EDIT_BASE, EditProps.EDIT_ACTIVE);
 		this.persistentStorage = new CheckboxComponent(initialPersistentStorage);
 	}
 
@@ -77,8 +77,14 @@ public class EditContainer extends GuiMenu {
 		
 		addComponent(new DynamicTextComponent("Name:", EditProps.LABEL), 0.05f, 0.6f, 0.15f, 0.65f);
 		addComponent(nameField, 0.175f, 0.6f, 0.3f, 0.65f);
-		addComponent(new DynamicTextComponent("Display name:", EditProps.LABEL), 0.05f, 0.525f, 0.2f, 0.575f);
-		addComponent(displayNameField, 0.225f, 0.525f, 0.35f, 0.575f);
+		addComponent(new DynamicTextComponent("Selection icon:", EditProps.LABEL), 0.05f, 0.525f, 0.2f, 0.575f);
+		addComponent(new DynamicTextButton("Change...", EditProps.BUTTON, EditProps.HOVER, () -> {
+			state.getWindow().setMainComponent(new CreateDisplay(
+					this, 
+					newSelectionIcon -> this.selectionIcon = newSelectionIcon, 
+					true, menu.getSet().getBackingItems()
+			));
+		}), 0.225f, 0.525f, 0.3f, 0.575f);
 		addComponent(new DynamicTextComponent("Fuel mode:", EditProps.LABEL), 0.05f, 0.45f, 0.175f, 0.5f);
 		addComponent(EnumSelect.createSelectButton(FuelMode.class, newFuelMode -> {
 			this.fuelMode = newFuelMode;
@@ -100,7 +106,7 @@ public class EditContainer extends GuiMenu {
 		if (toModify != null) {
 			addComponent(new DynamicTextButton("Apply", EditProps.SAVE_BASE, EditProps.SAVE_HOVER, () -> {
 				String error = menu.getSet().changeContainer(toModify, nameField.getText(), 
-						displayNameField.getText(), recipes, fuelMode, slots.getSlots(), 
+						selectionIcon, recipes, fuelMode, slots.getSlots(), 
 						vanillaType, persistentStorage.isChecked()
 				);
 				if (error != null) {
@@ -112,7 +118,7 @@ public class EditContainer extends GuiMenu {
 		} else {
 			addComponent(new DynamicTextButton("Create", EditProps.SAVE_BASE, EditProps.SAVE_HOVER, () -> {
 				String error = menu.getSet().addContainer(new CustomContainer(
-						nameField.getText(), displayNameField.getText(), recipes, 
+						nameField.getText(), selectionIcon, recipes, 
 						fuelMode, slots.getSlots(), vanillaType, 
 						persistentStorage.isChecked())
 				);

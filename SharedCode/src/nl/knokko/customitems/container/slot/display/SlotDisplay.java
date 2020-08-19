@@ -1,5 +1,6 @@
 package nl.knokko.customitems.container.slot.display;
 
+import java.util.Arrays;
 import java.util.function.Function;
 
 import nl.knokko.customitems.item.CustomItem;
@@ -52,6 +53,18 @@ public final class SlotDisplay {
 	@Override
 	public String toString() {
 		return item.toString();
+	}
+	
+	@Override
+	public boolean equals(Object other) {
+		if (other instanceof SlotDisplay) {
+			
+			SlotDisplay display = (SlotDisplay) other;
+			return display.item.equals(item) && display.displayName.equals(displayName) &&
+					Arrays.equals(display.lore, lore) && display.amount == amount;
+		} else {
+			return false;
+		}
 	}
 	
 	public void save(BitOutput output) {

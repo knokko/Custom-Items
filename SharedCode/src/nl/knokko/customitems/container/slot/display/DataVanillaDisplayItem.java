@@ -26,6 +26,16 @@ public class DataVanillaDisplayItem implements SlotDisplayItem {
 	}
 	
 	@Override
+	public boolean equals(Object other) {
+		if (other instanceof DataVanillaDisplayItem) {
+			DataVanillaDisplayItem display = (DataVanillaDisplayItem) other;
+			return display.material == material && display.data == data;
+		} else {
+			return false;
+		}
+	}
+	
+	@Override
 	public void save(BitOutput output) {
 		output.addByte(SlotDisplayItem.Encodings.DATA_VANILLA1);
 		output.addString(material.name());

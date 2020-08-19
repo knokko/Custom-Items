@@ -51,7 +51,7 @@ import nl.knokko.util.bits.BitOutput;
 public class ContainerInstance {
 	
 	@SuppressWarnings("deprecation")
-	private static ItemStack fromDisplay(SlotDisplay display) {
+	public static ItemStack fromDisplay(SlotDisplay display) {
 		ItemStack stack;
 		if (display.getItem() instanceof CustomItemDisplayItem) {
 			stack = ((CustomItem)((CustomItemDisplayItem) display.getItem()).getItem()).create(display.getAmount());
@@ -84,7 +84,7 @@ public class ContainerInstance {
 	private static Inventory createInventory(ContainerInfo typeInfo) {
 		CustomContainer container = typeInfo.getContainer();
 		Inventory inv = Bukkit.createInventory(null, 9 * container.getHeight(), 
-				container.getDisplayName());
+				container.getSelectionIcon().getDisplayName());
 		
 		for (DecorationProps decoration : typeInfo.getDecorations()) {
 			ItemStack stack = fromDisplay(decoration.getSlotDisplay());
@@ -419,8 +419,10 @@ public class ContainerInstance {
 	private void dropAllItems(Location location, Iterable<Entry<String, Integer>> slots) {
 		slots.forEach(entry -> {
 			ItemStack stack = inventory.getItem(entry.getValue());
-			location.getWorld().dropItem(location, stack);
-			inventory.setItem(entry.getValue(), null);
+			if (!ItemUtils.isEmpty(stack)) {
+				location.getWorld().dropItem(location, stack);
+				inventory.setItem(entry.getValue(), null);
+			}
 		});
 	}
 	

@@ -1,16 +1,19 @@
 package nl.knokko.customitems.plugin.container;
 
-import java.util.ArrayList;
-import java.util.Collection;
+import java.util.List;
 
+import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
+import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.inventory.InventoryAction;
 import org.bukkit.event.inventory.InventoryClickEvent;
+import org.bukkit.event.inventory.InventoryCloseEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
+import org.bukkit.inventory.Inventory;
 
 import nl.knokko.core.plugin.item.ItemHelper;
 import nl.knokko.customitems.container.CustomContainer;
@@ -19,24 +22,42 @@ import nl.knokko.customitems.container.slot.CustomSlot;
 import nl.knokko.customitems.item.CIMaterial;
 import nl.knokko.customitems.plugin.CustomItemsPlugin;
 import nl.knokko.customitems.plugin.data.PluginData;
-import nl.knokko.customitems.plugin.set.ItemSet;
 
 public class ContainerEventHandler implements Listener {
 	
 	private static PluginData pluginData() {
 		return CustomItemsPlugin.getInstance().getData();
 	}
+	
+	@EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
+	public void onBlockBreak(BlockBreakEvent event) {
+		// Delay it to prevent the items to be dropped while the block is still there
+		Bukkit.getScheduler().scheduleSyncDelayedTask(
+				CustomItemsPlugin.getInstance(), 
+				() -> pluginData().destroyCustomContainersAt(
+						event.getBlock().getLocation()
+				)
+		);
+	}
+	
+	@EventHandler
+	public void onInventoryClose(InventoryCloseEvent event) {
+		if (event.getPlayer() instanceof Player) {
+			pluginData().clearContainerSelectionLocation((Player) event.getPlayer());
+		}
+	}
 
 	@EventHandler(priority = EventPriority.LOW, ignoreCancelled = true)
 	public void onInventoryClick(InventoryClickEvent event) {
 		
 		if (event.getWhoClicked() instanceof Player) {
+			
 			ContainerInstance customContainer = pluginData().getCustomContainer((Player) event.getWhoClicked());
 			if (customContainer != null) {
 				
 				int slotIndex = event.getRawSlot();
 				CustomContainer containerType = customContainer.getType();
-				if (slotIndex < 9 * containerType.getHeight()) {
+				if (slotIndex >= 0 && slotIndex < 9 * containerType.getHeight()) {
 					CustomSlot slot = customContainer.getType().getSlot(slotIndex % 9, slotIndex / 9);
 					
 					// Make sure slots can only be used the way they should be used
@@ -48,6 +69,21 @@ public class ContainerEventHandler implements Listener {
 						if (!slot.canInsertItems()) {
 							event.setCancelled(true);
 						}
+					} else if (
+							event.getAction() == InventoryAction.SWAP_WITH_CURSOR ||
+							
+							/*
+							 * NOTHING is an interesting case, because it can occur
+							 * when players attempt to stack stackable custom items
+							 * in a slot.
+							 * Because it's hard to predict if anything will happen
+							 * regardless, we will be safe and only allow the action
+							 * if the slot supports both insert and take actions.
+							 */
+							event.getAction() == InventoryAction.NOTHING) {
+						if (!slot.canTakeItems() || !slot.canInsertItems()) {
+							event.setCancelled(true);
+						}
 					} else {
 						
 						// Some other inventory action occurred
@@ -57,6 +93,31 @@ public class ContainerEventHandler implements Listener {
 					}
 				}
 			}
+			
+			List<CustomContainer> containerSelection = pluginData().getCustomContainerSelection(event.getWhoClicked());
+			if (containerSelection != null) {
+				
+				// Block any inventory action during container selection
+				event.setCancelled(true);
+				
+				int slotIndex = event.getRawSlot();
+				if (slotIndex == 0) {
+					Bukkit.getScheduler().scheduleSyncDelayedTask(
+							CustomItemsPlugin.getInstance(), 
+							event.getWhoClicked()::closeInventory
+					);
+					event.getWhoClicked().closeInventory();
+				} else if (slotIndex <= containerSelection.size()) {
+					CustomContainer toOpen = containerSelection.get(slotIndex - 1);
+					Bukkit.getScheduler().scheduleSyncDelayedTask(
+							CustomItemsPlugin.getInstance(), 
+							() -> pluginData().selectCustomContainer(
+									(Player) event.getWhoClicked(), 
+									toOpen
+							)
+					);
+				}
+			}
 		}
 	}
 	
@@ -64,8 +125,6 @@ public class ContainerEventHandler implements Listener {
 	public void onPlayerInteract(PlayerInteractEvent event) {
 		if (event.getAction() == Action.LEFT_CLICK_BLOCK && event.getPlayer().isSneaking()) {
 			
-			ItemSet set = CustomItemsPlugin.getInstance().getSet();
-			Collection<CustomContainer> potentialContainers = new ArrayList<>();
 			String blockName = ItemHelper.getMaterialName(event.getClickedBlock());
 			CIMaterial blockType;
 			try {
@@ -73,56 +132,15 @@ public class ContainerEventHandler implements Listener {
 			} catch (IllegalArgumentException unknownBlockTpe) {
 				blockType = null;
 			}
-			for (CustomContainer container : set.getContainers()) {
-				
-				if (container.getVanillaType() == VanillaContainerType.CRAFTING_TABLE) {
-					if (blockType == CIMaterial.CRAFTING_TABLE || blockType == CIMaterial.WORKBENCH) {
-						potentialContainers.add(container);
-					}
-				} else if (container.getVanillaType() == VanillaContainerType.FURNACE) {
-					if (blockType == CIMaterial.FURNACE || blockType == CIMaterial.BURNING_FURNACE) {
-						potentialContainers.add(container);
-					}
-				} else if (container.getVanillaType() == VanillaContainerType.ENCHANTING_TABLE) {
-					if (blockType == CIMaterial.ENCHANTING_TABLE || blockType == CIMaterial.ENCHANTMENT_TABLE) {
-						potentialContainers.add(container);
-					}
-				} else if (container.getVanillaType() == VanillaContainerType.ANVIL) {
-					if (blockType == CIMaterial.ANVIL || blockType == CIMaterial.CHIPPED_ANVIL
-							|| blockType == CIMaterial.DAMAGED_ANVIL) {
-						potentialContainers.add(container);
-					}
-				} else if (container.getVanillaType() == VanillaContainerType.LOOM) {
-					if (blockType == CIMaterial.LOOM) {
-						potentialContainers.add(container);
-					}
-				} else if (container.getVanillaType() == VanillaContainerType.BLAST_FURNACE) {
-					if (blockType == CIMaterial.BLAST_FURNACE) {
-						potentialContainers.add(container);
-					}
-				} else if (container.getVanillaType() == VanillaContainerType.SMOKER) {
-					if (blockType == CIMaterial.SMOKER) {
-						potentialContainers.add(container);
-					}
-				} else if (container.getVanillaType() == VanillaContainerType.STONE_CUTTER) {
-					if (blockType == CIMaterial.STONECUTTER) {
-						potentialContainers.add(container);
-					}
-				} else if (container.getVanillaType() == VanillaContainerType.GRINDSTONE) {
-					if (blockType == CIMaterial.GRINDSTONE) {
-						potentialContainers.add(container);
-					}
-				}
-			}
 			
-			if (potentialContainers.size() == 1) {
-				event.getPlayer().openInventory(pluginData().getCustomContainer(
-						event.getClickedBlock().getLocation(), event.getPlayer(), 
-						potentialContainers.iterator().next()
-				).getInventory()
+			VanillaContainerType vanillaType = VanillaContainerType.fromMaterial(blockType);
+			Inventory menu = pluginData().getCustomContainerMenu(
+					event.getClickedBlock().getLocation(), 
+					event.getPlayer(), vanillaType
 			);
-			} else if (potentialContainers.size() > 1) {
-				// TODO Handle this case
+			
+			if (menu != null) {
+				event.getPlayer().openInventory(menu);
 			}
 		}
 	}

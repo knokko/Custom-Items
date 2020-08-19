@@ -38,26 +38,10 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.material.MaterialData;
 
-import com.google.common.collect.Lists;
-
 import nl.knokko.core.plugin.item.ItemHelper;
 import nl.knokko.core.plugin.item.UnknownMaterialException;
 import nl.knokko.customitems.container.CustomContainer;
-import nl.knokko.customitems.container.IndicatorDomain;
-import nl.knokko.customitems.container.VanillaContainerType;
 import nl.knokko.customitems.container.fuel.CustomFuelRegistry;
-import nl.knokko.customitems.container.fuel.FuelEntry;
-import nl.knokko.customitems.container.fuel.FuelMode;
-import nl.knokko.customitems.container.slot.CustomSlot;
-import nl.knokko.customitems.container.slot.DecorationCustomSlot;
-import nl.knokko.customitems.container.slot.FuelCustomSlot;
-import nl.knokko.customitems.container.slot.FuelIndicatorCustomSlot;
-import nl.knokko.customitems.container.slot.InputCustomSlot;
-import nl.knokko.customitems.container.slot.OutputCustomSlot;
-import nl.knokko.customitems.container.slot.ProgressIndicatorCustomSlot;
-import nl.knokko.customitems.container.slot.display.DataVanillaDisplayItem;
-import nl.knokko.customitems.container.slot.display.SimpleVanillaDisplayItem;
-import nl.knokko.customitems.container.slot.display.SlotDisplay;
 import nl.knokko.customitems.damage.DamageResistances;
 import nl.knokko.customitems.drops.BlockDrop;
 import nl.knokko.customitems.drops.BlockType;
@@ -102,9 +86,6 @@ import nl.knokko.customitems.plugin.set.item.CustomWand;
 import nl.knokko.customitems.plugin.set.item.SimpleCustomItem;
 import nl.knokko.customitems.projectile.CIProjectile;
 import nl.knokko.customitems.projectile.ProjectileCover;
-import nl.knokko.customitems.recipe.ContainerRecipe;
-import nl.knokko.customitems.recipe.ContainerRecipe.InputEntry;
-import nl.knokko.customitems.recipe.ContainerRecipe.OutputEntry;
 import nl.knokko.customitems.trouble.IntegrityException;
 import nl.knokko.customitems.trouble.UnknownEncodingException;
 import nl.knokko.util.bits.BitInput;
@@ -122,6 +103,7 @@ public class ItemSet implements ItemSetBase {
 	private ProjectileCover[] projectileCovers;
 	private CIProjectile[] projectiles;
 	
+	private Collection<CustomFuelRegistry> fuelRegistries;
 	private Collection<CustomContainer> containers;
 	
 	private Drop[][] blockDropMap;
@@ -162,89 +144,17 @@ public class ItemSet implements ItemSetBase {
 			load5(input);
 		else if (encoding == SetEncoding.ENCODING_6)
 			load6(input);
+		else if (encoding == SetEncoding.ENCODING_7)
+			load7(input);
 		else
 			throw new UnknownEncodingException("ItemSet", encoding);
 		
 		errors = new ArrayList<>(0);
-		
-		// TODO Create new encoding for custom containers and load them properly
-		addCustomContainer(testContainer());
 	}
 	
 	private void addCustomContainer(CustomContainer toAdd) {
 		containerInfo.put(toAdd.getName(), new ContainerInfo(toAdd));
 		containers.add(toAdd);
-	}
-	
-	private CustomContainer testContainer() {
-		
-		CustomContainer testContainer = new CustomContainer(
-				"test_container", "Test Container", new ArrayList<>(), 
-				FuelMode.ALL, new CustomSlot[9][5], 
-				VanillaContainerType.FURNACE, true
-		);
-		
-		// Set all unusable slots to glass panes (the used ones will be overwritten)
-		SlotDisplay glassPane = new SlotDisplay(
-				new DataVanillaDisplayItem(CIMaterial.STAINED_GLASS_PANE, (byte) 7), 
-				"", new String[0], 1
-		);
-		for (int x = 0; x < 9; x++) {
-			for (int y = 0; y < testContainer.getHeight(); y++) {
-				testContainer.setSlot(new DecorationCustomSlot(glassPane), x, y);
-			}
-		}
-		
-		// Input slot + border
-		testContainer.setSlot(new InputCustomSlot("theInput"), 1, 1);
-		
-		// Fuel slot + border
-		Collection<FuelEntry> fuelRegistryEntries = new ArrayList<>(1);
-		fuelRegistryEntries.add(new FuelEntry(
-				new SimpleVanillaIngredient(CIMaterial.OBSIDIAN), 500
-		));
-		testContainer.setSlot(new FuelCustomSlot("obsidianFuel", new CustomFuelRegistry(
-				"obsidianFuel", fuelRegistryEntries)), 1, 3);
-		
-		// Output slot + border
-		testContainer.setSlot(new OutputCustomSlot("theOutput"), 7, 2);
-		
-		// Fuel indicator
-		testContainer.setSlot(new FuelIndicatorCustomSlot("obsidianFuel",
-				new SlotDisplay(new SimpleVanillaDisplayItem(CIMaterial.TORCH), 
-						"", new String[0], 64), glassPane, new IndicatorDomain()), 
-		3, 4);
-		
-		// Progress indicators
-		SlotDisplay progressIndicator = new SlotDisplay(
-				new SimpleVanillaDisplayItem(CIMaterial.BLAZE_POWDER), 
-				"", new String[0], 1
-		);
-		SlotDisplay progressPlaceholder = glassPane;
-		testContainer.setSlot(new ProgressIndicatorCustomSlot(
-				progressIndicator, progressPlaceholder, new IndicatorDomain(0, 25)), 
-		2, 2);
-		testContainer.setSlot(new ProgressIndicatorCustomSlot(
-				progressIndicator, progressPlaceholder, new IndicatorDomain(25, 50)), 
-		3, 2);
-		testContainer.setSlot(new ProgressIndicatorCustomSlot(
-				progressIndicator, progressPlaceholder, new IndicatorDomain(50, 75)), 
-		4, 2);
-		testContainer.setSlot(new ProgressIndicatorCustomSlot(
-				progressIndicator, progressPlaceholder, new IndicatorDomain(75, 100)), 
-		5, 2);
-		
-		// The recipes
-		testContainer.getRecipes().add(new ContainerRecipe(
-				Lists.newArrayList(new InputEntry("theInput", 
-						new SimpleVanillaIngredient(CIMaterial.BONE))),
-				Lists.newArrayList(new OutputEntry("theOutput",
-						ItemHelper.createStack(CIMaterial.APPLE.name(), 1))),
-				60, 60
-		));
-		
-		// Finally return the result
-		return testContainer;
 	}
 	
 	public void addError(String error) {
@@ -417,6 +327,89 @@ public class ItemSet implements ItemSetBase {
 		
 		// There are no custom containers in this encoding
 		containers = new ArrayList<>(0);
+	}
+	
+	private void load7(BitInput input) throws UnknownEncodingException, IntegrityException, UnknownMaterialException {
+		
+		long expectedHash = input.readLong();
+		byte[] content;
+		try {
+			// Catch undefined behavior
+			content = input.readByteArray();
+		} catch (Throwable t) {
+			throw new IntegrityException(t);
+		}
+		long actualHash = hash(content);
+		if (expectedHash != actualHash) {
+			throw new IntegrityException(expectedHash, actualHash);
+		}
+		
+		input = new ByteArrayBitInput(content);
+		
+		// Projectiles
+		int numProjectileCovers = input.readInt();
+		projectileCovers = new ProjectileCover[numProjectileCovers];
+		for (int index = 0; index < numProjectileCovers; index++) {
+			PluginProjectileCover cover = new PluginProjectileCover(input);
+			projectileCovers[index] = cover;
+			registerItemDamageClaim(cover);
+		}
+		
+		int numProjectiles = input.readInt();
+		projectiles = new CIProjectile[numProjectiles];
+		for (int index = 0; index < numProjectiles; index++)
+			projectiles[index] = CIProjectile.fromBits(input, this);
+		
+		// Notify the projectiles that all projectiles are loaded
+		for (CIProjectile projectile : projectiles)
+			projectile.afterProjectilesAreLoaded(this);
+		
+		// Items
+		int itemSize = input.readInt();
+		items = new CustomItem[itemSize];
+		for (int counter = 0; counter < itemSize; counter++)
+			register(loadItem(input), counter);
+
+		// Recipes
+		int recipeAmount = input.readInt();
+		recipes = new CustomRecipe[recipeAmount];
+		for (int counter = 0; counter < recipeAmount; counter++)
+			register(loadRecipe(input), counter);
+		
+		int numBlockDrops = input.readInt();
+		blockDropMap = new Drop[BlockType.AMOUNT][0];
+		for (int counter = 0; counter < numBlockDrops; counter++)
+			register(BlockDrop.load(input, this));
+		
+		int numMobDrops = input.readInt();
+		mobDropMap = new EntityDrop[CIEntityType.AMOUNT][0];
+		for (int counter = 0; counter < numMobDrops; counter++)
+			register(EntityDrop.load(input, this));
+		
+		// Custom containers & fuel registries
+		int numFuelRegistries = input.readInt();
+		fuelRegistries = new ArrayList<>(numFuelRegistries);
+		for (int counter = 0; counter < numFuelRegistries; counter++) {
+			fuelRegistries.add(loadFuelRegistry(input));
+		}
+		
+		int numContainers = input.readInt();
+		containers = new ArrayList<>(numContainers);
+		for (int counter = 0; counter < numContainers; counter++) {
+			addCustomContainer(loadContainer(input));
+		}
+	}
+	
+	private CustomFuelRegistry loadFuelRegistry(BitInput input) throws UnknownEncodingException {
+		return CustomFuelRegistry.load(input, () -> loadIngredient(input));
+	}
+	
+	private CustomContainer loadContainer(BitInput input) throws UnknownEncodingException {
+		return CustomContainer.load(input, 
+				this::getCustomItemByName, this::getFuelRegistryByName, 
+				() -> loadIngredient(input),
+				() -> loadResult(input)
+		);
 	}
 
 	private CustomItem loadItem(BitInput input) throws UnknownEncodingException {
@@ -1561,6 +1554,13 @@ public class ItemSet implements ItemSetBase {
 		for (ProjectileCover cover : projectileCovers)
 			if (cover.name.equals(name))
 				return cover;
+		return null;
+	}
+	
+	public CustomFuelRegistry getFuelRegistryByName(String name) {
+		for (CustomFuelRegistry fuelRegistry : fuelRegistries)
+			if (fuelRegistry.getName().equals(name))
+				return fuelRegistry;
 		return null;
 	}
 }

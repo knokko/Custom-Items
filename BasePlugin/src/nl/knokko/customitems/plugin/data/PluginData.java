@@ -4,7 +4,9 @@ import java.io.File;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.nio.file.Files;
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedList;
@@ -17,14 +19,20 @@ import java.util.logging.Level;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Sound;
+import org.bukkit.entity.HumanEntity;
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.ItemMeta;
 
+import nl.knokko.core.plugin.item.ItemHelper;
 import nl.knokko.customitems.container.CustomContainer;
+import nl.knokko.customitems.container.VanillaContainerType;
 import nl.knokko.customitems.container.slot.CustomSlot;
 import nl.knokko.customitems.container.slot.FuelCustomSlot;
 import nl.knokko.customitems.container.slot.InputCustomSlot;
 import nl.knokko.customitems.container.slot.OutputCustomSlot;
+import nl.knokko.customitems.item.CIMaterial;
 import nl.knokko.customitems.plugin.CustomItemsPlugin;
 import nl.knokko.customitems.plugin.container.ContainerInfo;
 import nl.knokko.customitems.plugin.container.ContainerInstance;
@@ -120,7 +128,7 @@ public class PluginData {
 			
 			if (typeInfo != null) {
 				ContainerInstance instance = ContainerInstance.load1(input, typeInfo);
-				ContainerLocation location = new ContainerLocation(worldId, typeInfo.getContainer(), x, y, z);
+				ContainerLocation location = new ContainerLocation(new PassiveLocation(worldId, x, y, z), typeInfo.getContainer());
 				persistentContainers.put(location, instance);
 			} else {
 				ContainerInstance.discard1(input);
@@ -139,6 +147,8 @@ public class PluginData {
 	// Non-persisting data
 	private Collection<TempContainerInstance> tempContainers;
 	private List<Player> shootingPlayers;
+	private Map<VanillaContainerType, List<CustomContainer>> containerTypeMap;
+	private Map<VanillaContainerType, Inventory> containerSelectionMap;
 
 	private PluginData() {
 		playerData = new HashMap<>();
@@ -160,11 +170,59 @@ public class PluginData {
 	private void init() {
 		tempContainers = new LinkedList<>();
 		shootingPlayers = new LinkedList<>();
+		initContainerTypeMap();
 		
 		CustomItemsPlugin plugin = CustomItemsPlugin.getInstance();
 		Bukkit.getScheduler().scheduleSyncRepeatingTask(plugin, this::update, 1, 1);
 		Bukkit.getScheduler().scheduleSyncRepeatingTask(plugin, this::quickClean, 50, 10);
 		Bukkit.getScheduler().scheduleSyncRepeatingTask(plugin, this::clean, 200, 40);
+	}
+	
+	private void initContainerTypeMap() {
+		containerTypeMap = new EnumMap<>(VanillaContainerType.class);
+		containerSelectionMap = new EnumMap<>(VanillaContainerType.class);
+		
+		ItemSet set = CustomItemsPlugin.getInstance().getSet();
+		for (VanillaContainerType vanillaType : VanillaContainerType.values()) {
+			
+			List<CustomContainer> containersForType = new ArrayList<>();
+			for (CustomContainer container : set.getContainers()) {
+				if (container.getVanillaType() == vanillaType) {
+					containersForType.add(container);
+				}
+			}
+			
+			containerTypeMap.put(vanillaType, containersForType);
+			if (containersForType.size() > 1) {
+				containerSelectionMap.put(vanillaType, createContainerSelectionMenu(containersForType));
+			}
+		}
+	}
+	
+	private Inventory createContainerSelectionMenu(
+			List<CustomContainer> containers) {
+		int invSize = 1 + containers.size();
+		if (invSize % 9 != 0) {
+			invSize = 9 + 9 * (invSize / 9);
+		}
+		
+		Inventory menu = Bukkit.createInventory(null, invSize, "Choose custom container");
+		{
+			ItemStack cancelStack = ItemHelper.createStack(CIMaterial.BARRIER.name(), 1);
+			ItemMeta meta = cancelStack.getItemMeta();
+			meta.setDisplayName("Cancel");
+			cancelStack.setItemMeta(meta);
+			menu.setItem(0, cancelStack);
+		}
+		
+		for (int listIndex = 0; listIndex < containers.size(); listIndex++) {
+			int invIndex = listIndex + 1;
+			CustomContainer container = containers.get(listIndex);
+			
+			menu.setItem(invIndex, ContainerInstance.fromDisplay(container.getSelectionIcon()));
+		}
+		
+		return menu;
 	}
 	
 	private void update() {
@@ -318,9 +376,9 @@ public class PluginData {
 			
 			// Save container location
 			ContainerLocation loc = entry.getKey();
-			output.addLong(loc.worldId.getMostSignificantBits());
-			output.addLong(loc.worldId.getLeastSignificantBits());
-			output.addInts(loc.x, loc.y, loc.z);
+			output.addLong(loc.location.getWorldId().getMostSignificantBits());
+			output.addLong(loc.location.getWorldId().getLeastSignificantBits());
+			output.addInts(loc.location.getX(), loc.location.getY(), loc.location.getZ());
 			output.addString(loc.type.getName());
 			
 			// Save container state
@@ -412,41 +470,117 @@ public class PluginData {
 		}
 	}
 	
+	public Inventory getCustomContainerMenu(
+			Location location, Player player, VanillaContainerType containerType
+	) {
+		
+		if (containerType == null) {
+			return null;
+		}
+		
+		List<CustomContainer> correspondingContainers = containerTypeMap.get(containerType);
+		if (correspondingContainers.isEmpty()) {
+			return null;
+		} else if (correspondingContainers.size() == 1) {
+			return getCustomContainer(
+					location, player, correspondingContainers.get(0)
+			).getInventory();
+		} else {
+			PlayerData pd = getPlayerData(player);
+			pd.containerSelectionLocation = new PassiveLocation(location);
+			return containerSelectionMap.get(containerType);
+		}
+	}
+	
+	public List<CustomContainer> getCustomContainerSelection(HumanEntity player) {
+		for (Entry<VanillaContainerType, Inventory> entry : containerSelectionMap.entrySet()) {
+			if (entry.getValue().getViewers().contains(player)) {
+				return containerTypeMap.get(entry.getKey());
+			}
+		}
+		
+		return null;
+	}
+	
+	public void selectCustomContainer(Player player, CustomContainer selected) {
+		PlayerData pd = getPlayerData(player);
+		if (pd.containerSelectionLocation == null) {
+			throw new IllegalStateException("Player " + player + " hasn't opened any container selection");
+		}
+		
+		Location containerLocation = pd.containerSelectionLocation.toBukkitLocation();
+		pd.containerSelectionLocation = null;
+		CIMaterial blockMaterial = CIMaterial.valueOf(
+				ItemHelper.getMaterialName(containerLocation.getBlock())
+		);
+		VanillaContainerType vanillaType = VanillaContainerType.fromMaterial(blockMaterial);
+		
+		/*
+		 * It may happen that a player opens the container selection, but that the
+		 * block is broken before the player makes his choice. That situation would
+		 * cause a somewhat corrupted state, which is avoided by simply closing the
+		 * players inventory.
+		 */
+		if (vanillaType == selected.getVanillaType()) {
+			player.openInventory(getCustomContainer(
+					containerLocation, player, selected
+			).getInventory());
+		} else {
+			player.closeInventory();
+		}
+	}
+	
+	public void clearContainerSelectionLocation(Player player) {
+		getPlayerData(player).containerSelectionLocation = null;
+	}
+	
+	public void destroyCustomContainersAt(Location location) {
+		
+		Iterator<Entry<ContainerLocation, ContainerInstance>> persistentIterator = 
+				persistentContainers.entrySet().iterator();
+		PassiveLocation passiveLocation = new PassiveLocation(location);
+		
+		while (persistentIterator.hasNext()) {
+			Entry<ContainerLocation, ContainerInstance> entry = persistentIterator.next();
+			
+			// Only the containers at this exact location are affected
+			if (passiveLocation.equals(entry.getKey().location)) {
+				
+				// Scan over all slots that the players can access in any way
+				entry.getValue().dropAllItems(location);
+				persistentIterator.remove();
+			}
+		}
+	}
+	
 	private static class ContainerLocation {
 		
-		final UUID worldId;
-		final int x, y, z;
+		final PassiveLocation location;
 		
 		final CustomContainer type;
 		
-		ContainerLocation(UUID worldId, CustomContainer type, int x, int y, int z){
-			this.worldId = worldId;
+		ContainerLocation(PassiveLocation location, CustomContainer type){
+			this.location = location;
 			this.type = type;
-			if (worldId == null) throw new NullPointerException("worldId");
 			if (type == null) throw new NullPointerException("type");
-			this.x = x;
-			this.y = y;
-			this.z = z;
+			if (location == null) throw new NullPointerException("location");
 		}
 		
 		ContainerLocation(Location location, CustomContainer type) {
-			this(location.getWorld().getUID(), type, 
-					location.getBlockX(), location.getBlockY(), location.getBlockZ()
-			);
+			this(new PassiveLocation(location), type);
 		}
 		
 		@Override
 		public int hashCode() {
-			return worldId.hashCode() + 7 * x - 17 * y + 43 * z - 71 * type.getName().hashCode();
+			return 17 * location.hashCode() - 71 * type.getName().hashCode();
 		}
 		
 		@Override
 		public boolean equals(Object other) {
 			if (other instanceof ContainerLocation) {
 				ContainerLocation loc = (ContainerLocation) other;
-				return loc.worldId.equals(worldId) && 
-						loc.type.getName().equals(type.getName()) &&
-						loc.x == x && loc.y == y && loc.z == z;
+				return loc.type.getName().equals(type.getName()) && 
+						loc.location.equals(location);
 			} else {
 				return false;
 			}

@@ -10,6 +10,9 @@ import nl.knokko.customitems.container.fuel.CustomFuelRegistry;
 import nl.knokko.customitems.container.fuel.FuelMode;
 import nl.knokko.customitems.container.slot.CustomSlot;
 import nl.knokko.customitems.container.slot.EmptyCustomSlot;
+import nl.knokko.customitems.container.slot.display.SimpleVanillaDisplayItem;
+import nl.knokko.customitems.container.slot.display.SlotDisplay;
+import nl.knokko.customitems.item.CIMaterial;
 import nl.knokko.customitems.item.CustomItem;
 import nl.knokko.customitems.recipe.ContainerRecipe;
 import nl.knokko.customitems.recipe.SCIngredient;
@@ -75,7 +78,7 @@ public class CustomContainer {
 	) throws UnknownEncodingException {
 		
 		String name = input.readString();
-		String displayName = input.readString();
+		SlotDisplay selectionIcon = SlotDisplay.load(input, itemByName);
 		
 		int numRecipes = input.readInt();
 		Collection<ContainerRecipe> recipes = new ArrayList<>(numRecipes);
@@ -101,7 +104,7 @@ public class CustomContainer {
 		VanillaContainerType vanillaType = VanillaContainerType.valueOf(input.readString());
 		boolean persistentStorage = input.readBoolean();
 		
-		return new CustomContainer(name, displayName, recipes, fuelMode,
+		return new CustomContainer(name, selectionIcon, recipes, fuelMode,
 				slots, vanillaType, persistentStorage);
 	}
 	
@@ -109,7 +112,7 @@ public class CustomContainer {
 	private static final int WIDTH = 9;
 	
 	private String name;
-	private String displayName;
+	private SlotDisplay selectionIcon;
 	
 	private CustomSlot[][] slots;
 	
@@ -122,15 +125,19 @@ public class CustomContainer {
 	private boolean persistentStorage;
 	
 	public CustomContainer(String name) {
-		this(name, name, new ArrayList<>(), FuelMode.ALL, new CustomSlot[9][6], 
-				VanillaContainerType.CRAFTING_TABLE, false);
+		this(name, 
+				new SlotDisplay(new SimpleVanillaDisplayItem(CIMaterial.FURNACE), 
+						name, new String[0], 1), 
+				new ArrayList<>(), FuelMode.ALL, new CustomSlot[9][6], 
+				VanillaContainerType.CRAFTING_TABLE, false
+		);
 	}
 	
-	public CustomContainer(String name, String displayName, 
+	public CustomContainer(String name, SlotDisplay selectionIcon, 
 			Collection<ContainerRecipe> recipes, FuelMode fuelMode, 
 			CustomSlot[][] slots, VanillaContainerType type, boolean persistentStorage) {
 		this.name = name;
-		this.displayName = displayName;
+		this.selectionIcon = selectionIcon;
 		this.recipes = recipes;
 		this.fuelMode = fuelMode;
 		this.slots = slots;
@@ -159,7 +166,7 @@ public class CustomContainer {
 	) {
 		output.addByte(Encodings.ENCODING1);
 		output.addString(name);
-		output.addString(displayName);
+		selectionIcon.save(output);
 		output.addInt(recipes.size());
 		for (ContainerRecipe recipe : recipes) {
 			recipe.save(output, saveIngredient, saveResult);
@@ -179,16 +186,16 @@ public class CustomContainer {
 		return name;
 	}
 	
-	public String getDisplayName() {
-		return displayName;
+	public SlotDisplay getSelectionIcon() {
+		return selectionIcon;
 	}
 	
 	public void setName(String newName) {
 		name = newName;
 	}
 	
-	public void setDisplayName(String newName) {
-		displayName = newName;
+	public void setSelectionIcon(SlotDisplay newSelectionIcon) {
+		selectionIcon = newSelectionIcon;
 	}
 	
 	public VanillaContainerType getVanillaType() {

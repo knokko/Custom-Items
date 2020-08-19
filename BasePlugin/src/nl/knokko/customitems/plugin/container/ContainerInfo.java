@@ -56,7 +56,6 @@ public class ContainerInfo {
 				if (slot instanceof FuelCustomSlot) {
 					FuelCustomSlot fuelSlot = (FuelCustomSlot) slot;
 					fuelSlots.put(fuelSlot.getName(), invIndex);
-					System.out.println("The name of the fuelSlot is " + fuelSlot.getName());
 					fuelRegistries.put(fuelSlot.getName(), fuelSlot.getRegistry());
 				} else if (slot instanceof FuelIndicatorCustomSlot) {
 					FuelIndicatorCustomSlot indicatorSlot = (FuelIndicatorCustomSlot) slot;

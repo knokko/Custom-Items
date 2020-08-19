@@ -26,6 +26,12 @@ public class CustomItemDisplayItem implements SlotDisplayItem {
 	}
 	
 	@Override
+	public boolean equals(Object other) {
+		return other instanceof CustomItemDisplayItem && 
+				((CustomItemDisplayItem)other).item == item;
+	}
+	
+	@Override
 	public void save(BitOutput output) {
 		output.addByte(SlotDisplayItem.Encodings.CUSTOM1);
 		output.addString(item.getName());

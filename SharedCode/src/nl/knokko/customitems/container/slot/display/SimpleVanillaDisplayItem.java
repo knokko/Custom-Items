@@ -23,6 +23,12 @@ public class SimpleVanillaDisplayItem implements SlotDisplayItem {
 	}
 	
 	@Override
+	public boolean equals(Object other) {
+		return other instanceof SimpleVanillaDisplayItem &&
+				((SimpleVanillaDisplayItem)other).material == material;
+	}
+	
+	@Override
 	public void save(BitOutput output) {
 		output.addByte(SlotDisplayItem.Encodings.SIMPLE_VANILLA1);
 		output.addString(material.name());
