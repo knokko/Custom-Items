@@ -32,6 +32,16 @@ import nl.knokko.customitems.test.TestHelper;
 import nl.knokko.customitems.trouble.UnknownEncodingException;
 
 public class TestCustomContainer {
+	
+	private static SlotDisplay selectionIcon() {
+		return new SlotDisplay(
+				new SimpleVanillaDisplayItem(CIMaterial.ANVIL), 
+				"Test Container Icon", new String[] {
+						"Just some example lore",
+						"With 2 lines!"
+				}, 5
+		);
+	}
 
 	@Test
 	public void testSaveLoad() {
@@ -49,7 +59,7 @@ public class TestCustomContainer {
 						
 						// General properties
 						assertEquals("test_container", container.getName());
-						assertEquals("Test Container", container.getDisplayName());
+						assertEquals(selectionIcon(), container.getSelectionIcon());
 						assertEquals(FuelMode.ANY, container.getFuelMode());
 						assertEquals(VanillaContainerType.BLAST_FURNACE, container.getVanillaType());
 						assertTrue(container.hasPersistentStorage());
@@ -157,7 +167,7 @@ public class TestCustomContainer {
 				new SlotDisplay(new CustomItemDisplayItem(new TestCustomItem("another")), "", new String[0], 2),
 				new IndicatorDomain(1, 2));
 		return new CustomContainer(
-				"test_container", "Test Container", 
+				"test_container", selectionIcon(), 
 				recipes, FuelMode.ANY, slots, 
 				VanillaContainerType.BLAST_FURNACE, true
 		);
