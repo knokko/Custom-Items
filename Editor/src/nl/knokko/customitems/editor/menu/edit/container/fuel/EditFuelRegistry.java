@@ -74,7 +74,7 @@ public class EditFuelRegistry extends GuiMenu {
 					errorComponent.setText(error);
 					errorComponent.setProperties(EditProps.ERROR);
 				} else {
-					state.getWindow().setMainComponent(new FuelRegistryCollectionEdit(returnMenu, set));
+					state.getWindow().setMainComponent(returnMenu);
 				}
 			}), 0.025f, 0.1f, 0.15f, 0.2f);
 		} else {
@@ -84,7 +84,7 @@ public class EditFuelRegistry extends GuiMenu {
 					errorComponent.setProperties(EditProps.ERROR);
 					errorComponent.setText(error);
 				} else
-					state.getWindow().setMainComponent(new FuelRegistryCollectionEdit(returnMenu, set));
+					state.getWindow().setMainComponent(returnMenu);
 			}), 0.025f, 0.1f, 0.15f, 0.2f);
 		}
 	}
