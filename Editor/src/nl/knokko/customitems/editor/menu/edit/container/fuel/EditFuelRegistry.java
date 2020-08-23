@@ -5,6 +5,7 @@ import java.util.Collection;
 
 import nl.knokko.customitems.container.fuel.CustomFuelRegistry;
 import nl.knokko.customitems.container.fuel.FuelEntry;
+import nl.knokko.customitems.editor.HelpButtons;
 import nl.knokko.customitems.editor.menu.edit.EditProps;
 import nl.knokko.customitems.editor.set.ItemSet;
 import nl.knokko.gui.color.GuiColor;
@@ -87,6 +88,7 @@ public class EditFuelRegistry extends GuiMenu {
 					state.getWindow().setMainComponent(returnMenu);
 			}), 0.025f, 0.1f, 0.15f, 0.2f);
 		}
+		HelpButtons.addHelpLink(this, "edit menu/containers/fuel registries/edit.html");
 	}
 
 }

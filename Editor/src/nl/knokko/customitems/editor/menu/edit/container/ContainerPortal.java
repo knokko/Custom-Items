@@ -35,7 +35,6 @@ public class ContainerPortal extends GuiMenu {
 			state.getWindow().setMainComponent(new ContainerCollectionEdit(menu));
 		}), 0.7f, 0.45f, 0.9f, 0.55f);
 		
-		// TODO Make the actual webpage!
 		HelpButtons.addHelpLink(this, "edit%20menu/containers/index.html");
 	}
 }

@@ -4,6 +4,7 @@ import java.awt.image.BufferedImage;
 import java.util.Collection;
 
 import nl.knokko.customitems.container.slot.CustomSlot;
+import nl.knokko.customitems.editor.HelpButtons;
 import nl.knokko.customitems.editor.menu.edit.CollectionEdit;
 import nl.knokko.customitems.editor.menu.edit.EditProps;
 import nl.knokko.customitems.editor.menu.edit.container.EditContainer;
@@ -43,6 +44,7 @@ public class ContainerRecipeCollectionEdit extends CollectionEdit<ContainerRecip
 					slots, recipes, this, null, null, set
 			));
 		}), 0.025f, 0.2f, 0.2f, 0.3f);
+		HelpButtons.addHelpLink(this, "edit menu/containers/recipes/overview.html");
 	}
 	
 	@Override

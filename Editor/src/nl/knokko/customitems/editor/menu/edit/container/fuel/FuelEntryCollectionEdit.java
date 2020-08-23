@@ -59,7 +59,6 @@ public class FuelEntryCollectionEdit extends QuickCollectionEdit<FuelEntry> {
 
 	@Override
 	protected String getHelpPage() {
-		// TODO Write help page
-		return null;
+		return "edit menu/containers/fuel registries/entries.html";
 	}
 }

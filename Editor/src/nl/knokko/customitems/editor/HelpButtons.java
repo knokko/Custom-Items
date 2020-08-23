@@ -11,6 +11,9 @@ import nl.knokko.gui.component.text.dynamic.DynamicTextButton;
 public class HelpButtons {
 	
 	public static void openWebpage(String urlString) {
+		// Replace all spaces by %20
+		urlString = urlString.replaceAll(" ", "%20");
+		
 		URL url;
 		try {
 			url = new URL(urlString);

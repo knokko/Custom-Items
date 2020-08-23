@@ -5,6 +5,7 @@ import java.util.function.Consumer;
 import nl.knokko.customitems.container.slot.CustomSlot;
 import nl.knokko.customitems.container.slot.DecorationCustomSlot;
 import nl.knokko.customitems.container.slot.EmptyCustomSlot;
+import nl.knokko.customitems.editor.HelpButtons;
 import nl.knokko.customitems.editor.menu.edit.EditProps;
 import nl.knokko.customitems.editor.set.ItemSet;
 import nl.knokko.gui.color.GuiColor;
@@ -69,6 +70,7 @@ public class CreateSlot extends GuiMenu {
 					returnMenu, changeSlot, set.getBackingItems()
 			));
 		}), 0.6f, 0.15f, 0.9f, 0.2f);
+		HelpButtons.addHelpLink(this, "edit menu/containers/slots/create.html");
 	}
 
 	@Override

@@ -6,6 +6,7 @@ import nl.knokko.customitems.container.IndicatorDomain;
 import nl.knokko.customitems.container.slot.CustomSlot;
 import nl.knokko.customitems.container.slot.ProgressIndicatorCustomSlot;
 import nl.knokko.customitems.container.slot.display.SlotDisplay;
+import nl.knokko.customitems.editor.HelpButtons;
 import nl.knokko.customitems.editor.menu.edit.EditProps;
 import nl.knokko.customitems.editor.set.item.CustomItem;
 import nl.knokko.gui.color.GuiColor;
@@ -92,6 +93,7 @@ public class CreateCraftingIndicatorSlot extends GuiMenu {
 			));
 			state.getWindow().setMainComponent(returnMenu);
 		}), 0.025f, 0.2f, 0.15f, 0.3f);
+		HelpButtons.addHelpLink(this, "edit menu/containers/slots/crafting progress indicator.html");
 	}
 
 	@Override

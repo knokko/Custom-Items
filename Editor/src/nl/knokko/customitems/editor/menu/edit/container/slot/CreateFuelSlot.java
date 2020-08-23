@@ -5,6 +5,7 @@ import java.util.function.Consumer;
 import nl.knokko.customitems.container.fuel.CustomFuelRegistry;
 import nl.knokko.customitems.container.slot.CustomSlot;
 import nl.knokko.customitems.container.slot.FuelCustomSlot;
+import nl.knokko.customitems.editor.HelpButtons;
 import nl.knokko.customitems.editor.menu.edit.CollectionSelect;
 import nl.knokko.customitems.editor.menu.edit.EditProps;
 import nl.knokko.customitems.editor.menu.edit.container.fuel.EditFuelRegistry;
@@ -79,6 +80,7 @@ public class CreateFuelSlot extends GuiMenu {
 			submitSlot.accept(new FuelCustomSlot(nameField.getText(), pChosenRegistry[0]));
 			state.getWindow().setMainComponent(returnMenu);
 		}), 0.025f, 0.2f, 0.2f, 0.3f);
+		HelpButtons.addHelpLink(this, "edit menu/containers/slots/fuel.html");
 	}
 
 	@Override

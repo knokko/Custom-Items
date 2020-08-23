@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 
 import nl.knokko.customitems.container.slot.CustomSlot;
+import nl.knokko.customitems.editor.HelpButtons;
 import nl.knokko.customitems.editor.menu.edit.EditProps;
 import nl.knokko.customitems.editor.set.ItemSet;
 import nl.knokko.customitems.recipe.ContainerRecipe;
@@ -105,6 +106,7 @@ public class EditContainerRecipe extends GuiMenu {
 			}
 			state.getWindow().setMainComponent(returnMenu);
 		}), 0.025f, 0.2f, 0.2f, 0.3f);
+		HelpButtons.addHelpLink(this, "edit menu/containers/recipes/edit.html");
 	}
 	
 	@Override

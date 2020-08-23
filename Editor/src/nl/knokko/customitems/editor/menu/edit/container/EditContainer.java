@@ -7,6 +7,7 @@ import nl.knokko.customitems.container.CustomContainer;
 import nl.knokko.customitems.container.VanillaContainerType;
 import nl.knokko.customitems.container.fuel.FuelMode;
 import nl.knokko.customitems.container.slot.display.SlotDisplay;
+import nl.knokko.customitems.editor.HelpButtons;
 import nl.knokko.customitems.editor.menu.edit.EditMenu;
 import nl.knokko.customitems.editor.menu.edit.EditProps;
 import nl.knokko.customitems.editor.menu.edit.EnumSelect;
@@ -129,6 +130,7 @@ public class EditContainer extends GuiMenu {
 				}
 			}), 0.025f, 0.1f, 0.175f, 0.2f);
 		}
+		HelpButtons.addHelpLink(this, "edit menu/containers/edit.html");
 	}
 
 	@Override

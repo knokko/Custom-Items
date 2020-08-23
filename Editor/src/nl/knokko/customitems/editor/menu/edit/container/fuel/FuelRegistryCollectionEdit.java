@@ -3,6 +3,7 @@ package nl.knokko.customitems.editor.menu.edit.container.fuel;
 import java.awt.image.BufferedImage;
 
 import nl.knokko.customitems.container.fuel.CustomFuelRegistry;
+import nl.knokko.customitems.editor.HelpButtons;
 import nl.knokko.customitems.editor.menu.edit.CollectionEdit;
 import nl.knokko.customitems.editor.menu.edit.EditProps;
 import nl.knokko.customitems.editor.set.ItemSet;
@@ -25,6 +26,7 @@ public class FuelRegistryCollectionEdit extends CollectionEdit<CustomFuelRegistr
 		addComponent(new DynamicTextButton("Add new", EditProps.BUTTON, EditProps.HOVER, () -> {
 			state.getWindow().setMainComponent(new EditFuelRegistry(this, set, null, null));
 		}), 0.05f, 0.2f, 0.2f, 0.3f);
+		HelpButtons.addHelpLink(this, "edit menu/containers/fuel registries/overview.html");
 	}
 	
 	@Override

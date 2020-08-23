@@ -7,6 +7,7 @@ import nl.knokko.customitems.container.slot.display.DataVanillaDisplayItem;
 import nl.knokko.customitems.container.slot.display.SimpleVanillaDisplayItem;
 import nl.knokko.customitems.container.slot.display.SlotDisplay;
 import nl.knokko.customitems.container.slot.display.SlotDisplayItem;
+import nl.knokko.customitems.editor.HelpButtons;
 import nl.knokko.customitems.editor.menu.edit.CollectionSelect;
 import nl.knokko.customitems.editor.menu.edit.EditProps;
 import nl.knokko.customitems.editor.menu.edit.select.item.SelectDataVanillaItem;
@@ -105,6 +106,7 @@ public class CreateDisplay extends GuiMenu {
 			setDisplay.accept(new SlotDisplay(pDisplayItem[0], displayNameField.getText(), pLore[0], amount.getValue()));
 			state.getWindow().setMainComponent(returnMenu);
 		}), 0.025f, 0.2f, 0.15f, 0.3f);
+		HelpButtons.addHelpLink(this, "edit menu/containers/slots/display.html");
 	}
 
 	@Override

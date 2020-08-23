@@ -3,6 +3,7 @@ package nl.knokko.customitems.editor.menu.edit.container;
 import java.awt.image.BufferedImage;
 
 import nl.knokko.customitems.container.CustomContainer;
+import nl.knokko.customitems.editor.HelpButtons;
 import nl.knokko.customitems.editor.menu.edit.CollectionEdit;
 import nl.knokko.customitems.editor.menu.edit.EditMenu;
 import nl.knokko.customitems.editor.menu.edit.EditProps;
@@ -25,6 +26,7 @@ public class ContainerCollectionEdit extends CollectionEdit<CustomContainer> {
 		addComponent(new DynamicTextButton("Create new", EditProps.BUTTON, EditProps.HOVER, () -> {
 			state.getWindow().setMainComponent(new EditContainer(menu, null, null));
 		}), 0.025f, 0.3f, 0.2f, 0.4f);
+		HelpButtons.addHelpLink(this, "edit%20menu/containers/overview.html");
 	}
 	
 	@Override
