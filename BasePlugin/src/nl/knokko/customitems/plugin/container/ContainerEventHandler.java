@@ -19,6 +19,7 @@ import nl.knokko.core.plugin.item.ItemHelper;
 import nl.knokko.customitems.container.CustomContainer;
 import nl.knokko.customitems.container.VanillaContainerType;
 import nl.knokko.customitems.container.slot.CustomSlot;
+import nl.knokko.customitems.container.slot.OutputCustomSlot;
 import nl.knokko.customitems.item.CIMaterial;
 import nl.knokko.customitems.plugin.CustomItemsPlugin;
 import nl.knokko.customitems.plugin.data.PluginData;
@@ -52,13 +53,21 @@ public class ContainerEventHandler implements Listener {
 		
 		if (event.getWhoClicked() instanceof Player) {
 			
-			ContainerInstance customContainer = pluginData().getCustomContainer((Player) event.getWhoClicked());
+			Player player = (Player) event.getWhoClicked();
+			
+			ContainerInstance customContainer = pluginData().getCustomContainer(player);
 			if (customContainer != null) {
 				
 				int slotIndex = event.getRawSlot();
 				CustomContainer containerType = customContainer.getType();
 				if (slotIndex >= 0 && slotIndex < 9 * containerType.getHeight()) {
 					CustomSlot slot = customContainer.getType().getSlot(slotIndex % 9, slotIndex / 9);
+					
+					if (customContainer.getStoredExperience() > 0 && slot instanceof OutputCustomSlot) {
+						player.giveExp(customContainer.getStoredExperience());
+						customContainer.clearStoredExperience();
+						// TODO Test experience!
+					}
 					
 					// Make sure slots can only be used the way they should be used
 					if (isTake(event.getAction())) {

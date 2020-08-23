@@ -245,6 +245,8 @@ public class ContainerInstance {
 		
 		int craftingProgress = input.readInt();
 		
+		int storedExperience = input.readInt();
+		
 		/* Now that we have gathered all information, it's time to distribute the
 		 * loaded item stacks over the container slots. This process is complex
 		 * because the container might not have the exact same configuration as the
@@ -304,6 +306,7 @@ public class ContainerInstance {
 		
 		// This one is simple
 		instance.currentCraftingProgress = craftingProgress;
+		instance.storedExperience = storedExperience;
 		
 		return instance;
 	}
@@ -324,6 +327,8 @@ public class ContainerInstance {
 	
 	private ContainerRecipe currentRecipe;
 	
+	private int storedExperience;
+	
 	public ContainerInstance(ContainerInfo typeInfo) {
 		if (typeInfo == null) throw new NullPointerException("typeInfo");
 		this.typeInfo = typeInfo;
@@ -333,6 +338,14 @@ public class ContainerInstance {
 		this.initFuelSlots();
 		
 		this.currentCraftingProgress = 0;
+	}
+	
+	public int getStoredExperience() {
+		return storedExperience;
+	}
+	
+	public void clearStoredExperience() {
+		storedExperience = 0;
 	}
 	
 	private void initFuelSlots() {
@@ -397,6 +410,9 @@ public class ContainerInstance {
 		
 		// Finally, we need to store the progress within the current crafting recipe
 		output.addInt(currentCraftingProgress);
+		
+		// And the experience that is currently stored
+		output.addInt(storedExperience);
 		
 		// We don't need to store for which recipe that progress is, because it can
 		// be derived from the contents of the inventory slots
@@ -544,6 +560,7 @@ public class ContainerInstance {
 						
 					}
 					currentCraftingProgress = 0;
+					storedExperience += currentRecipe.getExperience();
 				}
 			}
 		}
