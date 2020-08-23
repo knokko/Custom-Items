@@ -47,6 +47,9 @@ public class FuelEntryCollectionEdit extends QuickCollectionEdit<FuelEntry> {
 				EditProps.EDIT_BASE, EditProps.EDIT_ACTIVE, 
 				newBurnTime -> entry.setBurnTime(newBurnTime)),
 		0.75f, minY, 0.85f, maxY);
+		addComponent(new DynamicTextButton("X", EditProps.QUIT_BASE, EditProps.QUIT_HOVER, () -> {
+			removeItem(itemIndex);
+		}), 0.875f, minY, 0.925f, maxY);
 	}
 
 	@Override
