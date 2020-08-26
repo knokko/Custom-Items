@@ -29,6 +29,12 @@ public abstract class EditProjectileCover extends GuiMenu {
 	public EditProjectileCover(EditMenu menu) {
 		this.menu = menu;
 	}
+	
+	@Override
+	public void init() {
+		super.init();
+		errorComponent.setText("");
+	}
 
 	@Override
 	protected void addComponents() {

@@ -62,6 +62,7 @@ public class SelectDataVanillaItem extends GuiMenu {
 	@Override
 	public void init() {
 		super.init();
+		errorComponent.setText("");
 		filterField.setFocus();
 	}
 

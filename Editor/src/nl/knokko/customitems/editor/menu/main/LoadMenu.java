@@ -68,6 +68,12 @@ public class LoadMenu extends GuiMenu {
 	}
 	
 	@Override
+	public void init() {
+		super.init();
+		errorComponent.setText("");
+	}
+	
+	@Override
 	public GuiColor getBackgroundColor() {
 		return EditProps.BACKGROUND;
 	}
@@ -122,6 +128,12 @@ public class LoadMenu extends GuiMenu {
 		@Override
 		public GuiColor getBackgroundColor() {
 			return EditProps.BACKGROUND;
+		}
+		
+		@Override
+		public void init() {
+			super.init();
+			errorComponent.setText("");
 		}
 		
 		private void refresh() {

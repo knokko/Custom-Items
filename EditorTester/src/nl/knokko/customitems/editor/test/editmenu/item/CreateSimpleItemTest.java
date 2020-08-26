@@ -51,7 +51,7 @@ public class CreateSimpleItemTest {
 				"None", "Max stacksize:", "64");
 		ItemNameTest.test(test, itemName);
 		SimpleTextureTest.test(test, textureName);
-		DisplayNameTest.test(test, itemName);
+		DisplayNameTest.test(test, itemName, 2);
 		LoreTest.test(test, lore1, lore2, 8);
 		AttributeModTest.test(test, "generic.attackDamage", "Mainhand", "Add", "5", 
 				attribute1, slot1, op1, value1, attribute2, slot2, op2, value2, 8);

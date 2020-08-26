@@ -24,6 +24,12 @@ public abstract class EditProjectileEffect extends GuiMenu {
 	}
 
 	@Override
+	public void init() {
+		super.init();
+		errorComponent.setText("");
+	}
+	
+	@Override
 	protected void addComponents() {
 		addComponent(new DynamicTextButton("Cancel", CANCEL_BASE, CANCEL_HOVER, () -> {
 			state.getWindow().setMainComponent(returnMenu);
