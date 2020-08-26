@@ -66,7 +66,6 @@ public class ContainerEventHandler implements Listener {
 					if (customContainer.getStoredExperience() > 0 && slot instanceof OutputCustomSlot) {
 						player.giveExp(customContainer.getStoredExperience());
 						customContainer.clearStoredExperience();
-						// TODO Test experience!
 					}
 					
 					// Make sure slots can only be used the way they should be used
