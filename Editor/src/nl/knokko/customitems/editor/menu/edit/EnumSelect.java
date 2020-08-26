@@ -1,9 +1,13 @@
 package nl.knokko.customitems.editor.menu.edit;
 
+import java.util.Locale;
+
 import nl.knokko.gui.color.GuiColor;
 import nl.knokko.gui.component.GuiComponent;
 import nl.knokko.gui.component.menu.GuiMenu;
+import nl.knokko.gui.component.text.TextEditField;
 import nl.knokko.gui.component.text.dynamic.DynamicTextButton;
+import nl.knokko.gui.component.text.dynamic.DynamicTextComponent;
 
 public class EnumSelect<T extends Enum<?>> extends GuiMenu {
 	
@@ -43,50 +47,95 @@ public class EnumSelect<T extends Enum<?>> extends GuiMenu {
 			state.getWindow().setMainComponent(returnMenu);
 		}), 0.025f, 0.7f, 0.2f, 0.8f);
 		
-		T[] all = enumClass.getEnumConstants();
+		addComponent(new DynamicTextComponent("Search:", EditProps.LABEL), 
+				0.025f, 0.5f, 0.2f, 0.6f
+		);
+		TextEditField searchField = new TextEditField("", EditProps.EDIT_BASE, EditProps.EDIT_ACTIVE);
+		addComponent(searchField, 0.025f, 0.4f, 0.2f, 0.5f);
 		
-		if (all.length <= 12) {
-			
-			// If everything fits on the page, just put everything on the page
-			float x = 0.25f;
-			float y = 0.8f;
-			for (T currentType : all) {
-				if (filter.allow(currentType)) {
-					addComponent(new DynamicTextButton(currentType.toString(), EditProps.CHOOSE_BASE, EditProps.CHOOSE_HOVER, () -> {
-						receiver.onSelect(currentType);
-						state.getWindow().setMainComponent(returnMenu);
-					}), x, y - 0.1f, x + 0.2f, y);
-					y -= 0.15f;
-					if (y < 0.1f) {
-						x += 0.25f;
-						y = 0.8f;
-					}
-				}
-			}
-		} else {
-			
-			// Not everything fits, so we let the list grow down
-			float x = 0.25f;
-			float y = 0.8f;
-			for (T currentType : all) {
-				if (filter.allow(currentType)) {
-					addComponent(new DynamicTextButton(currentType.toString(), EditProps.CHOOSE_BASE, EditProps.CHOOSE_HOVER, () -> {
-						receiver.onSelect(currentType);
-						state.getWindow().setMainComponent(returnMenu);
-					}), x, y - 0.1f, x + 0.2f, y);
-					x += 0.25f;
-					if (x > 0.99f) {
-						x = 0.25f;
-						y -= 0.15f;
-					}
-				}
-			}
-		}
+		addComponent(new EntryList(searchField), 0.25f, 0f, 1f, 0.8f);
 	}
 	
 	@Override
 	public GuiColor getBackgroundColor() {
 		return EditProps.BACKGROUND;
+	}
+	
+	private class EntryList extends GuiMenu {
+		
+		final TextEditField searchField;
+		
+		String prevSearchText;
+		
+		EntryList(TextEditField searchField) {
+			this.searchField = searchField;
+		}
+		
+		@Override
+		public void update() {
+			super.update();
+			String newSearchText = searchField.getText();
+			if (!newSearchText.equals(prevSearchText)) {
+				clearComponents();
+				addComponents();
+			}
+		}
+		
+		@Override
+		public GuiColor getBackgroundColor() {
+			return EditProps.BACKGROUND;
+		}
+		
+		@Override
+		protected void addComponents() {
+			prevSearchText = searchField.getText();
+			T[] all = enumClass.getEnumConstants();
+			
+			if (all.length <= 12) {
+				
+				// If everything fits on the page, just put everything on the page
+				float x = 0.0f;
+				float y = 1f;
+				for (T currentType : all) {
+					if (
+							currentType.toString().toLowerCase(Locale.ROOT).
+							contains(prevSearchText.toLowerCase(Locale.ROOT)) && 
+							filter.allow(currentType)
+					) {
+						addComponent(new DynamicTextButton(currentType.toString(), EditProps.CHOOSE_BASE, EditProps.CHOOSE_HOVER, () -> {
+							receiver.onSelect(currentType);
+							state.getWindow().setMainComponent(returnMenu);
+						}), x, y - 0.125f, x + 0.27f, y);
+						y -= 0.19f;
+						if (y < 0.1f) {
+							x += 0.333f;
+							y = 1f;
+						}
+					}
+				}
+			} else {
+				
+				// Not everything fits, so we let the list grow down
+				float x = 0f;
+				float y = 1f;
+				for (T currentType : all) {
+					if (filter.allow(currentType) && 
+							currentType.toString().toLowerCase(Locale.ROOT)
+							.contains(prevSearchText.toLowerCase(Locale.ROOT))
+					) {
+						addComponent(new DynamicTextButton(currentType.toString(), EditProps.CHOOSE_BASE, EditProps.CHOOSE_HOVER, () -> {
+							receiver.onSelect(currentType);
+							state.getWindow().setMainComponent(returnMenu);
+						}), x, y - 0.125f, x + 0.27f, y);
+						x += 0.333f;
+						if (x > 0.99f) {
+							x = 0f;
+							y -= 0.19f;
+						}
+					}
+				}
+			}
+		}
 	}
 	
 	public static interface Receiver<T> {
