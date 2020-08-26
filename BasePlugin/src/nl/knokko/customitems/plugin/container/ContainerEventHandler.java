@@ -3,12 +3,15 @@ package nl.knokko.customitems.plugin.container;
 import java.util.List;
 
 import org.bukkit.Bukkit;
+import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.block.BlockBreakEvent;
+import org.bukkit.event.block.BlockExplodeEvent;
+import org.bukkit.event.entity.EntityExplodeEvent;
 import org.bukkit.event.inventory.InventoryAction;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryCloseEvent;
@@ -38,6 +41,32 @@ public class ContainerEventHandler implements Listener {
 				() -> pluginData().destroyCustomContainersAt(
 						event.getBlock().getLocation()
 				)
+		);
+	}
+	
+	@EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
+	public void onBlockExplode(BlockExplodeEvent event) {
+		
+		// Delay to prevent items from being destroyed by the explosion
+		Bukkit.getScheduler().scheduleSyncDelayedTask(
+				CustomItemsPlugin.getInstance(), () -> {
+					for (Block block : event.blockList()) {
+						pluginData().destroyCustomContainersAt(block.getLocation());
+					}
+				}
+		);
+	}
+	
+	@EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
+	public void onEntityExplode(EntityExplodeEvent event) {
+		
+		// Delay to prevent items from being destroyed by the explosion
+		Bukkit.getScheduler().scheduleSyncDelayedTask(
+				CustomItemsPlugin.getInstance(), () -> {
+					for (Block block : event.blockList()) {
+						pluginData().destroyCustomContainersAt(block.getLocation());
+					}
+				}
 		);
 	}
 	

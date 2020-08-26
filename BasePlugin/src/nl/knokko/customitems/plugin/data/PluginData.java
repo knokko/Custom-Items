@@ -548,7 +548,19 @@ public class PluginData {
 				
 				// Scan over all slots that the players can access in any way
 				entry.getValue().dropAllItems(location);
+				new ArrayList<>(entry.getValue().getInventory().getViewers()).forEach(HumanEntity::closeInventory);
 				persistentIterator.remove();
+			}
+		}
+		
+		for (Entry<UUID,PlayerData> playerEntry : playerData.entrySet()) {
+			PlayerData pd = playerEntry.getValue();
+			if (passiveLocation.equals(pd.containerSelectionLocation)) {
+				pd.containerSelectionLocation = null;
+				Player player = Bukkit.getPlayer(playerEntry.getKey());
+				if (player != null) {
+					player.closeInventory();
+				}
 			}
 		}
 	}
