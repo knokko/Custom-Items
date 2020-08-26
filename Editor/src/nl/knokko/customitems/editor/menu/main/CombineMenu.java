@@ -6,6 +6,8 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.util.Collection;
 
+import nl.knokko.customitems.container.CustomContainer;
+import nl.knokko.customitems.container.fuel.CustomFuelRegistry;
 import nl.knokko.customitems.editor.Editor;
 import nl.knokko.customitems.editor.menu.edit.EditProps;
 import nl.knokko.customitems.editor.set.ItemSet;
@@ -258,6 +260,25 @@ public class CombineMenu extends GuiMenu {
 						errorComponent.setText("Error with " + projectile.name + ": " + error);
 						return;
 					}
+				}
+				
+				for (CustomFuelRegistry secRegistry : secundarySet.getBackingFuelRegistries()) {
+					
+					if (primarySet.getFuelRegistryByName(secRegistry.getName()) != null) {
+						errorComponent.setText("Both item sets have a fuel registry named " + secRegistry.getName());
+						return;
+					}
+					
+					primarySet.addFuelRegistry(secRegistry);
+				}
+				
+				for (CustomContainer secContainer : secundarySet.getBackingContainers()) {
+					
+					if (primarySet.getContainerByName(secContainer.getName()) != null) {
+						errorComponent.setText("Both item sets have a custom container named " + secContainer.getName());
+						return;
+					}
+					primarySet.addContainer(secContainer);
 				}
 				
 				// When we created the instance of primarySet, we already gave it the new name

@@ -5624,4 +5624,15 @@ public class ItemSet implements ItemSetBase {
 				return registry;
 		return null;
 	}
+	
+	public CustomContainer getContainerByName(String name) {
+		
+		for (CustomContainer container : containers) {
+			if (container.getName().equals(name)) {
+				return container;
+			}
+		}
+		
+		return null;
+	}
 }
