@@ -28,6 +28,7 @@ public class EditMobDrop extends GuiMenu {
 	
 	private Drop selectedDrop;
 	private CIEntityType selectedType;
+	private final DynamicTextComponent errorComponent;
 
 	public EditMobDrop(ItemSet set, GuiComponent returnMenu, EntityDrop oldValues, EntityDrop toModify) {
 		this.set = set;
@@ -50,12 +51,17 @@ public class EditMobDrop extends GuiMenu {
 				requiresName = new CheckboxComponent(true);
 			}
 		}
+		this.errorComponent = new DynamicTextComponent("", EditProps.ERROR);
+	}
+	
+	@Override
+	public void init() {
+		super.init();
+		errorComponent.setText("");
 	}
 
 	@Override
 	protected void addComponents() {
-		
-		DynamicTextComponent errorComponent = new DynamicTextComponent("", EditProps.ERROR);
 		addComponent(errorComponent, 0.05f, 0.9f, 0.95f, 1f);
 		
 		addComponent(new DynamicTextButton("Cancel", EditProps.CANCEL_BASE, EditProps.CANCEL_HOVER, () -> {

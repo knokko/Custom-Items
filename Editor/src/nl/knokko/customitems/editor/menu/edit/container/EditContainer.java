@@ -34,6 +34,7 @@ public class EditContainer extends GuiMenu {
 	private SlotDisplay selectionIcon;
 	private FuelMode fuelMode;
 	private VanillaContainerType vanillaType;
+	private final DynamicTextComponent errorComponent;
 	
 	public EditContainer(EditMenu menu, 
 			CustomContainer oldValues, CustomContainer toModify) {
@@ -66,11 +67,17 @@ public class EditContainer extends GuiMenu {
 		
 		this.nameField = new TextEditField(initialName, EditProps.EDIT_BASE, EditProps.EDIT_ACTIVE);
 		this.persistentStorage = new CheckboxComponent(initialPersistentStorage);
+		this.errorComponent = new DynamicTextComponent("", EditProps.ERROR);
+	}
+	
+	@Override
+	public void init() {
+		super.init();
+		errorComponent.setText("");
 	}
 
 	@Override
 	protected void addComponents() {
-		DynamicTextComponent errorComponent = new DynamicTextComponent("", EditProps.ERROR);
 		addComponent(errorComponent, 0.025f, 0.9f, 0.975f, 1f);
 		addComponent(new DynamicTextButton("Cancel", EditProps.CANCEL_BASE, EditProps.CANCEL_HOVER, () -> {
 			state.getWindow().setMainComponent(new ContainerCollectionEdit(menu));

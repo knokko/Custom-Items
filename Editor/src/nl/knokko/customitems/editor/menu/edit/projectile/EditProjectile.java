@@ -35,6 +35,7 @@ public class EditProjectile extends GuiMenu {
 	private final CIProjectile oldValues, toModify;
 	
 	private EditorProjectileCover cover;
+	private final DynamicTextComponent errorComponent;
 
 	public EditProjectile(EditMenu menu, CIProjectile oldValues, CIProjectile toModify) {
 		this.menu = menu;
@@ -46,6 +47,13 @@ public class EditProjectile extends GuiMenu {
 		} else {
 			cover = (EditorProjectileCover) oldValues.cover;
 		}
+		this.errorComponent = new DynamicTextComponent("", ERROR);
+	}
+	
+	@Override
+	public void init() {
+		super.init();
+		errorComponent.setText("");
 	}
 
 	@Override
@@ -54,7 +62,6 @@ public class EditProjectile extends GuiMenu {
 			state.getWindow().setMainComponent(menu.getProjectileMenu().getProjectileOverview());
 		}), 0.025f, 0.75f, 0.15f, 0.85f);
 		
-		DynamicTextComponent errorComponent = new DynamicTextComponent("", ERROR);
 		addComponent(errorComponent, 0.05f, 0.9f, 0.95f, 1f);
 		
 		// The edit fields

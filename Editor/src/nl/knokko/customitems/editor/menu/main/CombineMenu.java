@@ -66,6 +66,18 @@ public class CombineMenu extends GuiMenu {
 	
 	private static class SelectSets extends GuiMenu {
 		
+		private final DynamicTextComponent errorComponent;
+		
+		SelectSets() {
+			this.errorComponent = new DynamicTextComponent("", EditProps.ERROR);
+		}
+		
+		@Override
+		public void init() {
+			super.init();
+			errorComponent.setText("");
+		}
+		
 		@Override
 		protected void addComponents() {
 			addComponent(new DynamicTextButton("Cancel", EditProps.CANCEL_BASE, EditProps.CANCEL_HOVER, () -> {
@@ -84,7 +96,6 @@ public class CombineMenu extends GuiMenu {
 			addComponent(new DynamicTextComponent("Name of the new item set:", EditProps.LABEL), 0.2f, 0.2f, 0.45f, 0.3f);
 			addComponent(combined, 0.5f, 0.2f, 0.7f, 0.3f);
 			
-			DynamicTextComponent errorComponent = new DynamicTextComponent("", EditProps.ERROR);
 			addComponent(errorComponent, 0.05f, 0.9f, 0.95f, 1f);
 			
 			addComponent(new DynamicTextButton("Combine", EditProps.SAVE_BASE, EditProps.SAVE_HOVER, () -> {
