@@ -130,6 +130,8 @@ public class ContainerInstance {
 		
 		// Discard remaining crafting progress
 		input.readInt();
+		// Discard stored experience
+		input.readInt();
 	}
 	
 	public static ContainerInstance load1(BitInput input, ContainerInfo typeInfo) {
