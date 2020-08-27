@@ -85,9 +85,6 @@ public class CustomItemsPlugin extends JavaPlugin {
 		Bukkit.getPluginManager().registerEvents(projectileManager, this);
 		CustomItemPickups.start();
 		CrazyEnchantmentsSupport.onEnable();
-		CorePluginEventHandler.preventSmithing((stack1, stack2) -> 
-				set.getItem(stack1) != null || set.getItem(stack2) != null
-		);
 	}
 
 	@Override
@@ -175,8 +172,10 @@ public class CustomItemsPlugin extends JavaPlugin {
 		
 		// I'm afraid I need to update the next line each time KnokkoCore updates
 		try {
-			Class.forName("nl.knokko.core.plugin.item.UnknownMaterialException");
-		} catch (ClassNotFoundException outdated) {
+			CorePluginEventHandler.preventSmithing((stack1, stack2) -> 
+					set.getItem(stack1) != null || set.getItem(stack2) != null
+			);
+		} catch (NoClassDefFoundError outdated) {
 			set.addError("It looks like your KnokkoCore is outdated. Please install a newer version.");
 		}
 	}
