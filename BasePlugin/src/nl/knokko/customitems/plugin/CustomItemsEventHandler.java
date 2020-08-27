@@ -65,7 +65,6 @@ import java.util.logging.Level;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.GameMode;
-import org.bukkit.Material;
 import org.bukkit.Sound;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.block.Block;
@@ -634,11 +633,11 @@ public class CustomItemsEventHandler implements Listener {
 		if (custom != null) {
 			final CustomItem finalCustom = custom;
 			
-			Material oldType = event.getBlock().getType();
+			boolean wasSolid = ItemHelper.isMaterialSolid(event.getBlock());
 			
 			// Delay this to avoid messing around with other plug-ins
 			Bukkit.getScheduler().scheduleSyncDelayedTask(plugin(), () -> {
-				finalCustom.onBlockBreak(event.getPlayer(), item, event.getBlock(), oldType);
+				finalCustom.onBlockBreak(event.getPlayer(), item, event.getBlock(), wasSolid);
 			});
 		}
 	}

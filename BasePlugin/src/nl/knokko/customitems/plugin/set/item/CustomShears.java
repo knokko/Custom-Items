@@ -2,7 +2,6 @@ package nl.knokko.customitems.plugin.set.item;
 
 import java.util.List;
 
-import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
@@ -33,9 +32,9 @@ public class CustomShears extends CustomTool {
 	}
 	
 	@Override
-	public void onBlockBreak(Player player, ItemStack tool, Block block, Material old) {
+	public void onBlockBreak(Player player, ItemStack tool, Block block, boolean wasSolid) {
 		// Only lose durability when breaking non-solid blocks because we shear it
-		if (!old.isSolid() && blockBreakDurabilityLoss != 0 && decreaseDurability(tool, blockBreakDurabilityLoss)) {
+		if (!wasSolid && blockBreakDurabilityLoss != 0 && decreaseDurability(tool, blockBreakDurabilityLoss)) {
 			CustomItemsEventHandler.playBreakSound(player);
 			player.getInventory().setItemInMainHand(null);
 		}

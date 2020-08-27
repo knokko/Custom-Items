@@ -26,7 +26,6 @@ package nl.knokko.customitems.plugin.set.item;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
@@ -148,8 +147,8 @@ public class CustomTool extends CustomItem {
 	}
 	
 	@Override
-	public void onBlockBreak(Player player, ItemStack tool, Block block, Material old) {
-		if (old.isSolid() && blockBreakDurabilityLoss != 0 && decreaseDurability(tool, blockBreakDurabilityLoss)) {
+	public void onBlockBreak(Player player, ItemStack tool, Block block, boolean wasSolid) {
+		if (wasSolid && blockBreakDurabilityLoss != 0 && decreaseDurability(tool, blockBreakDurabilityLoss)) {
 			CustomItemsEventHandler.playBreakSound(player);
 			player.getInventory().setItemInMainHand(null);
 		}
