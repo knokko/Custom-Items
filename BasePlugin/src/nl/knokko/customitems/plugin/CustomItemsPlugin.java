@@ -33,6 +33,7 @@ import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.java.JavaPlugin;
 
+import nl.knokko.core.plugin.event.CorePluginEventHandler;
 import nl.knokko.customitems.plugin.command.CommandCustomItems;
 import nl.knokko.customitems.plugin.container.ContainerEventHandler;
 import nl.knokko.customitems.plugin.data.PluginData;
@@ -84,6 +85,9 @@ public class CustomItemsPlugin extends JavaPlugin {
 		Bukkit.getPluginManager().registerEvents(projectileManager, this);
 		CustomItemPickups.start();
 		CrazyEnchantmentsSupport.onEnable();
+		CorePluginEventHandler.preventSmithing((stack1, stack2) -> 
+				set.getItem(stack1) != null || set.getItem(stack2) != null
+		);
 	}
 
 	@Override
