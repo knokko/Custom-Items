@@ -24,6 +24,7 @@ public class SelectDrop extends GuiMenu {
 	private final Drop previous;
 	
 	private CustomItem selectedItem;
+	private final DynamicTextComponent errorComponent;
 	
 	public SelectDrop(ItemSet set, GuiComponent returnMenu, Drop previous, Receiver receiver) {
 		this.set = set;
@@ -34,12 +35,17 @@ public class SelectDrop extends GuiMenu {
 		if (previous != null) {
 			selectedItem = (CustomItem) previous.getItemToDrop();
 		}
+		this.errorComponent = new DynamicTextComponent("", EditProps.ERROR);
+	}
+	
+	@Override
+	public void init() {
+		super.init();
+		errorComponent.setText("");
 	}
 
 	@Override
 	protected void addComponents() {
-		
-		DynamicTextComponent errorComponent = new DynamicTextComponent("", EditProps.ERROR);
 		addComponent(errorComponent, 0.05f, 0.9f, 0.95f, 1f);
 		
 		addComponent(new DynamicTextButton("Cancel", EditProps.CANCEL_BASE, EditProps.CANCEL_HOVER, () -> {

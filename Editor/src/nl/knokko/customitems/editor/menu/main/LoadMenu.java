@@ -68,6 +68,12 @@ public class LoadMenu extends GuiMenu {
 	}
 	
 	@Override
+	public void init() {
+		super.init();
+		errorComponent.setText("");
+	}
+	
+	@Override
 	public GuiColor getBackgroundColor() {
 		return EditProps.BACKGROUND;
 	}
@@ -81,10 +87,20 @@ public class LoadMenu extends GuiMenu {
 		private static final BackupMenu INSTANCE = new BackupMenu();
 		
 		private BackupSetList setList;
+		private final DynamicTextComponent errorComponent;
+		
+		BackupMenu() {
+			this.errorComponent = new DynamicTextComponent("", EditProps.ERROR);
+		}
+		
+		@Override
+		public void init() {
+			super.init();
+			errorComponent.setText("");
+		}
 		
 		@Override
 		protected void addComponents() {
-			DynamicTextComponent errorComponent = new DynamicTextComponent("", EditProps.ERROR);
 			addComponent(errorComponent, 0.05f, 0.9f, 0.95f, 1f);
 			setList = new BackupSetList(errorComponent);
 			addComponent(setList, 0.3f, 0f, 1f, 0.8f);
@@ -122,6 +138,12 @@ public class LoadMenu extends GuiMenu {
 		@Override
 		public GuiColor getBackgroundColor() {
 			return EditProps.BACKGROUND;
+		}
+		
+		@Override
+		public void init() {
+			super.init();
+			errorComponent.setText("");
 		}
 		
 		private void refresh() {

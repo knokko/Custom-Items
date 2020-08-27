@@ -22,6 +22,7 @@ public class EditBlockDrop extends GuiMenu {
 	
 	private BlockType selectedBlock;
 	private Drop selectedDrop;
+	private final DynamicTextComponent errorComponent;
 	
 	public EditBlockDrop(ItemSet set, GuiComponent returnMenu, BlockDrop oldValues, BlockDrop toModify) {
 		this.set = set;
@@ -36,11 +37,17 @@ public class EditBlockDrop extends GuiMenu {
 			selectedBlock = oldValues.getBlock();
 			selectedDrop = oldValues.getDrop();
 		}
+		this.errorComponent = new DynamicTextComponent("", EditProps.ERROR);
+	}
+	
+	@Override
+	public void init() {
+		super.init();
+		errorComponent.setText("");
 	}
 
 	@Override
 	protected void addComponents() {
-		DynamicTextComponent errorComponent = new DynamicTextComponent("", EditProps.ERROR);
 		addComponent(errorComponent, 0.05f, 0.9f, 0.95f, 1f);
 		
 		addComponent(new DynamicTextButton("Cancel", EditProps.CANCEL_BASE, EditProps.CANCEL_HOVER, () -> {

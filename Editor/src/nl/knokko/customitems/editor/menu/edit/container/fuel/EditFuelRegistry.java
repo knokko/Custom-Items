@@ -52,6 +52,12 @@ public class EditFuelRegistry extends GuiMenu {
 	public GuiColor getBackgroundColor() {
 		return EditProps.BACKGROUND;
 	}
+	
+	@Override
+	public void init() {
+		super.init();
+		errorComponent.setText("");
+	}
 
 	@Override
 	protected void addComponents() {

@@ -150,6 +150,12 @@ public abstract class EditItemBase extends GuiMenu {
 		Checks.nonNull(targetEffects);
 		Checks.nonNull(commands);
 	}
+	
+	@Override
+	public void init() {
+		super.init();
+		errorComponent.setText("");
+	}
 
 	@Override
 	public GuiColor getBackgroundColor() {

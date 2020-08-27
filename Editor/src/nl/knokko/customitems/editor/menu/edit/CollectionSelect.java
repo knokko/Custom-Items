@@ -1,9 +1,13 @@
 package nl.knokko.customitems.editor.menu.edit;
 
+import java.util.Locale;
+
 import nl.knokko.gui.color.GuiColor;
 import nl.knokko.gui.component.GuiComponent;
 import nl.knokko.gui.component.menu.GuiMenu;
+import nl.knokko.gui.component.text.TextEditField;
 import nl.knokko.gui.component.text.dynamic.DynamicTextButton;
+import nl.knokko.gui.component.text.dynamic.DynamicTextComponent;
 
 public class CollectionSelect<T> extends GuiMenu {
 	
@@ -49,23 +53,65 @@ public class CollectionSelect<T> extends GuiMenu {
 			state.getWindow().setMainComponent(returnMenu);
 		}), 0.025f, 0.7f, 0.15f, 0.8f);
 		
-		int counter = 0;
-		for (T item : collection) {
-			if (filter.canSelect(item)) {
-				T copy = item;
-				String name = formatter.getName(item);
-				addComponent(new DynamicTextButton(name, EditProps.CHOOSE_BASE, EditProps.CHOOSE_HOVER, () -> {
-					onSelect.onSelect(copy);
-					state.getWindow().setMainComponent(returnMenu);
-				}), 0.3f, 0.9f - counter * 0.12f, 0.3f + Math.min(0.7f, name.length() * 0.015f), 1f - counter * 0.12f);
-				counter++;
-			}
-		}
+		addComponent(new DynamicTextComponent("Search:", EditProps.LABEL),
+				0.025f, 0.5f, 0.15f, 0.6f
+		);
+		TextEditField searchField = new TextEditField("", EditProps.EDIT_BASE, EditProps.EDIT_ACTIVE);
+		addComponent(searchField, 0.025f, 0.4f, 0.15f, 0.5f);
+		
+		addComponent(new EntryList(searchField), 0.3f, 0f, 1f, 0.9f);
 	}
 	
 	@Override
 	public GuiColor getBackgroundColor() {
 		return EditProps.BACKGROUND;
+	}
+	
+	private class EntryList extends GuiMenu {
+		
+		final TextEditField searchField;
+		
+		String lastSearchText;
+		
+		EntryList(TextEditField searchField) {
+			this.searchField = searchField;
+		}
+		
+		@Override
+		public void update() {
+			super.update();
+			String currentSearchText = searchField.getText();
+			if (!lastSearchText.equals(currentSearchText)) {
+				clearComponents();
+				addComponents();
+			}
+		}
+		
+		@Override
+		public GuiColor getBackgroundColor() {
+			return EditProps.BACKGROUND;
+		}
+		
+		@Override
+		protected void addComponents() {
+			lastSearchText = searchField.getText();
+			int counter = 0;
+			for (T item : collection) {
+				String name = formatter.getName(item);
+				if (
+						filter.canSelect(item) && name.toLowerCase(Locale.ROOT)
+						.contains(lastSearchText.toLowerCase(Locale.ROOT))
+				) {
+					T copy = item;
+					
+					addComponent(new DynamicTextButton(name, EditProps.CHOOSE_BASE, EditProps.CHOOSE_HOVER, () -> {
+						onSelect.onSelect(copy);
+						state.getWindow().setMainComponent(returnMenu);
+					}), 0f, 0.88f - counter * 0.13f, 0f + Math.min(1f, name.length() * 0.02f), 1f - counter * 0.13f);
+					counter++;
+				}
+			}
+		}
 	}
 	
 	public static interface Receiver<T> {

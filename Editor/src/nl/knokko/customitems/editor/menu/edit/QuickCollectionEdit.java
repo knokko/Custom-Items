@@ -36,6 +36,12 @@ public abstract class QuickCollectionEdit<T> extends GuiMenu {
 		
 		this.errorComponent = new DynamicTextComponent("", EditProps.ERROR);
 	}
+	
+	@Override
+	public void init() {
+		super.init();
+		errorComponent.setText("");
+	}
 
 	@Override
 	protected void addComponents() {

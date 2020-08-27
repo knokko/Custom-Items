@@ -35,8 +35,8 @@ public class DisplayNameTest {
 	 * @param itemName The item name of the custom item, the display name is automatically chosen based on
 	 * that item name
 	 */
-	public static void test(GuiTestHelper test, String itemName) {
-		test.click("");
+	public static void test(GuiTestHelper test, String itemName, int numEmptyTexts) {
+		test.clickNearest("", "Display name: ", numEmptyTexts);
 		String displayName = itemName.replace('_', ' ');
 		test.type(displayName);
 		test.assertComponentWithText(displayName);

@@ -79,6 +79,7 @@ public class CollectionEdit<T> extends GuiMenu {
 	public void init() {
 		if(didInit) itemList.refresh();
 		super.init();
+		errorComponent.setText("");
 	}
 	
 	private class List extends GuiMenu {

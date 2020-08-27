@@ -50,6 +50,12 @@ public class CreateMenu extends GuiMenu {
 	}
 	
 	@Override
+	public void init() {
+		super.init();
+		errorComponent.setText("");
+	}
+	
+	@Override
 	protected void addComponents() {
 		fileName = new TextEditField("", EditProps.EDIT_BASE, EditProps.EDIT_ACTIVE);
 		errorComponent = new DynamicTextComponent("", EditProps.ERROR);

@@ -22,17 +22,24 @@ public class CreateCraftingIndicatorSlot extends GuiMenu {
 	private final GuiComponent returnMenu;
 	private final Consumer<CustomSlot> submitSlot;
 	private final Iterable<CustomItem> customItems;
+	private final DynamicTextComponent errorComponent;
 	
 	public CreateCraftingIndicatorSlot(GuiComponent returnMenu, Consumer<CustomSlot> submitSlot, 
 			Iterable<CustomItem> customItems) {
 		this.returnMenu = returnMenu;
 		this.submitSlot = submitSlot;
 		this.customItems = customItems;
+		this.errorComponent = new DynamicTextComponent("", EditProps.ERROR);
+	}
+	
+	@Override
+	public void init() {
+		super.init();
+		errorComponent.setText("");
 	}
 
 	@Override
 	protected void addComponents() {
-		DynamicTextComponent errorComponent = new DynamicTextComponent("", EditProps.ERROR);
 		addComponent(errorComponent, 0.025f, 0.9f, 0.975f, 1f);
 		
 		addComponent(new DynamicTextButton("Cancel", EditProps.CANCEL_BASE, EditProps.CANCEL_HOVER, () -> {

@@ -66,6 +66,7 @@ public class CreateFuelIndicatorSlot extends GuiMenu {
 	private final Consumer<CustomSlot> submitSlot;
 	private final Iterable<FuelCustomSlot> existingSlots;
 	private final Iterable<CustomItem> customItems;
+	private final DynamicTextComponent errorComponent;
 	
 	public CreateFuelIndicatorSlot(GuiComponent returnMenu, 
 			Consumer<CustomSlot> submitSlot, Iterable<CustomSlot> existingSlots, Iterable<CustomItem> customItems) {
@@ -73,11 +74,17 @@ public class CreateFuelIndicatorSlot extends GuiMenu {
 		this.submitSlot = submitSlot;
 		this.existingSlots = fuelSlotFilter(existingSlots);
 		this.customItems = customItems;
+		this.errorComponent = new DynamicTextComponent("", EditProps.ERROR);
+	}
+	
+	@Override
+	public void init() {
+		super.init();
+		errorComponent.setText("");
 	}
 
 	@Override
 	protected void addComponents() {
-		DynamicTextComponent errorComponent = new DynamicTextComponent("", EditProps.ERROR);
 		addComponent(errorComponent, 0.025f, 0.9f, 0.975f, 1f);
 		
 		addComponent(new DynamicTextButton("Cancel", EditProps.CANCEL_BASE, EditProps.CANCEL_HOVER, () -> {

@@ -21,7 +21,7 @@ public class CreateShearsTest {
 				"500", "0", "1");
 		ItemNameTest.test(test, itemName);
 		SimpleTextureTest.test(test, textureName);
-		DisplayNameTest.test(test, itemName);
+		DisplayNameTest.test(test, itemName, 2);
 		LoreTest.test(test, lore1, lore2, 8);
 		
 		CustomItemType customItemType = CustomItemType.SHEARS;

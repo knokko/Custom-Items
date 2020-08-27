@@ -29,6 +29,7 @@ public class CreateDisplay extends GuiMenu {
 	private final Consumer<SlotDisplay> setDisplay;
 	private final boolean selectAmount;
 	private final Iterable<CustomItem> customItems;
+	private final DynamicTextComponent errorComponent;
 	
 	public CreateDisplay(GuiComponent returnMenu, Consumer<SlotDisplay> setDisplay,
 			boolean selectAmount, Iterable<CustomItem> customItems) {
@@ -36,12 +37,17 @@ public class CreateDisplay extends GuiMenu {
 		this.setDisplay = setDisplay;
 		this.selectAmount = selectAmount;
 		this.customItems = customItems;
+		this.errorComponent = new DynamicTextComponent("", EditProps.ERROR);
+	}
+	
+	@Override
+	public void init() {
+		super.init();
+		errorComponent.setText("");
 	}
 
 	@Override
 	protected void addComponents() {
-		
-		DynamicTextComponent errorComponent = new DynamicTextComponent("", EditProps.ERROR);
 		addComponent(errorComponent, 0.025f, 0.9f, 0.975f, 1f);
 		
 		addComponent(new DynamicTextButton("Cancel", EditProps.CANCEL_BASE, EditProps.CANCEL_HOVER, () -> {

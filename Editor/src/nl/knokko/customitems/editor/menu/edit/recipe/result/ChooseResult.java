@@ -63,6 +63,12 @@ public class ChooseResult extends GuiMenu {
 		errorComponent = new DynamicTextComponent("", EditProps.ERROR);
 		amountField = new TextEditField("1", EditProps.EDIT_BASE, EditProps.EDIT_ACTIVE);
 	}
+	
+	@Override
+	public void init() {
+		super.init();
+		errorComponent.setText("");
+	}
 
 	@Override
 	protected void addComponents() {

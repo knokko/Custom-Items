@@ -59,6 +59,12 @@ public class ShapedRecipeEdit extends GuiMenu {
 		else
 			ingredientsComponent = new Ingredients();
 	}
+	
+	@Override
+	public void init() {
+		super.init();
+		errorComponent.setText("");
+	}
 
 	@Override
 	protected void addComponents() {

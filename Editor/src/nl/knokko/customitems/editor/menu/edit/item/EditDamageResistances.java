@@ -32,6 +32,12 @@ public class EditDamageResistances extends GuiMenu {
 		this.onCancel = onCancel;
 		this.onApply = onApply;
 	}
+	
+	@Override
+	public void init() {
+		super.init();
+		errorComponent.setText("");
+	}
 
 	@Override
 	protected void addComponents() {

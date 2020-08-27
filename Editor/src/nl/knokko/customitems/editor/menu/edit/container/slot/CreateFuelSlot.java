@@ -23,6 +23,7 @@ public class CreateFuelSlot extends GuiMenu {
 	private final Consumer<CustomSlot> submitSlot;
 	private final ItemSet set;
 	private final Iterable<CustomSlot> existingSlots;
+	private final DynamicTextComponent errorComponent;
 	
 	public CreateFuelSlot(GuiComponent returnMenu, Consumer<CustomSlot> submitSlot,
 			ItemSet set, Iterable<CustomSlot> existingSlots) {
@@ -30,11 +31,11 @@ public class CreateFuelSlot extends GuiMenu {
 		this.submitSlot = submitSlot;
 		this.set = set;
 		this.existingSlots = existingSlots;
+		this.errorComponent = new DynamicTextComponent("", EditProps.ERROR);
 	}
 
 	@Override
 	protected void addComponents() {
-		DynamicTextComponent errorComponent = new DynamicTextComponent("", EditProps.ERROR);
 		addComponent(errorComponent, 0.025f, 0.9f, 0.975f, 1f);
 		
 		addComponent(new DynamicTextButton("Cancel", EditProps.CANCEL_BASE, EditProps.CANCEL_HOVER, () -> {
@@ -81,6 +82,12 @@ public class CreateFuelSlot extends GuiMenu {
 			state.getWindow().setMainComponent(returnMenu);
 		}), 0.025f, 0.2f, 0.2f, 0.3f);
 		HelpButtons.addHelpLink(this, "edit menu/containers/slots/fuel.html");
+	}
+	
+	@Override
+	public void init() {
+		super.init();
+		errorComponent.setText("");
 	}
 
 	@Override

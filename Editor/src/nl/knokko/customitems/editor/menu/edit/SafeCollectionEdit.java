@@ -53,6 +53,7 @@ public abstract class SafeCollectionEdit<T> extends GuiMenu {
 	public void init() {
 		if(didInit) itemList.refresh();
 		super.init();
+		errorComponent.setText("");
 	}
 	
 	protected abstract String getItemLabel(T item);

@@ -151,6 +151,7 @@ public class TextureEdit extends GuiMenu {
 										else
 											imageName = file.getName().substring(0, indexDot);
 										
+										errorComponent.setText("");
 										return listener.listen(loaded, imageName);
 									} else
 										errorComponent.setText("The width and height (" + width + ") should be a power of 2");

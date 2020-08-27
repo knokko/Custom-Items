@@ -18,17 +18,18 @@ public class CreateInputSlot extends GuiMenu {
 	private final GuiComponent returnMenu;
 	private final Consumer<CustomSlot> submitSlot;
 	private final Iterable<CustomSlot> existingSlots;
+	private final DynamicTextComponent errorComponent;
 	
 	public CreateInputSlot(GuiComponent returnMenu, Consumer<CustomSlot> submitSlot,
 			Iterable<CustomSlot> existingSlots) {
 		this.returnMenu = returnMenu;
 		this.submitSlot = submitSlot;
 		this.existingSlots = existingSlots;
+		this.errorComponent = new DynamicTextComponent("", EditProps.ERROR);
 	}
 
 	@Override
 	protected void addComponents() {
-		DynamicTextComponent errorComponent = new DynamicTextComponent("", EditProps.ERROR);
 		addComponent(errorComponent, 0.025f, 0.9f, 0.975f, 1f);
 		
 		addComponent(new DynamicTextButton("Cancel", EditProps.CANCEL_BASE, EditProps.CANCEL_HOVER, () -> {
@@ -60,6 +61,12 @@ public class CreateInputSlot extends GuiMenu {
 			state.getWindow().setMainComponent(returnMenu);
 		}), 0.025f, 0.3f, 0.15f, 0.4f);
 		HelpButtons.addHelpLink(this, "edit menu/containers/slots/input.html");
+	}
+	
+	@Override
+	public void init() {
+		super.init();
+		errorComponent.setText("");
 	}
 
 	@Override

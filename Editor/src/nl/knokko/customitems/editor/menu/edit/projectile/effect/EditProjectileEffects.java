@@ -46,6 +46,12 @@ public class EditProjectileEffects extends GuiMenu {
 			currentEffects = oldValues.effects;
 		}
 	}
+	
+	@Override
+	public void init() {
+		super.init();
+		errorComponent.setText("");
+	}
 
 	@Override
 	protected void addComponents() {

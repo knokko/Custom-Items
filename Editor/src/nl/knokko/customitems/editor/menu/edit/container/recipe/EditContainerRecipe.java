@@ -63,6 +63,12 @@ public class EditContainerRecipe extends GuiMenu {
 				EditProps.EDIT_BASE, EditProps.EDIT_ACTIVE
 		);
 	}
+	
+	@Override
+	public void init() {
+		super.init();
+		errorComponent.setText("");
+	}
 
 	@Override
 	protected void addComponents() {

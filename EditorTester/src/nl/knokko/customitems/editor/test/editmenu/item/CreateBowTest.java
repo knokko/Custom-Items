@@ -24,7 +24,7 @@ public class CreateBowTest {
 				"knockback strength: ", "Arrow gravity", "500", "0", "1", "1");
 		SimpleTextureTest.test(test, textureName);
 		ItemNameTest.test(test, "fragile_bow");
-		DisplayNameTest.test(test, itemName);
+		DisplayNameTest.test(test, itemName, 1);
 		LoreTest.test(test, lore1, lore2, 7);
 		
 		AttributeModTest.test(test, "generic.movementSpeed", "Offhand", "Add factor", "1.5", 
