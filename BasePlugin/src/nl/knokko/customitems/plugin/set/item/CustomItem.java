@@ -96,7 +96,7 @@ public abstract class CustomItem extends nl.knokko.customitems.item.CustomItem i
         meta.setLore(lore);
         meta.setUnbreakable(true);
         ItemFlag[] allFlags = ItemFlag.values();
-        for (int index = 0; index < allFlags.length; index++) {
+        for (int index = 0; index < allFlags.length && index < itemFlags.length; index++) {
         	if (itemFlags[index]) {
         		meta.addItemFlags(allFlags[index]);
         	}
