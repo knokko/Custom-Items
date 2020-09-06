@@ -71,6 +71,8 @@ public abstract class CustomItem extends nl.knokko.customitems.item.CustomItem i
 	protected final CIMaterial material;
 
 	protected final Single[] attributeModifiers;
+	
+	protected BooleanRepresentation boolRepresentation;
     
     public CustomItem(CustomItemType itemType, short itemDamage, String name, String displayName, 
     		String[] lore, AttributeModifier[] attributes, Enchantment[] defaultEnchantments, boolean[] itemFlags, 
@@ -84,6 +86,10 @@ public abstract class CustomItem extends nl.knokko.customitems.item.CustomItem i
         	AttributeModifier a = attributes[index];
         	attributeModifiers[index] = new Single(a.getAttribute().getName(), a.getSlot().getSlot(), a.getOperation().getOperation(), a.getValue());
         }
+    }
+    
+    public void setBooleanRepresentation(BooleanRepresentation boolRep) {
+    	this.boolRepresentation = boolRep;
     }
     
     protected List<String> createLore(){

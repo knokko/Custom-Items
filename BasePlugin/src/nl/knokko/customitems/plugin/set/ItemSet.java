@@ -74,6 +74,7 @@ import nl.knokko.customitems.plugin.recipe.ingredient.DataVanillaIngredient;
 import nl.knokko.customitems.plugin.recipe.ingredient.Ingredient;
 import nl.knokko.customitems.plugin.recipe.ingredient.NoIngredient;
 import nl.knokko.customitems.plugin.recipe.ingredient.SimpleVanillaIngredient;
+import nl.knokko.customitems.plugin.set.item.BooleanRepresentation;
 import nl.knokko.customitems.plugin.set.item.CustomArmor;
 import nl.knokko.customitems.plugin.set.item.CustomBow;
 import nl.knokko.customitems.plugin.set.item.CustomHoe;
@@ -89,6 +90,7 @@ import nl.knokko.customitems.projectile.ProjectileCover;
 import nl.knokko.customitems.trouble.IntegrityException;
 import nl.knokko.customitems.trouble.UnknownEncodingException;
 import nl.knokko.util.bits.BitInput;
+import nl.knokko.util.bits.BooleanArrayBitOutput;
 import nl.knokko.util.bits.ByteArrayBitInput;
 
 public class ItemSet implements ItemSetBase {
@@ -411,8 +413,49 @@ public class ItemSet implements ItemSetBase {
 				() -> loadResult(input)
 		);
 	}
-
+	
 	private CustomItem loadItem(BitInput input) throws UnknownEncodingException {
+		
+		BooleanArrayBitOutput rememberBits = new BooleanArrayBitOutput();
+		
+		class BitInputTracker extends BitInput {
+			
+			@Override
+			public boolean readDirectBoolean() {
+				boolean result = input.readDirectBoolean();
+				rememberBits.addBoolean(result);
+				return result;
+			}
+			
+			@Override
+			public byte readDirectByte() {
+				byte result = input.readDirectByte();
+				rememberBits.addByte(result);
+				return result;
+			}
+
+			@Override
+			public void increaseCapacity(int booleans) {
+				input.increaseCapacity(booleans);
+			}
+
+			@Override
+			public void terminate() {
+				input.terminate();
+			}
+
+			@Override
+			public void skip(long amount) {
+				input.skip(amount);
+			}
+		}
+		
+		CustomItem result = loadItemInternal(new BitInputTracker());
+		result.setBooleanRepresentation(new BooleanRepresentation(rememberBits.getBytes()));
+		return result;
+	}
+
+	private CustomItem loadItemInternal(BitInput input) throws UnknownEncodingException {
 		byte encoding = input.readByte();
 		switch (encoding) {
 		case ItemEncoding.ENCODING_SIMPLE_1 : return loadSimpleItem1(input);
