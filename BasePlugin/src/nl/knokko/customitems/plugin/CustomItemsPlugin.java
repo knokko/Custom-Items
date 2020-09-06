@@ -50,6 +50,7 @@ public class CustomItemsPlugin extends JavaPlugin {
 	private static CustomItemsPlugin instance;
 
 	private ItemSet set;
+	private long setLastModified;
 	private LanguageFile languageFile;
 	private PluginData data;
 	private ProjectileManager projectileManager;
@@ -200,6 +201,13 @@ public class CustomItemsPlugin extends JavaPlugin {
 	}
 	
 	private void loadSet(File file) {
+		this.setLastModified = file.lastModified();
+		if (setLastModified == 0) {
+			Bukkit.getLogger().log(Level.SEVERE, "The last-modified property of " + file + " couldn't be read");
+			set = new ItemSet();
+			set.addError("The last-modified property of " + file + " couldn't be read");
+			return;
+		}
 		try {
 			if (file.length() < 1_000_000_000) {
 				byte[] bytes = new byte[(int) file.length()];
@@ -310,6 +318,10 @@ public class CustomItemsPlugin extends JavaPlugin {
 
 	public LanguageFile getLanguageFile() {
 		return languageFile;
+	}
+	
+	public long getSetLastModified() {
+		return setLastModified;
 	}
 	
 	public PluginData getData() {

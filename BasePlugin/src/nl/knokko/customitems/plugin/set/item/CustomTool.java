@@ -325,4 +325,11 @@ public class CustomTool extends CustomItem {
 	public long getMaxDurability() {
 		return maxDurability;
 	}
+	
+	@Override
+	protected void initNBT(CustomItemNBT nbt) {
+		if (maxDurability != UNBREAKABLE_TOOL_DURABILITY) {
+			nbt.setDurability(maxDurability);
+		}
+	}
 }

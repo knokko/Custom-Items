@@ -12,9 +12,8 @@ public class CustomItemNBT {
 	private static final String KEY = "CustomItemsAndTexturesTag";
 	
 	private static final String NAME = "CustomItemName";
-	private static final String EXPORT_TIME = "ExportTime";
+	private static final String LAST_MODIFIED = "LastModified";
 	private static final String DURABILITY = "Durability";
-	private static final String AUTO_UPDATE = "AutoUpdate";
 	private static final String BOOL_REPRESENTATION = "BooleanRepresentation";
 	
 	/**
@@ -117,18 +116,18 @@ public class CustomItemNBT {
 	}
 	
 	/**
-	 * Gets the time (from System.currentTimeMillis) at which the custom item
-	 * represented by this item was exported. If this is not equal to the export time
-	 * of the current item set, this indicates that this item stack was created
-	 * from an older version of the server item set.
+	 * Gets the time at which the .cis file was last modified at the time this item 
+	 * stack was created. If this is not equal to the last modified of the current 
+	 * .cis file, this indicates that this item stack was created from an older 
+	 * version of the server item set.
 	 * 
 	 * @throws UnsupportedOperationException If this item stack doesn't have custom
 	 * item nbt
 	 */
-	public long getExportTime() throws UnsupportedOperationException {
+	public long getLastModified() throws UnsupportedOperationException {
 		assertOurNBT();
 		
-		return getOurTag().getLong(EXPORT_TIME);
+		return getOurTag().getLong(LAST_MODIFIED);
 	}
 	
 	/**
@@ -179,22 +178,20 @@ public class CustomItemNBT {
 	 * a custom nbt yet).
 	 * 
 	 * @param name The name of the custom item that is to be represented by this item
-	 * @param exportTime The time (from System.currentTimeMillis) at which the item
-	 * set of the custom item was exported
+	 * @param lastModified The time at which the current .cis file was last modified
 	 * @param maxDurability The maximum durability of the custom item, or null if it's
 	 * an unbreakable tool or not a tool at all
 	 * @param boolRepresentation The boolean representation of the custom item
 	 * 
 	 * @throws UnsupportedOperationException If this custom item nbt is read-only
 	 */
-	public void set(String name, long exportTime, Long maxDurability, 
+	public void set(String name, long lastModified, Long maxDurability, 
 			BooleanRepresentation boolRepresentation) throws UnsupportedOperationException {
 		assertWrite();
 		NBTTagCompound nbt = getOrCreateOurNBT();
 		nbt.setString(NAME, name);
-		nbt.setLong(EXPORT_TIME, exportTime);
+		nbt.setLong(LAST_MODIFIED, lastModified);
 		nbt.setLong(DURABILITY, maxDurability);
-		nbt.setBoolean(AUTO_UPDATE, true);
 		nbt.setByteArray(BOOL_REPRESENTATION, boolRepresentation.getAsBytes());
 	}
 }

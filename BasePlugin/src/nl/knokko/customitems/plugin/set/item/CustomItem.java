@@ -45,6 +45,7 @@ import nl.knokko.customitems.item.AttributeModifier;
 import nl.knokko.customitems.item.CIMaterial;
 import nl.knokko.customitems.item.CustomItemType;
 import nl.knokko.customitems.item.Enchantment;
+import nl.knokko.customitems.plugin.CustomItemsPlugin;
 import nl.knokko.customitems.plugin.set.ItemDamageClaim;
 import nl.knokko.customitems.effect.PotionEffect;
 
@@ -117,8 +118,17 @@ public abstract class CustomItem extends nl.knokko.customitems.item.CustomItem i
         for (Enchantment enchantment : defaultEnchantments) {
         	item.addUnsafeEnchantment(org.bukkit.enchantments.Enchantment.getByName(enchantment.getType().name()), enchantment.getLevel());
         }
-        return item;
+        
+        ItemStack[] pResult = {null};
+        CustomItemNBT.readWrite(item, nbt -> {
+        	long lastModified = CustomItemsPlugin.getInstance().getSetLastModified();
+        	nbt.set(name, lastModified, null, boolRepresentation);
+        	initNBT(nbt);
+        }, result -> pResult[0] = result);
+        return pResult[0];
     }
+    
+    protected void initNBT(CustomItemNBT nbt) {}
     
     public ItemStack create(int amount) {
     	return create(amount, createLore());
