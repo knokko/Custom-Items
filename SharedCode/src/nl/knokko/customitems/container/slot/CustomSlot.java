@@ -36,6 +36,8 @@ public interface CustomSlot {
 	
 	boolean canTakeItems();
 	
+	CustomSlot safeClone(CustomSlot[][] existingSlots);
+	
 	void save(BitOutput output);
 	
 	static class Encodings {

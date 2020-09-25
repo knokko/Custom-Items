@@ -18,4 +18,10 @@ public class EmptyCustomSlot implements CustomSlot {
 	public void save(BitOutput output) {
 		output.addByte(CustomSlot.Encodings.EMPTY);
 	}
+
+	@Override
+	public CustomSlot safeClone(CustomSlot[][] existingSlots) {
+		// It doesn't matter if 2 slots point to the same EmptyCustomSlot instance
+		return this;
+	}
 }

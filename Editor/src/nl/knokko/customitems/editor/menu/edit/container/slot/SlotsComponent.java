@@ -52,7 +52,7 @@ public class SlotsComponent extends GuiMenu {
 				final int fixedY = y;
 				addComponent(new SlotComponent(outerMenu, set, allSlots, slots[x][y],
 						newSlot -> slots[fixedX][fixedY] = newSlot, 
-						() -> this.clipboardSlot, 
+						() -> this.clipboardSlot.safeClone(slots), 
 						slotToCopy -> this.clipboardSlot = slotToCopy
 				), x * 0.1f, 0.85f - y * 0.15f, x * 0.1f + 0.1f, 1f - y * 0.15f);
 			}
