@@ -42,10 +42,10 @@ public class TransparencyFixMenu extends GuiMenu {
 				"Would you like to get rid of those pixels?", LABEL),
 				0.2f, 0.6f, 0.6f, 0.7f);
 		addComponent(new DynamicTextComponent(
-				"The textures that are almost transparent will become completely transparent.", 
+				"The pixels that are almost transparent will become completely transparent.", 
 				LABEL), 0.2f, 0.5f, 0.9f, 0.6f);
 		addComponent(new DynamicTextComponent(
-				"The textures that are almost solid will become completely solid.", 
+				"The pixels that are almost solid will become completely solid.", 
 				LABEL), 0.2f, 0.4f, 0.8f, 0.5f);
 		addComponent(new DynamicTextButton("Yes", BUTTON, HOVER, () -> {
 			for (int x = 0; x < image.getWidth(); x++) {
