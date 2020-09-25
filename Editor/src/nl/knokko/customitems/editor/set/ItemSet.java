@@ -2797,7 +2797,7 @@ public class ItemSet implements ItemSetBase {
 	}
 	
 	private byte[] createTextyBytes(byte[] bytes) {
-		byte[] textBytes = new byte[2 * bytes.length + 2 * bytes.length / 50];
+		byte[] textBytes = new byte[2 * bytes.length + 2 * (bytes.length / 50)];
 		int textIndex = 0;
 		int textCounter = 0;
 		byte charCodeA = (byte) 'a';
