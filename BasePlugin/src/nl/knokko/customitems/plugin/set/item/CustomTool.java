@@ -53,12 +53,6 @@ public class CustomTool extends CustomItem {
 		return prefix() + " " + current + DURABILITY_SPLIT + max;
 	}
 	
-	private static long parseDurability(String line) {
-		int indexBound = line.lastIndexOf(DURABILITY_SPLIT);
-		int indexStart = line.lastIndexOf(' ', indexBound - 1) + 1;
-		return Long.parseLong(line.substring(indexStart, indexBound));
-	}
-	
 	protected final long maxDurability;
 	
 	protected final boolean allowEnchanting;
@@ -148,19 +142,29 @@ public class CustomTool extends CustomItem {
 	
 	@Override
 	public void onBlockBreak(Player player, ItemStack tool, Block block, boolean wasSolid) {
-		if (wasSolid && blockBreakDurabilityLoss != 0 && decreaseDurability(tool, blockBreakDurabilityLoss)) {
-			CustomItemsEventHandler.playBreakSound(player);
-			player.getInventory().setItemInMainHand(null);
+		if (wasSolid && blockBreakDurabilityLoss != 0) {
+			
+			ItemStack decreased = decreaseDurability(tool, blockBreakDurabilityLoss);
+			if (decreased == null) {
+				CustomItemsEventHandler.playBreakSound(player);
+			}
+			if (decreased != tool) {
+				player.getInventory().setItemInMainHand(decreased);
+			}
 		}
 	}
 	
 	@Override
 	public void onEntityHit(LivingEntity attacker, ItemStack tool, Entity target) {
 		super.onEntityHit(attacker, tool, target);
-		if (entityHitDurabilityLoss != 0 && decreaseDurability(tool, entityHitDurabilityLoss)) {
-			if (attacker instanceof Player)
+		if (entityHitDurabilityLoss != 0) {
+			ItemStack decreased = decreaseDurability(tool, entityHitDurabilityLoss);
+			if (decreased == null && attacker instanceof Player) {
 				CustomItemsEventHandler.playBreakSound((Player) attacker);
-			attacker.getEquipment().setItemInMainHand(null);
+			}
+			if (decreased != tool) {
+				attacker.getEquipment().setItemInMainHand(decreased);
+			}
 		}
 	}
 	
@@ -172,77 +176,134 @@ public class CustomTool extends CustomItem {
 	 * @param stack The (custom) item stack to decrease the durability of
 	 * @return True if the stack breaks, false if it only loses durability
 	 */
-	public boolean decreaseDurability(ItemStack stack, int damage) {
+	public ItemStack decreaseDurability(ItemStack stack, int damage) {
 		if (isUnbreakable() || !stack.hasItemMeta()) {
-			return false;
+			return stack;
 		}
 		if (Math.random() <= 1.0 / (1 + stack.getEnchantmentLevel(org.bukkit.enchantments.Enchantment.DURABILITY))) {
-			ItemMeta meta = stack.getItemMeta();
-			List<String> lore = meta.getLore();
-			String durabilityString = getDurabilityString(lore);
-			// Check whether or not the tool is unbreakable
-			if (durabilityString != null) {
-				long durability = parseDurability(durabilityString);
-				if (durability > damage) {
-					durability -= damage;
-					lore.set(lore.indexOf(durabilityString), createDurabilityLine(durability, maxDurability));
-					meta.setLore(lore);
+			
+			// Don't to anything if this tool is unbreakable
+			if (maxDurability != UNBREAKABLE_TOOL_DURABILITY) {
+				
+				ItemStack[] pResult = {stack};
+				Long[] pNewDurability = {null};
+				
+				CustomItemNBT.readWrite(stack, nbt -> {
+					Long durability = nbt.getDurability();
+					if (durability != null) {
+						if (durability > damage) {
+							durability -= damage;
+							nbt.setDurability(durability);
+							pNewDurability[0] = durability;
+						}
+					} else {
+						/*
+						 * If this happens, the item stack doesn't have durability
+						 * stored in its lore, even though it should be breakable.
+						 * This probably means that the custom item used to be
+						 * unbreakable in the previous version of the item set, but
+						 * became breakable in the current version of the item set.
+						 * We have a repeating task to frequently check for these
+						 * problems, so we will just do nothing and wait for the
+						 * repeating task to fix this.
+						 */
+					}
+				}, newStack -> pResult[0] = newStack);
+				stack = pResult[0];
+				
+				if (pNewDurability[0] != null) {
+					long newDurability = pNewDurability[0];
+					ItemMeta meta = stack.getItemMeta();
+					meta.setLore(createLore(newDurability));
 					stack.setItemMeta(meta);
-					return false;
-				} else {
-					return true;
 				}
+				
+				return stack;
 			} else {
 				
-				// The durability/lore must have been corrupted, so we can't determine the durability
-				return false;
+				// The item is unbreakable, so just return the same item right away
+				return stack;
 			}
 		} else {
-			return false;
+			
+			// The item has durability enchantment, and shouldn't receive damage now
+			return stack;
 		}
 	}
 	
-	public long increaseDurability(ItemStack stack, int amount) {
+	public static class IncreaseDurabilityResult {
+		
+		public final ItemStack stack;
+		public final long increasedAmount;
+		
+		IncreaseDurabilityResult(ItemStack stack, long increasedAmount) {
+			this.stack = stack;
+			this.increasedAmount = increasedAmount;
+		}
+	}
+	
+	public IncreaseDurabilityResult increaseDurability(ItemStack stack, int amount) {
 		if (isUnbreakable() || !stack.hasItemMeta()) {
-			return 0;
+			return new IncreaseDurabilityResult(stack, 0);
 		}
-		ItemMeta meta = stack.getItemMeta();
-		List<String> lore = meta.getLore();
-		String durabilityString = getDurabilityString(lore);
-		// Check whether or not the tool is unbreakable
-		if (durabilityString != null) {
-			long durability = parseDurability(durabilityString);
-			long old = durability;
-			durability += amount;
-			if (durability > maxDurability)
-				durability = maxDurability;
-			lore.set(lore.indexOf(durabilityString), createDurabilityLine(durability, maxDurability));
-			meta.setLore(lore);
+		
+		ItemStack[] pStack = {stack};
+		long[] pIncreasedAmount = {0L};
+		long[] pNewDurability = {-1L};
+		
+		CustomItemNBT.readWrite(stack, nbt -> {
+			Long oldDurability = nbt.getDurability();
+			if (oldDurability != null) {
+				long newDurability;
+				if (oldDurability + amount <= maxDurability) {
+					newDurability = oldDurability + amount;
+				} else {
+					newDurability = maxDurability;
+				}
+				pIncreasedAmount[0] = newDurability - oldDurability;
+				pNewDurability[0] = newDurability;
+				nbt.setDurability(newDurability);
+			} else {
+				/*
+				 * If this happens, the item stack doesn't have durability
+				 * stored in its lore, even though it should be breakable.
+				 * This probably means that the custom item used to be
+				 * unbreakable in the previous version of the item set, but
+				 * became breakable in the current version of the item set.
+				 * We have a repeating task to frequently check for these
+				 * problems, so we will just do nothing and wait for the
+				 * repeating task to fix this.
+				 */
+			}
+		}, newStack -> pStack[0] = newStack);
+		stack = pStack[0];
+		long increasedAmount = pIncreasedAmount[0];
+		
+		if (increasedAmount > 0) {
+			long newDurability = pNewDurability[0];
+			ItemMeta meta = stack.getItemMeta();
+			meta.setLore(createLore(newDurability));
 			stack.setItemMeta(meta);
-			return durability - old;
-		} else {
-			return 0;
 		}
+		
+		return new IncreaseDurabilityResult(stack, increasedAmount);
 	}
 	
 	protected boolean isUnbreakable() {
-		return maxDurability == nl.knokko.customitems.item.CustomItem.UNBREAKABLE_TOOL_DURABILITY;
+		return maxDurability == UNBREAKABLE_TOOL_DURABILITY;
 	}
 	
 	public long getDurability(ItemStack stack) {
-		if (isUnbreakable()) {
-			return CustomItem.UNBREAKABLE_TOOL_DURABILITY;
-		}
-		ItemMeta meta = stack.getItemMeta();
-		List<String> lore = meta.getLore();
-		String durabilityString = getDurabilityString(lore);
-		
-		// Check whether or not the tool is unbreakable
-		if (durabilityString != null) {
-			return parseDurability(durabilityString);
-		} else {
-			return CustomItem.UNBREAKABLE_TOOL_DURABILITY;
-		}
+		long[] pResult = {0};
+		CustomItemNBT.readOnly(stack, nbt -> {
+			Long durability = nbt.getDurability();
+			if (durability != null) {
+				pResult[0] = durability;
+			} else {
+				pResult[0] = UNBREAKABLE_TOOL_DURABILITY;
+			}
+		});
+		return pResult[0];
 	}
 	
 	private String getDurabilityString(List<String> lore) {
