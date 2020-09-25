@@ -226,7 +226,7 @@ public class CustomContainer {
 		
 		int oldHeight = getHeight();
 		
-		CustomSlot[][] newSlots = new CustomSlot[WIDTH][oldHeight];
+		CustomSlot[][] newSlots = new CustomSlot[WIDTH][newHeight];
 		for (int x = 0; x < WIDTH; x++) {
 			for (int y = 0; y < oldHeight && y < newHeight; y++) {
 				newSlots[x][y] = slots[x][y];
@@ -240,7 +240,6 @@ public class CustomContainer {
 		}
 			
 		slots = newSlots;
-		oldHeight = newHeight;
 	}
 	
 	public int getHeight() {
