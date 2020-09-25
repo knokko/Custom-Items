@@ -55,7 +55,6 @@ public class CreateSimpleTextureTest1 {
 		test.click("autotest5.png");
 		test.click("Select");
 		test.assertImageShown(image5);
-		test.click("autotest5");
 		test.backspace(9);
 		test.click("Create");
 		test.assertComponentWithText("You can't leave the name empty.");
@@ -65,7 +64,6 @@ public class CreateSimpleTextureTest1 {
 		test.assertComponentsWithTexts("Back", "Load texture", "Edit", "Delete", textureName);
 		test.clickNearest("Edit", textureName, 2);
 		test.assertImageShown(image5);
-		test.click(textureName);
 		test.type("_one");
 		test.assertComponentWithText(textureName + "_one");
 		test.click("Apply");

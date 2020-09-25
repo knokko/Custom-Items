@@ -16,7 +16,6 @@ public class EnchantmentsTest {
 		test.assertImageShown(deleteImage);
 		test.click("Durability");
 		test.click(enchantment1);
-		test.click("2");
 		test.backspace(1);
 		test.type(level1);
 		test.delay(30);

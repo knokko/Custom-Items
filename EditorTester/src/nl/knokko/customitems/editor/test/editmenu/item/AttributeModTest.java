@@ -61,7 +61,6 @@ public class AttributeModTest {
 		test.click(defaultOp);
 		test.delay(30);
 		test.click(op1);
-		test.click(defaultValue);
 		test.backspace(defaultValue.length());
 		test.type(value1);
 		test.click("Add new");

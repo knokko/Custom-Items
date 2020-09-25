@@ -60,7 +60,6 @@ public class CreateBowTextureTest1 {
 		test.click("autotest1.png");
 		test.click("Select");
 		test.assertNearestImage("Base texture: ", image1, 4);
-		test.click("autotest1");
 		test.backspace(9);
 		test.click("Create");
 		test.assertComponentWithText("You can't leave the name empty.");

@@ -52,7 +52,6 @@ public class CreateItemSetTest {
 		}
 		
 		test.click("New item set");
-		test.clickNearest("", test.getComponentWithText("Create"), 0, 2);
 		
 		test.type(name + "full");
 		test.click("Create");
