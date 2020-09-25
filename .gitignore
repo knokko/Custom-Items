@@ -12,5 +12,7 @@ Custom Items Workspace.code-workspace
 /SharedCode/bin
 /Editor/bin
 /EditorTester/bin
+/EditorTester/autotest*
+/EditorTester/before_test_failed.png
 /Github.io
 *.jar
