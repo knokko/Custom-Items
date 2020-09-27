@@ -51,4 +51,30 @@ public class FuelCustomSlot implements CustomSlot {
 		return true;
 	}
 
+	@Override
+	public CustomSlot safeClone(CustomSlot[][] existingSlots) {
+		
+		// This can only return true if this slot no longer exists
+		if (tryName(name, existingSlots)) {
+			return this;
+		}
+		
+		// Try name0, name1, name2... until it finds a free name
+		int counter = 0;
+		while (!tryName(name + counter, existingSlots)) {
+			counter++;
+		}
+		return new FuelCustomSlot(name + counter, fuelRegistry);
+	}
+
+	private boolean tryName(String fuelSlotName, CustomSlot[][] existingSlots) {
+		for (CustomSlot[] row : existingSlots) {
+			for (CustomSlot slot : row) {
+				if (slot instanceof FuelCustomSlot && ((FuelCustomSlot)slot).getName().equals(fuelSlotName)) {
+					return false;
+				}
+			}
+		}
+		return true;
+	}
 }

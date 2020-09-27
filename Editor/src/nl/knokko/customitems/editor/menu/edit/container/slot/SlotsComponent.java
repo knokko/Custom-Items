@@ -52,7 +52,7 @@ public class SlotsComponent extends GuiMenu {
 				final int fixedY = y;
 				addComponent(new SlotComponent(outerMenu, set, allSlots, slots[x][y],
 						newSlot -> slots[fixedX][fixedY] = newSlot, 
-						() -> this.clipboardSlot, 
+						() -> this.clipboardSlot.safeClone(slots), 
 						slotToCopy -> this.clipboardSlot = slotToCopy
 				), x * 0.1f, 0.85f - y * 0.15f, x * 0.1f + 0.1f, 1f - y * 0.15f);
 			}
@@ -98,32 +98,37 @@ public class SlotsComponent extends GuiMenu {
 			}
 			
 			// Add a + button for each row, to insert a new empty row below it
-			addComponent(new DynamicTextButton("+", EditProps.SAVE_BASE, EditProps.SAVE_HOVER, () -> {
-				CustomSlot[][] newSlots = new CustomSlot[9][numRows + 1];
-				for (int x = 0; x < 9; x++) {
-					for (int newY = 0; newY <= fixedY; newY++) {
-						newSlots[x][newY] = slots[x][newY];
+			// But at most 6 rows are allowed
+			if (numRows < 6) {
+				addComponent(new DynamicTextButton("+", EditProps.SAVE_BASE, EditProps.SAVE_HOVER, () -> {
+					CustomSlot[][] newSlots = new CustomSlot[9][numRows + 1];
+					for (int x = 0; x < 9; x++) {
+						for (int newY = 0; newY <= fixedY; newY++) {
+							newSlots[x][newY] = slots[x][newY];
+						}
+						newSlots[x][fixedY + 1] = new EmptyCustomSlot();
+						for (int oldY = fixedY + 1; oldY < numRows; oldY++) {
+							newSlots[x][oldY + 1] = slots[x][oldY];
+						}
 					}
-					newSlots[x][fixedY + 1] = new EmptyCustomSlot();
-					for (int oldY = fixedY + 1; oldY < numRows; oldY++) {
-						newSlots[x][oldY + 1] = slots[x][oldY];
-					}
-				}
-				setSlots(newSlots);
-			}), 0.95f, 0.825f - 0.15f * y, 1f, 0.875f - 0.15f * y);
+					setSlots(newSlots);
+				}), 0.95f, 0.825f - 0.15f * y, 1f, 0.875f - 0.15f * y);
+			}
 		}
 		
 		// The upper + button, to insert a new empty first row
-		addComponent(new DynamicTextButton("+", EditProps.SAVE_BASE, EditProps.SAVE_HOVER, () -> {
-			CustomSlot[][] newSlots = new CustomSlot[9][numRows + 1];
-			for (int x = 0; x < 9; x++) {
-				for (int oldY = 0; oldY < numRows; oldY++) {
-					newSlots[x][oldY + 1] = slots[x][oldY];
+		if (numRows < 6) {
+			addComponent(new DynamicTextButton("+", EditProps.SAVE_BASE, EditProps.SAVE_HOVER, () -> {
+				CustomSlot[][] newSlots = new CustomSlot[9][numRows + 1];
+				for (int x = 0; x < 9; x++) {
+					for (int oldY = 0; oldY < numRows; oldY++) {
+						newSlots[x][oldY + 1] = slots[x][oldY];
+					}
+					newSlots[x][0] = new EmptyCustomSlot();
 				}
-				newSlots[x][0] = new EmptyCustomSlot();
-			}
-			setSlots(newSlots);
-		}), 0.95f, 0.95f, 1f, 1f);
+				setSlots(newSlots);
+			}), 0.95f, 0.95f, 1f, 1f);
+		}
 	}
 
 	@Override

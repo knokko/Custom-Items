@@ -62,4 +62,9 @@ public class ProgressIndicatorCustomSlot implements CustomSlot {
 		return false;
 	}
 
+	@Override
+	public CustomSlot safeClone(CustomSlot[][] existingSlots) {
+		// It's allowed to have two identical progress indicator slots
+		return this;
+	}
 }

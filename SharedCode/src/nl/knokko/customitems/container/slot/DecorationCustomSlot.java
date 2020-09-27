@@ -41,4 +41,10 @@ public class DecorationCustomSlot implements CustomSlot {
 	public boolean canTakeItems() {
 		return false;
 	}
+
+	@Override
+	public CustomSlot safeClone(CustomSlot[][] existingSlots) {
+		// There is no danger in having 2 identical decoration slots
+		return this;
+	}
 }

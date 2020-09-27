@@ -71,4 +71,10 @@ public class FuelIndicatorCustomSlot implements CustomSlot {
 	public boolean canTakeItems() {
 		return false;
 	}
+
+	@Override
+	public CustomSlot safeClone(CustomSlot[][] existingSlots) {
+		// Its allowed to have two identical fuel indicator slots
+		return this;
+	}
 }

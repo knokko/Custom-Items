@@ -98,7 +98,7 @@ public class ShapelessRecipeCollectionEdit extends SafeCollectionEdit<Ingredient
 
 	@Override
 	protected CopyMode getCopyMode(Ingredient item) {
-		return CopyMode.INSTANT;
+		return currentCollection.size() < 9 ? CopyMode.INSTANT : CopyMode.DISABLED;
 	}
 
 	@Override
