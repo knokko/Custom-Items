@@ -4,11 +4,17 @@ public class CustomItemDamage {
 	
 	public static double getDefaultAttackDamage(CustomItemType i) {
 		double attackDamage;
-		if  (i == CustomItemType.DIAMOND_AXE || i == CustomItemType.IRON_AXE || i == CustomItemType.STONE_AXE){
+		if (i == CustomItemType.NETHERITE_AXE) {
+			attackDamage = 10;
+		} else if (i == CustomItemType.DIAMOND_AXE || i == CustomItemType.IRON_AXE || i == CustomItemType.STONE_AXE){
 			attackDamage = 9;
+		} else if (i == CustomItemType.NETHERITE_SWORD) {
+			attackDamage = 8;
 		} else if (i == CustomItemType.DIAMOND_SWORD || i == CustomItemType.WOOD_AXE || i == CustomItemType.GOLD_AXE) {
 			attackDamage = 7;
-		} else if (i == CustomItemType.IRON_SWORD) {
+		} else if (i == CustomItemType.NETHERITE_SHOVEL) {
+			attackDamage = 6.5;
+		} else if (i == CustomItemType.IRON_SWORD || i == CustomItemType.NETHERITE_PICKAXE) {
 			attackDamage = 6;
 		} else if (i == CustomItemType.DIAMOND_SHOVEL) {
 			attackDamage = 5.5;
