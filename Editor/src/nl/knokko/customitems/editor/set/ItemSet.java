@@ -2192,8 +2192,9 @@ public class ItemSet implements ItemSetBase {
 	
 	public String exportFor16() {
 		
-		// It looks like the resourcepack format didn't change in 1.16 either
-		return exportFor13Or14(MCVersions.VERSION1_16, 5);
+		// They raised the resourcepack format from 5 to 6
+		// But for some reason, they made that switch between 1.16.1 and 1.16.2
+		return exportFor13Or14(MCVersions.VERSION1_16, 6);
 	}
 	
 	private String exportFor13Or14(int mcVersion, int packFormat) {
