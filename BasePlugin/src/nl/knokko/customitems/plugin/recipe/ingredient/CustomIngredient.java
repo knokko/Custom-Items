@@ -40,4 +40,9 @@ public class CustomIngredient implements Ingredient {
     public boolean accept(ItemStack item) {
         return this.item.is(item);
     }
+    
+    @Override
+    public String toString() {
+    	return item.getName();
+    }
 }

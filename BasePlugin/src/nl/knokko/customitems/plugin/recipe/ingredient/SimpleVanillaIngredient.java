@@ -42,4 +42,9 @@ public class SimpleVanillaIngredient implements Ingredient {
         return item != null && !CustomItem.isCustom(item)
         		&& ItemHelper.getMaterialName(item).equals(type.name());
     }
+    
+    @Override
+    public String toString() {
+    	return type.name();
+    }
 }

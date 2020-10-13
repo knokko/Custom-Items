@@ -82,6 +82,11 @@ public class ContainerRecipe {
 		);
 	}
 	
+	@Override
+	public String toString() {
+		return "ContainerRecipe(inputs=" + inputs + ", outputs=" + outputs + ")";
+	}
+	
 	public void save(
 			BitOutput output, 
 			Consumer<SCIngredient> saveIngredient,
@@ -139,6 +144,11 @@ public class ContainerRecipe {
 			this.ingredient = ingredient;
 		}
 		
+		@Override
+		public String toString() {
+			return inputSlotName + "==" + ingredient;
+		}
+		
 		public String getInputSlotName() {
 			return inputSlotName;
 		}
@@ -160,6 +170,11 @@ public class ContainerRecipe {
 		public OutputEntry(String outputSlotName, Object result) {
 			this.outputSlotName = outputSlotName;
 			this.result = result;
+		}
+		
+		@Override
+		public String toString() {
+			return outputSlotName + ":=" + result;
 		}
 		
 		public String getOutputSlotName() {
