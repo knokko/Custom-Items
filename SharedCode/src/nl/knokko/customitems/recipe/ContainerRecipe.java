@@ -36,7 +36,12 @@ public class ContainerRecipe {
 			
 			String inputSlotName = input.readString();
 			SCIngredient ingredient = loadIngredient.get();
-			inputs.add(new InputEntry(inputSlotName, ingredient));
+			
+			// A bug in the past made it possible that NoIngredient instances are
+			// encoded ;( This seems like the easiest way to nullify the damage.
+			if (!ingredient.getClass().getSimpleName().equals("NoIngredient")) {
+				inputs.add(new InputEntry(inputSlotName, ingredient));
+			}
 		}
 		
 		int numOutputs = input.readInt();
