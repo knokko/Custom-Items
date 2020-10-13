@@ -53,8 +53,10 @@ public class ContainerInstance {
 	@SuppressWarnings("deprecation")
 	public static ItemStack fromDisplay(SlotDisplay display) {
 		ItemStack stack;
-		if (display.getItem() instanceof CustomItemDisplayItem) {
-			stack = ((CustomItem)((CustomItemDisplayItem) display.getItem()).getItem()).create(display.getAmount());
+		boolean isCustom = display.getItem() instanceof CustomItemDisplayItem;
+		if (isCustom) {
+			CustomItem customItem = ((CustomItem)((CustomItemDisplayItem) display.getItem()).getItem());
+			stack = customItem.create(display.getAmount());
 		} else {
 			CIMaterial material;
 			if (display.getItem() instanceof DataVanillaDisplayItem) {
@@ -74,8 +76,15 @@ public class ContainerInstance {
 		}
 		
 		ItemMeta meta = stack.getItemMeta();
-		meta.setDisplayName(display.getDisplayName());
-		meta.setLore(Lists.newArrayList(display.getLore()));
+		
+		// If a custom item is used, only overwrite display name and lore if its
+		// specifically specified
+		if (!isCustom || !display.getDisplayName().isEmpty())
+			meta.setDisplayName(display.getDisplayName());
+		if (!isCustom || display.getLore().length > 0)
+			meta.setLore(Lists.newArrayList(display.getLore()));
+		
+		// Store changes in item meta
 		stack.setItemMeta(meta);
 		
 		return stack;
