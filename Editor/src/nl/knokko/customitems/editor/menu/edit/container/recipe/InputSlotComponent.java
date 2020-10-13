@@ -6,6 +6,7 @@ import nl.knokko.customitems.editor.menu.edit.EditProps;
 import nl.knokko.customitems.editor.menu.edit.recipe.ingredient.ChooseIngredient;
 import nl.knokko.customitems.editor.set.ItemSet;
 import nl.knokko.customitems.editor.set.recipe.ingredient.Ingredient;
+import nl.knokko.customitems.editor.set.recipe.ingredient.NoIngredient;
 import nl.knokko.customitems.recipe.ContainerRecipe.InputEntry;
 import nl.knokko.gui.color.GuiColor;
 import nl.knokko.gui.color.SimpleGuiColor;
@@ -61,6 +62,11 @@ public class InputSlotComponent implements GuiComponent {
 	}
 	
 	private void setIngredient(Ingredient newIngredient) {
+		
+		// Make sure only null indicates that there is no ingredient
+		if (newIngredient instanceof NoIngredient) {
+			newIngredient = null;
+		}
 		
 		// Update inputs collection
 		InputEntry currentEntry = getOwnEntry();
