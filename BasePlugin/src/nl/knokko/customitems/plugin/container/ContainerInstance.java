@@ -500,10 +500,30 @@ public class ContainerInstance {
 		
 		candidateLoop:
 		for (ContainerRecipe candidate : typeInfo.getContainer().getRecipes()) {
+			
+			// Check that all inputs are present
 			for (InputEntry input : candidate.getInputs()) {
 				ItemStack inSlot = getInput(input.getInputSlotName());
 				Ingredient ingredient = (Ingredient) input.getIngredient();
 				if (!ingredient.accept(inSlot)) {
+					continue candidateLoop;
+				}
+			}
+			
+			// Check that all other inputs are empty
+			inputLoop:
+			for (Entry<String, Integer> inputEntry : typeInfo.getInputSlots()) {
+				for (InputEntry usedInput : candidate.getInputs()) {
+					
+					// If this input is used, we shouldn't check if its empty
+					if (usedInput.getInputSlotName().equals(inputEntry.getKey())) {
+						continue inputLoop;
+					}
+				}
+				
+				// If this input slot is not used, it should be empty!
+				ItemStack inSlot = inventory.getItem(inputEntry.getValue());
+				if (!ItemUtils.isEmpty(inSlot)) {
 					continue candidateLoop;
 				}
 			}
