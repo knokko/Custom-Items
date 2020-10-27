@@ -4753,6 +4753,26 @@ public class ItemSet implements ItemSetBase {
 					}
 				}
 			}
+			for (CustomContainer container : containers) {
+				for (ContainerRecipe recipe : container.getRecipes()) {
+					for (InputEntry input : recipe.getInputs()) {
+						if (input.getIngredient() instanceof CustomItemIngredient) {
+							CustomItemIngredient customIngredient = (CustomItemIngredient) input.getIngredient();
+							if (customIngredient.getItem() == item) {
+								return "The container " + container.getName() + " has this item as input of a recipe";
+							}
+						}
+					}
+					for (OutputEntry output : recipe.getOutputs()) {
+						if (output.getResult() instanceof CustomItemResult) {
+							CustomItemResult customResult = (CustomItemResult) output.getResult();
+							if (customResult.getItem() == item) {
+								return "The container " + container.getName() + " has this item as output of a recipe";
+							}
+						}
+					}
+				}
+			}
 		}
 		if (!items.remove(item)) {
 			return "This item is not in the item set";
