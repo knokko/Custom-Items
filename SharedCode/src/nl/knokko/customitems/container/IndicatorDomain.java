@@ -42,15 +42,18 @@ public class IndicatorDomain {
 		int scaledBegin = begin * maxProgress / MAX;
 		int scaledEnd = end * maxProgress / MAX;
 		
-		int computedResult = (currentProgress - scaledBegin) * 64 / (scaledEnd - scaledBegin);
-		
-		if (computedResult < 0) {
+		// result >= 1 if and only if scaledProgress > 0
+		int scaledProgress = currentProgress - scaledBegin;
+		if (scaledProgress <= 0) {
 			return 0;
 		}
-		if (computedResult > 64) {
+		
+		// result <= 63 if and only if scaledProgress < scaledMax
+		int scaledMax = scaledEnd - scaledBegin;
+		if (scaledProgress >= scaledMax) {
 			return 64;
 		}
 		
-		return computedResult;
+		return 1 + scaledProgress * 63 / scaledMax;
 	}
 }

@@ -599,10 +599,13 @@ public class ContainerInstance {
 		if (oldCraftingProgress != currentCraftingProgress) {
 			for (IndicatorProps indicator : typeInfo.getCraftingIndicators()) {
 				
+				int newStacksize = 0;
 				if (currentCraftingProgress > 0) {
 					IndicatorDomain domain = indicator.getIndicatorDomain();
-					int newStacksize = domain.getStacksize(currentCraftingProgress, currentRecipe.getDuration());
-					
+					newStacksize = domain.getStacksize(currentCraftingProgress, currentRecipe.getDuration());
+				}
+				
+				if (newStacksize > 0) {
 					ItemStack newItemStack = fromDisplay(indicator.getSlotDisplay());
 					newItemStack.setAmount(newStacksize);
 					inventory.setItem(indicator.getInventoryIndex(), newItemStack);
