@@ -498,7 +498,6 @@ public class CustomItemsEventHandler implements Listener {
 							playBreakSound(player);
 						}
 						if (newBow != oldBow) {
-							// TODO Test this new code
 							ItemStack mainHand = player.getInventory().getItemInMainHand();
 							if (mainHand != null && set().getItem(mainHand) == bow) {
 								player.getInventory().setItemInMainHand(newBow);
@@ -582,7 +581,6 @@ public class CustomItemsEventHandler implements Listener {
 	public void onShear(PlayerShearEntityEvent event) {
 		ItemStack main = event.getPlayer().getInventory().getItemInMainHand();
 		ItemStack off = event.getPlayer().getInventory().getItemInOffHand();
-		// TODO Test durability loss here
 		CustomItem customMain = CIMaterial.getOrNull(ItemHelper.getMaterialName(main)) == CIMaterial.SHEARS
 				? set().getItem(main) : null;
 				CustomItem customOff = CIMaterial.getOrNull(ItemHelper.getMaterialName(off)) == CIMaterial.SHEARS
@@ -808,7 +806,6 @@ public class CustomItemsEventHandler implements Listener {
 			// Only act if armor reduced the damage
 			if (isReducedByArmor(event.getCause())) {
 
-				// TODO Test for each piece!
 				int armorDamage = Math.max(1, (int) (original / 4));
 				EntityEquipment e = player.getEquipment();
 				
@@ -854,7 +851,7 @@ public class CustomItemsEventHandler implements Listener {
 
 				CustomShield shield = null;
 				boolean offhand = true;
-
+				
 				if (CustomItem.isCustom(player.getInventory().getItemInOffHand())) {
 					ItemSet set = set();
 					CustomItem customMain = set.getItem(player.getInventory().getItemInOffHand());
@@ -870,6 +867,11 @@ public class CustomItemsEventHandler implements Listener {
 						shield = (CustomShield) customMain;
 						offhand = false;
 					}
+				} else if (ItemHelper.getMaterialName(
+							player.getInventory().getItemInMainHand()
+						).equals(CIMaterial.SHIELD.name())) {
+					shield = null;
+					offhand = false;
 				}
 
 				if (shield != null && event.getDamage() >= shield.getDurabilityThreshold()) {
@@ -899,7 +901,6 @@ public class CustomItemsEventHandler implements Listener {
 	}
 
 	private ItemStack decreaseCustomArmorDurability(ItemStack piece, int damage) {
-		// TODO Test this
 		if (CustomItem.isCustom(piece)) {
 			CustomItem custom = set().getItem(piece);
 			if (custom instanceof CustomArmor) {
@@ -1030,7 +1031,6 @@ public class CustomItemsEventHandler implements Listener {
 			}
 		}
 		
-		// TODO Test this
 		if (oldEquipment[0] != allEquipment[0]) {
 			eq.setItemInMainHand(allEquipment[0]);
 		}
