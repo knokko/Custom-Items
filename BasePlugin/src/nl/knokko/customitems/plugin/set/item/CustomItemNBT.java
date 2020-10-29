@@ -9,7 +9,7 @@ import net.minecraft.server.v1_12_R1.NBTTagCompound;
 
 public class CustomItemNBT {
 	
-	private static final String KEY = "CustomItemsAndTexturesTag";
+	private static final String KEY = "Knokko'sCustomItems";
 	
 	private static final String NAME = "CustomItemName";
 	private static final String LAST_MODIFIED = "LastModified";
@@ -81,7 +81,7 @@ public class CustomItemNBT {
 	 * return true if and only if the item has the tag.
 	 */
 	public boolean hasOurNBT() {
-		return getOurTag() != null;
+		return nbt.hasKey(KEY);
 	}
 	
 	private void assertOurNBT() {
@@ -90,9 +90,9 @@ public class CustomItemNBT {
 	}
 	
 	private NBTTagCompound getOrCreateOurNBT() {
-		if (hasOurNBT())
+		if (hasOurNBT()) {
 			return getOurTag();
-		else {
+		} else {
 			assertWrite();
 			NBTTagCompound ourNBT = new NBTTagCompound();
 			nbt.set(KEY, ourNBT);
@@ -191,7 +191,9 @@ public class CustomItemNBT {
 		NBTTagCompound nbt = getOrCreateOurNBT();
 		nbt.setString(NAME, name);
 		nbt.setLong(LAST_MODIFIED, lastModified);
-		nbt.setLong(DURABILITY, maxDurability);
+		if (maxDurability != null) {
+			nbt.setLong(DURABILITY, maxDurability);
+		}
 		nbt.setByteArray(BOOL_REPRESENTATION, boolRepresentation.getAsBytes());
 	}
 }

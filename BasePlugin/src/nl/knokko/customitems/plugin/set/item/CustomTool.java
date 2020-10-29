@@ -174,7 +174,10 @@ public class CustomTool extends CustomItem {
 	
 	/**
 	 * @param stack The (custom) item stack to decrease the durability of
-	 * @return True if the stack breaks, false if it only loses durability
+	 * @return The same item stack if nothing changed, or a new ItemStack that should
+	 * replace the old one (null if the stack should break). 
+	 * 
+	 * It is the task of the caller to ensure that the old one really gets replaced!
 	 */
 	public ItemStack decreaseDurability(ItemStack stack, int damage) {
 		if (isUnbreakable() || !stack.hasItemMeta()) {
@@ -195,6 +198,10 @@ public class CustomTool extends CustomItem {
 							durability -= damage;
 							nbt.setDurability(durability);
 							pNewDurability[0] = durability;
+						} else {
+							
+							// If this block is reached, the item will break
+							pNewDurability[0] = 0L;
 						}
 					} else {
 						/*
@@ -213,6 +220,9 @@ public class CustomTool extends CustomItem {
 				
 				if (pNewDurability[0] != null) {
 					long newDurability = pNewDurability[0];
+					if (newDurability == 0) {
+						return null;
+					}
 					ItemMeta meta = stack.getItemMeta();
 					meta.setLore(createLore(newDurability));
 					stack.setItemMeta(meta);
@@ -304,83 +314,6 @@ public class CustomTool extends CustomItem {
 			}
 		});
 		return pResult[0];
-	}
-	
-	private String getDurabilityString(List<String> lore) {
-		if (lore == null || lore.isEmpty()) {
-			return null;
-		}
-		
-		String durabilityPrefix = CustomItemsPlugin.getInstance().getLanguageFile().getDurabilityPrefix();
-		
-		// If the config has not been changed and the item is not unbreakable, it should be found here
-		for (String line : lore) {
-			if (line.startsWith(durabilityPrefix)) {
-				int indexSplit = line.lastIndexOf(DURABILITY_SPLIT);
-				if (indexSplit != -1) {
-					try {
-						long maxDurability = Long.parseLong(line.substring(indexSplit + DURABILITY_SPLIT.length()));
-						if (maxDurability > 0) {
-							long durability = Long.parseLong(line.substring(line.lastIndexOf(' ', indexSplit - 1) + 1, indexSplit));
-							if (durability > 0) {
-								return line;
-							}
-						}
-					} catch (NumberFormatException ex) {
-						// This means that the item has lore that looks like the durability format
-					}
-				}
-			}
-		}
-		
-		// It looks like the config has been changed, this might get a bit dirty...
-		int potentialMatches = 0;
-		for (String line : lore) {
-			int indexSplit = line.lastIndexOf(DURABILITY_SPLIT);
-			if (indexSplit != -1) {
-				try {
-					long maxDurability = Long.parseLong(line.substring(indexSplit + DURABILITY_SPLIT.length()));
-					if (maxDurability > 0) {
-						long durability = Long.parseLong(line.substring(line.lastIndexOf(' ', indexSplit - 1) + 1, indexSplit));
-						if (durability > 0) {
-							potentialMatches++;
-						}
-					}
-				} catch (NumberFormatException ex) {
-					// This means that the item has lore that looks like the durability format
-				}
-			}
-		}
-		
-		if (potentialMatches == 0) {
-			
-			// It looks like the lore of this custom item has been manipulated somehow
-			return null;
-		} else if (potentialMatches == 1) {
-			
-			// Then the language config changed and this should be the old durability
-			for (String line : lore) {
-				int indexSplit = line.lastIndexOf(DURABILITY_SPLIT);
-				if (indexSplit != -1) {
-					try {
-						long maxDurability = Long.parseLong(line.substring(indexSplit + DURABILITY_SPLIT.length()));
-						if (maxDurability > 0) {
-							long durability = Long.parseLong(line.substring(line.lastIndexOf(' ', indexSplit - 1) + 1, indexSplit));
-							if (durability > 0) {
-								return line;
-							}
-						}
-					} catch (NumberFormatException ex) {
-						// This means that the item has lore that looks like the durability format
-					}
-				}
-			}
-		} else {
-			
-			// There are at least 2 lines that could be it, so there is no way to safely choose the right one
-			return null;
-		}
-		throw new Error("This line should be unreachable!");
 	}
 	
 	public long getMaxDurability() {

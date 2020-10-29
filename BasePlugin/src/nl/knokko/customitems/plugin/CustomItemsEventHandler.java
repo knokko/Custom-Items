@@ -138,6 +138,7 @@ import nl.knokko.customitems.plugin.set.item.CustomItem;
 import nl.knokko.customitems.plugin.set.item.CustomShears;
 import nl.knokko.customitems.plugin.set.item.CustomShield;
 import nl.knokko.customitems.plugin.set.item.CustomTool;
+import nl.knokko.customitems.plugin.set.item.CustomTool.IncreaseDurabilityResult;
 import nl.knokko.customitems.plugin.set.item.CustomTrident;
 import nl.knokko.customitems.plugin.set.item.CustomWand;
 
@@ -185,12 +186,18 @@ public class CustomItemsEventHandler implements Listener {
 					CustomTool tool = (CustomTool) custom;
 					if (tool instanceof CustomHoe) {
 						CIMaterial type = CIMaterial.getOrNull(ItemHelper.getMaterialName(event.getClickedBlock()));
-						if ((type == CIMaterial.DIRT || type == CIMaterial.GRASS) && tool.decreaseDurability(item, ((CustomHoe) tool).getTillDurabilityLoss())) {
-							playBreakSound(event.getPlayer());
-							if (event.getHand() == EquipmentSlot.HAND)
-								event.getPlayer().getInventory().setItemInMainHand(null);
-							else
-								event.getPlayer().getInventory().setItemInOffHand(null);
+						CustomHoe customHoe = (CustomHoe) tool;
+						if (type == CIMaterial.DIRT || type == CIMaterial.GRASS) {
+							ItemStack newStack = tool.decreaseDurability(item, customHoe.getTillDurabilityLoss());
+							if (newStack != item) {
+								if (newStack == null) {
+									playBreakSound(event.getPlayer());
+								}
+								if (event.getHand() == EquipmentSlot.HAND)
+									event.getPlayer().getInventory().setItemInMainHand(newStack);
+								else
+									event.getPlayer().getInventory().setItemInOffHand(newStack);
+							}
 						}
 					}
 				}
@@ -375,13 +382,18 @@ public class CustomItemsEventHandler implements Listener {
 				ItemStack main = shooter.getInventory().getItemInMainHand();
 				ItemStack off = shooter.getInventory().getItemInOffHand();
 				ItemSet set = set();
+				
+				// TODO Test durability loss here!
 				if (main != null && ItemHelper.getMaterialName(main).equals(CIMaterial.TRIDENT.name())) {
 					if (CustomItem.isCustom(main)) {
 						CustomItem customMain = set.getItem(main);
 						if (customMain instanceof CustomTrident) {
 							customTrident = (CustomTrident) customMain;
-							if (customTrident.decreaseDurability(main, customTrident.throwDurabilityLoss)) {
+							ItemStack newMain = customTrident.decreaseDurability(main, customTrident.throwDurabilityLoss);
+							if (newMain == null) {
 								trident.setMetadata("CustomTridentBreak", TRIDENT_BREAK_META);
+							} else if (newMain != main) {
+								shooter.getInventory().setItemInMainHand(newMain);
 							}
 						}
 					}
@@ -390,8 +402,11 @@ public class CustomItemsEventHandler implements Listener {
 						CustomItem customOff = set.getItem(off);
 						if (customOff instanceof CustomTrident) {
 							customTrident = (CustomTrident) customOff;
-							if (customTrident.decreaseDurability(off, customTrident.throwDurabilityLoss)) {
+							ItemStack newOff = customTrident.decreaseDurability(off, customTrident.throwDurabilityLoss);
+							if (newOff == null) {
 								trident.setMetadata("CustomTridentBreak", TRIDENT_BREAK_META);
+							} else if (newOff != off) {
+								shooter.getInventory().setItemInOffHand(newOff);
 							}
 						}
 					}
@@ -469,23 +484,30 @@ public class CustomItemsEventHandler implements Listener {
 
 	@EventHandler(ignoreCancelled = true)
 	public void onBowShoot(EntityShootBowEvent event) {
-		if (CustomItem.isCustom(event.getBow())) {
-			CustomItem customItem = set().getItem(event.getBow());
+		ItemStack oldBow = event.getBow();
+		if (CustomItem.isCustom(oldBow)) {
+			CustomItem customItem = set().getItem(oldBow);
 			if (customItem instanceof CustomBow) {
 				CustomBow bow = (CustomBow) customItem;
 				Entity projectile = event.getProjectile();
 				if (projectile instanceof Arrow) {
-					if (event.getEntity() instanceof Player
-							&& bow.decreaseDurability(event.getBow(), bow.getShootDurabilityLoss())) {
+					if (event.getEntity() instanceof Player) {
 						Player player = (Player) event.getEntity();
-						playBreakSound(player);
-						ItemStack mainHand = player.getInventory().getItemInMainHand();
-						if (mainHand != null && set().getItem(mainHand) == bow) {
-							player.getInventory().setItemInMainHand(null);
-						} else {
-							player.getInventory().setItemInOffHand(null);
+						ItemStack newBow = bow.decreaseDurability(oldBow, bow.getShootDurabilityLoss());
+						if (newBow == null) {
+							playBreakSound(player);
+						}
+						if (newBow != oldBow) {
+							// TODO Test this new code
+							ItemStack mainHand = player.getInventory().getItemInMainHand();
+							if (mainHand != null && set().getItem(mainHand) == bow) {
+								player.getInventory().setItemInMainHand(newBow);
+							} else {
+								player.getInventory().setItemInOffHand(newBow);
+							}
 						}
 					}
+
 					Arrow arrow = (Arrow) projectile;
 					arrow.setKnockbackStrength(arrow.getKnockbackStrength() + bow.getKnockbackStrength());
 					arrow.setVelocity(arrow.getVelocity().multiply(bow.getSpeedMultiplier()));
@@ -560,6 +582,7 @@ public class CustomItemsEventHandler implements Listener {
 	public void onShear(PlayerShearEntityEvent event) {
 		ItemStack main = event.getPlayer().getInventory().getItemInMainHand();
 		ItemStack off = event.getPlayer().getInventory().getItemInOffHand();
+		// TODO Test durability loss here
 		CustomItem customMain = CIMaterial.getOrNull(ItemHelper.getMaterialName(main)) == CIMaterial.SHEARS
 				? set().getItem(main) : null;
 				CustomItem customOff = CIMaterial.getOrNull(ItemHelper.getMaterialName(off)) == CIMaterial.SHEARS
@@ -569,9 +592,12 @@ public class CustomItemsEventHandler implements Listener {
 								event.setCancelled(true);
 							else if (customMain instanceof CustomShears) {
 								CustomShears tool = (CustomShears) customMain;
-								if (tool.decreaseDurability(main, tool.getShearDurabilityLoss())) {
-									playBreakSound(event.getPlayer());
-									event.getPlayer().getInventory().setItemInMainHand(null);
+								ItemStack newMain = tool.decreaseDurability(main, tool.getShearDurabilityLoss());
+								if (newMain != main) {
+									if (newMain == null) {
+										playBreakSound(event.getPlayer());
+									}
+									event.getPlayer().getInventory().setItemInMainHand(newMain);
 								}
 							} else if (interestingWarnings()) {
 								Bukkit.getLogger().warning("Interesting custom main shear: " + main);
@@ -581,9 +607,12 @@ public class CustomItemsEventHandler implements Listener {
 								event.setCancelled(true);
 							else if (customOff instanceof CustomShears) {
 								CustomShears tool = (CustomShears) customOff;
-								if (tool.decreaseDurability(off, tool.getShearDurabilityLoss())) {
-									playBreakSound(event.getPlayer());
-									event.getPlayer().getInventory().setItemInOffHand(null);
+								ItemStack newOff = tool.decreaseDurability(off, tool.getShearDurabilityLoss());
+								if (newOff != off) {
+									if (newOff == null) {
+										playBreakSound(event.getPlayer());
+									}
+									event.getPlayer().getInventory().setItemInOffHand(newOff);
 								}
 							} else if (interestingWarnings()) {
 								Bukkit.getLogger().warning("Interesting custom off shear: " + off);
@@ -779,23 +808,44 @@ public class CustomItemsEventHandler implements Listener {
 			// Only act if armor reduced the damage
 			if (isReducedByArmor(event.getCause())) {
 
+				// TODO Test for each piece!
 				int armorDamage = Math.max(1, (int) (original / 4));
 				EntityEquipment e = player.getEquipment();
-				if (decreaseCustomArmorDurability(e.getHelmet(), armorDamage)) {
-					playBreakSound(player);
-					e.setHelmet(null);
+				
+				ItemStack oldHelmet = e.getHelmet();
+				ItemStack newHelmet = decreaseCustomArmorDurability(oldHelmet, armorDamage);
+				if (oldHelmet != newHelmet) {
+					if (newHelmet == null) {
+						playBreakSound(player);
+					}
+					e.setHelmet(newHelmet);
 				}
-				if (decreaseCustomArmorDurability(e.getChestplate(), armorDamage)) {
-					playBreakSound(player);
-					e.setChestplate(null);
+				
+				ItemStack oldChestplate = e.getChestplate();
+				ItemStack newChestplate = decreaseCustomArmorDurability(oldChestplate, armorDamage);
+				if (oldChestplate != newChestplate) {
+					if (newChestplate == null) {
+						playBreakSound(player);
+					}
+					e.setChestplate(newChestplate);
 				}
-				if (decreaseCustomArmorDurability(e.getLeggings(), armorDamage)) {
-					playBreakSound(player);
-					e.setLeggings(null);
+				
+				ItemStack oldLeggings = e.getLeggings();
+				ItemStack newLeggings = decreaseCustomArmorDurability(oldLeggings, armorDamage);
+				if (oldLeggings != newLeggings) {
+					if (newLeggings == null) {
+						playBreakSound(player);
+					}
+					e.setLeggings(newLeggings);
 				}
-				if (decreaseCustomArmorDurability(e.getBoots(), armorDamage)) {
-					playBreakSound(player);
-					e.setBoots(null);
+				
+				ItemStack oldBoots = e.getBoots();
+				ItemStack newBoots = decreaseCustomArmorDurability(oldBoots, armorDamage);
+				if (oldBoots != newBoots) {
+					if (newBoots == null) {
+						playBreakSound(player);
+					}
+					e.setBoots(newBoots);
 				}
 			}
 
@@ -825,14 +875,22 @@ public class CustomItemsEventHandler implements Listener {
 				if (shield != null && event.getDamage() >= shield.getDurabilityThreshold()) {
 					int lostDurability = (int) (event.getDamage()) + 1;
 					if (offhand) {
-						if (shield.decreaseDurability(player.getInventory().getItemInOffHand(), lostDurability)) {
-							player.getInventory().setItemInOffHand(null);
-							playBreakSound(player);
+						ItemStack oldOffHand = player.getInventory().getItemInOffHand();
+						ItemStack newOffHand = shield.decreaseDurability(oldOffHand, lostDurability);
+						if (oldOffHand != newOffHand) {
+							player.getInventory().setItemInOffHand(newOffHand);
+							if (newOffHand == null) {
+								playBreakSound(player);
+							}
 						}
 					} else {
-						if (shield.decreaseDurability(player.getInventory().getItemInMainHand(), lostDurability)) {
-							player.getInventory().setItemInOffHand(null);
-							playBreakSound(player);
+						ItemStack oldMainHand = player.getInventory().getItemInMainHand();
+						ItemStack newMainHand = shield.decreaseDurability(oldMainHand, lostDurability);
+						if (oldMainHand != newMainHand) {
+							player.getInventory().setItemInMainHand(newMainHand);
+							if (newMainHand == null) {
+								playBreakSound(player);
+							}
 						}
 					}
 				}
@@ -840,7 +898,8 @@ public class CustomItemsEventHandler implements Listener {
 		}
 	}
 
-	private boolean decreaseCustomArmorDurability(ItemStack piece, int damage) {
+	private ItemStack decreaseCustomArmorDurability(ItemStack piece, int damage) {
+		// TODO Test this
 		if (CustomItem.isCustom(piece)) {
 			CustomItem custom = set().getItem(piece);
 			if (custom instanceof CustomArmor) {
@@ -849,10 +908,10 @@ public class CustomItemsEventHandler implements Listener {
 				if (interestingWarnings()) {
 					Bukkit.getLogger().warning("Strange item " + piece);
 				}
-				return false;
+				return piece;
 			}
 		} else {
-			return false;
+			return piece;
 		}
 	}
 
@@ -948,17 +1007,20 @@ public class CustomItemsEventHandler implements Listener {
 		ItemStack boots = eq.getBoots();
 		
 		ItemStack[] allEquipment = {mainHand, offHand, helmet, chest, leggs, boots};
+		ItemStack[] oldEquipment = Arrays.copyOf(allEquipment, allEquipment.length);
 		int durAmount = event.getAmount() * 2;
 		
-		for (ItemStack item : allEquipment) {
+		for (int index = 0; index < allEquipment.length; index++) {
+			ItemStack item = allEquipment[index];
 			if (CustomItem.isCustom(item)) {
 				CustomItem custom = set().getItem(item);
 				if (custom != null) {
 					if (item.containsEnchantment(Enchantment.MENDING) && custom instanceof CustomTool) {
 						CustomTool tool = (CustomTool) custom;
 						
-						long repaired = tool.increaseDurability(item, durAmount);
-						durAmount -= repaired;
+						IncreaseDurabilityResult increaseResult = tool.increaseDurability(item, durAmount);
+						durAmount -= increaseResult.increasedAmount;
+						allEquipment[index] = increaseResult.stack;
 						
 						if (durAmount == 0) {
 							break;
@@ -966,6 +1028,26 @@ public class CustomItemsEventHandler implements Listener {
 					}
 				}
 			}
+		}
+		
+		// TODO Test this
+		if (oldEquipment[0] != allEquipment[0]) {
+			eq.setItemInMainHand(allEquipment[0]);
+		}
+		if (oldEquipment[1] != allEquipment[1]) {
+			eq.setItemInOffHand(allEquipment[1]);
+		}
+		if (oldEquipment[2] != allEquipment[2]) {
+			eq.setHelmet(allEquipment[2]);
+		}
+		if (oldEquipment[3] != allEquipment[3]) {
+			eq.setChestplate(allEquipment[3]);
+		}
+		if (oldEquipment[4] != allEquipment[4]) {
+			eq.setLeggings(allEquipment[4]);
+		}
+		if (oldEquipment[5] != allEquipment[5]) {
+			eq.setBoots(allEquipment[5]);
 		}
 		
 		int newXP = durAmount / 2;
