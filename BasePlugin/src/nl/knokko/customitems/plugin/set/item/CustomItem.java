@@ -93,6 +93,14 @@ public abstract class CustomItem extends nl.knokko.customitems.item.CustomItem i
     	this.boolRepresentation = boolRep;
     }
     
+    public BooleanRepresentation getBooleanRepresentation() {
+    	return boolRepresentation;
+    }
+    
+    public Single[] getAttributeModifiers() {
+    	return attributeModifiers;
+    }
+    
     protected List<String> createLore(){
     	return Lists.newArrayList(lore);
     }

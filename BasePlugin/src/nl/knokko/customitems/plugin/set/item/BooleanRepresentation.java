@@ -1,5 +1,7 @@
 package nl.knokko.customitems.plugin.set.item;
 
+import java.util.Arrays;
+
 /**
  * <p>
  * Represents the boolean representation of a custom item. This is the data that was
@@ -25,6 +27,21 @@ public class BooleanRepresentation {
 
 	public BooleanRepresentation(byte[] byteRepresentation) {
 		this.byteRepresentation = byteRepresentation;
+	}
+	
+	@Override
+	public boolean equals(Object other) {
+		if (other instanceof BooleanRepresentation) {
+			BooleanRepresentation boolRep = (BooleanRepresentation) other;
+			return Arrays.equals(byteRepresentation, boolRep.byteRepresentation);
+		} else {
+			return false;
+		}
+	}
+	
+	@Override
+	public String toString() {
+		return "BooleanRepresentation(" + Arrays.toString(byteRepresentation) + ")";
 	}
 	
 	public byte[] getAsBytes() {

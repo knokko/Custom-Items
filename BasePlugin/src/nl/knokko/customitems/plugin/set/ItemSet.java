@@ -30,6 +30,8 @@ import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Function;
+import java.util.logging.Level;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Color;
@@ -450,12 +452,30 @@ public class ItemSet implements ItemSetBase {
 			}
 		}
 		
-		CustomItem result = loadItemInternal(new BitInputTracker());
+		CustomItem result = loadItemInternal(new BitInputTracker(), 
+				this::loadIngredient, this::getProjectileByName
+		);
 		result.setBooleanRepresentation(new BooleanRepresentation(rememberBits.getBytes()));
 		return result;
 	}
+	
+	public static CustomItem loadOldItem(BooleanRepresentation representation) {
+		BitInput input = new ByteArrayBitInput(representation.getAsBytes());
+		try {
+			return loadItemInternal(input, bitInput -> null, name -> null);
+		} catch (UnknownEncodingException unknownEncoding) {
+			Bukkit.getLogger().log(Level.SEVERE, 
+					"Encountered an unknown encoding while deserializing the" +
+					"boolean representation stored in the nbt of an item stack"
+			);
+			return null;
+		}
+	}
 
-	private CustomItem loadItemInternal(BitInput input) throws UnknownEncodingException {
+	private static CustomItem loadItemInternal(
+			BitInput input, LoadIngredient loadIngredient, 
+			ProjectileByName getProjectileByName
+	) throws UnknownEncodingException {
 		byte encoding = input.readByte();
 		switch (encoding) {
 		case ItemEncoding.ENCODING_SIMPLE_1 : return loadSimpleItem1(input);
@@ -465,33 +485,33 @@ public class ItemSet implements ItemSetBase {
 		case ItemEncoding.ENCODING_SIMPLE_5 : return loadSimpleItem5(input);
 		case ItemEncoding.ENCODING_SIMPLE_6 : return loadSimpleItem6(input);
 		case ItemEncoding.ENCODING_TOOL_2 : return loadTool2(input);
-		case ItemEncoding.ENCODING_TOOL_3 : return loadTool3(input);
-		case ItemEncoding.ENCODING_TOOL_4 : return loadTool4(input);
-		case ItemEncoding.ENCODING_TOOL_5 : return loadTool5(input);
-		case ItemEncoding.ENCODING_TOOL_6 : return loadTool6(input);
-		case ItemEncoding.ENCODING_SHEAR_5 : return loadShear5(input);
-		case ItemEncoding.ENCODING_SHEAR_6 : return loadShear6(input);
-		case ItemEncoding.ENCODING_BOW_3 : return loadBow3(input);
-		case ItemEncoding.ENCODING_BOW_4 : return loadBow4(input);
-		case ItemEncoding.ENCODING_BOW_5 : return loadBow5(input);
-		case ItemEncoding.ENCODING_BOW_6 : return loadBow6(input);
-		case ItemEncoding.ENCODING_ARMOR_4 : return loadArmor4(input);
-		case ItemEncoding.ENCODING_ARMOR_5 : return loadArmor5(input);
-		case ItemEncoding.ENCODING_ARMOR_6 : return loadArmor6(input);
-		case ItemEncoding.ENCODING_ARMOR_7 : return loadArmor7(input);
-		case ItemEncoding.ENCODING_ARMOR_8 : return loadArmor8(input);
-		case ItemEncoding.ENCODING_SHIELD_6 : return loadShield6(input);
-		case ItemEncoding.ENCODING_SHIELD_7 : return loadShield7(input);
-		case ItemEncoding.ENCODING_TRIDENT_7 : return loadTrident7(input);
-		case ItemEncoding.ENCODING_TRIDENT_8 : return loadTrident8(input);
-		case ItemEncoding.ENCODING_HOE_5 : return loadHoe5(input);
-		case ItemEncoding.ENCODING_HOE_6 : return loadHoe6(input);
-		case ItemEncoding.ENCODING_WAND_8: return loadWand8(input);
+		case ItemEncoding.ENCODING_TOOL_3 : return loadTool3(input, loadIngredient);
+		case ItemEncoding.ENCODING_TOOL_4 : return loadTool4(input, loadIngredient);
+		case ItemEncoding.ENCODING_TOOL_5 : return loadTool5(input, loadIngredient);
+		case ItemEncoding.ENCODING_TOOL_6 : return loadTool6(input, loadIngredient);
+		case ItemEncoding.ENCODING_SHEAR_5 : return loadShear5(input, loadIngredient);
+		case ItemEncoding.ENCODING_SHEAR_6 : return loadShear6(input, loadIngredient);
+		case ItemEncoding.ENCODING_BOW_3 : return loadBow3(input, loadIngredient);
+		case ItemEncoding.ENCODING_BOW_4 : return loadBow4(input, loadIngredient);
+		case ItemEncoding.ENCODING_BOW_5 : return loadBow5(input, loadIngredient);
+		case ItemEncoding.ENCODING_BOW_6 : return loadBow6(input, loadIngredient);
+		case ItemEncoding.ENCODING_ARMOR_4 : return loadArmor4(input, loadIngredient);
+		case ItemEncoding.ENCODING_ARMOR_5 : return loadArmor5(input, loadIngredient);
+		case ItemEncoding.ENCODING_ARMOR_6 : return loadArmor6(input, loadIngredient);
+		case ItemEncoding.ENCODING_ARMOR_7 : return loadArmor7(input, loadIngredient);
+		case ItemEncoding.ENCODING_ARMOR_8 : return loadArmor8(input, loadIngredient);
+		case ItemEncoding.ENCODING_SHIELD_6 : return loadShield6(input, loadIngredient);
+		case ItemEncoding.ENCODING_SHIELD_7 : return loadShield7(input, loadIngredient);
+		case ItemEncoding.ENCODING_TRIDENT_7 : return loadTrident7(input, loadIngredient);
+		case ItemEncoding.ENCODING_TRIDENT_8 : return loadTrident8(input, loadIngredient);
+		case ItemEncoding.ENCODING_HOE_5 : return loadHoe5(input, loadIngredient);
+		case ItemEncoding.ENCODING_HOE_6 : return loadHoe6(input, loadIngredient);
+		case ItemEncoding.ENCODING_WAND_8: return loadWand8(input, getProjectileByName);
 		default : throw new UnknownEncodingException("Item", encoding);
 	}
 	}
 
-	private CustomItem loadSimpleItem1(BitInput input) {
+	private static CustomItem loadSimpleItem1(BitInput input) {
 		CustomItemType itemType = CustomItemType.valueOf(input.readJavaString());
 		short damage = input.readShort();
 		String name = input.readJavaString();
@@ -504,7 +524,7 @@ public class ItemSet implements ItemSetBase {
 				ItemFlag.getDefaultValues(), new ArrayList<PotionEffect>(), new ArrayList<PotionEffect>(), new String[] {});
 	}
 
-	private CustomItem loadSimpleItem2(BitInput input) {
+	private static CustomItem loadSimpleItem2(BitInput input) {
 		CustomItemType itemType = CustomItemType.valueOf(input.readJavaString());
 		short damage = input.readShort();
 		String name = input.readJavaString();
@@ -519,7 +539,7 @@ public class ItemSet implements ItemSetBase {
 				ItemFlag.getDefaultValues(), new ArrayList<PotionEffect>(), new ArrayList<PotionEffect>(), new String[] {});
 	}
 
-	private CustomItem loadSimpleItem3(BitInput input) {
+	private static CustomItem loadSimpleItem3(BitInput input) {
 		CustomItemType itemType = CustomItemType.valueOf(input.readJavaString());
 		short damage = input.readShort();
 		String name = input.readJavaString();
@@ -537,7 +557,7 @@ public class ItemSet implements ItemSetBase {
 				ItemFlag.getDefaultValues(), new ArrayList<PotionEffect>(), new ArrayList<PotionEffect>(), new String[] {});
 	}
 
-	private CustomItem loadSimpleItem4(BitInput input) {
+	private static CustomItem loadSimpleItem4(BitInput input) {
 		CustomItemType itemType = CustomItemType.valueOf(input.readJavaString());
 		short damage = input.readShort();
 		String name = input.readJavaString();
@@ -556,7 +576,7 @@ public class ItemSet implements ItemSetBase {
 				stackSize, ItemFlag.getDefaultValues(), new ArrayList<PotionEffect>(), new ArrayList<PotionEffect>(), new String[] {});
 	}
 
-	private CustomItem loadSimpleItem5(BitInput input) {
+	private static CustomItem loadSimpleItem5(BitInput input) {
 		CustomItemType itemType = CustomItemType.valueOf(input.readJavaString());
 		short damage = input.readShort();
 		String name = input.readJavaString();
@@ -576,7 +596,7 @@ public class ItemSet implements ItemSetBase {
 				stackSize, itemFlags, new ArrayList<PotionEffect>(), new ArrayList<PotionEffect>(), new String[] {});
 	}
 	
-	private CustomItem loadSimpleItem6(BitInput input) {
+	private static CustomItem loadSimpleItem6(BitInput input) {
 		CustomItemType itemType = CustomItemType.valueOf(input.readJavaString());
 		short damage = input.readShort();
 		String name = input.readJavaString();
@@ -610,7 +630,7 @@ public class ItemSet implements ItemSetBase {
 				stackSize, itemFlags, playerEffects, targetEffects, commands);
 	}
 
-	private CustomItem loadTool2(BitInput input) throws UnknownEncodingException {
+	private static CustomItem loadTool2(BitInput input) throws UnknownEncodingException {
 		CustomItemType itemType = CustomItemType.valueOf(input.readJavaString());
 		short damage = input.readShort();
 		String name = input.readJavaString();
@@ -631,7 +651,9 @@ public class ItemSet implements ItemSetBase {
 				new ArrayList<PotionEffect>(), new ArrayList<PotionEffect>(), new String[] {});
 	}
 
-	private CustomItem loadTool3(BitInput input) throws UnknownEncodingException {
+	private static CustomItem loadTool3(
+			BitInput input, LoadIngredient loadIngredient
+	) throws UnknownEncodingException {
 		CustomItemType itemType = CustomItemType.valueOf(input.readJavaString());
 		short damage = input.readShort();
 		String name = input.readJavaString();
@@ -645,7 +667,7 @@ public class ItemSet implements ItemSetBase {
 		int durability = input.readInt();
 		boolean allowEnchanting = input.readBoolean();
 		boolean allowAnvil = input.readBoolean();
-		Ingredient repairItem = loadIngredient(input);
+		Ingredient repairItem = loadIngredient.apply(input);
 		return new CustomTool(itemType, damage, name, displayName, lore, attributes, new Enchantment[0], durability,
 				allowEnchanting, allowAnvil, repairItem, ItemFlag.getDefaultValues(),
 				CustomToolDurability.defaultEntityHitDurabilityLoss(itemType),
@@ -653,7 +675,9 @@ public class ItemSet implements ItemSetBase {
 				new ArrayList<PotionEffect>(), new ArrayList<PotionEffect>(), new String[] {});
 	}
 
-	private CustomItem loadTool4(BitInput input) throws UnknownEncodingException {
+	private static CustomItem loadTool4(
+			BitInput input, LoadIngredient loadIngredient
+	) throws UnknownEncodingException {
 		CustomItemType itemType = CustomItemType.valueOf(input.readJavaString());
 		short damage = input.readShort();
 		String name = input.readJavaString();
@@ -670,7 +694,7 @@ public class ItemSet implements ItemSetBase {
 		long durability = input.readLong();
 		boolean allowEnchanting = input.readBoolean();
 		boolean allowAnvil = input.readBoolean();
-		Ingredient repairItem = loadIngredient(input);
+		Ingredient repairItem = loadIngredient.apply(input);
 		return new CustomTool(itemType, damage, name, displayName, lore, attributes, defaultEnchantments, durability,
 				allowEnchanting, allowAnvil, repairItem, ItemFlag.getDefaultValues(),
 				CustomToolDurability.defaultEntityHitDurabilityLoss(itemType),
@@ -678,7 +702,9 @@ public class ItemSet implements ItemSetBase {
 				new ArrayList<PotionEffect>(), new ArrayList<PotionEffect>(), new String[] {});
 	}
 
-	private CustomItem loadTool5(BitInput input) throws UnknownEncodingException {
+	private static CustomItem loadTool5(
+			BitInput input, LoadIngredient loadIngredient
+	) throws UnknownEncodingException {
 		CustomItemType itemType = CustomItemType.valueOf(input.readJavaString());
 		short damage = input.readShort();
 		String name = input.readJavaString();
@@ -695,7 +721,7 @@ public class ItemSet implements ItemSetBase {
 		long durability = input.readLong();
 		boolean allowEnchanting = input.readBoolean();
 		boolean allowAnvil = input.readBoolean();
-		Ingredient repairItem = loadIngredient(input);
+		Ingredient repairItem = loadIngredient.apply(input);
 		boolean[] itemFlags = input.readBooleans(6);
 		int entityHitDurabilityLoss = input.readInt();
 		int blockBreakDurabilityLoss = input.readInt();
@@ -704,7 +730,9 @@ public class ItemSet implements ItemSetBase {
 				new ArrayList<PotionEffect>(), new ArrayList<PotionEffect>(), new String[] {});
 	}
 	
-	private CustomItem loadTool6(BitInput input) throws UnknownEncodingException {
+	private static CustomItem loadTool6(
+			BitInput input, LoadIngredient loadIngredient
+	) throws UnknownEncodingException {
 		CustomItemType itemType = CustomItemType.valueOf(input.readJavaString());
 		short damage = input.readShort();
 		String name = input.readJavaString();
@@ -721,7 +749,7 @@ public class ItemSet implements ItemSetBase {
 		long durability = input.readLong();
 		boolean allowEnchanting = input.readBoolean();
 		boolean allowAnvil = input.readBoolean();
-		Ingredient repairItem = loadIngredient(input);
+		Ingredient repairItem = loadIngredient.apply(input);
 		boolean[] itemFlags = input.readBooleans(6);
 		int entityHitDurabilityLoss = input.readInt();
 		int blockBreakDurabilityLoss = input.readInt();
@@ -744,9 +772,9 @@ public class ItemSet implements ItemSetBase {
 				playerEffects, targetEffects, commands);
 	}
 	
-	
-	
-	private CustomItem loadHoe5(BitInput input) throws UnknownEncodingException {
+	private static CustomItem loadHoe5(
+			BitInput input, LoadIngredient loadIngredient
+	) throws UnknownEncodingException {
 		CustomItemType itemType = CustomItemType.valueOf(input.readJavaString());
 		short damage = input.readShort();
 		String name = input.readJavaString();
@@ -763,7 +791,7 @@ public class ItemSet implements ItemSetBase {
 		long durability = input.readLong();
 		boolean allowEnchanting = input.readBoolean();
 		boolean allowAnvil = input.readBoolean();
-		Ingredient repairItem = loadIngredient(input);
+		Ingredient repairItem = loadIngredient.apply(input);
 		boolean[] itemFlags = input.readBooleans(6);
 		int entityHitDurabilityLoss = input.readInt();
 		int blockBreakDurabilityLoss = input.readInt();
@@ -773,7 +801,9 @@ public class ItemSet implements ItemSetBase {
 				tillDurabilityLoss, new ArrayList<PotionEffect>(), new ArrayList<PotionEffect>(), new String[] {});
 	}
 	
-	private CustomItem loadHoe6(BitInput input) throws UnknownEncodingException {
+	private static CustomItem loadHoe6(
+			BitInput input, LoadIngredient loadIngredient
+	) throws UnknownEncodingException {
 		CustomItemType itemType = CustomItemType.valueOf(input.readJavaString());
 		short damage = input.readShort();
 		String name = input.readJavaString();
@@ -790,7 +820,7 @@ public class ItemSet implements ItemSetBase {
 		long durability = input.readLong();
 		boolean allowEnchanting = input.readBoolean();
 		boolean allowAnvil = input.readBoolean();
-		Ingredient repairItem = loadIngredient(input);
+		Ingredient repairItem = loadIngredient.apply(input);
 		boolean[] itemFlags = input.readBooleans(6);
 		int entityHitDurabilityLoss = input.readInt();
 		int blockBreakDurabilityLoss = input.readInt();
@@ -814,7 +844,9 @@ public class ItemSet implements ItemSetBase {
 				tillDurabilityLoss, playerEffects, targetEffects, commands);
 	}
 	
-	private CustomItem loadShear5(BitInput input) throws UnknownEncodingException {
+	private static CustomItem loadShear5(
+			BitInput input, LoadIngredient loadIngredient
+	) throws UnknownEncodingException {
 		CustomItemType itemType = CustomItemType.valueOf(input.readJavaString());
 		short damage = input.readShort();
 		String name = input.readJavaString();
@@ -831,7 +863,7 @@ public class ItemSet implements ItemSetBase {
 		long durability = input.readLong();
 		boolean allowEnchanting = input.readBoolean();
 		boolean allowAnvil = input.readBoolean();
-		Ingredient repairItem = loadIngredient(input);
+		Ingredient repairItem = loadIngredient.apply(input);
 		boolean[] itemFlags = input.readBooleans(6);
 		int entityHitDurabilityLoss = input.readInt();
 		int blockBreakDurabilityLoss = input.readInt();
@@ -841,7 +873,9 @@ public class ItemSet implements ItemSetBase {
 				shearDurabilityLoss, new ArrayList<PotionEffect>(), new ArrayList<PotionEffect>(), new String[] {});
 	}
 	
-	private CustomItem loadShear6(BitInput input) throws UnknownEncodingException {
+	private static CustomItem loadShear6(
+			BitInput input, LoadIngredient loadIngredient
+	) throws UnknownEncodingException {
 		CustomItemType itemType = CustomItemType.valueOf(input.readJavaString());
 		short damage = input.readShort();
 		String name = input.readJavaString();
@@ -858,7 +892,7 @@ public class ItemSet implements ItemSetBase {
 		long durability = input.readLong();
 		boolean allowEnchanting = input.readBoolean();
 		boolean allowAnvil = input.readBoolean();
-		Ingredient repairItem = loadIngredient(input);
+		Ingredient repairItem = loadIngredient.apply(input);
 		boolean[] itemFlags = input.readBooleans(6);
 		int entityHitDurabilityLoss = input.readInt();
 		int blockBreakDurabilityLoss = input.readInt();
@@ -882,7 +916,9 @@ public class ItemSet implements ItemSetBase {
 				shearDurabilityLoss, playerEffects, targetEffects, commands);
 	}
 
-	private CustomItem loadArmor4(BitInput input) throws UnknownEncodingException {
+	private static CustomItem loadArmor4(
+			BitInput input, LoadIngredient loadIngredient
+	) throws UnknownEncodingException {
 		CustomItemType itemType = CustomItemType.valueOf(input.readJavaString());
 		short damage = input.readShort();
 		String name = input.readJavaString();
@@ -899,7 +935,7 @@ public class ItemSet implements ItemSetBase {
 		long durability = input.readLong();
 		boolean allowEnchanting = input.readBoolean();
 		boolean allowAnvil = input.readBoolean();
-		Ingredient repairItem = loadIngredient(input);
+		Ingredient repairItem = loadIngredient.apply(input);
 		Color color;
 		if (itemType.isLeatherArmor()) {
 			color = Color.fromRGB(input.readByte() & 0xFF, input.readByte() & 0xFF, input.readByte() & 0xFF);
@@ -911,7 +947,9 @@ public class ItemSet implements ItemSetBase {
 				new DamageResistances(), new ArrayList<PotionEffect>(), new ArrayList<PotionEffect>(), new String[] {});
 	}
 
-	private CustomItem loadArmor5(BitInput input) throws UnknownEncodingException {
+	private static CustomItem loadArmor5(
+			BitInput input, LoadIngredient loadIngredient
+	) throws UnknownEncodingException {
 		CustomItemType itemType = CustomItemType.valueOf(input.readJavaString());
 		short damage = input.readShort();
 		String name = input.readJavaString();
@@ -928,7 +966,7 @@ public class ItemSet implements ItemSetBase {
 		long durability = input.readLong();
 		boolean allowEnchanting = input.readBoolean();
 		boolean allowAnvil = input.readBoolean();
-		Ingredient repairItem = loadIngredient(input);
+		Ingredient repairItem = loadIngredient.apply(input);
 		Color color;
 		if (itemType.isLeatherArmor()) {
 			color = Color.fromRGB(input.readByte() & 0xFF, input.readByte() & 0xFF, input.readByte() & 0xFF);
@@ -944,7 +982,9 @@ public class ItemSet implements ItemSetBase {
 				new ArrayList<PotionEffect>(), new String[] {});
 	}
 
-	private CustomItem loadArmor6(BitInput input) throws UnknownEncodingException {
+	private static CustomItem loadArmor6(
+			BitInput input, LoadIngredient loadIngredient
+	) throws UnknownEncodingException {
 		CustomItemType itemType = CustomItemType.valueOf(input.readJavaString());
 		short damage = input.readShort();
 		String name = input.readJavaString();
@@ -961,7 +1001,7 @@ public class ItemSet implements ItemSetBase {
 		long durability = input.readLong();
 		boolean allowEnchanting = input.readBoolean();
 		boolean allowAnvil = input.readBoolean();
-		Ingredient repairItem = loadIngredient(input);
+		Ingredient repairItem = loadIngredient.apply(input);
 		Color color;
 		if (itemType.isLeatherArmor()) {
 			color = Color.fromRGB(input.readByte() & 0xFF, input.readByte() & 0xFF, input.readByte() & 0xFF);
@@ -978,7 +1018,9 @@ public class ItemSet implements ItemSetBase {
 				new ArrayList<PotionEffect>(), new String[] {});
 	}
 	
-	private CustomItem loadArmor7(BitInput input) throws UnknownEncodingException {
+	private static CustomItem loadArmor7(
+			BitInput input, LoadIngredient loadIngredient
+	) throws UnknownEncodingException {
 		CustomItemType itemType = CustomItemType.valueOf(input.readJavaString());
 		short damage = input.readShort();
 		String name = input.readJavaString();
@@ -995,7 +1037,7 @@ public class ItemSet implements ItemSetBase {
 		long durability = input.readLong();
 		boolean allowEnchanting = input.readBoolean();
 		boolean allowAnvil = input.readBoolean();
-		Ingredient repairItem = loadIngredient(input);
+		Ingredient repairItem = loadIngredient.apply(input);
 		Color color;
 		if (itemType.isLeatherArmor()) {
 			color = Color.fromRGB(input.readByte() & 0xFF, input.readByte() & 0xFF, input.readByte() & 0xFF);
@@ -1012,7 +1054,9 @@ public class ItemSet implements ItemSetBase {
 				new ArrayList<PotionEffect>(), new String[] {});
 	}
 	
-	private CustomItem loadArmor8(BitInput input) throws UnknownEncodingException {
+	private static CustomItem loadArmor8(
+			BitInput input, LoadIngredient loadIngredient
+	) throws UnknownEncodingException {
 		CustomItemType itemType = CustomItemType.valueOf(input.readJavaString());
 		short damage = input.readShort();
 		String name = input.readJavaString();
@@ -1029,7 +1073,7 @@ public class ItemSet implements ItemSetBase {
 		long durability = input.readLong();
 		boolean allowEnchanting = input.readBoolean();
 		boolean allowAnvil = input.readBoolean();
-		Ingredient repairItem = loadIngredient(input);
+		Ingredient repairItem = loadIngredient.apply(input);
 		Color color;
 		if (itemType.isLeatherArmor()) {
 			color = Color.fromRGB(input.readByte() & 0xFF, input.readByte() & 0xFF, input.readByte() & 0xFF);
@@ -1059,7 +1103,9 @@ public class ItemSet implements ItemSetBase {
 				blockBreakDurabilityLoss, damageResistances, playerEffects, targetEffects, commands);
 	}
 
-	private CustomBow loadBow3(BitInput input) throws UnknownEncodingException {
+	private static CustomBow loadBow3(
+			BitInput input, LoadIngredient loadIngredient
+	) throws UnknownEncodingException {
 		short damage = input.readShort();
 		String name = input.readJavaString();
 		String displayName = input.readJavaString();
@@ -1076,13 +1122,15 @@ public class ItemSet implements ItemSetBase {
 		boolean gravity = input.readBoolean();
 		boolean allowEnchanting = input.readBoolean();
 		boolean allowAnvil = input.readBoolean();
-		Ingredient repairItem = loadIngredient(input);
+		Ingredient repairItem = loadIngredient.apply(input);
 		return new CustomBow(damage, name, displayName, lore, attributes, new Enchantment[0], durability,
 				damageMultiplier, speedMultiplier, knockbackStrength, gravity, allowEnchanting, allowAnvil, repairItem,
 				ItemFlag.getDefaultValues(), 0, 0, 1, new ArrayList<PotionEffect>(), new ArrayList<PotionEffect>(), new String[] {});
 	}
 
-	private CustomBow loadBow4(BitInput input) throws UnknownEncodingException {
+	private static CustomBow loadBow4(
+			BitInput input, LoadIngredient loadIngredient
+	) throws UnknownEncodingException {
 		short damage = input.readShort();
 		String name = input.readJavaString();
 		String displayName = input.readJavaString();
@@ -1102,13 +1150,15 @@ public class ItemSet implements ItemSetBase {
 		boolean gravity = input.readBoolean();
 		boolean allowEnchanting = input.readBoolean();
 		boolean allowAnvil = input.readBoolean();
-		Ingredient repairItem = loadIngredient(input);
+		Ingredient repairItem = loadIngredient.apply(input);
 		return new CustomBow(damage, name, displayName, lore, attributes, defaultEnchantments, durability,
 				damageMultiplier, speedMultiplier, knockbackStrength, gravity, allowEnchanting, allowAnvil, repairItem,
 				ItemFlag.getDefaultValues(), 0, 0, 1, new ArrayList<PotionEffect>(), new ArrayList<PotionEffect>(), new String[] {});
 	}
 
-	private CustomBow loadBow5(BitInput input) throws UnknownEncodingException {
+	private static CustomBow loadBow5(
+			BitInput input, LoadIngredient loadIngredient
+	) throws UnknownEncodingException {
 		short damage = input.readShort();
 		String name = input.readJavaString();
 		String displayName = input.readJavaString();
@@ -1128,7 +1178,7 @@ public class ItemSet implements ItemSetBase {
 		boolean gravity = input.readBoolean();
 		boolean allowEnchanting = input.readBoolean();
 		boolean allowAnvil = input.readBoolean();
-		Ingredient repairItem = loadIngredient(input);
+		Ingredient repairItem = loadIngredient.apply(input);
 		boolean[] itemFlags = input.readBooleans(6);
 		int entityHitDurabilityLoss = input.readInt();
 		int blockBreakDurabilityLoss = input.readInt();
@@ -1139,7 +1189,9 @@ public class ItemSet implements ItemSetBase {
 				new ArrayList<PotionEffect>(), new ArrayList<PotionEffect>(), new String[] {});
 	}
 	
-	private CustomBow loadBow6(BitInput input) throws UnknownEncodingException {
+	private static CustomBow loadBow6(
+			BitInput input, LoadIngredient loadIngredient
+	) throws UnknownEncodingException {
 		short damage = input.readShort();
 		String name = input.readJavaString();
 		String displayName = input.readJavaString();
@@ -1159,7 +1211,7 @@ public class ItemSet implements ItemSetBase {
 		boolean gravity = input.readBoolean();
 		boolean allowEnchanting = input.readBoolean();
 		boolean allowAnvil = input.readBoolean();
-		Ingredient repairItem = loadIngredient(input);
+		Ingredient repairItem = loadIngredient.apply(input);
 		boolean[] itemFlags = input.readBooleans(6);
 		int entityHitDurabilityLoss = input.readInt();
 		int blockBreakDurabilityLoss = input.readInt();
@@ -1184,7 +1236,9 @@ public class ItemSet implements ItemSetBase {
 				playerEffects, targetEffects, commands);
 	}
 	
-	private CustomItem loadShield6(BitInput input) throws UnknownEncodingException {
+	private static CustomItem loadShield6(
+			BitInput input, LoadIngredient loadIngredient
+	) throws UnknownEncodingException {
 		CustomItemType itemType = CustomItemType.valueOf(input.readJavaString());
 		short damage = input.readShort();
 		String name = input.readJavaString();
@@ -1201,7 +1255,7 @@ public class ItemSet implements ItemSetBase {
 		long durability = input.readLong();
 		boolean allowEnchanting = input.readBoolean();
 		boolean allowAnvil = input.readBoolean();
-		Ingredient repairItem = loadIngredient(input);
+		Ingredient repairItem = loadIngredient.apply(input);
 		boolean[] itemFlags = input.readBooleans(6);
 		int entityHitDurabilityLoss = input.readInt();
 		int blockBreakDurabilityLoss = input.readInt();
@@ -1211,7 +1265,9 @@ public class ItemSet implements ItemSetBase {
 				new ArrayList<PotionEffect>(), new ArrayList<PotionEffect>(), new String[] {});
 	}
 	
-	private CustomItem loadShield7(BitInput input) throws UnknownEncodingException {
+	private static CustomItem loadShield7(
+			BitInput input, LoadIngredient loadIngredient
+	) throws UnknownEncodingException {
 		CustomItemType itemType = CustomItemType.valueOf(input.readJavaString());
 		short damage = input.readShort();
 		String name = input.readJavaString();
@@ -1228,7 +1284,7 @@ public class ItemSet implements ItemSetBase {
 		long durability = input.readLong();
 		boolean allowEnchanting = input.readBoolean();
 		boolean allowAnvil = input.readBoolean();
-		Ingredient repairItem = loadIngredient(input);
+		Ingredient repairItem = loadIngredient.apply(input);
 		boolean[] itemFlags = input.readBooleans(6);
 		int entityHitDurabilityLoss = input.readInt();
 		int blockBreakDurabilityLoss = input.readInt();
@@ -1252,7 +1308,9 @@ public class ItemSet implements ItemSetBase {
 				playerEffects, targetEffects, commands);
 	}
 	
-	private CustomItem loadTrident7(BitInput input) throws UnknownEncodingException {
+	private static CustomItem loadTrident7(
+			BitInput input, LoadIngredient loadIngredient
+	) throws UnknownEncodingException {
 		short damage = input.readShort();
 		String name = input.readJavaString();
 		String displayName = input.readJavaString();
@@ -1268,7 +1326,7 @@ public class ItemSet implements ItemSetBase {
 		long durability = input.readLong();
 		boolean allowEnchanting = input.readBoolean();
 		boolean allowAnvil = input.readBoolean();
-		Ingredient repairItem = loadIngredient(input);
+		Ingredient repairItem = loadIngredient.apply(input);
 		boolean[] itemFlags = input.readBooleans(6);
 		int entityHitDurabilityLoss = input.readInt();
 		int blockBreakDurabilityLoss = input.readInt();
@@ -1281,7 +1339,9 @@ public class ItemSet implements ItemSetBase {
 				new ArrayList<PotionEffect>(), new ArrayList<PotionEffect>(), new String[] {});
 	}
 	
-	private CustomItem loadTrident8(BitInput input) throws UnknownEncodingException {
+	private static CustomItem loadTrident8(
+			BitInput input, LoadIngredient loadIngredient
+	) throws UnknownEncodingException {
 		short damage = input.readShort();
 		String name = input.readJavaString();
 		String displayName = input.readJavaString();
@@ -1297,7 +1357,7 @@ public class ItemSet implements ItemSetBase {
 		long durability = input.readLong();
 		boolean allowEnchanting = input.readBoolean();
 		boolean allowAnvil = input.readBoolean();
-		Ingredient repairItem = loadIngredient(input);
+		Ingredient repairItem = loadIngredient.apply(input);
 		boolean[] itemFlags = input.readBooleans(6);
 		int entityHitDurabilityLoss = input.readInt();
 		int blockBreakDurabilityLoss = input.readInt();
@@ -1324,7 +1384,9 @@ public class ItemSet implements ItemSetBase {
 				playerEffects, targetEffects, commands);
 	}
 	
-	private CustomItem loadWand8(BitInput input) {
+	private static CustomItem loadWand8(
+			BitInput input, ProjectileByName getProjectileByName
+	) {
 		CustomItemType itemType = CustomItemType.valueOf(input.readJavaString());
 		short damage = input.readShort();
 		String name = input.readJavaString();
@@ -1363,14 +1425,14 @@ public class ItemSet implements ItemSetBase {
 			charges = null;
 		int amountPerShot = input.readInt();
 		
-		CIProjectile projectile = getProjectileByName(projectileName);
+		CIProjectile projectile = getProjectileByName.apply(projectileName);
 		
 		return new CustomWand(itemType, damage, name, displayName, lore, attributes, defaultEnchantments,
 				itemFlags, playerEffects, targetEffects, commands,
 				projectile, cooldown, charges, amountPerShot);
 	}
 
-	private AttributeModifier loadAttribute2(BitInput input) {
+	private static AttributeModifier loadAttribute2(BitInput input) {
 		return new AttributeModifier(Attribute.valueOf(input.readJavaString()), Slot.valueOf(input.readJavaString()),
 				Operation.values()[(int) input.readNumber((byte) 2, false)], input.readDouble());
 	}
@@ -1606,4 +1668,17 @@ public class ItemSet implements ItemSetBase {
 				return fuelRegistry;
 		return null;
 	}
+	
+	@FunctionalInterface
+	private static interface ThrowingFunction<Input,Output,Failure extends Exception> {
+		
+		Output apply(Input input) throws Failure;
+	}
+	
+	@FunctionalInterface
+	private static interface LoadIngredient extends 
+			ThrowingFunction<BitInput, Ingredient, UnknownEncodingException> {}
+	
+	@FunctionalInterface
+	private static interface ProjectileByName extends Function<String, CIProjectile> {}
 }

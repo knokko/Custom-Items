@@ -119,15 +119,47 @@ public class CustomItemNBT {
 	 * Gets the time at which the .cis file was last modified at the time this item 
 	 * stack was created. If this is not equal to the last modified of the current 
 	 * .cis file, this indicates that this item stack was created from an older 
-	 * version of the server item set.
+	 * version of the server item set. If the LastModified property is missing, this
+	 * method will return null.
 	 * 
 	 * @throws UnsupportedOperationException If this item stack doesn't have custom
 	 * item nbt
 	 */
-	public long getLastModified() throws UnsupportedOperationException {
+	public Long getLastModified() throws UnsupportedOperationException {
 		assertOurNBT();
 		
 		return getOurTag().getLong(LAST_MODIFIED);
+	}
+	
+	/**
+	 * Sets the LastModified property of this item to the given value. This value
+	 * should normally be the lastModified of the .cis file, but other values can
+	 * be supplied as well.
+	 * 
+	 * @throws UnsupportedOperationException If this item stack doesn't have custom
+	 * item nbt
+	 */
+	public void setLastModified(long newLastModified) throws UnsupportedOperationException {
+		assertOurNBT();
+		getOurTag().setLong(LAST_MODIFIED, newLastModified);
+	}
+	
+	/**
+	 * Gets the {@link BooleanRepresentation} that is stored in the nbt of this item
+	 * stack. If it is missing, this method will return null.
+	 * 
+	 * @throws UnsupportedOperationException If this item stack doesn't have custom
+	 * item nbt
+	 */
+	public BooleanRepresentation getBooleanRepresentation() throws UnsupportedOperationException {
+		assertOurNBT();
+		
+		if (getOurTag().hasKey(BOOL_REPRESENTATION)) {
+			byte[] byteRepresentation = getOurTag().getByteArray(BOOL_REPRESENTATION);
+			return new BooleanRepresentation(byteRepresentation);
+		} else {
+			return null;
+		}
 	}
 	
 	/**
