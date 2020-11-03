@@ -101,8 +101,18 @@ public abstract class CustomItem extends nl.knokko.customitems.item.CustomItem i
     	return attributeModifiers;
     }
     
+    public Long getMaxDurabilityNew() {
+    	// Simple custom items are unbreakable, but tools should override this
+    	return null;
+    }
+    
     protected List<String> createLore(){
     	return Lists.newArrayList(lore);
+    }
+    
+    public List<String> createLore(Long durability) {
+    	// This should be overridden by CustomTool
+    	return createLore();
     }
     
     protected ItemMeta createItemMeta(ItemStack item, List<String> lore) {

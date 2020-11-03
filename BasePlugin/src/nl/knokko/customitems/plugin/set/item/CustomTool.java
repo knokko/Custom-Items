@@ -118,13 +118,26 @@ public class CustomTool extends CustomItem {
 	}
 	
 	@Override
-	protected List<String> createLore(){
-		return createLore(maxDurability);
+	public Long getMaxDurabilityNew() {
+		if (maxDurability == UNBREAKABLE_TOOL_DURABILITY) {
+			return null;
+		} else {
+			return maxDurability;
+		}
 	}
 	
-	protected List<String> createLore(long currentDurability){
+	@Override
+	protected List<String> createLore(){
+		return createLore(getMaxDurabilityNew());
+	}
+	
+	@Override
+	public List<String> createLore(Long currentDurability){
 		List<String> itemLore = new ArrayList<String>(lore.length + 2);
         if (!isUnbreakable()) {
+        	if (currentDurability == null) {
+        		currentDurability = maxDurability;
+        	}
         	itemLore.add(createDurabilityLine(currentDurability, maxDurability));
         	itemLore.add("");
         }
@@ -303,6 +316,10 @@ public class CustomTool extends CustomItem {
 		return maxDurability == UNBREAKABLE_TOOL_DURABILITY;
 	}
 	
+	public long getMaxDurability() {
+		return maxDurability;
+	}
+	
 	public long getDurability(ItemStack stack) {
 		long[] pResult = {0};
 		CustomItemNBT.readOnly(stack, nbt -> {
@@ -314,10 +331,6 @@ public class CustomTool extends CustomItem {
 			}
 		});
 		return pResult[0];
-	}
-	
-	public long getMaxDurability() {
-		return maxDurability;
 	}
 	
 	@Override

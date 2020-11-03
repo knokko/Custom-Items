@@ -10,8 +10,8 @@ import org.bukkit.inventory.meta.ItemMeta;
 import nl.knokko.core.plugin.item.ItemHelper;
 import nl.knokko.customitems.item.Enchantment;
 import nl.knokko.customitems.item.EnchantmentType;
+import nl.knokko.customitems.item.ItemFlag;
 import nl.knokko.core.plugin.item.attributes.ItemAttributes;
-import nl.knokko.customitems.item.CIMaterial;
 import nl.knokko.customitems.plugin.set.ItemSet;
 import nl.knokko.customitems.plugin.set.item.BooleanRepresentation;
 import nl.knokko.customitems.plugin.set.item.CustomItem;
@@ -52,8 +52,13 @@ public class ItemUpdater {
 					 * representation of the desired custom item.
 					 */
 					CustomItem currentItem = getItemByName(itemName);
-					pNewItem[0] = currentItem;
-					pAction[0] = UpdateAction.INITIALIZE;
+					if (currentItem != null) {
+						pNewItem[0] = currentItem;
+						pAction[0] = UpdateAction.INITIALIZE;
+					} else {
+						// I'm not really sure how this case should be handled
+						pAction[0] = UpdateAction.DO_NOTHING;
+					}
 				} else if (lastModified == setLastModified) {
 					
 					/*
@@ -125,11 +130,18 @@ public class ItemUpdater {
 						 * This case will happen when a custom item stack is given to
 						 * someone, but that custom item is later removed from the
 						 * item set (the admin deleted it via the Editor and updated
-						 * the server item set). 
+						 * the server item set).
+						 * 
+						 * But, it is also possible that the server accidentally
+						 * loaded the wrong item set, or that an error occurred
+						 * on start-up.
 						 * 
 						 * I think simply deleting the corresponding in-game item 
 						 * stack is the best way to deal with this case.
 						 */
+						// TODO Reconsider this! This is lethal when the
+						// wrong item set is used by mistake or some error
+						// occurred during loading!
 						pAction[0] = UpdateAction.DESTROY;
 					}
 				}
@@ -178,15 +190,142 @@ public class ItemUpdater {
 		
 		ItemStack withoutAttributes = ItemAttributes.clearAttributes(oldStack);
 		ItemStack newStack = ItemAttributes.setAttributes(withoutAttributes, newStackAttributes);
-	
+
+		ItemStack[] pNewStack = {null};
+		Long[] pNewDurability = {null};
+		CustomItemNBT.readWrite(newStack, nbt -> {
+			Long currentDurability = nbt.getDurability();
+			if (currentDurability != null) {
+				if (newItem.getMaxDurabilityNew() != null) {
+					/*
+					 * There was durability, and there still is. We will do the
+					 * following: if the new maximum durability became bigger,
+					 * we increase the current durability by the difference between
+					 * the old and new max durability.
+					 * 
+					 * If the new maximum durability is smaller than the old
+					 * maximum durability, the current durability will be set to
+					 * the new maximum durability if (and only if) the current
+					 * durability is bigger.
+					 * 
+					 * These decisions are not necessarily perfect, but decisions
+					 * have to be made.
+					 */
+					if (oldItem.getMaxDurabilityNew() != null) {
+						if (newItem.getMaxDurabilityNew() >= oldItem.getMaxDurabilityNew()) {
+							pNewDurability[0] = currentDurability 
+									+ newItem.getMaxDurabilityNew() 
+									- oldItem.getMaxDurabilityNew();
+						} else {
+							pNewDurability[0] = Math.min(
+									currentDurability, 
+									newItem.getMaxDurabilityNew()
+							);
+						}
+					} else {
+						// How is this even possible?
+						// Anyway, this seems like the most logical response
+						pNewDurability[0] = Math.min(
+								currentDurability, 
+								newItem.getMaxDurabilityNew()
+						);
+					}
+				} else {
+					// There was durability, but no more
+					pNewDurability[0] = null;
+				}
+			} else {
+				if (newItem.getMaxDurabilityNew() != null) {
+					// There was no durability, but now there is.
+					// Let's just start with full durability
+					pNewDurability[0] = newItem.getMaxDurabilityNew();
+				} else {
+					// There was no durability, and there shouldn't be durability
+					pNewDurability[0] = null;
+				}
+			}
+			
+			if (pNewDurability[0] != null) {
+				nbt.setDurability(pNewDurability[0]);
+			} else {
+				nbt.removeDurability();
+			}
+		}, afterNbt -> pNewStack[0] = afterNbt);
+		newStack = pNewStack[0];
+		
 		upgradeEnchantments(newStack, oldItem, newItem);
-		// TODO Upgrade the following attributes:
-		// - Internal item type
-		// - Internal item damage
-		// - Display name
-		// - Lore
-		// - Item flags
-		// - Durability
+		
+		ItemHelper.setMaterial(newStack, newItem.getMaterial().name());
+		
+		ItemMeta meta = newStack.getItemMeta();
+		
+		upgradeDisplayName(meta, oldItem, newItem);
+		upgradeLore(meta, oldItem, newItem, pNewDurability[0]);
+		upgradeItemFlags(meta, oldItem, newItem);
+		
+		meta.setUnbreakable(true);
+		newStack.setItemMeta(meta);
+		
+		newStack.setDurability(newItem.getItemDamage());
+		
+		return newStack;
+	}
+	
+	private void upgradeDisplayName(ItemMeta toUpgrade, CustomItem oldItem, CustomItem newItem) {
+		/*
+		 * If the item allows anvil actions, it is possible that the player renamed
+		 * the item in an anvil. It would be bad to 'reset' the name each time the
+		 * item set is updated, so I will instead replace all occurrences of the
+		 * display name of the old custom item with the display name of the new
+		 * custom item. (Even this might not always be ideal, but I don't think
+		 * there is some 'perfect' behavior for this.)
+		 */
+		if (newItem.allowAnvilActions()) {
+			if (toUpgrade.hasDisplayName()) {
+				String currentDisplayName = toUpgrade.getDisplayName();
+				String newDisplayName = currentDisplayName.replace(oldItem.getDisplayName(), newItem.getDisplayName());
+				toUpgrade.setDisplayName(newDisplayName);
+			}
+			// else... well... the player decided to remove the custom name entirely
+			// so lets keep it that way
+		} else {
+			toUpgrade.setDisplayName(newItem.getDisplayName());
+		}
+	}
+	
+	private void upgradeLore(ItemMeta toUpgrade, CustomItem oldItem, CustomItem newItem, Long newDurability) {
+		/*
+		 * I will do no attempt to 'upgrade' the lore rather than replacing it,
+		 * because tools will overwrite lore each time they take durability
+		 * anyway.
+		 */
+		toUpgrade.setLore(newItem.createLore(newDurability));
+	}
+	
+	private void upgradeItemFlags(ItemMeta toUpgrade, CustomItem oldItem, CustomItem newItem) {
+		/*
+		 * We will only update the item flags that changed for optimal preservation
+		 * of the custom values of the item stack being upgraded.
+		 */
+		boolean[] oldFlags = oldItem.getItemFlags();
+		boolean[] newFlags = newItem.getItemFlags();
+		ItemFlag[] allFlags = ItemFlag.values();
+		for (int flagIndex = 0; flagIndex < allFlags.length; flagIndex++) {
+			boolean oldHasFlag = flagIndex < oldFlags.length && oldFlags[flagIndex];
+			boolean newHasFlag = flagIndex < newFlags.length && newFlags[flagIndex];
+			if (oldHasFlag != newHasFlag) {
+				ItemFlag currentFlag = allFlags[flagIndex];
+				if (newHasFlag) {
+					toUpgrade.addItemFlags(
+							org.bukkit.inventory.ItemFlag.valueOf(currentFlag.name())
+					);
+				} else {
+					toUpgrade.removeItemFlags(
+							org.bukkit.inventory.ItemFlag.valueOf(currentFlag.name())
+					);
+				}
+			}
+		}
 	}
 	
 	private ItemAttributes.Single[] determineUpgradedAttributes(
