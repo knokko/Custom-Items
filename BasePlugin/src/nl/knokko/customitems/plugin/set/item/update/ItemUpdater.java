@@ -133,15 +133,15 @@ public class ItemUpdater {
 						 * the server item set).
 						 * 
 						 * But, it is also possible that the server accidentally
-						 * loaded the wrong item set, or that an error occurred
-						 * on start-up.
+						 * loaded the wrong item set. (Note: If some start-up
+						 * error occurred, this method shouldn't be called in
+						 * the first place.)
 						 * 
 						 * I think simply deleting the corresponding in-game item 
 						 * stack is the best way to deal with this case.
 						 */
 						// TODO Reconsider this! This is lethal when the
-						// wrong item set is used by mistake or some error
-						// occurred during loading!
+						// wrong item set is used by mistake!
 						pAction[0] = UpdateAction.DESTROY;
 					}
 				}
