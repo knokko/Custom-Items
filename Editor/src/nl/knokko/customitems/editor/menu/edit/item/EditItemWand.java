@@ -91,7 +91,7 @@ public class EditItemWand extends EditItemBase {
 	@Override
 	protected String create(short internalItemDamage) {
 		return withProperties((int cooldown, WandCharges charges, int amount) -> {
-			return menu.getSet().addWand(new CustomWand(internalType, internalItemDamage, name.getText(), 
+			return menu.getSet().addWand(new CustomWand(internalType, internalItemDamage, nameField.getText(), 
 					getDisplayName(), lore, attributes, enchantments, textureSelect.getSelected(), 
 					itemFlags, customModel, playerEffects, targetEffects, commands, projectile, cooldown, 
 					charges, amount));
@@ -101,7 +101,7 @@ public class EditItemWand extends EditItemBase {
 	@Override
 	protected String apply(short internalItemDamage) {
 		return withProperties((int cooldown, WandCharges charges, int amount) -> {
-			return menu.getSet().changeWand(toModify, internalType, internalItemDamage, name.getText(), 
+			return menu.getSet().changeWand(toModify, internalType, internalItemDamage,
 					getDisplayName(), lore, attributes, enchantments, textureSelect.getSelected(), 
 					itemFlags, customModel, playerEffects, targetEffects, commands, projectile, cooldown, 
 					charges, amount);

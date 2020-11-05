@@ -145,7 +145,7 @@ public class EditItemTool extends EditItemBase {
 	
 	protected String create(short damage, long maxUses, int entityHitDurabilityLoss, int blockBreakDurabilityLoss) {
 		return menu.getSet().addTool(
-				new CustomTool(internalType, damage, name.getText(), getDisplayName(),
+				new CustomTool(internalType, damage, nameField.getText(), getDisplayName(),
 						lore, attributes, enchantments, maxUses, allowEnchanting.isChecked(),
 						allowAnvil.isChecked(), repairItem.getIngredient(), textureSelect.getSelected(), 
 						itemFlags, entityHitDurabilityLoss, blockBreakDurabilityLoss, customModel, 
@@ -167,7 +167,7 @@ public class EditItemTool extends EditItemBase {
 	}
 	
 	protected String apply(short damage, long maxUses, int entityHitDurabilityLoss, int blockBreakDurabilityLoss) {
-		return menu.getSet().changeTool(toModify, internalType, damage, name.getText(),
+		return menu.getSet().changeTool(toModify, internalType, damage,
 				getDisplayName(), lore, attributes, enchantments, allowEnchanting.isChecked(),
 				allowAnvil.isChecked(), repairItem.getIngredient(), maxUses, textureSelect.getSelected(),
 				itemFlags, entityHitDurabilityLoss, blockBreakDurabilityLoss, customModel,

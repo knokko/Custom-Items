@@ -139,7 +139,7 @@ public abstract class CustomItem extends nl.knokko.customitems.item.CustomItem i
         
         ItemStack[] pResult = {null};
         CustomItemNBT.readWrite(item, nbt -> {
-        	long lastModified = CustomItemsPlugin.getInstance().getSetLastModified();
+        	long lastModified = CustomItemsPlugin.getInstance().getSet().getExportTime();
         	nbt.set(name, lastModified, null, boolRepresentation);
         	initNBT(nbt);
         }, result -> pResult[0] = result);

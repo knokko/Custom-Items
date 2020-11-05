@@ -101,6 +101,8 @@ public class ItemSet implements ItemSetBase {
 
 	private final Map<CIMaterial, Map<Short, ItemDamageClaim>> customItemMap;
 	private final Map<String, ContainerInfo> containerInfo;
+	
+	private long exportTime;
 
 	private CustomItem[] items;
 	
@@ -112,6 +114,8 @@ public class ItemSet implements ItemSetBase {
 	
 	private Drop[][] blockDropMap;
 	private EntityDrop[][] mobDropMap;
+	
+	private String[] deletedItems;
 	
 	private final Collection<String> errors;
 
@@ -150,6 +154,8 @@ public class ItemSet implements ItemSetBase {
 			load6(input);
 		else if (encoding == SetEncoding.ENCODING_7)
 			load7(input);
+		else if (encoding == SetEncoding.ENCODING_8)
+			load8(input);
 		else
 			throw new UnknownEncodingException("ItemSet", encoding);
 		
@@ -174,6 +180,9 @@ public class ItemSet implements ItemSetBase {
 	}
 
 	private void load1(BitInput input) throws UnknownEncodingException, UnknownMaterialException {
+		// We don't store the export time of hash in this version, so use back-up
+		exportTime = generateFakeExportTime();
+		
 		// Items
 		int itemSize = input.readInt();
 		items = new CustomItem[itemSize];
@@ -192,12 +201,18 @@ public class ItemSet implements ItemSetBase {
 		
 		// There are no custom containers in this encoding
 		containers = new ArrayList<>(0);
+		fuelRegistries = new ArrayList<>(0);
+		
+		// Deleted items are not remembered in this encoding
+		deletedItems = new String[0];
 	}
 
 	// Just like the ItemSet of Editor doesn't have export2, this doesn't have load2
 
 	private void load3(BitInput input) throws UnknownEncodingException, UnknownMaterialException {
-		
+		// We don't store the export time of hash in this version, so use back-up
+		exportTime = generateFakeExportTime();
+				
 		// Items
 		int itemSize = input.readInt();
 		items = new CustomItem[itemSize];
@@ -222,12 +237,18 @@ public class ItemSet implements ItemSetBase {
 		
 		// There are no custom containers in this encoding
 		containers = new ArrayList<>(0);
+		fuelRegistries = new ArrayList<>(0);
+		
+		// Deleted items are not remembered in this encoding
+		deletedItems = new String[0];
 	}
 	
 	// Since ENCODING_4 is editor-only, there is no load4 method
 	
 	private void load5(BitInput input) throws UnknownEncodingException, UnknownMaterialException {
-		
+		// We don't store the export time of hash in this version, so use back-up
+		exportTime = generateFakeExportTime();
+				
 		// Projectiles
 		int numProjectileCovers = input.readInt();
 		projectileCovers = new ProjectileCover[numProjectileCovers];
@@ -270,6 +291,10 @@ public class ItemSet implements ItemSetBase {
 		
 		// There are no custom containers in this encoding
 		containers = new ArrayList<>(0);
+		fuelRegistries = new ArrayList<>(0);
+		
+		// Deleted items are not remembered in this encoding
+		deletedItems = new String[0];
 	}
 	
 	private void load6(BitInput input) throws UnknownEncodingException, IntegrityException, UnknownMaterialException {
@@ -289,6 +314,10 @@ public class ItemSet implements ItemSetBase {
 		
 		input = new ByteArrayBitInput(content);
 		
+		// We don't store the export time in this encoding, but we do store a hash
+		// Make it negative to prevent collisions with real export times
+		exportTime = -Math.abs(actualHash);
+		
 		// Projectiles
 		int numProjectileCovers = input.readInt();
 		projectileCovers = new ProjectileCover[numProjectileCovers];
@@ -331,6 +360,10 @@ public class ItemSet implements ItemSetBase {
 		
 		// There are no custom containers in this encoding
 		containers = new ArrayList<>(0);
+		fuelRegistries = new ArrayList<>(0);
+		
+		// Deleted items are not remembered in this encoding
+		deletedItems = new String[0];
 	}
 	
 	private void load7(BitInput input) throws UnknownEncodingException, IntegrityException, UnknownMaterialException {
@@ -349,6 +382,10 @@ public class ItemSet implements ItemSetBase {
 		}
 		
 		input = new ByteArrayBitInput(content);
+		
+		// We don't store the export time in this encoding, but we do store a hash
+		// Make it negative to prevent collisions with real export times
+		exportTime = -Math.abs(actualHash);
 		
 		// Projectiles
 		int numProjectileCovers = input.readInt();
@@ -401,6 +438,89 @@ public class ItemSet implements ItemSetBase {
 		containers = new ArrayList<>(numContainers);
 		for (int counter = 0; counter < numContainers; counter++) {
 			addCustomContainer(loadContainer(input));
+		}
+		
+		// There are no deleted items in this encoding
+		deletedItems = new String[0];
+	}
+	
+	private void load8(BitInput input) throws UnknownEncodingException, IntegrityException, UnknownMaterialException {
+		
+		long expectedHash = input.readLong();
+		byte[] content;
+		try {
+			// Catch undefined behavior
+			content = input.readByteArray();
+		} catch (Throwable t) {
+			throw new IntegrityException(t);
+		}
+		long actualHash = hash(content);
+		if (expectedHash != actualHash) {
+			throw new IntegrityException(expectedHash, actualHash);
+		}
+		
+		input = new ByteArrayBitInput(content);
+		
+		exportTime = input.readLong();
+		
+		// Projectiles
+		int numProjectileCovers = input.readInt();
+		projectileCovers = new ProjectileCover[numProjectileCovers];
+		for (int index = 0; index < numProjectileCovers; index++) {
+			PluginProjectileCover cover = new PluginProjectileCover(input);
+			projectileCovers[index] = cover;
+			registerItemDamageClaim(cover);
+		}
+		
+		int numProjectiles = input.readInt();
+		projectiles = new CIProjectile[numProjectiles];
+		for (int index = 0; index < numProjectiles; index++)
+			projectiles[index] = CIProjectile.fromBits(input, this);
+		
+		// Notify the projectiles that all projectiles are loaded
+		for (CIProjectile projectile : projectiles)
+			projectile.afterProjectilesAreLoaded(this);
+		
+		// Items
+		int itemSize = input.readInt();
+		items = new CustomItem[itemSize];
+		for (int counter = 0; counter < itemSize; counter++)
+			register(loadItem(input), counter);
+
+		// Recipes
+		int recipeAmount = input.readInt();
+		recipes = new CustomRecipe[recipeAmount];
+		for (int counter = 0; counter < recipeAmount; counter++)
+			register(loadRecipe(input), counter);
+		
+		int numBlockDrops = input.readInt();
+		blockDropMap = new Drop[BlockType.AMOUNT][0];
+		for (int counter = 0; counter < numBlockDrops; counter++)
+			register(BlockDrop.load(input, this));
+		
+		int numMobDrops = input.readInt();
+		mobDropMap = new EntityDrop[CIEntityType.AMOUNT][0];
+		for (int counter = 0; counter < numMobDrops; counter++)
+			register(EntityDrop.load(input, this));
+		
+		// Custom containers & fuel registries
+		int numFuelRegistries = input.readInt();
+		fuelRegistries = new ArrayList<>(numFuelRegistries);
+		for (int counter = 0; counter < numFuelRegistries; counter++) {
+			fuelRegistries.add(loadFuelRegistry(input));
+		}
+		
+		int numContainers = input.readInt();
+		containers = new ArrayList<>(numContainers);
+		for (int counter = 0; counter < numContainers; counter++) {
+			addCustomContainer(loadContainer(input));
+		}
+		
+		// Deleted items
+		int numDeletedItems = input.readInt();
+		deletedItems = new String[numDeletedItems];
+		for (int index = 0; index < numDeletedItems; index++) {
+			deletedItems[index] = input.readString();
 		}
 	}
 	
@@ -1667,6 +1787,37 @@ public class ItemSet implements ItemSetBase {
 			if (fuelRegistry.getName().equals(name))
 				return fuelRegistry;
 		return null;
+	}
+	
+	private long generateFakeExportTime() {
+		/*
+		 * Unfortunately, we don't know the real export time (when an older version
+		 * of the editor was used). Luckily, the export time is mostly just a 
+		 * unique identifier for the version of an item set.
+		 * 
+		 * When using this method, the chance of generating the same 'id' more than
+		 * once is very small.
+		 * 
+		 * The primary drawback is that this will also differ each time the server
+		 * is restarted, so it will cause some unnecessary work. Anyway, we only
+		 * need this to support old versions of the editor, so users can just
+		 * use a newer editor to avoid this.
+		 */
+		return (long) (-1_000_000_000_000_000L * Math.random());
+	}
+	
+	public long getExportTime() {
+		return exportTime;
+	}
+	
+	public boolean isItemDeleted(String customItemName) {
+		for (String deletedItem : deletedItems) {
+			if (deletedItem.equals(customItemName)) {
+				return true;
+			}
+		}
+		
+		return false;
 	}
 	
 	@FunctionalInterface

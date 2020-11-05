@@ -52,7 +52,7 @@ public class EditItemShield extends EditItemTool {
 		if (!thresholdDamage.hasValue())
 			return "The required damage must be a positive number";
 		return menu.getSet().addShield(
-				new CustomShield(internalType, damage, name.getText(), getDisplayName(),
+				new CustomShield(internalType, damage, nameField.getText(), getDisplayName(),
 						lore, attributes, enchantments, maxUses, allowEnchanting.isChecked(),
 						allowAnvil.isChecked(), repairItem.getIngredient(), textureSelect.getSelected(), 
 						itemFlags, entityHitDurabilityLoss, blockBreakDurabilityLoss, 
@@ -65,7 +65,7 @@ public class EditItemShield extends EditItemTool {
 		Option.Double thresholdDamage = thresholdField.getDouble();
 		if (!thresholdDamage.hasValue())
 			return "The required damage must be a positive number";
-		return menu.getSet().changeShield(toModify, internalType, damage, name.getText(),
+		return menu.getSet().changeShield(toModify, internalType, damage,
 				getDisplayName(), lore, attributes, enchantments, allowEnchanting.isChecked(),
 				allowAnvil.isChecked(), repairItem.getIngredient(), maxUses, textureSelect.getSelected(),
 				itemFlags, entityHitDurabilityLoss, blockBreakDurabilityLoss, thresholdDamage.getValue(),

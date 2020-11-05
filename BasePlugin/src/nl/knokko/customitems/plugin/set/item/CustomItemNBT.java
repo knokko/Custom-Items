@@ -12,7 +12,7 @@ public class CustomItemNBT {
 	private static final String KEY = "Knokko'sCustomItems";
 	
 	private static final String NAME = "CustomItemName";
-	private static final String LAST_MODIFIED = "LastModified";
+	private static final String LAST_EXPORT_TIME = "LastExportTime";
 	private static final String DURABILITY = "Durability";
 	private static final String BOOL_REPRESENTATION = "BooleanRepresentation";
 	
@@ -116,32 +116,50 @@ public class CustomItemNBT {
 	}
 	
 	/**
-	 * Gets the time at which the .cis file was last modified at the time this item 
-	 * stack was created. If this is not equal to the last modified of the current 
-	 * .cis file, this indicates that this item stack was created from an older 
-	 * version of the server item set. If the LastModified property is missing, this
-	 * method will return null.
+	 * <p>
+	 * Gets the <b>export time</b> of the .cis file that was active at the time this 
+	 * item stack was last <b>upgraded</b> (or created if it hasn't been upgraded
+	 * yet). If this is not equal to the export time of the current .cis file, this 
+	 * indicates that this item stack was created from an older version of the 
+	 * server item set. If the LastExportTime property is missing, this method will 
+	 * return null.
+	 * </p>
+	 * 
+	 * <p>
+	 * The <b>export time</b> of a .cis file is the result of 
+	 * System.currentTimeMillis() at the time that .cis file was exported by the
+	 * editor.
+	 * </p>
+	 * 
+	 * <p>
+	 * Modern versions of this plug-in will <b>upgrade</b> item stacks it finds in
+	 * inventories. Upgrading an item stack means checking if its NBT indicates that
+	 * it is a custom item, and doing something if that is the case. For instance,
+	 * it checks if the attribute modifiers of such item stacks still match the
+	 * attribute modifiers defined by the corresponding custom item, and adjusts them
+	 * if necessary.
+	 * </p>
 	 * 
 	 * @throws UnsupportedOperationException If this item stack doesn't have custom
 	 * item nbt
 	 */
-	public Long getLastModified() throws UnsupportedOperationException {
+	public Long getLastExportTime() throws UnsupportedOperationException {
 		assertOurNBT();
 		
-		return getOurTag().getLong(LAST_MODIFIED);
+		return getOurTag().getLong(LAST_EXPORT_TIME);
 	}
 	
 	/**
-	 * Sets the LastModified property of this item to the given value. This value
-	 * should normally be the lastModified of the .cis file, but other values can
+	 * Sets the LastExportTime property of this item to the given value. This value
+	 * should normally be the exportTime of the .cis file, but other values can
 	 * be supplied as well.
 	 * 
 	 * @throws UnsupportedOperationException If this item stack doesn't have custom
 	 * item nbt
 	 */
-	public void setLastModified(long newLastModified) throws UnsupportedOperationException {
+	public void setLastExportTime(long newLastExportTime) throws UnsupportedOperationException {
 		assertOurNBT();
-		getOurTag().setLong(LAST_MODIFIED, newLastModified);
+		getOurTag().setLong(LAST_EXPORT_TIME, newLastExportTime);
 	}
 	
 	/**
@@ -210,19 +228,19 @@ public class CustomItemNBT {
 	 * a custom nbt yet).
 	 * 
 	 * @param name The name of the custom item that is to be represented by this item
-	 * @param lastModified The time at which the current .cis file was last modified
+	 * @param lastExportTime The time at which the current .cis file was exported/generated
 	 * @param maxDurability The maximum durability of the custom item, or null if it's
 	 * an unbreakable tool or not a tool at all
 	 * @param boolRepresentation The boolean representation of the custom item
 	 * 
 	 * @throws UnsupportedOperationException If this custom item nbt is read-only
 	 */
-	public void set(String name, long lastModified, Long maxDurability, 
+	public void set(String name, long lastExportTime, Long maxDurability, 
 			BooleanRepresentation boolRepresentation) throws UnsupportedOperationException {
 		assertWrite();
 		NBTTagCompound nbt = getOrCreateOurNBT();
 		nbt.setString(NAME, name);
-		nbt.setLong(LAST_MODIFIED, lastModified);
+		nbt.setLong(LAST_EXPORT_TIME, lastExportTime);
 		if (maxDurability != null) {
 			nbt.setLong(DURABILITY, maxDurability);
 		}

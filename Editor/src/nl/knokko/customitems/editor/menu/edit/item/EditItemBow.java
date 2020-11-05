@@ -112,7 +112,7 @@ public class EditItemBow extends EditItemTool {
 		if (!knockbackStrength.hasValue()) return "The knockback strength must be a positive integer";
 		Option.Int shootDurabilityLoss = this.shootDurabilityLoss.getInt();
 		if (!shootDurabilityLoss.hasValue()) return "The shoot durability loss must be a positive integer";
-		return menu.getSet().addBow(new CustomBow(damage, name.getText(), getDisplayName(), lore, attributes, 
+		return menu.getSet().addBow(new CustomBow(damage, nameField.getText(), getDisplayName(), lore, attributes, 
 				enchantments, maxUses, damageMultiplier.getValue(), speedMultiplier.getValue(), 
 				knockbackStrength.getValue(), gravity.isChecked(), allowEnchanting.isChecked(), 
 				allowAnvil.isChecked(), repairItem.getIngredient(),
@@ -130,7 +130,7 @@ public class EditItemBow extends EditItemTool {
 		if (!knockbackStrength.hasValue()) return "The knockback strength must be a positive integer";
 		Option.Int shootDurabilityLoss = this.shootDurabilityLoss.getInt();
 		if (!shootDurabilityLoss.hasValue()) return "The shoot durability loss must be a positive integer";
-		return menu.getSet().changeBow(toModify, damage, name.getText(), getDisplayName(), lore, attributes, 
+		return menu.getSet().changeBow(toModify, damage, getDisplayName(), lore, attributes, 
 				enchantments, damageMultiplier.getValue(), speedMultiplier.getValue(), 
 				knockbackStrength.getValue(), gravity.isChecked(), allowEnchanting.isChecked(), 
 				allowAnvil.isChecked(), repairItem.getIngredient(), maxUses, 

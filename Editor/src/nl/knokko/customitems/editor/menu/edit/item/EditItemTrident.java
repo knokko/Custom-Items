@@ -80,7 +80,7 @@ public class EditItemTrident extends EditItemTool {
 		if (!speedMult.hasValue())
 			return "The throw speed multiplier must be a positive number";
 		return menu.getSet().addTrident(
-				new CustomTrident(damage, name.getText(), getDisplayName(),
+				new CustomTrident(damage, nameField.getText(), getDisplayName(),
 						lore, attributes, enchantments, maxUses, allowEnchanting.isChecked(),
 						allowAnvil.isChecked(), damageMult.getValue(), speedMult.getValue(), repairItem.getIngredient(), 
 						textureSelect.getSelected(), itemFlags, entityHitDurabilityLoss, blockBreakDurabilityLoss, 
@@ -99,7 +99,7 @@ public class EditItemTrident extends EditItemTool {
 		Option.Double speedMult = throwSpeedMultiplier.getDouble();
 		if (!speedMult.hasValue())
 			return "The throw speed multiplier must be a positive number";
-		return menu.getSet().changeTrident(toModify, internalType, damage, name.getText(),
+		return menu.getSet().changeTrident(toModify, internalType, damage,
 				getDisplayName(), lore, attributes, enchantments, allowEnchanting.isChecked(),
 				allowAnvil.isChecked(), damageMult.getValue(), speedMult.getValue(), repairItem.getIngredient(), 
 				maxUses, textureSelect.getSelected(), itemFlags, entityHitDurabilityLoss, blockBreakDurabilityLoss, 

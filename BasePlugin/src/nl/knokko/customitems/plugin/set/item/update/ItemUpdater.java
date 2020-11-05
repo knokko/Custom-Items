@@ -2,6 +2,7 @@ package nl.knokko.customitems.plugin.set.item.update;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.function.Function;
 
 import static org.bukkit.enchantments.Enchantment.getByName;
 import org.bukkit.inventory.ItemStack;
@@ -20,11 +21,13 @@ import nl.knokko.customitems.plugin.set.item.CustomItemNBT;
 public class ItemUpdater {
 
 	private final CustomItem[] items;
-	private final long setLastModified;
+	private Function<String, Boolean> isItemDeleted;
+	private final long setExportTime;
 	
-	public ItemUpdater(CustomItem[] items, long setLastModified) {
+	public ItemUpdater(CustomItem[] items, Function<String, Boolean> isItemDeleted, long setExportTime) {
 		this.items = items;
-		this.setLastModified = setLastModified;
+		this.isItemDeleted = isItemDeleted;
+		this.setExportTime = setExportTime;
 	}
 	
 	public ItemStack maybeUpdate(ItemStack originalStack) {
@@ -36,11 +39,11 @@ public class ItemUpdater {
 			if (nbt.hasOurNBT()) {
 				String itemName = nbt.getName();
 				
-				Long lastModified = nbt.getLastModified();
-				if (lastModified == null) {
+				Long lastExportTime = nbt.getLastExportTime();
+				if (lastExportTime == null) {
 					
 					/*
-					 * If this line is reached, the lastModified of the item stack is
+					 * If this line is reached, the LastExportTime of the item stack is
 					 * missing. That means the item stack wasn't created by this
 					 * plug-in.
 					 * 
@@ -59,11 +62,11 @@ public class ItemUpdater {
 						// I'm not really sure how this case should be handled
 						pAction[0] = UpdateAction.DO_NOTHING;
 					}
-				} else if (lastModified == setLastModified) {
+				} else if (lastExportTime == setExportTime) {
 					
 					/*
-					 * If the lastModified of the item stack is the same as the 
-					 * lastModified of the item set, there is no need to take any 
+					 * If the exportTime of the item stack is the same as the 
+					 * exportTime of the item set, there is no need to take any 
 					 * action because the item stack properties should already be 
 					 * up-to-date.
 					 */
@@ -80,11 +83,11 @@ public class ItemUpdater {
 							 * This case will happen when the item set is updated,
 							 * but the current custom item stayed the same. If this
 							 * happens, we don't need to upgrade the item stack,
-							 * but we should update the LastModified to prevent the
+							 * but we should update the LastExportTime to prevent the
 							 * need for comparing the boolean representations over
 							 * and over.
 							 */
-							pAction[0] = UpdateAction.UPDATE_LAST_MODIFIED;
+							pAction[0] = UpdateAction.UPDATE_LAST_EXPORT_TIME;
 						} else {
 							
 							/*
@@ -127,22 +130,31 @@ public class ItemUpdater {
 						}
 					} else {
 						/*
-						 * This case will happen when a custom item stack is given to
-						 * someone, but that custom item is later removed from the
-						 * item set (the admin deleted it via the Editor and updated
-						 * the server item set).
+						 * This case will occur when an item stack is found with
+						 * a custom item name that is not part of the current item
+						 * set. There are roughly 3 possible causes for this:
+						 * 1) The item stack belongs to a custom item of a different
+						 * item set.
+						 * 2) The custom item belonging to the item stack has been
+						 * deleted.
+						 * 3) The item stack was artificially created with commands
+						 * or by some other plug-in.
 						 * 
-						 * But, it is also possible that the server accidentally
-						 * loaded the wrong item set. (Note: If some start-up
-						 * error occurred, this method shouldn't be called in
-						 * the first place.)
+						 * We can check case (2) by comparing the custom item name
+						 * of the item stack with all deleted custom items. If
+						 * the corresponding custom item was indeed deleted, we
+						 * destroy the item set.
 						 * 
-						 * I think simply deleting the corresponding in-game item 
-						 * stack is the best way to deal with this case.
+						 * I think case (1) and (3) are best handled by ignoring it.
+						 * That way, the damage will be very limited if the wrong
+						 * item set is used. (And there isn't really a good
+						 * solution for case 3).
 						 */
-						// TODO Reconsider this! This is lethal when the
-						// wrong item set is used by mistake!
-						pAction[0] = UpdateAction.DESTROY;
+						pAction[0] = UpdateAction.DO_NOTHING;
+						
+						if (isItemDeleted.apply(itemName)) {
+							pAction[0] = UpdateAction.DESTROY;
+						}
 					}
 				}
 			} else {
@@ -160,10 +172,10 @@ public class ItemUpdater {
 			return originalStack;
 		} else if (action == UpdateAction.DESTROY) {
 			return null;
-		} else if (action == UpdateAction.UPDATE_LAST_MODIFIED) {
+		} else if (action == UpdateAction.UPDATE_LAST_EXPORT_TIME) {
 			ItemStack[] pResult = {null};
 			CustomItemNBT.readWrite(originalStack, nbt -> {
-				nbt.setLastModified(setLastModified);
+				nbt.setLastExportTime(setExportTime);
 			}, result -> pResult[0] = result);
 			return pResult[0];
 		} else {
@@ -518,7 +530,7 @@ public class ItemUpdater {
 	private static enum UpdateAction {
 		
 		DO_NOTHING,
-		UPDATE_LAST_MODIFIED,
+		UPDATE_LAST_EXPORT_TIME,
 		INITIALIZE,
 		UPGRADE,
 		DESTROY

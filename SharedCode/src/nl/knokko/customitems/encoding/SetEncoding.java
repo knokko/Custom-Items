@@ -59,4 +59,9 @@ public class SetEncoding {
 	 * Added custom containers and fuel registries
 	 */
 	public static final byte ENCODING_7 = 6;
+	
+	/**
+	 * Added deleted item names and export time (editor to plugin only)
+	 */
+	public static final byte ENCODING_8 = 7;
 }

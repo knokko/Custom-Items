@@ -27,13 +27,7 @@ import static nl.knokko.customitems.MCVersions.FIRST_VERSION;
 import static nl.knokko.customitems.MCVersions.LAST_VERSION;
 import static nl.knokko.customitems.MCVersions.VERSION1_12;
 import static nl.knokko.customitems.NameHelper.versionName;
-import static nl.knokko.customitems.encoding.SetEncoding.ENCODING_1;
-import static nl.knokko.customitems.encoding.SetEncoding.ENCODING_2;
-import static nl.knokko.customitems.encoding.SetEncoding.ENCODING_3;
-import static nl.knokko.customitems.encoding.SetEncoding.ENCODING_4;
-import static nl.knokko.customitems.encoding.SetEncoding.ENCODING_5;
-import static nl.knokko.customitems.encoding.SetEncoding.ENCODING_6;
-import static nl.knokko.customitems.encoding.SetEncoding.ENCODING_7;
+import static nl.knokko.customitems.encoding.SetEncoding.*;
 
 import java.awt.image.BufferedImage;
 import java.io.File;
@@ -1458,6 +1452,7 @@ public class ItemSet implements ItemSetBase {
 	private Collection<CIProjectile> projectiles;
 	private Collection<CustomFuelRegistry> fuelRegistries;
 	private Collection<CustomContainer> containers;
+	private Collection<String> deletedItems;
 
 	public ItemSet(String fileName) {
 		this.fileName = fileName;
@@ -1470,6 +1465,7 @@ public class ItemSet implements ItemSetBase {
 		projectiles = new ArrayList<>();
 		fuelRegistries = new ArrayList<>();
 		containers = new ArrayList<>();
+		deletedItems = new ArrayList<>();
 	}
 
 	public ItemSet(String fileName, BitInput input) throws UnknownEncodingException, IntegrityException {
@@ -1489,6 +1485,8 @@ public class ItemSet implements ItemSetBase {
 			load6(input);
 		else if (encoding == ENCODING_7)
 			load7(input);
+		else if (encoding == ENCODING_8)
+			load8(input);
 		else
 			throw new UnknownEncodingException("ItemSet", encoding);
 	}
@@ -1511,14 +1509,12 @@ public class ItemSet implements ItemSetBase {
 	private void load1(BitInput input) throws UnknownEncodingException {
 		// Textures
 		int textureAmount = input.readInt();
-		// System.out.println("amount of textures is " + textureAmount);
 		textures = new ArrayList<NamedImage>(textureAmount);
 		for (int counter = 0; counter < textureAmount; counter++)
 			textures.add(new NamedImage(input));
-		// System.out.println("textures are " + textures);
+
 		// Items
 		int itemAmount = input.readInt();
-		// System.out.println("amount of items is " + itemAmount);
 		items = new ArrayList<CustomItem>(itemAmount);
 		for (int counter = 0; counter < itemAmount; counter++)
 			items.add(loadItem(input, false));
@@ -1540,12 +1536,14 @@ public class ItemSet implements ItemSetBase {
 		// Containers (there are no containers in this encoding)
 		fuelRegistries = new ArrayList<>();
 		containers = new ArrayList<>();
+		
+		// Deleted item names aren't remembered in this encoding
+		deletedItems = new ArrayList<>();
 	}
 
 	private void load2(BitInput input) throws UnknownEncodingException {
 		// Textures
 		int textureAmount = input.readInt();
-		// System.out.println("amount of textures is " + textureAmount);
 		textures = new ArrayList<NamedImage>(textureAmount);
 		for (int counter = 0; counter < textureAmount; counter++) {
 			byte textureType = input.readByte();
@@ -1556,10 +1554,9 @@ public class ItemSet implements ItemSetBase {
 			else
 				throw new UnknownEncodingException("Texture", textureType);
 		}
-		// System.out.println("textures are " + textures);
+
 		// Items
 		int itemAmount = input.readInt();
-		// System.out.println("amount of items is " + itemAmount);
 		items = new ArrayList<CustomItem>(itemAmount);
 		for (int counter = 0; counter < itemAmount; counter++)
 			items.add(loadItem(input, false));
@@ -1581,12 +1578,14 @@ public class ItemSet implements ItemSetBase {
 		// Containers (there are no containers in this encoding)
 		fuelRegistries = new ArrayList<>();
 		containers = new ArrayList<>();
+		
+		// Deleted item names aren't remembered in this encoding
+		deletedItems = new ArrayList<>();
 	}
 	
 	private void load3(BitInput input) throws UnknownEncodingException {
 		// Textures
 		int textureAmount = input.readInt();
-		// System.out.println("amount of textures is " + textureAmount);
 		textures = new ArrayList<NamedImage>(textureAmount);
 		for (int counter = 0; counter < textureAmount; counter++) {
 			byte textureType = input.readByte();
@@ -1597,10 +1596,9 @@ public class ItemSet implements ItemSetBase {
 			else
 				throw new UnknownEncodingException("Texture", textureType);
 		}
-		// System.out.println("textures are " + textures);
+
 		// Items
 		int itemAmount = input.readInt();
-		// System.out.println("amount of items is " + itemAmount);
 		items = new ArrayList<CustomItem>(itemAmount);
 		for (int counter = 0; counter < itemAmount; counter++)
 			items.add(loadItem(input, false));
@@ -1629,12 +1627,14 @@ public class ItemSet implements ItemSetBase {
 		// Containers (there are no containers in this encoding)
 		fuelRegistries = new ArrayList<>();
 		containers = new ArrayList<>();
+		
+		// Deleted item names aren't remembered in this encoding
+		deletedItems = new ArrayList<>();
 	}
 	
 	private void load4(BitInput input) throws UnknownEncodingException {
 		// Textures
 		int textureAmount = input.readInt();
-		// System.out.println("amount of textures is " + textureAmount);
 		textures = new ArrayList<NamedImage>(textureAmount);
 		for (int counter = 0; counter < textureAmount; counter++) {
 			byte textureType = input.readByte();
@@ -1645,10 +1645,9 @@ public class ItemSet implements ItemSetBase {
 			else
 				throw new UnknownEncodingException("Texture", textureType);
 		}
-		// System.out.println("textures are " + textures);
+
 		// Items
 		int itemAmount = input.readInt();
-		// System.out.println("amount of items is " + itemAmount);
 		items = new ArrayList<CustomItem>(itemAmount);
 		for (int counter = 0; counter < itemAmount; counter++)
 			items.add(loadItem(input, true));
@@ -1677,6 +1676,9 @@ public class ItemSet implements ItemSetBase {
 		// Containers (there are no containers in this encoding)
 		fuelRegistries = new ArrayList<>();
 		containers = new ArrayList<>();
+		
+		// Deleted item names aren't remembered in this encoding
+		deletedItems = new ArrayList<>();
 	}
 	
 	private void load5(BitInput input) throws UnknownEncodingException {
@@ -1711,7 +1713,6 @@ public class ItemSet implements ItemSetBase {
 
 		// Items
 		int itemAmount = input.readInt();
-		// System.out.println("amount of items is " + itemAmount);
 		items = new ArrayList<CustomItem>(itemAmount);
 		for (int counter = 0; counter < itemAmount; counter++)
 			items.add(loadItem(input, true));
@@ -1736,6 +1737,9 @@ public class ItemSet implements ItemSetBase {
 		// Containers (there are no containers in this encoding)
 		fuelRegistries = new ArrayList<>();
 		containers = new ArrayList<>();
+		
+		// Deleted item names aren't remembered in this encoding
+		deletedItems = new ArrayList<>();
 	}
 	
 	private void load6(BitInput input) throws UnknownEncodingException, IntegrityException {
@@ -1785,7 +1789,6 @@ public class ItemSet implements ItemSetBase {
 
 		// Items
 		int itemAmount = input.readInt();
-		// System.out.println("amount of items is " + itemAmount);
 		items = new ArrayList<CustomItem>(itemAmount);
 		for (int counter = 0; counter < itemAmount; counter++)
 			items.add(loadItem(input, true));
@@ -1810,6 +1813,9 @@ public class ItemSet implements ItemSetBase {
 		// Containers (there are no containers in this encoding)
 		fuelRegistries = new ArrayList<>();
 		containers = new ArrayList<>();
+		
+		// Deleted item names aren't remembered in this encoding
+		deletedItems = new ArrayList<>();
 	}
 	
 	private void load7(BitInput input) throws UnknownEncodingException, IntegrityException {
@@ -1859,7 +1865,6 @@ public class ItemSet implements ItemSetBase {
 
 		// Items
 		int itemAmount = input.readInt();
-		// System.out.println("amount of items is " + itemAmount);
 		items = new ArrayList<CustomItem>(itemAmount);
 		for (int counter = 0; counter < itemAmount; counter++)
 			items.add(loadItem(input, true));
@@ -1892,6 +1897,98 @@ public class ItemSet implements ItemSetBase {
 		containers = new ArrayList<>(numContainers);
 		for (int counter = 0; counter < numContainers; counter++) {
 			containers.add(loadContainer(input));
+		}
+		
+		// Deleted item names aren't remembered in this encoding
+		deletedItems = new ArrayList<>();
+	}
+	
+	private void load8(BitInput input) throws UnknownEncodingException, IntegrityException {
+		// Check integrity
+		long expectedHash = input.readLong();
+		byte[] remaining;
+		try {
+			// Catch undefined behavior when the remaining size is wrong
+			remaining = input.readByteArray();
+		} catch (Throwable t) {
+			throw new IntegrityException(t);
+		}
+		long actualHash = hash(remaining);
+		if (expectedHash != actualHash)
+			throw new IntegrityException(expectedHash, actualHash);
+		
+		input = new ByteArrayBitInput(remaining);
+		
+		// Textures
+		int textureAmount = input.readInt();
+		textures = new ArrayList<NamedImage>(textureAmount);
+		for (int counter = 0; counter < textureAmount; counter++) {
+			byte textureType = input.readByte();
+			if (textureType == NamedImage.ENCODING_BOW)
+				textures.add(new BowTextures(input));
+			else if (textureType == NamedImage.ENCODING_SIMPLE)
+				textures.add(new NamedImage(input));
+			else
+				throw new UnknownEncodingException("Texture", textureType);
+		}
+		
+		// Projectile covers
+		int numProjectileCovers = input.readInt();
+		projectileCovers = new ArrayList<>(numProjectileCovers);
+		for (int counter = 0; counter < numProjectileCovers; counter++)
+			projectileCovers.add(EditorProjectileCover.fromBits(input, this));
+		
+		// Projectiles
+		int numProjectiles = input.readInt();
+		projectiles = new ArrayList<>(numProjectiles);
+		for (int counter = 0; counter < numProjectiles; counter++)
+			projectiles.add(CIProjectile.fromBits(input, this));
+		
+		// Notify the projectile effects that all projectiles have been loaded
+		for (CIProjectile projectile : projectiles)
+			projectile.afterProjectilesAreLoaded(this);
+
+		// Items
+		int itemAmount = input.readInt();
+		items = new ArrayList<CustomItem>(itemAmount);
+		for (int counter = 0; counter < itemAmount; counter++)
+			items.add(loadItem(input, true));
+
+		// Recipes
+		int recipeAmount = input.readInt();
+		recipes = new ArrayList<Recipe>(recipeAmount);
+		for (int counter = 0; counter < recipeAmount; counter++)
+			recipes.add(loadRecipe(input));
+		
+		// Drops
+		int numBlockDrops = input.readInt();
+		blockDrops = new ArrayList<>(numBlockDrops);
+		for (int counter = 0; counter < numBlockDrops; counter++)
+			blockDrops.add(BlockDrop.load(input, this));
+		
+		int numMobDrops = input.readInt();
+		mobDrops = new ArrayList<>(numMobDrops);
+		for (int counter = 0; counter < numMobDrops; counter++)
+			mobDrops.add(EntityDrop.load(input, this));
+		
+		// Custom containers and fuel registries
+		int numFuelRegistries = input.readInt();
+		fuelRegistries = new ArrayList<>(numFuelRegistries);
+		for (int counter = 0; counter < numFuelRegistries; counter++) {
+			fuelRegistries.add(loadFuelRegistry(input));
+		}
+		
+		int numContainers = input.readInt();
+		containers = new ArrayList<>(numContainers);
+		for (int counter = 0; counter < numContainers; counter++) {
+			containers.add(loadContainer(input));
+		}
+		
+		// Deleted item names
+		int numDeletedItems = input.readInt();
+		deletedItems = new ArrayList<>(numDeletedItems);
+		for (int counter = 0; counter < numDeletedItems; counter++) {
+			deletedItems.add(input.readString());
 		}
 	}
 
@@ -2208,7 +2305,7 @@ public class ItemSet implements ItemSetBase {
 			File file = new File(Editor.getFolder() + "/" + fileName + ".cis");// cis stands for Custom Item Set
 			OutputStream fileOutput = Files.newOutputStream(file.toPath());
 			ByteArrayBitOutput output = new ByteArrayBitOutput();
-			export7(output);
+			export8(output);
 			output.terminate();
 			
 			byte[] bytes = output.getBytes();
@@ -2832,7 +2929,7 @@ public class ItemSet implements ItemSetBase {
 		}
 		try {
 			ByteArrayBitOutput output = new ByteArrayBitOutput();
-			export7(output);
+			export8(output);
 			output.terminate();
 			
 			byte[] bytes = output.getBytes();
@@ -3306,6 +3403,7 @@ public class ItemSet implements ItemSetBase {
 	}
 	
 	// Add custom containers
+	@SuppressWarnings("unused")
 	private void export7(BitOutput outerOutput) {
 		outerOutput.addByte(ENCODING_7);
 		
@@ -3366,6 +3464,77 @@ public class ItemSet implements ItemSetBase {
 		outerOutput.addLong(hash(contentBytes));
 		outerOutput.addByteArray(contentBytes);
 	}
+	
+	// Add export time and remember names of deleted items
+	private void export8(BitOutput outerOutput) {
+		outerOutput.addByte(ENCODING_8);
+		
+		ByteArrayBitOutput output = new ByteArrayBitOutput();
+		
+		// Export time
+		output.addLong(System.currentTimeMillis());
+		
+		// Projectiles
+		output.addInt(projectileCovers.size());
+		for (EditorProjectileCover cover : projectileCovers)
+			cover.export(output);
+		
+		output.addInt(projectiles.size());
+		for (CIProjectile projectile : projectiles)
+			projectile.toBits(output);
+
+		// Items
+		output.addInt(items.size());
+
+		// Tools can have non-tools as repair item, so the non-tools must be exported first.
+		// This way, that all repair items are available once the tools are being loaded.
+		for (CustomItem noTool : items)
+			if (!(noTool instanceof CustomTool))
+				noTool.export(output);
+
+		for (CustomItem tool : items)
+			if (tool instanceof CustomTool)
+				tool.export(output);
+
+		// Recipes
+		output.addInt(recipes.size());
+		for (Recipe recipe : recipes)
+			recipe.save(output);
+		
+		// Drops
+		output.addInt(blockDrops.size());
+		for (BlockDrop drop : blockDrops)
+			drop.save(output);
+		
+		output.addInt(mobDrops.size());
+		for (EntityDrop drop : mobDrops)
+			drop.save(output);
+		
+		// Fuel registries
+		output.addInt(fuelRegistries.size());
+		for (CustomFuelRegistry registry : fuelRegistries)
+			registry.save(output, scIngredient -> ((Ingredient)scIngredient).save(output));
+		
+		// Custom containers
+		output.addInt(containers.size());
+		for (CustomContainer container : containers) {
+			container.save(output, 
+					ingredient -> ((Ingredient)ingredient).save(output),
+					result -> ((Result)result).save(output)
+			);
+		}
+		
+		// Deleted item names
+		output.addInt(deletedItems.size());
+		for (String deletedItem : deletedItems) {
+			output.addString(deletedItem);
+		}
+		
+		// Finish the integrity stuff
+		byte[] contentBytes = output.getBytes();
+		outerOutput.addLong(hash(contentBytes));
+		outerOutput.addByteArray(contentBytes);
+	}
 
 	public String save() {
 		try {
@@ -3374,7 +3543,7 @@ public class ItemSet implements ItemSetBase {
 			File file = new File(Editor.getFolder() + "/" + fileName + ".cisb");// cisb stands for Custom Item Set
 																				// Builder
 			ByteArrayBitOutput output = new ByteArrayBitOutput();
-			save7(output);
+			save8(output);
 			output.terminate();
 			byte[] bytes = output.getBytes();
 			OutputStream mainOutput = Files.newOutputStream(file.toPath());
@@ -3655,6 +3824,7 @@ public class ItemSet implements ItemSetBase {
 	}
 	
 	// Add custom containers
+	@SuppressWarnings("unused")
 	private void save7(BitOutput outerOutput) {
 		outerOutput.addByte(ENCODING_7);
 		
@@ -3718,6 +3888,83 @@ public class ItemSet implements ItemSetBase {
 					ingredient -> ((Ingredient)ingredient).save(output),
 					result -> ((Result)result).save(output)
 			);
+		}
+		
+		// Finish the integrity work
+		byte[] contentBytes = output.getBytes();
+		outerOutput.addLong(hash(contentBytes));
+		outerOutput.addByteArray(contentBytes);
+	}
+	
+	// Add custom containers
+	private void save8(BitOutput outerOutput) {
+		outerOutput.addByte(ENCODING_8);
+		
+		// Prepare integrity
+		ByteArrayBitOutput output = new ByteArrayBitOutput();
+		
+		output.addInt(textures.size());
+		for (NamedImage texture : textures) {
+			if (texture instanceof BowTextures)
+				output.addByte(NamedImage.ENCODING_BOW);
+			else
+				output.addByte(NamedImage.ENCODING_SIMPLE);
+			texture.save(output);
+		}
+		
+		output.addInt(projectileCovers.size());
+		for (EditorProjectileCover cover : projectileCovers)
+			cover.toBits(output);
+		
+		output.addInt(projectiles.size());
+		for (CIProjectile projectile : projectiles)
+			projectile.toBits(output);
+		
+		output.addInt(items.size());
+
+		// Save the normal items before the tools so that tools can use normal items as
+		// repair item
+		List<CustomItem> sorted = new ArrayList<CustomItem>(items.size());
+		for (CustomItem item : items) {
+			if (!(item instanceof CustomTool)) {
+				sorted.add(item);
+			}
+		}
+		for (CustomItem item : items) {
+			if (item instanceof CustomTool) {
+				sorted.add(item);
+			}
+		}
+		for (CustomItem item : sorted)
+			item.save2(output);
+
+		output.addInt(recipes.size());
+		for (Recipe recipe : recipes)
+			recipe.save(output);
+		
+		output.addInt(blockDrops.size());
+		for (BlockDrop drop : blockDrops)
+			drop.save(output);
+		
+		output.addInt(mobDrops.size());
+		for (EntityDrop drop : mobDrops)
+			drop.save(output);
+		
+		output.addInt(fuelRegistries.size());
+		for (CustomFuelRegistry registry : fuelRegistries)
+			registry.save(output, scIngredient -> ((Ingredient)scIngredient).save(output));
+		
+		output.addInt(containers.size());
+		for (CustomContainer container : containers) {
+			container.save(output, 
+					ingredient -> ((Ingredient)ingredient).save(output),
+					result -> ((Result)result).save(output)
+			);
+		}
+		
+		output.addInt(deletedItems.size());
+		for (String deletedItem : deletedItems) {
+			output.addString(deletedItem);
 		}
 		
 		// Finish the integrity work
@@ -3895,7 +4142,7 @@ public class ItemSet implements ItemSetBase {
 		return addTool(item, false);
 	}
 	
-	public String changeArmor(CustomArmor armor, CustomItemType newType, short newDamage, String newName, 
+	public String changeArmor(CustomArmor armor, CustomItemType newType, short newDamage,
 			String newDisplayName, String[] newLore, AttributeModifier[] newAttributes, 
 			Enchantment[] newEnchantments, boolean allowEnchanting, boolean allowAnvil, 
 			Ingredient repairItem, long newDurability, NamedImage newTexture, int newRed, int newGreen, 
@@ -3916,7 +4163,7 @@ public class ItemSet implements ItemSetBase {
 			if (resistances == null)
 				return "The damage resistances can't be null";
 		}
-		String error = changeTool(armor, newType, newDamage, newName, newDisplayName, newLore, newAttributes, newEnchantments,
+		String error = changeTool(armor, newType, newDamage, newDisplayName, newLore, newAttributes, newEnchantments,
 				allowEnchanting, allowAnvil, repairItem, newDurability, newTexture, itemFlags,
 				entityHitDurabilityLoss, blockBreakDurabilityLoss, newCustomModel, playerEffects, targetEffects, commands, false);
 		if (error == null) {
@@ -3957,7 +4204,7 @@ public class ItemSet implements ItemSetBase {
 		return addTool(item, false);
 	}
 
-	public String changeBow(CustomBow bow, short newDamage, String newName, String newDisplayName, String[] newLore,
+	public String changeBow(CustomBow bow, short newDamage, String newDisplayName, String[] newLore,
 			AttributeModifier[] newAttributes, Enchantment[] newEnchantments, double newDamageMultiplier, double newSpeedMultiplier,
 			int newKnockbackStrength, boolean useGravity, boolean allowEnchanting, boolean allowAnvil,
 			Ingredient repairItem, long newDurability, BowTextures newTextures, boolean[] itemFlags,
@@ -3979,7 +4226,7 @@ public class ItemSet implements ItemSetBase {
 			if (shootDurabilityLoss < 0)
 				return "The shoot durability loss can't be negative";
 		}
-		String error = changeTool(bow, CustomItemType.BOW, newDamage, newName, newDisplayName, newLore, newAttributes, newEnchantments,
+		String error = changeTool(bow, CustomItemType.BOW, newDamage, newDisplayName, newLore, newAttributes, newEnchantments,
 				allowEnchanting, allowAnvil, repairItem, newDurability, newTextures, itemFlags,
 				entityHitDurabilityLoss, blockBreakDurabilityLoss, newCustomModel, playerEffects, targetEffects, commands, false);
 		if (error == null) {
@@ -4009,7 +4256,7 @@ public class ItemSet implements ItemSetBase {
 		return addTool(shield, false);
 	}
 	
-	public String changeShield(CustomShield shield, CustomItemType newType, short newDamage, String newName,
+	public String changeShield(CustomShield shield, CustomItemType newType, short newDamage,
 			String newDisplayName, String[] newLore, AttributeModifier[] newAttributes, 
 			Enchantment[] newEnchantments, boolean allowEnchanting, boolean allowAnvil, 
 			Ingredient repairItem, long newDurability, NamedImage newImage, boolean[] itemFlags, 
@@ -4027,7 +4274,7 @@ public class ItemSet implements ItemSetBase {
 			if (th != th)
 				return "The threshold damage can't be NaN";
 		}
-		String error = changeTool(shield, newType, newDamage, newName, newDisplayName, newLore, newAttributes,
+		String error = changeTool(shield, newType, newDamage, newDisplayName, newLore, newAttributes,
 				newEnchantments, allowEnchanting, allowAnvil, repairItem, newDurability, newImage, itemFlags,
 				entityHitDurabilityLoss, blockBreakDurabilityLoss, newCustomModel, playerEffects, targetEffects, commands, false);
 		if (error != null) {
@@ -4112,7 +4359,6 @@ public class ItemSet implements ItemSetBase {
 	 * @param item            The tool that should be changed
 	 * @param newType         The new item type of the tool
 	 * @param newDamage       The new internal damage of the tool
-	 * @param newName         The new name of the tool
 	 * @param newDisplayName  The new display name of the tool
 	 * @param newLore         The new lore of the tool
 	 * @param newAttributes   The new attribute modifiers of the tool
@@ -4123,7 +4369,7 @@ public class ItemSet implements ItemSetBase {
 	 * @return The reason the tool could not be changed, or null if the tool was
 	 *         changed successfully
 	 */
-	public String changeTool(CustomTool item, CustomItemType newType, short newDamage, String newName,
+	public String changeTool(CustomTool item, CustomItemType newType, short newDamage,
 			String newDisplayName, String[] newLore, AttributeModifier[] newAttributes, Enchantment[] newEnchantments, boolean allowEnchanting,
 			boolean allowAnvil, Ingredient repairItem, long newDurability, NamedImage newImage, 
 			boolean[] itemFlags, int entityHitDurabilityLoss, int blockBreakDurabilityLoss,
@@ -4143,7 +4389,7 @@ public class ItemSet implements ItemSetBase {
 			if (blockBreakDurabilityLoss < 0)
 				return "The block break durability loss can't be negative";
 		}
-		String error = changeItem(item, newType, newDamage, newName, newDisplayName, newLore, newAttributes, 
+		String error = changeItem(item, newType, newDamage, newDisplayName, newLore, newAttributes, 
 				newEnchantments, newImage, itemFlags, newCustomModel,
 				playerEffects, targetEffects, commands);
 		if (error == null) {
@@ -4159,7 +4405,7 @@ public class ItemSet implements ItemSetBase {
 		}
 	}
 	
-	public String changeShears(CustomShears shears, CustomItemType newType, short newDamage, String newName,
+	public String changeShears(CustomShears shears, CustomItemType newType, short newDamage,
 			String newDisplayName, String[] newLore, AttributeModifier[] newAttributes, Enchantment[] newEnchantments, boolean allowEnchanting,
 			boolean allowAnvil, Ingredient repairItem, long newDurability, NamedImage newImage, 
 			boolean[] itemFlags, int entityHitDurabilityLoss, int blockBreakDurabilityLoss, int shearDurabilityLoss,
@@ -4172,7 +4418,7 @@ public class ItemSet implements ItemSetBase {
 				return "Use the appropriate method to change this class";
 			}
 		}
-		String error = changeTool(shears, newType, newDamage, newName, newDisplayName, newLore, newAttributes,
+		String error = changeTool(shears, newType, newDamage, newDisplayName, newLore, newAttributes,
 				newEnchantments, allowEnchanting, allowAnvil, repairItem, newDurability, newImage, itemFlags,
 				entityHitDurabilityLoss, blockBreakDurabilityLoss, newCustomModel, playerEffects, targetEffects, commands, false);
 		if (error == null) {
@@ -4183,7 +4429,7 @@ public class ItemSet implements ItemSetBase {
 		}
 	}
 	
-	public String changeHoe(CustomHoe hoe, CustomItemType newType, short newDamage, String newName,
+	public String changeHoe(CustomHoe hoe, CustomItemType newType, short newDamage,
 			String newDisplayName, String[] newLore, AttributeModifier[] newAttributes, Enchantment[] newEnchantments, boolean allowEnchanting,
 			boolean allowAnvil, Ingredient repairItem, long newDurability, NamedImage newImage, 
 			boolean[] itemFlags, int entityHitDurabilityLoss, int blockBreakDurabilityLoss, int tillDurabilityLoss,
@@ -4196,7 +4442,7 @@ public class ItemSet implements ItemSetBase {
 				return "Use the appropriate method to change this class";
 			}
 		}
-		String error = changeTool(hoe, newType, newDamage, newName, newDisplayName, newLore, newAttributes,
+		String error = changeTool(hoe, newType, newDamage, newDisplayName, newLore, newAttributes,
 				newEnchantments, allowEnchanting, allowAnvil, repairItem, newDurability, newImage, itemFlags,
 				entityHitDurabilityLoss, blockBreakDurabilityLoss, newCustomModel, playerEffects, targetEffects, commands, false);
 		if (error == null) {
@@ -4208,7 +4454,7 @@ public class ItemSet implements ItemSetBase {
 	}
 	
 	public String changeTrident(CustomTrident trident, CustomItemType newType, short newDamage, 
-			String newName, String newDisplayName, String[] newLore, AttributeModifier[] newAttributes, 
+			String newDisplayName, String[] newLore, AttributeModifier[] newAttributes, 
 			Enchantment[] newEnchantments, boolean allowEnchanting, boolean allowAnvil, 
 			double throwDamageMultiplier, double throwSpeedMultiplier, Ingredient repairItem, 
 			long newDurability, NamedImage newImage, boolean[] itemFlags, int entityHitDurabilityLoss, 
@@ -4228,7 +4474,7 @@ public class ItemSet implements ItemSetBase {
 				return "The speed multiplier must be a positive number";
 		}
 		
-		String error = changeTool(trident, newType, newDamage, newName, newDisplayName, newLore, newAttributes,
+		String error = changeTool(trident, newType, newDamage, newDisplayName, newLore, newAttributes,
 				newEnchantments, allowEnchanting, allowAnvil, repairItem, newDurability, newImage, itemFlags,
 				entityHitDurabilityLoss, blockBreakDurabilityLoss, newCustomModel, playerEffects, targetEffects, commands, false);
 		if (error == null) {
@@ -4272,7 +4518,7 @@ public class ItemSet implements ItemSetBase {
 	 * Attempts to change the properties of the given wand to the given values.
 	 * @return null if the wand was changed successfully, or the reason it wasn't
 	 */
-	public String changeWand(CustomWand original, CustomItemType newType, short newDamage, String newName,
+	public String changeWand(CustomWand original, CustomItemType newType, short newDamage,
 			String newDisplayName, String[] newLore, AttributeModifier[] newAttributes, 
 			Enchantment[] newEnchantments, NamedImage newImage, boolean[] itemFlags,
 			byte[] newCustomModel, List<PotionEffect> playerEffects, List<PotionEffect> targetEffects, 
@@ -4293,7 +4539,7 @@ public class ItemSet implements ItemSetBase {
 			if (newAmountPerShot <= 0)
 				return "The amount per shot must be a positive integer";
 		}
-		String error = changeItem(original, newType, newDamage, newName, newDisplayName, newLore,
+		String error = changeItem(original, newType, newDamage, newDisplayName, newLore,
 				newAttributes, newEnchantments, newImage, itemFlags, newCustomModel, playerEffects,
 				targetEffects, commands);
 		if (error == null) {
@@ -4555,6 +4801,11 @@ public class ItemSet implements ItemSetBase {
 			for (CustomItem current : items)
 				if (current.getName().equals(item.getName()))
 					return "There is already a custom item with that name";
+			for (String deletedItem : deletedItems) {
+				if (item.getName().equals(deletedItem)) {
+					return "There is a deleted custom item with that name";
+				}
+			}
 			if (!isItemDamageTypeFree(item.getItemType(), item.getItemDamage(), item))
 				return "There is already a custom item or projectile cover with the same internal item type and damage";
 		}
@@ -4580,7 +4831,7 @@ public class ItemSet implements ItemSetBase {
 		return addItem(item);
 	}
 	
-	public String changeSimpleItem(SimpleCustomItem item, CustomItemType newType, short newDamage, String newName,
+	public String changeSimpleItem(SimpleCustomItem item, CustomItemType newType, short newDamage,
 			String newDisplayName, String[] newLore, AttributeModifier[] newAttributes, 
 			Enchantment[] newEnchantments, NamedImage newImage, int newStacksize, boolean[] newItemFlags, 
 			byte[] newCustomModel, List<PotionEffect> playerEffects, List<PotionEffect> targetEffects, 
@@ -4591,7 +4842,7 @@ public class ItemSet implements ItemSetBase {
 			if (newStacksize < 1 || newStacksize > 64)
 				return "The maximum stacksize (" + newStacksize + ") is out of range";
 		}
-		String error = changeItem(item, newType, newDamage, newName, newDisplayName, newLore, newAttributes,
+		String error = changeItem(item, newType, newDamage, newDisplayName, newLore, newAttributes,
 				newEnchantments, newImage, newItemFlags, newCustomModel, playerEffects, targetEffects, commands);
 		if (error == null) {
 			item.setMaxStacksize(newStacksize);
@@ -4615,7 +4866,7 @@ public class ItemSet implements ItemSetBase {
 	 * @return null if the item was changed successfully or the reason the item
 	 *         could not be changed
 	 */
-	private String changeItem(CustomItem item, CustomItemType newType, short newDamage, String newName,
+	private String changeItem(CustomItem item, CustomItemType newType, short newDamage,
 			String newDisplayName, String[] newLore, AttributeModifier[] newAttributes, 
 			Enchantment[] newEnchantments, NamedImage newImage, boolean[] itemFlags,
 			byte[] newCustomModel, List<PotionEffect> newPlayerEffects, List<PotionEffect> newTargetEffects, 
@@ -4623,12 +4874,6 @@ public class ItemSet implements ItemSetBase {
 		if (!bypassChecks()) {
 			if (item == null)
 				return "Can't change null items";
-			String nameError = checkName(newName);
-			if (nameError != null)
-				return nameError;
-			CustomItem sameName = getCustomItemByName(newName);
-			if (sameName != null && sameName != item)
-				return "There is already another item with that name";
 			if (newImage == null)
 				return "Every item needs a texture";
 			if (newAttributes == null)
@@ -4689,7 +4934,6 @@ public class ItemSet implements ItemSetBase {
 		}
 		item.setItemType(newType);
 		item.setItemDamage(newDamage);
-		item.setName(newName);
 		item.setDisplayName(newDisplayName);
 		item.setLore(newLore);
 		item.setAttributes(newAttributes);
@@ -4757,6 +5001,8 @@ public class ItemSet implements ItemSetBase {
 		if (!items.remove(item)) {
 			return "This item is not in the item set";
 		}
+		
+		deletedItems.add(item.getName());
 		return null;
 	}
 

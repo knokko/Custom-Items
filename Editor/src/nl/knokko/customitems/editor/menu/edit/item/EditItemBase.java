@@ -85,7 +85,7 @@ public abstract class EditItemBase extends GuiMenu {
 	protected final EditMenu menu;
 	private final CustomItem toModify;
 
-	protected TextEditField name;
+	protected TextEditField nameField;
 	protected CustomItemType internalType;
 	protected IntEditField internalDamage;
 	protected TextEditField displayName;
@@ -111,7 +111,7 @@ public abstract class EditItemBase extends GuiMenu {
 				return new TextureEdit(set, returnMenu, afterSave, null, null);
 		};
 		if (oldValues != null) {
-			name = new TextEditField(oldValues.getName(), EditProps.EDIT_BASE, EditProps.EDIT_ACTIVE);
+			//name = new TextEditField(oldValues.getName(), EditProps.EDIT_BASE, EditProps.EDIT_ACTIVE);
 			internalType = oldValues.getItemType();
 			internalDamage = new IntEditField(oldValues.getItemDamage(), 1, EditProps.EDIT_BASE,
 					EditProps.EDIT_ACTIVE);
@@ -126,7 +126,7 @@ public abstract class EditItemBase extends GuiMenu {
 			targetEffects = oldValues.getTargetEffects();
 			commands = oldValues.getCommands();
 		} else {
-			name = new TextEditField("", EditProps.EDIT_BASE, EditProps.EDIT_ACTIVE);
+			nameField = new TextEditField("", EditProps.EDIT_BASE, EditProps.EDIT_ACTIVE);
 			internalType = chooseInitialItemType(menu.getSet(), category, CustomItemType.DIAMOND_HOE, null);
 			internalDamage = new IntEditField(
 					menu.getSet().nextAvailableDamage(internalType, null), 1, EditProps.EDIT_BASE,
@@ -212,7 +212,16 @@ public abstract class EditItemBase extends GuiMenu {
 			}), 0.025f, 0.1f, 0.15f, 0.2f);
 		}
 		addComponent(errorComponent, 0.1f, 0.9f, 0.9f, 1f);
-		addComponent(name, BUTTON_X, 0.8f, BUTTON_X + 0.1f, 0.85f);
+		
+		// Renaming is no longer allowed!
+		if (toModify == null) {
+			addComponent(nameField, BUTTON_X, 0.8f, BUTTON_X + 0.1f, 0.85f);
+		} else {
+			addComponent(
+					new DynamicTextComponent(toModify.getName(), EditProps.LABEL), 
+					BUTTON_X, 0.8f, BUTTON_X + 0.1f, 0.85f
+			);
+		}
 		//addComponent(internalType, BUTTON_X, 0.74f, BUTTON_X + 0.1f, 0.79f);
 		addComponent(EnumSelect.createSelectButton(CustomItemType.class, (CustomItemType newType) -> {
 			internalType = newType;
