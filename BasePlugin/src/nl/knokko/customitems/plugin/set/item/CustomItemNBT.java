@@ -9,9 +9,9 @@ import net.minecraft.server.v1_12_R1.NBTTagCompound;
 
 public class CustomItemNBT {
 	
-	private static final String KEY = "Knokko'sCustomItems";
+	private static final String KEY = "KnokkosCustomItems";
 	
-	private static final String NAME = "CustomItemName";
+	private static final String NAME = "Name";
 	private static final String LAST_EXPORT_TIME = "LastExportTime";
 	private static final String DURABILITY = "Durability";
 	private static final String BOOL_REPRESENTATION = "BooleanRepresentation";
@@ -57,7 +57,7 @@ public class CustomItemNBT {
 	}
 	
 	private final ItemStack nmsStack;
-	private final NBTTagCompound nbt;
+	private NBTTagCompound nbt;
 	
 	private boolean allowWrite;
 	
@@ -81,10 +81,10 @@ public class CustomItemNBT {
 	 * return true if and only if the item has the tag.
 	 */
 	public boolean hasOurNBT() {
-		return nbt.hasKey(KEY);
+		return nbt != null && nbt.hasKey(KEY);
 	}
 	
-	private void assertOurNBT() {
+	private void assertOurNBT() throws UnsupportedOperationException {
 		if (!hasOurNBT())
 			throw new UnsupportedOperationException("This item stack doesn't have our nbt tag");
 	}
@@ -95,6 +95,9 @@ public class CustomItemNBT {
 		} else {
 			assertWrite();
 			NBTTagCompound ourNBT = new NBTTagCompound();
+			if (nbt == null) {
+				nbt = new NBTTagCompound();
+			}
 			nbt.set(KEY, ourNBT);
 			return ourNBT;
 		}
@@ -146,7 +149,11 @@ public class CustomItemNBT {
 	public Long getLastExportTime() throws UnsupportedOperationException {
 		assertOurNBT();
 		
-		return getOurTag().getLong(LAST_EXPORT_TIME);
+		if (getOurTag().hasKey(LAST_EXPORT_TIME)) {
+			return getOurTag().getLong(LAST_EXPORT_TIME);
+		} else {
+			return null;
+		}
 	}
 	
 	/**
@@ -158,6 +165,7 @@ public class CustomItemNBT {
 	 * item nbt
 	 */
 	public void setLastExportTime(long newLastExportTime) throws UnsupportedOperationException {
+		assertWrite();
 		assertOurNBT();
 		getOurTag().setLong(LAST_EXPORT_TIME, newLastExportTime);
 	}
@@ -178,6 +186,20 @@ public class CustomItemNBT {
 		} else {
 			return null;
 		}
+	}
+	
+	/**
+	 * Stores the given {@link BooleanRepresentation} in the custom item nbt of this
+	 * item stack.
+	 * @param newBoolRepresentation The new boolean representation to store
+	 * @throws UnsupportedOperationException If this item stack doesn't have custom
+	 * item nbt
+	 */
+	public void setBooleanRepresentation(BooleanRepresentation newBoolRepresentation) throws UnsupportedOperationException {
+		assertWrite();
+		assertOurNBT();
+		
+		getOurTag().setByteArray(BOOL_REPRESENTATION, newBoolRepresentation.getAsBytes());
 	}
 	
 	/**

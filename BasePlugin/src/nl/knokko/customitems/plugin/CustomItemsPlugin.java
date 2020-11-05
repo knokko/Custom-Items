@@ -40,6 +40,7 @@ import nl.knokko.customitems.plugin.data.PluginData;
 import nl.knokko.customitems.plugin.multisupport.crazyenchantments.CrazyEnchantmentsSupport;
 import nl.knokko.customitems.plugin.projectile.ProjectileManager;
 import nl.knokko.customitems.plugin.set.ItemSet;
+import nl.knokko.customitems.plugin.set.item.update.ItemUpdater;
 import nl.knokko.customitems.trouble.IntegrityException;
 import nl.knokko.customitems.trouble.UnknownEncodingException;
 import nl.knokko.util.bits.BitInput;
@@ -53,6 +54,7 @@ public class CustomItemsPlugin extends JavaPlugin {
 	private LanguageFile languageFile;
 	private PluginData data;
 	private ProjectileManager projectileManager;
+	private ItemUpdater itemUpdater;
 	
 	private int maxFlyingProjectiles;
 	private boolean showInterestingWarnings;
@@ -79,11 +81,13 @@ public class CustomItemsPlugin extends JavaPlugin {
 		debugChecks();
 		data = PluginData.loadData();
 		projectileManager = new ProjectileManager();
+		itemUpdater = new ItemUpdater(set.getBackingItems(), set::isItemDeleted, set.getExportTime());
 		getCommand("customitems").setExecutor(new CommandCustomItems(languageFile));
 		Bukkit.getPluginManager().registerEvents(new CustomItemsEventHandler(), this);
 		Bukkit.getPluginManager().registerEvents(new ContainerEventHandler(), this);
 		Bukkit.getPluginManager().registerEvents(projectileManager, this);
 		CustomItemPickups.start();
+		itemUpdater.start();
 		CrazyEnchantmentsSupport.onEnable();
 	}
 

@@ -1,18 +1,23 @@
 package nl.knokko.customitems.plugin.set.item.update;
 
+import static org.bukkit.enchantments.Enchantment.getByName;
+
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.function.Function;
 
-import static org.bukkit.enchantments.Enchantment.getByName;
+import org.bukkit.Bukkit;
+import org.bukkit.entity.Player;
+import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
 import nl.knokko.core.plugin.item.ItemHelper;
+import nl.knokko.core.plugin.item.attributes.ItemAttributes;
 import nl.knokko.customitems.item.Enchantment;
 import nl.knokko.customitems.item.EnchantmentType;
 import nl.knokko.customitems.item.ItemFlag;
-import nl.knokko.core.plugin.item.attributes.ItemAttributes;
+import nl.knokko.customitems.plugin.CustomItemsPlugin;
 import nl.knokko.customitems.plugin.set.ItemSet;
 import nl.knokko.customitems.plugin.set.item.BooleanRepresentation;
 import nl.knokko.customitems.plugin.set.item.CustomItem;
@@ -28,6 +33,27 @@ public class ItemUpdater {
 		this.items = items;
 		this.isItemDeleted = isItemDeleted;
 		this.setExportTime = setExportTime;
+	}
+	
+	public void start() {
+		Bukkit.getScheduler().scheduleSyncRepeatingTask(CustomItemsPlugin.getInstance(), () -> {
+			for (Player player : Bukkit.getOnlinePlayers()) {
+				updateInventory(player.getInventory());
+			}
+		}, 100, 100);
+	}
+	
+	public void updateInventory(Inventory inventory) {
+		int invSize = inventory.getSize();
+		for (int index = 0; index < invSize; index++) {
+			ItemStack currentStack = inventory.getItem(index);
+			if (currentStack != null) {
+				ItemStack newStack = maybeUpdate(currentStack);
+				if (newStack != currentStack) {
+					inventory.setItem(index, newStack);
+				}
+			}
+		}
 	}
 	
 	public ItemStack maybeUpdate(ItemStack originalStack) {
@@ -72,7 +98,6 @@ public class ItemUpdater {
 					 */
 					pAction[0] = UpdateAction.DO_NOTHING;
 				} else {
-					
 					CustomItem currentItem = getItemByName(itemName);
 					if (currentItem != null) {
 						
@@ -200,12 +225,13 @@ public class ItemUpdater {
 				oldStack, oldItem, newItem
 		);
 		
-		ItemStack withoutAttributes = ItemAttributes.clearAttributes(oldStack);
-		ItemStack newStack = ItemAttributes.setAttributes(withoutAttributes, newStackAttributes);
+		ItemStack newStack = ItemAttributes.replaceAttributes(oldStack, newStackAttributes);
 
 		ItemStack[] pNewStack = {null};
 		Long[] pNewDurability = {null};
 		CustomItemNBT.readWrite(newStack, nbt -> {
+			nbt.setLastExportTime(setExportTime);
+			nbt.setBooleanRepresentation(newItem.getBooleanRepresentation());
 			Long currentDurability = nbt.getDurability();
 			if (currentDurability != null) {
 				if (newItem.getMaxDurabilityNew() != null) {
@@ -369,6 +395,11 @@ public class ItemUpdater {
 				}
 			}
 			
+			// Don't stack dummy attributes
+			if (oldStackAttribute.getAttribute().equals("dummy")) {
+				continue oldStackLoop;
+			}
+			
 			newStackAttributes.add(oldStackAttribute);
 		}
 		
@@ -461,7 +492,7 @@ public class ItemUpdater {
 				 */
 				int newLevel = currentLevel - removed.getLevel();
 				if (newLevel > 0) {
-					toUpgrade.addEnchantment(getByName(removed.getType().name()), newLevel);
+					toUpgrade.addUnsafeEnchantment(getByName(removed.getType().name()), newLevel);
 				} else {
 					toUpgrade.removeEnchantment(getByName(removed.getType().name()));
 				}
@@ -483,7 +514,7 @@ public class ItemUpdater {
 				 * enchantment.
 				 */
 				if (added.getLevel() > currentLevel) {
-					toUpgrade.addEnchantment(
+					toUpgrade.addUnsafeEnchantment(
 							getByName(added.getType().name()), 
 							added.getLevel()
 					);
@@ -499,7 +530,7 @@ public class ItemUpdater {
 					
 					// Make the same decision as for adding a new enchantment
 					if (changed.newLevel > currentLevel) {
-						toUpgrade.addEnchantment(
+						toUpgrade.addUnsafeEnchantment(
 								getByName(changed.type.name()), 
 								changed.newLevel
 						);
@@ -508,7 +539,7 @@ public class ItemUpdater {
 					// Decrease the current enchantment level
 					int newLevel = currentLevel + changed.newLevel - changed.oldLevel;
 					if (newLevel > 0) {
-						toUpgrade.addEnchantment(getByName(changed.type.name()), newLevel);
+						toUpgrade.addUnsafeEnchantment(getByName(changed.type.name()), newLevel);
 					} else {
 						toUpgrade.removeEnchantment(getByName(changed.type.name()));
 					}
