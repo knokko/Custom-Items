@@ -88,7 +88,12 @@ public class CustomItemsPlugin extends JavaPlugin {
 		Bukkit.getPluginManager().registerEvents(new ContainerEventHandler(), this);
 		Bukkit.getPluginManager().registerEvents(projectileManager, this);
 		CustomItemPickups.start();
-		itemUpdater.start();
+		
+		// Don't start item updater if there are no custom items, for instance due to
+		// errors on start-up
+		if (set.getBackingItems().length > 0) {
+			itemUpdater.start();
+		}
 		CrazyEnchantmentsSupport.onEnable();
 	}
 
