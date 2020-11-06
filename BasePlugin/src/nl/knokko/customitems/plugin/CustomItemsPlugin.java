@@ -51,6 +51,7 @@ public class CustomItemsPlugin extends JavaPlugin {
 	private static CustomItemsPlugin instance;
 
 	private ItemSet set;
+	private long setExportTime;
 	private LanguageFile languageFile;
 	private PluginData data;
 	private ProjectileManager projectileManager;
@@ -81,7 +82,7 @@ public class CustomItemsPlugin extends JavaPlugin {
 		debugChecks();
 		data = PluginData.loadData();
 		projectileManager = new ProjectileManager();
-		itemUpdater = new ItemUpdater(set.getBackingItems(), set::isItemDeleted, set.getExportTime());
+		itemUpdater = new ItemUpdater(set.getBackingItems(), set::isItemDeleted, setExportTime);
 		getCommand("customitems").setExecutor(new CommandCustomItems(languageFile));
 		Bukkit.getPluginManager().registerEvents(new CustomItemsEventHandler(), this);
 		Bukkit.getPluginManager().registerEvents(new ContainerEventHandler(), this);
@@ -97,6 +98,14 @@ public class CustomItemsPlugin extends JavaPlugin {
 		projectileManager.destroyCustomProjectiles();
 		instance = null;
 		super.onDisable();
+	}
+	
+	public void setExportTime(long theSetExportTime) {
+		this.setExportTime = theSetExportTime;
+	}
+	
+	public long getSetExportTime() {
+		return setExportTime;
 	}
 	
 	public int getMaxFlyingProjectiles() {

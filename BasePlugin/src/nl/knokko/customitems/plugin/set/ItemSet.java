@@ -67,6 +67,7 @@ import nl.knokko.customitems.item.EnchantmentType;
 import nl.knokko.customitems.item.ItemFlag;
 import nl.knokko.customitems.item.ItemSetBase;
 import nl.knokko.customitems.item.WandCharges;
+import nl.knokko.customitems.plugin.CustomItemsPlugin;
 import nl.knokko.customitems.plugin.container.ContainerInfo;
 import nl.knokko.customitems.plugin.recipe.CustomRecipe;
 import nl.knokko.customitems.plugin.recipe.ShapedCustomRecipe;
@@ -101,8 +102,6 @@ public class ItemSet implements ItemSetBase {
 
 	private final Map<CIMaterial, Map<Short, ItemDamageClaim>> customItemMap;
 	private final Map<String, ContainerInfo> containerInfo;
-	
-	private long exportTime;
 
 	private CustomItem[] items;
 	
@@ -181,7 +180,7 @@ public class ItemSet implements ItemSetBase {
 
 	private void load1(BitInput input) throws UnknownEncodingException, UnknownMaterialException {
 		// We don't store the export time of hash in this version, so use back-up
-		exportTime = generateFakeExportTime();
+		CustomItemsPlugin.getInstance().setExportTime(generateFakeExportTime());
 		
 		// Items
 		int itemSize = input.readInt();
@@ -211,7 +210,7 @@ public class ItemSet implements ItemSetBase {
 
 	private void load3(BitInput input) throws UnknownEncodingException, UnknownMaterialException {
 		// We don't store the export time of hash in this version, so use back-up
-		exportTime = generateFakeExportTime();
+		CustomItemsPlugin.getInstance().setExportTime(generateFakeExportTime());
 				
 		// Items
 		int itemSize = input.readInt();
@@ -247,7 +246,7 @@ public class ItemSet implements ItemSetBase {
 	
 	private void load5(BitInput input) throws UnknownEncodingException, UnknownMaterialException {
 		// We don't store the export time of hash in this version, so use back-up
-		exportTime = generateFakeExportTime();
+		CustomItemsPlugin.getInstance().setExportTime(generateFakeExportTime());
 				
 		// Projectiles
 		int numProjectileCovers = input.readInt();
@@ -316,7 +315,7 @@ public class ItemSet implements ItemSetBase {
 		
 		// We don't store the export time in this encoding, but we do store a hash
 		// Make it negative to prevent collisions with real export times
-		exportTime = -Math.abs(actualHash);
+		CustomItemsPlugin.getInstance().setExportTime(-Math.abs(actualHash));
 		
 		// Projectiles
 		int numProjectileCovers = input.readInt();
@@ -385,7 +384,7 @@ public class ItemSet implements ItemSetBase {
 		
 		// We don't store the export time in this encoding, but we do store a hash
 		// Make it negative to prevent collisions with real export times
-		exportTime = -Math.abs(actualHash);
+		CustomItemsPlugin.getInstance().setExportTime(-Math.abs(actualHash));
 		
 		// Projectiles
 		int numProjectileCovers = input.readInt();
@@ -461,7 +460,7 @@ public class ItemSet implements ItemSetBase {
 		
 		input = new ByteArrayBitInput(content);
 		
-		exportTime = input.readLong();
+		CustomItemsPlugin.getInstance().setExportTime(input.readLong());
 		
 		// Projectiles
 		int numProjectileCovers = input.readInt();
@@ -582,7 +581,25 @@ public class ItemSet implements ItemSetBase {
 	public static CustomItem loadOldItem(BooleanRepresentation representation) {
 		BitInput input = new ByteArrayBitInput(representation.getAsBytes());
 		try {
-			return loadItemInternal(input, bitInput -> null, name -> null);
+			return loadItemInternal(input, bitInput -> {
+				byte encoding = input.readByte();
+				if (encoding == RecipeEncoding.Ingredient.NONE) {
+					// No more data to skip
+				} else if (encoding == RecipeEncoding.Ingredient.VANILLA_SIMPLE) {
+					// Skip material name
+					input.readJavaString();
+				} else if (encoding == RecipeEncoding.Ingredient.VANILLA_DATA) {
+					// Skip material name and data value
+					input.readJavaString();
+					input.readNumber((byte) 4, false);
+				} else if (encoding == RecipeEncoding.Ingredient.CUSTOM) {
+					// Skip custom item name
+					input.readJavaString();
+				} else {
+					throw new UnknownEncodingException("BRIngredient", encoding);
+				}
+				return null;
+			}, name -> null);
 		} catch (UnknownEncodingException unknownEncoding) {
 			Bukkit.getLogger().log(Level.SEVERE, 
 					"Encountered an unknown encoding while deserializing the" +
@@ -1804,10 +1821,6 @@ public class ItemSet implements ItemSetBase {
 		 * use a newer editor to avoid this.
 		 */
 		return (long) (-1_000_000_000_000_000L * Math.random());
-	}
-	
-	public long getExportTime() {
-		return exportTime;
 	}
 	
 	public boolean isItemDeleted(String customItemName) {
