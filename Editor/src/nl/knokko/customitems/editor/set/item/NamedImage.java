@@ -24,6 +24,12 @@
 package nl.knokko.customitems.editor.set.item;
 
 import java.awt.image.BufferedImage;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+
+import javax.imageio.ImageIO;
 
 import nl.knokko.util.bits.BitInput;
 import nl.knokko.util.bits.BitOutput;
@@ -42,13 +48,19 @@ public class NamedImage {
 		this.image = image;
 	}
 	
-	public NamedImage(BitInput input) {
+	public NamedImage(BitInput input, boolean expectCompressed) throws IOException {
 		name = input.readJavaString();
-		image = new BufferedImage(input.readInt(), input.readInt(), BufferedImage.TYPE_INT_ARGB);
-		input.increaseCapacity(32 * image.getWidth() * image.getHeight());
-		for(int x = 0; x < image.getWidth(); x++)
-			for(int y = 0; y < image.getHeight(); y++)
-				image.setRGB(x, y, input.readDirectInt());
+		if (expectCompressed) {
+			byte[] imageBytes = input.readByteArray();
+			InputStream imageInput = new ByteArrayInputStream(imageBytes);
+			image = ImageIO.read(imageInput);
+		} else {
+			image = new BufferedImage(input.readInt(), input.readInt(), BufferedImage.TYPE_INT_ARGB);
+			input.increaseCapacity(32 * image.getWidth() * image.getHeight());
+			for(int x = 0; x < image.getWidth(); x++)
+				for(int y = 0; y < image.getHeight(); y++)
+					image.setRGB(x, y, input.readDirectInt());
+		}
 	}
 	
 	@Override
@@ -72,13 +84,20 @@ public class NamedImage {
 		this.image = image;
 	}
 	
-	public void save(BitOutput output) {
+	public void save(BitOutput output, boolean shouldCompress) throws IOException {
 		output.addJavaString(name);
-		output.ensureExtraCapacity(32 * (2 + image.getWidth() * image.getHeight()));
-		output.addDirectInt(image.getWidth());
-		output.addDirectInt(image.getHeight());
-		for(int x = 0; x < image.getWidth(); x++)
-			for(int y = 0; y < image.getHeight(); y++)
-				output.addDirectInt(image.getRGB(x, y));
+		if (shouldCompress) {
+			ByteArrayOutputStream imageOutput = new ByteArrayOutputStream();
+			ImageIO.write(image, "PNG", imageOutput);
+			byte[] imageBytes = imageOutput.toByteArray();
+			output.addByteArray(imageBytes);
+		} else {
+			output.ensureExtraCapacity(32 * (2 + image.getWidth() * image.getHeight()));
+			output.addDirectInt(image.getWidth());
+			output.addDirectInt(image.getHeight());
+			for(int x = 0; x < image.getWidth(); x++)
+				for(int y = 0; y < image.getHeight(); y++)
+					output.addDirectInt(image.getRGB(x, y));
+		}
 	}
 }

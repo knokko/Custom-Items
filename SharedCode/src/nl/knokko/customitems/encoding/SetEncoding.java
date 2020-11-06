@@ -61,7 +61,8 @@ public class SetEncoding {
 	public static final byte ENCODING_7 = 6;
 	
 	/**
-	 * Added deleted item names and export time (editor to plugin only)
+	 * Added deleted item names to both editor and plugin.
+	 * Added export time and image compression to only editor.
 	 */
 	public static final byte ENCODING_8 = 7;
 }

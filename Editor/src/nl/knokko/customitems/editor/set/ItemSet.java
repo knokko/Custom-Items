@@ -1468,7 +1468,8 @@ public class ItemSet implements ItemSetBase {
 		deletedItems = new ArrayList<>();
 	}
 
-	public ItemSet(String fileName, BitInput input) throws UnknownEncodingException, IntegrityException {
+	public ItemSet(String fileName, BitInput input) 
+			throws UnknownEncodingException, IntegrityException, IOException {
 		this.fileName = fileName;
 		byte encoding = input.readByte();
 		if (encoding == ENCODING_1)
@@ -1506,12 +1507,12 @@ public class ItemSet implements ItemSetBase {
 		return null;
 	}
 
-	private void load1(BitInput input) throws UnknownEncodingException {
+	private void load1(BitInput input) throws UnknownEncodingException, IOException {
 		// Textures
 		int textureAmount = input.readInt();
 		textures = new ArrayList<NamedImage>(textureAmount);
 		for (int counter = 0; counter < textureAmount; counter++)
-			textures.add(new NamedImage(input));
+			textures.add(new NamedImage(input, false));
 
 		// Items
 		int itemAmount = input.readInt();
@@ -1541,16 +1542,16 @@ public class ItemSet implements ItemSetBase {
 		deletedItems = new ArrayList<>();
 	}
 
-	private void load2(BitInput input) throws UnknownEncodingException {
+	private void load2(BitInput input) throws UnknownEncodingException, IOException {
 		// Textures
 		int textureAmount = input.readInt();
 		textures = new ArrayList<NamedImage>(textureAmount);
 		for (int counter = 0; counter < textureAmount; counter++) {
 			byte textureType = input.readByte();
 			if (textureType == NamedImage.ENCODING_BOW)
-				textures.add(new BowTextures(input));
+				textures.add(new BowTextures(input, false));
 			else if (textureType == NamedImage.ENCODING_SIMPLE)
-				textures.add(new NamedImage(input));
+				textures.add(new NamedImage(input, false));
 			else
 				throw new UnknownEncodingException("Texture", textureType);
 		}
@@ -1583,16 +1584,16 @@ public class ItemSet implements ItemSetBase {
 		deletedItems = new ArrayList<>();
 	}
 	
-	private void load3(BitInput input) throws UnknownEncodingException {
+	private void load3(BitInput input) throws UnknownEncodingException, IOException {
 		// Textures
 		int textureAmount = input.readInt();
 		textures = new ArrayList<NamedImage>(textureAmount);
 		for (int counter = 0; counter < textureAmount; counter++) {
 			byte textureType = input.readByte();
 			if (textureType == NamedImage.ENCODING_BOW)
-				textures.add(new BowTextures(input));
+				textures.add(new BowTextures(input, false));
 			else if (textureType == NamedImage.ENCODING_SIMPLE)
-				textures.add(new NamedImage(input));
+				textures.add(new NamedImage(input, false));
 			else
 				throw new UnknownEncodingException("Texture", textureType);
 		}
@@ -1632,16 +1633,16 @@ public class ItemSet implements ItemSetBase {
 		deletedItems = new ArrayList<>();
 	}
 	
-	private void load4(BitInput input) throws UnknownEncodingException {
+	private void load4(BitInput input) throws UnknownEncodingException, IOException {
 		// Textures
 		int textureAmount = input.readInt();
 		textures = new ArrayList<NamedImage>(textureAmount);
 		for (int counter = 0; counter < textureAmount; counter++) {
 			byte textureType = input.readByte();
 			if (textureType == NamedImage.ENCODING_BOW)
-				textures.add(new BowTextures(input));
+				textures.add(new BowTextures(input, false));
 			else if (textureType == NamedImage.ENCODING_SIMPLE)
-				textures.add(new NamedImage(input));
+				textures.add(new NamedImage(input, false));
 			else
 				throw new UnknownEncodingException("Texture", textureType);
 		}
@@ -1681,16 +1682,16 @@ public class ItemSet implements ItemSetBase {
 		deletedItems = new ArrayList<>();
 	}
 	
-	private void load5(BitInput input) throws UnknownEncodingException {
+	private void load5(BitInput input) throws UnknownEncodingException, IOException {
 		// Textures
 		int textureAmount = input.readInt();
 		textures = new ArrayList<NamedImage>(textureAmount);
 		for (int counter = 0; counter < textureAmount; counter++) {
 			byte textureType = input.readByte();
 			if (textureType == NamedImage.ENCODING_BOW)
-				textures.add(new BowTextures(input));
+				textures.add(new BowTextures(input, false));
 			else if (textureType == NamedImage.ENCODING_SIMPLE)
-				textures.add(new NamedImage(input));
+				textures.add(new NamedImage(input, false));
 			else
 				throw new UnknownEncodingException("Texture", textureType);
 		}
@@ -1742,7 +1743,8 @@ public class ItemSet implements ItemSetBase {
 		deletedItems = new ArrayList<>();
 	}
 	
-	private void load6(BitInput input) throws UnknownEncodingException, IntegrityException {
+	private void load6(BitInput input) 
+			throws UnknownEncodingException, IntegrityException, IOException {
 		// Check integrity
 		long expectedHash = input.readLong();
 		byte[] remaining;
@@ -1764,9 +1766,9 @@ public class ItemSet implements ItemSetBase {
 		for (int counter = 0; counter < textureAmount; counter++) {
 			byte textureType = input.readByte();
 			if (textureType == NamedImage.ENCODING_BOW)
-				textures.add(new BowTextures(input));
+				textures.add(new BowTextures(input, false));
 			else if (textureType == NamedImage.ENCODING_SIMPLE)
-				textures.add(new NamedImage(input));
+				textures.add(new NamedImage(input, false));
 			else
 				throw new UnknownEncodingException("Texture", textureType);
 		}
@@ -1818,7 +1820,8 @@ public class ItemSet implements ItemSetBase {
 		deletedItems = new ArrayList<>();
 	}
 	
-	private void load7(BitInput input) throws UnknownEncodingException, IntegrityException {
+	private void load7(BitInput input) 
+			throws UnknownEncodingException, IntegrityException, IOException {
 		// Check integrity
 		long expectedHash = input.readLong();
 		byte[] remaining;
@@ -1840,9 +1843,9 @@ public class ItemSet implements ItemSetBase {
 		for (int counter = 0; counter < textureAmount; counter++) {
 			byte textureType = input.readByte();
 			if (textureType == NamedImage.ENCODING_BOW)
-				textures.add(new BowTextures(input));
+				textures.add(new BowTextures(input, false));
 			else if (textureType == NamedImage.ENCODING_SIMPLE)
-				textures.add(new NamedImage(input));
+				textures.add(new NamedImage(input, false));
 			else
 				throw new UnknownEncodingException("Texture", textureType);
 		}
@@ -1903,7 +1906,8 @@ public class ItemSet implements ItemSetBase {
 		deletedItems = new ArrayList<>();
 	}
 	
-	private void load8(BitInput input) throws UnknownEncodingException, IntegrityException {
+	private void load8(BitInput input) 
+			throws UnknownEncodingException, IntegrityException, IOException {
 		// Check integrity
 		long expectedHash = input.readLong();
 		byte[] remaining;
@@ -1925,9 +1929,9 @@ public class ItemSet implements ItemSetBase {
 		for (int counter = 0; counter < textureAmount; counter++) {
 			byte textureType = input.readByte();
 			if (textureType == NamedImage.ENCODING_BOW)
-				textures.add(new BowTextures(input));
+				textures.add(new BowTextures(input, true));
 			else if (textureType == NamedImage.ENCODING_SIMPLE)
-				textures.add(new NamedImage(input));
+				textures.add(new NamedImage(input, true));
 			else
 				throw new UnknownEncodingException("Texture", textureType);
 		}
@@ -3563,11 +3567,11 @@ public class ItemSet implements ItemSetBase {
 	}
 
 	@SuppressWarnings("unused")
-	private void save1(BitOutput output) {
+	private void save1(BitOutput output) throws IOException {
 		output.addByte(ENCODING_1);
 		output.addInt(textures.size());
 		for (NamedImage texture : textures)
-			texture.save(output);
+			texture.save(output, false);
 		output.addInt(items.size());
 
 		// Save the normal items before the tools so that tools can use normal items as
@@ -3592,7 +3596,7 @@ public class ItemSet implements ItemSetBase {
 	}
 
 	@SuppressWarnings("unused")
-	private void save2(BitOutput output) {
+	private void save2(BitOutput output) throws IOException {
 		output.addByte(ENCODING_2);
 		output.addInt(textures.size());
 		for (NamedImage texture : textures) {
@@ -3600,7 +3604,7 @@ public class ItemSet implements ItemSetBase {
 				output.addByte(NamedImage.ENCODING_BOW);
 			else
 				output.addByte(NamedImage.ENCODING_SIMPLE);
-			texture.save(output);
+			texture.save(output, false);
 		}
 		output.addInt(items.size());
 
@@ -3626,7 +3630,7 @@ public class ItemSet implements ItemSetBase {
 	}
 	
 	@SuppressWarnings("unused")
-	private void save3(BitOutput output) {
+	private void save3(BitOutput output) throws IOException {
 		output.addByte(ENCODING_3);
 		output.addInt(textures.size());
 		for (NamedImage texture : textures) {
@@ -3634,7 +3638,7 @@ public class ItemSet implements ItemSetBase {
 				output.addByte(NamedImage.ENCODING_BOW);
 			else
 				output.addByte(NamedImage.ENCODING_SIMPLE);
-			texture.save(output);
+			texture.save(output, false);
 		}
 		output.addInt(items.size());
 
@@ -3669,7 +3673,7 @@ public class ItemSet implements ItemSetBase {
 	
 	// Use CustomItem.save2 instead of CustomItem.save1
 	@SuppressWarnings("unused")
-	private void save4(BitOutput output) {
+	private void save4(BitOutput output) throws IOException {
 		output.addByte(ENCODING_4);
 		output.addInt(textures.size());
 		for (NamedImage texture : textures) {
@@ -3677,7 +3681,7 @@ public class ItemSet implements ItemSetBase {
 				output.addByte(NamedImage.ENCODING_BOW);
 			else
 				output.addByte(NamedImage.ENCODING_SIMPLE);
-			texture.save(output);
+			texture.save(output, false);
 		}
 		output.addInt(items.size());
 
@@ -3712,7 +3716,7 @@ public class ItemSet implements ItemSetBase {
 	
 	// Add projectiles
 	@SuppressWarnings("unused")
-	private void save5(BitOutput output) {
+	private void save5(BitOutput output) throws IOException {
 		output.addByte(ENCODING_5);
 		output.addInt(textures.size());
 		for (NamedImage texture : textures) {
@@ -3720,7 +3724,7 @@ public class ItemSet implements ItemSetBase {
 				output.addByte(NamedImage.ENCODING_BOW);
 			else
 				output.addByte(NamedImage.ENCODING_SIMPLE);
-			texture.save(output);
+			texture.save(output, false);
 		}
 		
 		output.addInt(projectileCovers.size());
@@ -3764,7 +3768,7 @@ public class ItemSet implements ItemSetBase {
 	
 	// Add integrity check
 	@SuppressWarnings("unused")
-	private void save6(BitOutput outerOutput) {
+	private void save6(BitOutput outerOutput) throws IOException {
 		outerOutput.addByte(ENCODING_6);
 		
 		// Prepare integrity
@@ -3776,7 +3780,7 @@ public class ItemSet implements ItemSetBase {
 				output.addByte(NamedImage.ENCODING_BOW);
 			else
 				output.addByte(NamedImage.ENCODING_SIMPLE);
-			texture.save(output);
+			texture.save(output, false);
 		}
 		
 		output.addInt(projectileCovers.size());
@@ -3825,7 +3829,7 @@ public class ItemSet implements ItemSetBase {
 	
 	// Add custom containers
 	@SuppressWarnings("unused")
-	private void save7(BitOutput outerOutput) {
+	private void save7(BitOutput outerOutput) throws IOException {
 		outerOutput.addByte(ENCODING_7);
 		
 		// Prepare integrity
@@ -3837,7 +3841,7 @@ public class ItemSet implements ItemSetBase {
 				output.addByte(NamedImage.ENCODING_BOW);
 			else
 				output.addByte(NamedImage.ENCODING_SIMPLE);
-			texture.save(output);
+			texture.save(output, false);
 		}
 		
 		output.addInt(projectileCovers.size());
@@ -3897,7 +3901,7 @@ public class ItemSet implements ItemSetBase {
 	}
 	
 	// Add custom containers
-	private void save8(BitOutput outerOutput) {
+	private void save8(BitOutput outerOutput) throws IOException {
 		outerOutput.addByte(ENCODING_8);
 		
 		// Prepare integrity
@@ -3909,7 +3913,7 @@ public class ItemSet implements ItemSetBase {
 				output.addByte(NamedImage.ENCODING_BOW);
 			else
 				output.addByte(NamedImage.ENCODING_SIMPLE);
-			texture.save(output);
+			texture.save(output, true);
 		}
 		
 		output.addInt(projectileCovers.size());

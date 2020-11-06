@@ -24,8 +24,14 @@
 package nl.knokko.customitems.editor.set.item.texture;
 
 import java.awt.image.BufferedImage;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
+
+import javax.imageio.ImageIO;
 
 import nl.knokko.customitems.editor.set.item.NamedImage;
 import nl.knokko.util.bits.BitInput;
@@ -51,19 +57,26 @@ public class BowTextures extends NamedImage {
 		entries.add(new Entry(null, 0.9));
 	}
 	
-	public BowTextures(BitInput input) {
-		super(input);
+	public BowTextures(BitInput input, boolean expectCompressed) throws IOException {
+		super(input, expectCompressed);
 		int size = input.readInt();
 		entries = new ArrayList<Entry>(size);
 		for (int index = 0; index < size; index++) {
 			double pull = input.readDouble();
-			int width = input.readInt();
-			int height = input.readInt();
-			BufferedImage image = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
-			input.increaseCapacity(32 * width * height);
-			for (int x = 0; x < width; x++) {
-				for (int y = 0; y < height; y++) {
-					image.setRGB(x, y, input.readDirectInt());
+			BufferedImage image;
+			if (expectCompressed) {
+				byte[] imageBytes = input.readByteArray();
+				InputStream imageInput = new ByteArrayInputStream(imageBytes);
+				image = ImageIO.read(imageInput);
+			} else {
+				int width = input.readInt();
+				int height = input.readInt();
+				image = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
+				input.increaseCapacity(32 * width * height);
+				for (int x = 0; x < width; x++) {
+					for (int y = 0; y < height; y++) {
+						image.setRGB(x, y, input.readDirectInt());
+					}
 				}
 			}
 			entries.add(new Entry(image, pull));
@@ -71,17 +84,26 @@ public class BowTextures extends NamedImage {
 	}
 	
 	@Override
-	public void save(BitOutput output) {
-		super.save(output);
+	public void save(BitOutput output, boolean shouldCompress) throws IOException {
+		super.save(output, shouldCompress);
+		
 		output.addInt(entries.size());
 		for (Entry entry : entries) {
 			output.addDouble(entry.pull);
-			output.ensureExtraCapacity(32 * (2 + entry.texture.getWidth() * entry.getTexture().getHeight()));
-			output.addDirectInt(entry.texture.getWidth());
-			output.addDirectInt(entry.texture.getHeight());
-			for (int x = 0; x < entry.texture.getWidth(); x++) {
-				for (int y = 0; y < entry.texture.getHeight(); y++) {
-					output.addDirectInt(entry.texture.getRGB(x, y));
+			
+			if (shouldCompress) {
+				ByteArrayOutputStream imageOutput = new ByteArrayOutputStream();
+				ImageIO.write(entry.texture, "PNG", imageOutput);
+				byte[] imageBytes = imageOutput.toByteArray();
+				output.addByteArray(imageBytes);
+			} else {
+				output.ensureExtraCapacity(32 * (2 + entry.texture.getWidth() * entry.getTexture().getHeight()));
+				output.addDirectInt(entry.texture.getWidth());
+				output.addDirectInt(entry.texture.getHeight());
+				for (int x = 0; x < entry.texture.getWidth(); x++) {
+					for (int y = 0; y < entry.texture.getHeight(); y++) {
+						output.addDirectInt(entry.texture.getRGB(x, y));
+					}
 				}
 			}
 		}
