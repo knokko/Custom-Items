@@ -51,13 +51,19 @@ public class EditItemShield extends EditItemTool {
 		Option.Double thresholdDamage = thresholdField.getDouble();
 		if (!thresholdDamage.hasValue())
 			return "The required damage must be a positive number";
+		String replaceItemName;
+		if (replaceItem == null) {
+			replaceItemName = new String();
+		} else {
+			replaceItemName = replaceItem.getName();
+		}
 		return menu.getSet().addShield(
 				new CustomShield(internalType, damage, name.getText(), getDisplayName(),
 						lore, attributes, enchantments, maxUses, allowEnchanting.isChecked(),
 						allowAnvil.isChecked(), repairItem.getIngredient(), textureSelect.getSelected(), 
 						itemFlags, entityHitDurabilityLoss, blockBreakDurabilityLoss, 
 						thresholdDamage.getValue(), customModel, customBlockingModel, playerEffects, 
-						targetEffects, commands), true);
+						targetEffects, commands, replaceItemName), true);
 	}
 	
 	@Override
@@ -65,10 +71,16 @@ public class EditItemShield extends EditItemTool {
 		Option.Double thresholdDamage = thresholdField.getDouble();
 		if (!thresholdDamage.hasValue())
 			return "The required damage must be a positive number";
+		String replaceItemName;
+		if (replaceItem == null) {
+			replaceItemName = new String();
+		} else {
+			replaceItemName = replaceItem.getName();
+		}
 		return menu.getSet().changeShield(toModify, internalType, damage, name.getText(),
 				getDisplayName(), lore, attributes, enchantments, allowEnchanting.isChecked(),
 				allowAnvil.isChecked(), repairItem.getIngredient(), maxUses, textureSelect.getSelected(),
 				itemFlags, entityHitDurabilityLoss, blockBreakDurabilityLoss, thresholdDamage.getValue(),
-				customModel, customBlockingModel, playerEffects, targetEffects, commands, true);
+				customModel, customBlockingModel, playerEffects, targetEffects, commands, replaceItemName, true);
 	}
 }

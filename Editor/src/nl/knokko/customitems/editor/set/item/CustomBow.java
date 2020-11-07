@@ -47,10 +47,10 @@ public class CustomBow extends CustomTool {
 			long durability, double damageMultiplier, double speedMultiplier, int knockbackStrength, 
 			boolean hasGravity, boolean allowEnchanting, boolean allowAnvil, Ingredient repairItem, 
 			BowTextures texture, boolean[] itemFlags, int entityHitDurabilityLoss, int blockBreakDurabilityLoss,
-			int shootDurabilityLoss, byte[] customModel, List<PotionEffect> playerEffects, List<PotionEffect> targetEffects, String[] commands) {
+			int shootDurabilityLoss, byte[] customModel, List<PotionEffect> playerEffects, List<PotionEffect> targetEffects, String[] commands, String replaceItem) {
 		super(CustomItemType.BOW, itemDamage, name, displayName, lore, attributes, enchantments, durability, allowEnchanting,
 				allowAnvil, repairItem, texture, itemFlags, entityHitDurabilityLoss, blockBreakDurabilityLoss, customModel, 
-				playerEffects, targetEffects, commands);
+				playerEffects, targetEffects, commands, replaceItem);
 		this.damageMultiplier = damageMultiplier;
 		this.speedMultiplier = speedMultiplier;
 		this.knockbackStrength = knockbackStrength;
@@ -150,6 +150,7 @@ public class CustomBow extends CustomTool {
 		output.addBooleans(itemFlags);
 		output.addInts(entityHitDurabilityLoss, blockBreakDurabilityLoss, shootDurabilityLoss);*/
 		
+		/* Previous Encoding
 		output.addByte(ItemEncoding.ENCODING_BOW_6);
 		output.addShort(itemDamage);
 		output.addJavaString(name);
@@ -194,7 +195,54 @@ public class CustomBow extends CustomTool {
 		output.addByte((byte) commands.length);
 		for (String command : commands) {
 			output.addJavaString(command);
+		} */
+		
+		output.addByte(ItemEncoding.ENCODING_BOW_9);
+		output.addShort(itemDamage);
+		output.addJavaString(name);
+		output.addJavaString(displayName);
+		output.addByte((byte) lore.length);
+		for(String line : lore)
+			output.addJavaString(line);
+		output.addByte((byte) attributes.length);
+		for (AttributeModifier attribute : attributes) {
+			output.addJavaString(attribute.getAttribute().name());
+			output.addJavaString(attribute.getSlot().name());
+			output.addNumber(attribute.getOperation().ordinal(), (byte) 2, false);
+			output.addDouble(attribute.getValue());
 		}
+		output.addByte((byte) defaultEnchantments.length);
+		for (Enchantment enchantment : defaultEnchantments) {
+			output.addString(enchantment.getType().name());
+			output.addInt(enchantment.getLevel());
+		}
+		output.addLong(durability);
+		output.addDouble(damageMultiplier);
+		output.addDouble(speedMultiplier);
+		output.addInt(knockbackStrength);
+		output.addBoolean(hasGravity);
+		output.addBoolean(allowEnchanting);
+		output.addBoolean(allowAnvil);
+		repairItem.save(output);
+		output.addBooleans(itemFlags);
+		output.addInts(entityHitDurabilityLoss, blockBreakDurabilityLoss, shootDurabilityLoss);
+		output.addByte((byte) playerEffects.size());
+		for (PotionEffect effect : playerEffects) {
+			output.addJavaString(effect.getEffect().name());
+			output.addInt(effect.getDuration());
+			output.addInt(effect.getLevel());
+		}
+		output.addByte((byte) targetEffects.size());
+		for (PotionEffect effect : targetEffects) {
+			output.addJavaString(effect.getEffect().name());
+			output.addInt(effect.getDuration());
+			output.addInt(effect.getLevel());
+		}
+		output.addByte((byte) commands.length);
+		for (String command : commands) {
+			output.addJavaString(command);
+		}
+		output.addJavaString(replaceItem);
 	}
 	
 	public double getDamageMultiplier() {

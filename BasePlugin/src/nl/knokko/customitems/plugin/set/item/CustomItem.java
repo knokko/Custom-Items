@@ -74,8 +74,8 @@ public abstract class CustomItem extends nl.knokko.customitems.item.CustomItem i
     
     public CustomItem(CustomItemType itemType, short itemDamage, String name, String displayName, 
     		String[] lore, AttributeModifier[] attributes, Enchantment[] defaultEnchantments, boolean[] itemFlags, 
-    		List<PotionEffect> playerEffects, List<PotionEffect> targetEffects, String[] commands){
-        super(itemType, itemDamage, name, displayName, lore, attributes, defaultEnchantments, itemFlags, playerEffects, targetEffects, commands);
+    		List<PotionEffect> playerEffects, List<PotionEffect> targetEffects, String[] commands, String replaceItem){
+        super(itemType, itemDamage, name, displayName, lore, attributes, defaultEnchantments, itemFlags, playerEffects, targetEffects, commands, replaceItem);
         
         material = getMaterial(itemType);
         

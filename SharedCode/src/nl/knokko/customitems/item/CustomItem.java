@@ -45,9 +45,10 @@ public abstract class CustomItem {
     protected List<PotionEffect> targetEffects;
     
     protected String[] commands;
+    protected String replaceItem;
     public CustomItem(CustomItemType itemType, short itemDamage, String name, String displayName, 
     		String[] lore, AttributeModifier[] attributes, Enchantment[] defaultEnchantments, boolean[] itemFlags, 
-    		List<PotionEffect> playerEffects, List<PotionEffect> targetEffects, String[] commands){
+    		List<PotionEffect> playerEffects, List<PotionEffect> targetEffects, String[] commands, String replaceItem){
         this.itemType = itemType;
         this.itemDamage = itemDamage;
         if (name == null) throw new NullPointerException("name");
@@ -60,6 +61,7 @@ public abstract class CustomItem {
         this.playerEffects = playerEffects;
         this.targetEffects = targetEffects;
         this.commands = commands;
+        this.replaceItem = replaceItem;
     }
     
     // For validation checks (and some other stuff), it is very important that the equals() method of custom 
@@ -280,5 +282,9 @@ public abstract class CustomItem {
     
     public String[] getCommands() {
     	return commands;
+    }
+    
+    public String getReplaceItem() {
+    	return replaceItem;
     }
 }

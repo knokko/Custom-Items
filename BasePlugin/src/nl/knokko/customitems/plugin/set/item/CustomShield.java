@@ -16,9 +16,9 @@ public class CustomShield extends CustomTool {
 			AttributeModifier[] attributes, Enchantment[] defaultEnchantments, long maxDurability,
 			boolean allowEnchanting, boolean allowAnvil, Ingredient repairItem, boolean[] itemFlags,
 			int entityHitDurabilityLoss, int blockBreakDurabilityLoss, double durabilityThreshold,  
-			List<PotionEffect> playerEffects, List<PotionEffect> targetEffects, String[] commands) {
+			List<PotionEffect> playerEffects, List<PotionEffect> targetEffects, String[] commands, String replaceItem) {
 		super(itemType, itemDamage, name, displayName, lore, attributes, defaultEnchantments, maxDurability, allowEnchanting,
-				allowAnvil, repairItem, itemFlags, entityHitDurabilityLoss, blockBreakDurabilityLoss, playerEffects, targetEffects, commands);
+				allowAnvil, repairItem, itemFlags, entityHitDurabilityLoss, blockBreakDurabilityLoss, playerEffects, targetEffects, commands, replaceItem);
 		this.durabilityThreshold = durabilityThreshold;
 	}
 	

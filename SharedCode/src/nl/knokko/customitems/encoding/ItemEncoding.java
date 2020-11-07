@@ -122,4 +122,12 @@ public class ItemEncoding {
 	 * The first encoding of (custom) wands
 	 */
 	public static final byte ENCODING_WAND_8 = 28;
+	
+	/** 
+	 * Add support for replacing an item on right click
+	 */
+	public static final byte ENCODING_SIMPLE_9 = 29, ENCODING_TOOL_9 = 30, ENCODING_ARMOR_9 = 31,
+			ENCODING_BOW_9 = 32, ENCODING_SHEAR_9 = 33, ENCODING_HOE_9 = 34, ENCODING_SHIELD_9 = 35,
+			ENCODING_TRIDENT_9 = 36, ENCODING_WAND_9 = 37;
+	
 }

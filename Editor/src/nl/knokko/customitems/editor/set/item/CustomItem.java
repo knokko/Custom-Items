@@ -40,8 +40,8 @@ public abstract class CustomItem extends nl.knokko.customitems.item.CustomItem i
 
 	public CustomItem(CustomItemType itemType, short itemDamage, String name, String displayName, String[] lore,
 			AttributeModifier[] attributes, Enchantment[] defaultEnchantments, NamedImage texture,
-			boolean[] itemFlags, byte[] customModel, List<PotionEffect> playerEffects, List<PotionEffect> targetEffects, String[] commands) {
-		super(itemType, itemDamage, name, displayName, lore, attributes, defaultEnchantments, itemFlags, playerEffects, targetEffects, commands);
+			boolean[] itemFlags, byte[] customModel, List<PotionEffect> playerEffects, List<PotionEffect> targetEffects, String[] commands, String replaceItem) {
+		super(itemType, itemDamage, name, displayName, lore, attributes, defaultEnchantments, itemFlags, playerEffects, targetEffects, commands, replaceItem);
 		this.texture = texture;
 		this.customModel = customModel;
 	}
@@ -117,6 +117,10 @@ public abstract class CustomItem extends nl.knokko.customitems.item.CustomItem i
 	
 	public void setCommands(String[] commands) {
 		this.commands = commands;
+	}
+	
+	public void setReplaceItem(String replaceItem) {
+		this.replaceItem = replaceItem;
 	}
 
 	public final void save1(BitOutput output) {

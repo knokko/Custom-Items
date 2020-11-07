@@ -28,6 +28,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import nl.knokko.customitems.editor.Checks;
+import nl.knokko.customitems.editor.menu.edit.CollectionSelect;
 import nl.knokko.customitems.editor.menu.edit.EditMenu;
 import nl.knokko.customitems.editor.menu.edit.EditProps;
 import nl.knokko.customitems.editor.menu.edit.EnumSelect;
@@ -99,6 +100,7 @@ public abstract class EditItemBase extends GuiMenu {
 	protected List<PotionEffect> playerEffects;
 	protected List<PotionEffect> targetEffects;
 	protected String[] commands;
+	protected CustomItem replaceItem;
 
 	public EditItemBase(EditMenu menu, CustomItem oldValues, CustomItem toModify, Category category) {
 		this.menu = menu;
@@ -125,6 +127,7 @@ public abstract class EditItemBase extends GuiMenu {
 			playerEffects = oldValues.getPlayerEffects();
 			targetEffects = oldValues.getTargetEffects();
 			commands = oldValues.getCommands();
+			replaceItem = menu.getSet().getCustomItemByName(oldValues.getReplaceItem());
 		} else {
 			name = new TextEditField("", EditProps.EDIT_BASE, EditProps.EDIT_ACTIVE);
 			internalType = chooseInitialItemType(menu.getSet(), category, CustomItemType.DIAMOND_HOE, null);
@@ -141,6 +144,7 @@ public abstract class EditItemBase extends GuiMenu {
 			playerEffects = DEFAULT_PLAYER_EFFECTS;
 			targetEffects = DEFAULT_TARGET_EFFECTS;
 			commands = new String[] {};
+			replaceItem = null;
 		}
 		
 		Checks.nonNull(lore);
@@ -186,6 +190,7 @@ public abstract class EditItemBase extends GuiMenu {
 		addComponent(new DynamicTextComponent("On-Hit Player effects: ", EditProps.LABEL), LABEL_X, 0.2f, LABEL_X + 0.2f, 0.25f);
 		addComponent(new DynamicTextComponent("On-Hit Target effects: ", EditProps.LABEL), LABEL_X, 0.14f, LABEL_X + 0.2f, 0.19f);
 		addComponent(new DynamicTextComponent("Commands: ", EditProps.LABEL), LABEL_X, 0.08f, LABEL_X + 0.125f, 0.13f);
+		addComponent(new DynamicTextComponent("Replace on right click by: ", EditProps.LABEL), LABEL_X, 0.02f, LABEL_X + 0.2f, 0.07f);
 		
 		// I might add custom bow models later, but I leave it out for now
 		if (!(this instanceof EditItemBow)) {
@@ -252,6 +257,10 @@ public abstract class EditItemBase extends GuiMenu {
 			state.getWindow().setMainComponent(new ItemFlagMenu(this, itemFlags));
 		}), BUTTON_X, 0.38f, BUTTON_X + 0.1f, 0.43f);
 		addComponent(textureSelect, BUTTON_X, 0.32f, BUTTON_X + 0.1f, 0.37f);
+		
+		addComponent(CollectionSelect.createButton(menu.getSet().getBackingItems(), (CustomItem newItem) -> {
+			replaceItem = newItem;
+		}, (CustomItem item) -> { return item.getName(); }, replaceItem), BUTTON_X, 0.02f, BUTTON_X + 0.1f, 0.07f);
 
 		// Bow models are more complex and have less priority, so leave it out for now
 		if (!(this instanceof EditItemBow)) {

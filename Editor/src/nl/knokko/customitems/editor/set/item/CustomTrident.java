@@ -25,9 +25,9 @@ public class CustomTrident extends CustomTool {
 			boolean allowAnvil, double throwDamageMultiplier, double speedMultiplier, Ingredient repairItem, 
 			NamedImage texture, boolean[] itemFlags, int entityHitDurabilityLoss, 
 			int blockBreakDurabilityLoss, int throwDurabilityLoss, byte[] customModel,
-			byte[] customInHandModel, byte[] customThrowingModel, List<PotionEffect> playerEffects, List<PotionEffect> targetEffects, String[] commands) {
+			byte[] customInHandModel, byte[] customThrowingModel, List<PotionEffect> playerEffects, List<PotionEffect> targetEffects, String[] commands, String replaceItem) {
 		super(CustomItemType.TRIDENT, itemDamage, name, displayName, lore, attributes, defaultEnchantments, durability, allowEnchanting,
-				allowAnvil, repairItem, texture, itemFlags, entityHitDurabilityLoss, blockBreakDurabilityLoss, customModel, playerEffects, targetEffects, commands);
+				allowAnvil, repairItem, texture, itemFlags, entityHitDurabilityLoss, blockBreakDurabilityLoss, customModel, playerEffects, targetEffects, commands, replaceItem);
 		this.throwDamageMultiplier = throwDamageMultiplier;
 		this.speedMultiplier = speedMultiplier;
 		this.throwDurabilityLoss = throwDurabilityLoss;
@@ -65,6 +65,7 @@ public class CustomTrident extends CustomTool {
 		output.addInts(entityHitDurabilityLoss, blockBreakDurabilityLoss, throwDurabilityLoss);
 		output.addDoubles(throwDamageMultiplier, speedMultiplier);*/
 		
+		/* Previous Encoding
 		output.addByte(ItemEncoding.ENCODING_TRIDENT_8);
 		output.addShort(itemDamage);
 		output.addJavaString(name);
@@ -106,6 +107,50 @@ public class CustomTrident extends CustomTool {
 		output.addByte((byte) commands.length);
 		for (String command : commands) {
 			output.addJavaString(command);
+		} */
+		
+		output.addByte(ItemEncoding.ENCODING_TRIDENT_9);
+		output.addShort(itemDamage);
+		output.addJavaString(name);
+		output.addJavaString(displayName);
+		output.addByte((byte) lore.length);
+		for(String line : lore)
+			output.addJavaString(line);
+		output.addByte((byte) attributes.length);
+		for (AttributeModifier attribute : attributes) {
+			output.addJavaString(attribute.getAttribute().name());
+			output.addJavaString(attribute.getSlot().name());
+			output.addNumber(attribute.getOperation().ordinal(), (byte) 2, false);
+			output.addDouble(attribute.getValue());
 		}
+		output.addByte((byte) defaultEnchantments.length);
+		for (Enchantment enchantment : defaultEnchantments) {
+			output.addString(enchantment.getType().name());
+			output.addInt(enchantment.getLevel());
+		}
+		output.addLong(durability);
+		output.addBoolean(allowEnchanting);
+		output.addBoolean(allowAnvil);
+		repairItem.save(output);
+		output.addBooleans(itemFlags);
+		output.addInts(entityHitDurabilityLoss, blockBreakDurabilityLoss, throwDurabilityLoss);
+		output.addDoubles(throwDamageMultiplier, speedMultiplier);
+		output.addByte((byte) playerEffects.size());
+		for (PotionEffect effect : playerEffects) {
+			output.addJavaString(effect.getEffect().name());
+			output.addInt(effect.getDuration());
+			output.addInt(effect.getLevel());
+		}
+		output.addByte((byte) targetEffects.size());
+		for (PotionEffect effect : targetEffects) {
+			output.addJavaString(effect.getEffect().name());
+			output.addInt(effect.getDuration());
+			output.addInt(effect.getLevel());
+		}
+		output.addByte((byte) commands.length);
+		for (String command : commands) {
+			output.addJavaString(command);
+		}
+		output.addJavaString(replaceItem);
 	}
 }

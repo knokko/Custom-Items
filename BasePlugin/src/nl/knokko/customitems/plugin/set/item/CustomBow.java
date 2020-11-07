@@ -44,10 +44,10 @@ public class CustomBow extends CustomTool {
 			Enchantment[] defaultEnchantments, long maxDurability, double damageMultiplier, double speedMultiplier, int knockbackStrength,
 			boolean hasGravity, boolean allowEnchanting, boolean allowAnvil, Ingredient repairItem, 
 			boolean[] itemFlags, int entityHitDurabilityLoss, int blockBreakDurabilityLoss, int shootDurabilityLoss,
-			List<PotionEffect> playerEffects, List<PotionEffect> targetEffects, String[] commands) {
+			List<PotionEffect> playerEffects, List<PotionEffect> targetEffects, String[] commands, String replaceItem) {
 		super(CustomItemType.BOW, itemDamage, name, displayName, lore, attributes, defaultEnchantments, 
 				maxDurability, allowEnchanting, allowAnvil, repairItem, itemFlags, entityHitDurabilityLoss,
-				blockBreakDurabilityLoss, playerEffects, targetEffects, commands);
+				blockBreakDurabilityLoss, playerEffects, targetEffects, commands, replaceItem);
 		this.damageMultiplier = damageMultiplier;
 		this.speedMultiplier = speedMultiplier;
 		this.knockbackStrength = knockbackStrength;

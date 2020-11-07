@@ -18,10 +18,10 @@ public class CustomWand extends CustomItem {
 
 	public CustomWand(CustomItemType itemType, short itemDamage, String name, String displayName, String[] lore,
 			AttributeModifier[] attributes, Enchantment[] defaultEnchantments, boolean[] itemFlags,
-			List<PotionEffect> playerEffects, List<PotionEffect> targetEffects, String[] commands,
+			List<PotionEffect> playerEffects, List<PotionEffect> targetEffects, String[] commands, String replaceItem,
 			CIProjectile projectile, int cooldown, WandCharges charges, int amountPerShot) {
 		super(itemType, itemDamage, name, displayName, lore, attributes, defaultEnchantments, itemFlags, playerEffects,
-				targetEffects, commands);
+				targetEffects, commands, replaceItem);
 		this.projectile = projectile;
 		this.cooldown = cooldown;
 		this.charges = charges;

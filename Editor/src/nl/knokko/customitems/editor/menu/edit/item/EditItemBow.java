@@ -112,12 +112,18 @@ public class EditItemBow extends EditItemTool {
 		if (!knockbackStrength.hasValue()) return "The knockback strength must be a positive integer";
 		Option.Int shootDurabilityLoss = this.shootDurabilityLoss.getInt();
 		if (!shootDurabilityLoss.hasValue()) return "The shoot durability loss must be a positive integer";
+		String replaceItemName;
+		if (replaceItem == null) {
+			replaceItemName = new String();
+		} else {
+			replaceItemName = replaceItem.getName();
+		}
 		return menu.getSet().addBow(new CustomBow(damage, name.getText(), getDisplayName(), lore, attributes, 
 				enchantments, maxUses, damageMultiplier.getValue(), speedMultiplier.getValue(), 
 				knockbackStrength.getValue(), gravity.isChecked(), allowEnchanting.isChecked(), 
 				allowAnvil.isChecked(), repairItem.getIngredient(),
 				(BowTextures) textureSelect.getSelected(), itemFlags, entityHitDurabilityLoss,
-				blockBreakDurabilityLoss, shootDurabilityLoss.getValue(), customModel, playerEffects, targetEffects, commands), true);
+				blockBreakDurabilityLoss, shootDurabilityLoss.getValue(), customModel, playerEffects, targetEffects, commands, replaceItemName), true);
 	}
 
 	@Override
@@ -130,12 +136,18 @@ public class EditItemBow extends EditItemTool {
 		if (!knockbackStrength.hasValue()) return "The knockback strength must be a positive integer";
 		Option.Int shootDurabilityLoss = this.shootDurabilityLoss.getInt();
 		if (!shootDurabilityLoss.hasValue()) return "The shoot durability loss must be a positive integer";
+		String replaceItemName;
+		if (replaceItem == null) {
+			replaceItemName = new String();
+		} else {
+			replaceItemName = replaceItem.getName();
+		}
 		return menu.getSet().changeBow(toModify, damage, name.getText(), getDisplayName(), lore, attributes, 
 				enchantments, damageMultiplier.getValue(), speedMultiplier.getValue(), 
 				knockbackStrength.getValue(), gravity.isChecked(), allowEnchanting.isChecked(), 
 				allowAnvil.isChecked(), repairItem.getIngredient(), maxUses, 
 				(BowTextures) textureSelect.getSelected(), itemFlags, entityHitDurabilityLoss,
 				blockBreakDurabilityLoss, shootDurabilityLoss.getValue(), customModel, playerEffects, 
-				targetEffects, commands, true);
+				targetEffects, commands, replaceItemName, true);
 	}
 }
