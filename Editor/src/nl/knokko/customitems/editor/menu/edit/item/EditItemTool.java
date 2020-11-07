@@ -144,18 +144,12 @@ public class EditItemTool extends EditItemBase {
 	}
 	
 	protected String create(short damage, long maxUses, int entityHitDurabilityLoss, int blockBreakDurabilityLoss) {
-		String replaceItemName;
-		if (replaceItem == null) {
-			replaceItemName = new String();
-		} else {
-			replaceItemName = replaceItem.getName();
-		}
 		return menu.getSet().addTool(
 				new CustomTool(internalType, damage, name.getText(), getDisplayName(),
 						lore, attributes, enchantments, maxUses, allowEnchanting.isChecked(),
 						allowAnvil.isChecked(), repairItem.getIngredient(), textureSelect.getSelected(), 
 						itemFlags, entityHitDurabilityLoss, blockBreakDurabilityLoss, customModel, 
-						playerEffects, targetEffects, commands, replaceItemName), true);
+						playerEffects, targetEffects, commands, conditions, op), true);
 	}
 
 	@Override
@@ -173,17 +167,11 @@ public class EditItemTool extends EditItemBase {
 	}
 	
 	protected String apply(short damage, long maxUses, int entityHitDurabilityLoss, int blockBreakDurabilityLoss) {
-		String replaceItemName;
-		if (replaceItem == null) {
-			replaceItemName = new String();
-		} else {
-			replaceItemName = replaceItem.getName();
-		}
 		return menu.getSet().changeTool(toModify, internalType, damage, name.getText(),
 				getDisplayName(), lore, attributes, enchantments, allowEnchanting.isChecked(),
 				allowAnvil.isChecked(), repairItem.getIngredient(), maxUses, textureSelect.getSelected(),
 				itemFlags, entityHitDurabilityLoss, blockBreakDurabilityLoss, customModel,
-				playerEffects, targetEffects, commands, replaceItemName, true);
+				playerEffects, targetEffects, commands, conditions, op, true);
 	}
 
 	@Override

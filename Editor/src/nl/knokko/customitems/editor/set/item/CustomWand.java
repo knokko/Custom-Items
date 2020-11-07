@@ -7,6 +7,8 @@ import nl.knokko.customitems.encoding.ItemEncoding;
 import nl.knokko.customitems.item.AttributeModifier;
 import nl.knokko.customitems.item.CustomItemType;
 import nl.knokko.customitems.item.Enchantment;
+import nl.knokko.customitems.item.ReplaceCondition;
+import nl.knokko.customitems.item.ReplaceCondition.ConditionOperation;
 import nl.knokko.customitems.item.WandCharges;
 import nl.knokko.customitems.projectile.CIProjectile;
 import nl.knokko.util.bits.BitOutput;
@@ -23,10 +25,10 @@ public class CustomWand extends CustomItem {
 
 	public CustomWand(CustomItemType itemType, short itemDamage, String name, String displayName, String[] lore,
 			AttributeModifier[] attributes, Enchantment[] defaultEnchantments, NamedImage texture, boolean[] itemFlags,
-			byte[] customModel, List<PotionEffect> playerEffects, List<PotionEffect> targetEffects, String[] commands, String replaceItem,
-			CIProjectile projectile, int cooldown, WandCharges charges, int amountPerShot) {
+			byte[] customModel, List<PotionEffect> playerEffects, List<PotionEffect> targetEffects, String[] commands, 
+			ReplaceCondition[] conditions, ConditionOperation op, CIProjectile projectile, int cooldown, WandCharges charges, int amountPerShot) {
 		super(itemType, itemDamage, name, displayName, lore, attributes, defaultEnchantments, texture, itemFlags,
-				customModel, playerEffects, targetEffects, commands, replaceItem);
+				customModel, playerEffects, targetEffects, commands, conditions, op);
 		this.projectile = projectile;
 		this.cooldown = cooldown;
 		this.charges = charges;
@@ -119,7 +121,15 @@ public class CustomWand extends CustomItem {
 		for (String command : commands) {
 			output.addJavaString(command);
 		}
-		output.addJavaString(replaceItem);
+		output.addByte((byte) conditions.length);
+		for (ReplaceCondition condition : conditions) {
+			output.addJavaString(condition.getCondition().name());
+			output.addJavaString(condition.getItemName());
+			output.addJavaString(condition.getOp().name());
+			output.addInt(condition.getValue());
+			output.addJavaString(condition.getReplacingItemName());
+		}
+		output.addJavaString(op.name());
 		
 		output.addString(projectile.name);
 		output.addInt(cooldown);

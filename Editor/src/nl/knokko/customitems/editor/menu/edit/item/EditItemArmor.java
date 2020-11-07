@@ -176,19 +176,13 @@ public class EditItemArmor extends EditItemTool {
 		if (greenValue == -1) return "The green must be an integer at least 0 and at most 255";
 		int blueValue = getColorValue(blue, DEFAULT_BLUE);
 		if (blueValue == -1) return "The blue must be an integer at least 0 and at most 255";
-		String replaceItemName;
-		if (replaceItem == null) {
-			replaceItemName = new String();
-		} else {
-			replaceItemName = replaceItem.getName();
-		}
 		return menu.getSet().addArmor(
 				new CustomArmor(internalType, damage, name.getText(), getDisplayName(),
 						lore, attributes, enchantments, maxUses, allowEnchanting.isChecked(),
 						allowAnvil.isChecked(), repairItem.getIngredient(), textureSelect.getSelected(),
 						redValue, greenValue, blueValue, itemFlags, entityHitDurabilityLoss, 
-						blockBreakDurabilityLoss, damageResistances, customModel, playerEffects, targetEffects, commands, replaceItemName),
-						true);
+						blockBreakDurabilityLoss, damageResistances, customModel, playerEffects, targetEffects, 
+						commands, conditions, op), true);
 	}
 	
 	@Override
@@ -199,17 +193,11 @@ public class EditItemArmor extends EditItemTool {
 		if (greenValue == -1) return "The green must be an integer at least 0 and at most 255";
 		int blueValue = getColorValue(blue, DEFAULT_BLUE);
 		if (blueValue == -1) return "The blue must be an integer at least 0 and at most 255";
-		String replaceItemName;
-		if (replaceItem == null) {
-			replaceItemName = new String();
-		} else {
-			replaceItemName = replaceItem.getName();
-		}
 		return menu.getSet().changeArmor(toModify, internalType, damage, name.getText(),
 				getDisplayName(), lore, attributes, enchantments, allowEnchanting.isChecked(),
 				allowAnvil.isChecked(), repairItem.getIngredient(), maxUses, textureSelect.getSelected(),
 				redValue, greenValue, blueValue, itemFlags, entityHit, blockBreak, damageResistances,
-				customModel, playerEffects, targetEffects, commands, replaceItemName, true);
+				customModel, playerEffects, targetEffects, commands, conditions, op, true);
 	}
 	
 	@Override

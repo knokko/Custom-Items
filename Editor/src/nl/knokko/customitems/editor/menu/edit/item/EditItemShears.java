@@ -50,18 +50,12 @@ public class EditItemShears extends EditItemTool {
 		Option.Int durLoss = shearDurabilityLoss.getInt();
 		if (!durLoss.hasValue())
 			return "The shear durability loss must be a positive integer";
-		String replaceItemName;
-		if (replaceItem == null) {
-			replaceItemName = new String();
-		} else {
-			replaceItemName = replaceItem.getName();
-		}
 		return menu.getSet().addShears(
 				new CustomShears(internalType, damage, name.getText(), getDisplayName(),
 						lore, attributes, enchantments, maxUses, allowEnchanting.isChecked(),
 						allowAnvil.isChecked(), repairItem.getIngredient(), textureSelect.getSelected(), itemFlags,
 						entityHitDurabilityLoss, blockBreakDurabilityLoss, durLoss.getValue(), customModel, 
-						playerEffects, targetEffects, commands, replaceItemName), true);
+						playerEffects, targetEffects, commands, conditions, op), true);
 	}
 	
 	@Override
@@ -69,16 +63,10 @@ public class EditItemShears extends EditItemTool {
 		Option.Int durLoss = shearDurabilityLoss.getInt();
 		if (!durLoss.hasValue())
 			return "The shear durability loss must be a positive integer";
-		String replaceItemName;
-		if (replaceItem == null) {
-			replaceItemName = new String();
-		} else {
-			replaceItemName = replaceItem.getName();
-		}
 		return menu.getSet().changeShears(toModify, internalType, damage, name.getText(),
 				getDisplayName(), lore, attributes, enchantments, allowEnchanting.isChecked(),
 				allowAnvil.isChecked(), repairItem.getIngredient(), maxUses, textureSelect.getSelected(),
 				itemFlags, entityHitDurabilityLoss, blockBreakDurabilityLoss, durLoss.getValue(),
-				customModel, playerEffects, targetEffects, commands, replaceItemName, true);
+				customModel, playerEffects, targetEffects, commands, conditions, op, true);
 	}
 }

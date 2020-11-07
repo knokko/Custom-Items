@@ -8,6 +8,8 @@ import nl.knokko.customitems.encoding.ItemEncoding;
 import nl.knokko.customitems.item.AttributeModifier;
 import nl.knokko.customitems.item.CustomItemType;
 import nl.knokko.customitems.item.Enchantment;
+import nl.knokko.customitems.item.ReplaceCondition;
+import nl.knokko.customitems.item.ReplaceCondition.ConditionOperation;
 import nl.knokko.util.bits.BitOutput;
 
 public class CustomHoe extends CustomTool {
@@ -18,10 +20,10 @@ public class CustomHoe extends CustomTool {
 			AttributeModifier[] attributes, Enchantment[] defaultEnchantments, long durability, boolean allowEnchanting,
 			boolean allowAnvil, Ingredient repairItem, NamedImage texture, boolean[] itemFlags,
 			int entityHitDurabilityLoss, int blockBreakDurabilityLoss, int tillDurabilityLoss, byte[] customModel, 
-			List<PotionEffect> playerEffects, List<PotionEffect> targetEffects, String[] commands, String replaceItem) {
+			List<PotionEffect> playerEffects, List<PotionEffect> targetEffects, String[] commands, ReplaceCondition[] conditions, ConditionOperation op) {
 		super(itemType, itemDamage, name, displayName, lore, attributes, defaultEnchantments, durability, allowEnchanting,
 				allowAnvil, repairItem, texture, itemFlags, entityHitDurabilityLoss, blockBreakDurabilityLoss, customModel, 
-				playerEffects, targetEffects, commands, replaceItem);
+				playerEffects, targetEffects, commands, conditions, op);
 		this.tillDurabilityLoss = tillDurabilityLoss;
 	}
 	
@@ -141,7 +143,15 @@ public class CustomHoe extends CustomTool {
 		for (String command : commands) {
 			output.addJavaString(command);
 		}
-		output.addJavaString(replaceItem);
+		output.addByte((byte) conditions.length);
+		for (ReplaceCondition condition : conditions) {
+			output.addJavaString(condition.getCondition().name());
+			output.addJavaString(condition.getItemName());
+			output.addJavaString(condition.getOp().name());
+			output.addInt(condition.getValue());
+			output.addJavaString(condition.getReplacingItemName());
+		}
+		output.addJavaString(op.name());
 	}
 	
 	public int getTillDurabilityLoss() {

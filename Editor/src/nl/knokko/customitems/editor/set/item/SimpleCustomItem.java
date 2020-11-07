@@ -30,6 +30,8 @@ import nl.knokko.customitems.encoding.ItemEncoding;
 import nl.knokko.customitems.item.AttributeModifier;
 import nl.knokko.customitems.item.CustomItemType;
 import nl.knokko.customitems.item.Enchantment;
+import nl.knokko.customitems.item.ReplaceCondition;
+import nl.knokko.customitems.item.ReplaceCondition.ConditionOperation;
 import nl.knokko.util.bits.BitOutput;
 
 public class SimpleCustomItem extends CustomItem {
@@ -38,9 +40,10 @@ public class SimpleCustomItem extends CustomItem {
 
 	public SimpleCustomItem(CustomItemType itemType, short itemDamage, String name, String displayName, String[] lore,
 			AttributeModifier[] attributes, Enchantment[] defaultEnchantments, int maxStacksize, 
-			NamedImage texture, boolean[] itemFlags, byte[] customModel, List<PotionEffect> playerEffects, List<PotionEffect> targetEffects, String[] commands, String replaceItem) {
+			NamedImage texture, boolean[] itemFlags, byte[] customModel, List<PotionEffect> playerEffects, List<PotionEffect> targetEffects, 
+			String[] commands, ReplaceCondition[] conditions, ConditionOperation op) {
 		super(itemType, itemDamage, name, displayName, lore, attributes, defaultEnchantments, texture, 
-				itemFlags, customModel, playerEffects, targetEffects, commands, replaceItem);
+				itemFlags, customModel, playerEffects, targetEffects, commands, conditions, op);
 		this.maxStacksize = maxStacksize;
 	}
 	
@@ -224,7 +227,15 @@ public class SimpleCustomItem extends CustomItem {
 		for (String command : commands) {
 			output.addJavaString(command);
 		}
-		output.addJavaString(replaceItem);
+		output.addByte((byte) conditions.length);
+		for (ReplaceCondition condition : conditions) {
+			output.addJavaString(condition.getCondition().name());
+			output.addJavaString(condition.getItemName());
+			output.addJavaString(condition.getOp().name());
+			output.addInt(condition.getValue());
+			output.addJavaString(condition.getReplacingItemName());
+		}
+		output.addJavaString(op.name());
 	}
 	
 	public int getMaxStacksize() {

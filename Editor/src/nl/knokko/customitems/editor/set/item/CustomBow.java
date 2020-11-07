@@ -32,6 +32,8 @@ import nl.knokko.customitems.encoding.ItemEncoding;
 import nl.knokko.customitems.item.AttributeModifier;
 import nl.knokko.customitems.item.CustomItemType;
 import nl.knokko.customitems.item.Enchantment;
+import nl.knokko.customitems.item.ReplaceCondition;
+import nl.knokko.customitems.item.ReplaceCondition.ConditionOperation;
 import nl.knokko.util.bits.BitOutput;
 
 public class CustomBow extends CustomTool {
@@ -47,10 +49,11 @@ public class CustomBow extends CustomTool {
 			long durability, double damageMultiplier, double speedMultiplier, int knockbackStrength, 
 			boolean hasGravity, boolean allowEnchanting, boolean allowAnvil, Ingredient repairItem, 
 			BowTextures texture, boolean[] itemFlags, int entityHitDurabilityLoss, int blockBreakDurabilityLoss,
-			int shootDurabilityLoss, byte[] customModel, List<PotionEffect> playerEffects, List<PotionEffect> targetEffects, String[] commands, String replaceItem) {
+			int shootDurabilityLoss, byte[] customModel, List<PotionEffect> playerEffects, List<PotionEffect> targetEffects, 
+			String[] commands, ReplaceCondition[] conditions, ConditionOperation op) {
 		super(CustomItemType.BOW, itemDamage, name, displayName, lore, attributes, enchantments, durability, allowEnchanting,
 				allowAnvil, repairItem, texture, itemFlags, entityHitDurabilityLoss, blockBreakDurabilityLoss, customModel, 
-				playerEffects, targetEffects, commands, replaceItem);
+				playerEffects, targetEffects, commands, conditions, op);
 		this.damageMultiplier = damageMultiplier;
 		this.speedMultiplier = speedMultiplier;
 		this.knockbackStrength = knockbackStrength;
@@ -242,7 +245,15 @@ public class CustomBow extends CustomTool {
 		for (String command : commands) {
 			output.addJavaString(command);
 		}
-		output.addJavaString(replaceItem);
+		output.addByte((byte) conditions.length);
+		for (ReplaceCondition condition : conditions) {
+			output.addJavaString(condition.getCondition().name());
+			output.addJavaString(condition.getItemName());
+			output.addJavaString(condition.getOp().name());
+			output.addInt(condition.getValue());
+			output.addJavaString(condition.getReplacingItemName());
+		}
+		output.addJavaString(op.name());
 	}
 	
 	public double getDamageMultiplier() {

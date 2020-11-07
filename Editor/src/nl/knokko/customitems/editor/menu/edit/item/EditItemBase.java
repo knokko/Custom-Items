@@ -28,7 +28,6 @@ import java.util.Arrays;
 import java.util.List;
 
 import nl.knokko.customitems.editor.Checks;
-import nl.knokko.customitems.editor.menu.edit.CollectionSelect;
 import nl.knokko.customitems.editor.menu.edit.EditMenu;
 import nl.knokko.customitems.editor.menu.edit.EditProps;
 import nl.knokko.customitems.editor.menu.edit.EnumSelect;
@@ -45,6 +44,10 @@ import nl.knokko.customitems.item.CustomItemType;
 import nl.knokko.customitems.item.CustomItemType.Category;
 import nl.knokko.customitems.item.Enchantment;
 import nl.knokko.customitems.item.ItemFlag;
+import nl.knokko.customitems.item.ReplaceCondition;
+import nl.knokko.customitems.item.ReplaceCondition.ConditionOperation;
+import nl.knokko.customitems.item.ReplaceCondition.ReplacementCondition;
+import nl.knokko.customitems.item.ReplaceCondition.ReplacementOperation;
 import nl.knokko.gui.color.GuiColor;
 import nl.knokko.gui.component.menu.GuiMenu;
 import nl.knokko.gui.component.menu.TextArrayEditMenu;
@@ -100,7 +103,8 @@ public abstract class EditItemBase extends GuiMenu {
 	protected List<PotionEffect> playerEffects;
 	protected List<PotionEffect> targetEffects;
 	protected String[] commands;
-	protected CustomItem replaceItem;
+	protected ReplaceCondition[] conditions;
+	protected ConditionOperation op;
 
 	public EditItemBase(EditMenu menu, CustomItem oldValues, CustomItem toModify, Category category) {
 		this.menu = menu;
@@ -127,7 +131,8 @@ public abstract class EditItemBase extends GuiMenu {
 			playerEffects = oldValues.getPlayerEffects();
 			targetEffects = oldValues.getTargetEffects();
 			commands = oldValues.getCommands();
-			replaceItem = menu.getSet().getCustomItemByName(oldValues.getReplaceItem());
+			conditions = oldValues.getReplaceConditions();
+			op = oldValues.getConditionOperator();
 		} else {
 			name = new TextEditField("", EditProps.EDIT_BASE, EditProps.EDIT_ACTIVE);
 			internalType = chooseInitialItemType(menu.getSet(), category, CustomItemType.DIAMOND_HOE, null);
@@ -144,7 +149,8 @@ public abstract class EditItemBase extends GuiMenu {
 			playerEffects = DEFAULT_PLAYER_EFFECTS;
 			targetEffects = DEFAULT_TARGET_EFFECTS;
 			commands = new String[] {};
-			replaceItem = null;
+			conditions = new ReplaceCondition[] {};
+			op = ConditionOperation.NONE;
 		}
 		
 		Checks.nonNull(lore);
@@ -153,6 +159,7 @@ public abstract class EditItemBase extends GuiMenu {
 		Checks.nonNull(playerEffects);
 		Checks.nonNull(targetEffects);
 		Checks.nonNull(commands);
+		Checks.nonNull(conditions);
 	}
 	
 	@Override
@@ -190,7 +197,7 @@ public abstract class EditItemBase extends GuiMenu {
 		addComponent(new DynamicTextComponent("On-Hit Player effects: ", EditProps.LABEL), LABEL_X, 0.2f, LABEL_X + 0.2f, 0.25f);
 		addComponent(new DynamicTextComponent("On-Hit Target effects: ", EditProps.LABEL), LABEL_X, 0.14f, LABEL_X + 0.2f, 0.19f);
 		addComponent(new DynamicTextComponent("Commands: ", EditProps.LABEL), LABEL_X, 0.08f, LABEL_X + 0.125f, 0.13f);
-		addComponent(new DynamicTextComponent("Replace on right click by: ", EditProps.LABEL), LABEL_X, 0.02f, LABEL_X + 0.2f, 0.07f);
+		addComponent(new DynamicTextComponent("Replace on right click: ", EditProps.LABEL), LABEL_X, 0.02f, LABEL_X + 0.2f, 0.07f);
 		
 		// I might add custom bow models later, but I leave it out for now
 		if (!(this instanceof EditItemBow)) {
@@ -253,14 +260,11 @@ public abstract class EditItemBase extends GuiMenu {
 		addEnchantmentsComponent();
 		addEffectsComponent();
 		addCommandsComponent();
+		addReplaceComponent();
 		addComponent(new DynamicTextButton("Change...", EditProps.BUTTON, EditProps.HOVER, () -> {
 			state.getWindow().setMainComponent(new ItemFlagMenu(this, itemFlags));
 		}), BUTTON_X, 0.38f, BUTTON_X + 0.1f, 0.43f);
 		addComponent(textureSelect, BUTTON_X, 0.32f, BUTTON_X + 0.1f, 0.37f);
-		
-		addComponent(CollectionSelect.createButton(menu.getSet().getBackingItems(), (CustomItem newItem) -> {
-			replaceItem = newItem;
-		}, (CustomItem item) -> { return item.getName(); }, replaceItem), BUTTON_X, 0.02f, BUTTON_X + 0.1f, 0.07f);
 
 		// Bow models are more complex and have less priority, so leave it out for now
 		if (!(this instanceof EditItemBow)) {
@@ -393,6 +397,26 @@ public abstract class EditItemBase extends GuiMenu {
 			}, EditProps.BACKGROUND, EditProps.CANCEL_BASE, EditProps.CANCEL_HOVER, EditProps.SAVE_BASE,
 					EditProps.SAVE_HOVER, EditProps.EDIT_BASE, EditProps.EDIT_ACTIVE, commands));
 		}), BUTTON_X, 0.08f, BUTTON_X + 0.1f, 0.13f);
+	}
+	
+	protected ReplaceCondition getExampleReplaceCondition() {
+		return new ReplaceCondition(ReplacementCondition.HASITEM, "None", ReplacementOperation.EXACTLY, 64, new String());
+	}
+	
+	private void addReplaceComponent() {
+		addComponent(new DynamicTextButton("Change...", EditProps.BUTTON, EditProps.HOVER, () -> {
+			state.getWindow().setMainComponent(new ReplacementCollectionEdit(Arrays.asList(conditions), 
+					newConditions -> {
+						Checks.nonNull(conditions);
+						this.conditions = newConditions.toArray(new ReplaceCondition[newConditions.size()]);
+					}, EditItemBase.this, getExampleReplaceCondition(), menu.getSet().getBackingItems(), newOp ->  {
+						if (newOp == null) {
+							newOp = ConditionOperation.NONE;
+						}
+						this.op = newOp;
+						System.out.println("Operator changed!");
+					}));
+		}), BUTTON_X, 0.02f, BUTTON_X + 0.1f, 0.07f);
 	}
 	protected abstract CustomItemType.Category getCategory();
 

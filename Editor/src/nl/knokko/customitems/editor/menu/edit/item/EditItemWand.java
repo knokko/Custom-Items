@@ -90,33 +90,21 @@ public class EditItemWand extends EditItemBase {
 
 	@Override
 	protected String create(short internalItemDamage) {
-		String replaceItemName;
-		if (replaceItem == null) {
-			replaceItemName = new String();
-		} else {
-			replaceItemName = replaceItem.getName();
-		}
 		return withProperties((int cooldown, WandCharges charges, int amount) -> {
 			return menu.getSet().addWand(new CustomWand(internalType, internalItemDamage, name.getText(), 
 					getDisplayName(), lore, attributes, enchantments, textureSelect.getSelected(), 
-					itemFlags, customModel, playerEffects, targetEffects, commands, replaceItemName, projectile, cooldown, 
-					charges, amount));
+					itemFlags, customModel, playerEffects, targetEffects, commands, conditions, op, 
+					projectile, cooldown, charges, amount));
 		});
 	}
 
 	@Override
 	protected String apply(short internalItemDamage) {
-		String replaceItemName;
-		if (replaceItem == null) {
-			replaceItemName = new String();
-		} else {
-			replaceItemName = replaceItem.getName();
-		}
 		return withProperties((int cooldown, WandCharges charges, int amount) -> {
 			return menu.getSet().changeWand(toModify, internalType, internalItemDamage, name.getText(), 
 					getDisplayName(), lore, attributes, enchantments, textureSelect.getSelected(), 
-					itemFlags, customModel, playerEffects, targetEffects, commands, replaceItemName, projectile, cooldown, 
-					charges, amount);
+					itemFlags, customModel, playerEffects, targetEffects, commands, conditions, op, 
+					projectile, cooldown, charges, amount);
 		});
 	}
 	
