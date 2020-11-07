@@ -26,6 +26,7 @@ import nl.knokko.customitems.item.CIMaterial;
 import nl.knokko.customitems.recipe.ContainerRecipe;
 import nl.knokko.customitems.recipe.ContainerRecipe.InputEntry;
 import nl.knokko.customitems.recipe.ContainerRecipe.OutputEntry;
+import nl.knokko.customitems.recipe.OutputTable;
 import nl.knokko.customitems.test.DummyIngredient;
 import nl.knokko.customitems.test.TestCustomItem;
 import nl.knokko.customitems.test.TestHelper;
@@ -80,7 +81,12 @@ public class TestCustomContainer {
 							assertEquals(1, recipe.getOutputs().size());
 							OutputEntry output = recipe.getOutputs().iterator().next();
 							assertEquals("ingot", output.getOutputSlotName());
-							assertEquals(3, ((DummyIngredient)output.getResult()).getId());
+
+							OutputTable outputTable = output.getOutputTable();
+							assertEquals(20, outputTable.getEntries().get(0).getChance());
+							assertEquals(3, ((DummyIngredient)outputTable.getEntries().get(0).getResult()).getId());
+							assertEquals(10, outputTable.getEntries().get(1).getChance());
+							assertEquals(4, ((DummyIngredient)outputTable.getEntries().get(1).getResult()).getId());
 							
 							assertEquals(14, recipe.getDuration());
 							assertEquals(21, recipe.getExperience());
@@ -143,7 +149,10 @@ public class TestCustomContainer {
 			inputs.add(new InputEntry("dust", new DummyIngredient(2)));
 			
 			Collection<OutputEntry> outputs = new ArrayList<>(1);
-			outputs.add(new OutputEntry("ingot", new DummyIngredient(3)));
+			OutputTable outputTable = new OutputTable();
+			outputTable.getEntries().add(new OutputTable.Entry(new DummyIngredient(3), 20));
+			outputTable.getEntries().add(new OutputTable.Entry(new DummyIngredient(4), 10));
+			outputs.add(new OutputEntry("ingot", outputTable));
 			recipes.add(new ContainerRecipe(inputs, outputs, 14, 21));
 		}
 		

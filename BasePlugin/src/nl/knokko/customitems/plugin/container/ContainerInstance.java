@@ -5,6 +5,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Random;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 import java.util.function.Function;
@@ -39,6 +40,7 @@ import nl.knokko.customitems.plugin.util.ItemUtils;
 import nl.knokko.customitems.recipe.ContainerRecipe;
 import nl.knokko.customitems.recipe.ContainerRecipe.InputEntry;
 import nl.knokko.customitems.recipe.ContainerRecipe.OutputEntry;
+import nl.knokko.customitems.recipe.OutputTable;
 import nl.knokko.util.bits.BitInput;
 import nl.knokko.util.bits.BitOutput;
 
@@ -501,13 +503,21 @@ public class ContainerInstance {
 			
 			for (OutputEntry output : candidate.getOutputs()) {
 				ItemStack outSlot = getOutput(output.getOutputSlotName());
-				ItemStack result = (ItemStack) output.getResult();
+				OutputTable outputTable = output.getOutputTable();
+				
+				// If the output slot is empty, nothing could go wrong
 				if (!ItemUtils.isEmpty(outSlot)) {
-					if (!result.isSimilar(outSlot)) {
-						continue candidateLoop;
-					}
-					if (ItemUtils.getMaxStacksize(outSlot) < outSlot.getAmount() + result.getAmount()) {
-						continue candidateLoop;
+					
+					// All possible output entries must be able to stack on top of
+					// the current item stack in the output slot
+					for (OutputTable.Entry entry : outputTable.getEntries()) {
+						ItemStack potentialResult = (ItemStack) entry.getResult();
+						if (!potentialResult.isSimilar(outSlot)) {
+							continue candidateLoop;
+						}
+						if (ItemUtils.getMaxStacksize(outSlot) < outSlot.getAmount() + potentialResult.getAmount()) {
+							continue candidateLoop;
+						}
 					}
 				}
 			}
@@ -549,17 +559,19 @@ public class ContainerInstance {
 						
 						int invIndex = typeInfo.getOutputSlotIndex(output.getOutputSlotName());
 						ItemStack outputItem = inventory.getItem(invIndex);
-						ItemStack result = (ItemStack) output.getResult();
+						ItemStack result = (ItemStack) output.getOutputTable().pickResult(new Random());
 						
-						// If the output slot is empty, set its item to the result
-						// Otherwise increase its amount
-						if (ItemUtils.isEmpty(outputItem)) {
-							outputItem = result.clone();
-						} else {
-							outputItem.setAmount(outputItem.getAmount() + result.getAmount());
+						// result can be null because the chance to get something could be < 100%
+						if (result != null) {
+							// If the output slot is empty, set its item to the result
+							// Otherwise increase its amount
+							if (ItemUtils.isEmpty(outputItem)) {
+								outputItem = result.clone();
+							} else {
+								outputItem.setAmount(outputItem.getAmount() + result.getAmount());
+							}
+							inventory.setItem(invIndex, outputItem);
 						}
-						inventory.setItem(invIndex, outputItem);
-						
 					}
 					currentCraftingProgress = 0;
 					storedExperience += currentRecipe.getExperience();

@@ -3,10 +3,9 @@ package nl.knokko.customitems.editor.menu.edit.container.recipe;
 import java.util.Collection;
 
 import nl.knokko.customitems.editor.menu.edit.EditProps;
-import nl.knokko.customitems.editor.menu.edit.recipe.result.ChooseResult;
 import nl.knokko.customitems.editor.set.ItemSet;
-import nl.knokko.customitems.editor.set.recipe.result.Result;
 import nl.knokko.customitems.recipe.ContainerRecipe.OutputEntry;
+import nl.knokko.customitems.recipe.OutputTable;
 import nl.knokko.gui.color.GuiColor;
 import nl.knokko.gui.color.SimpleGuiColor;
 import nl.knokko.gui.component.GuiComponent;
@@ -51,28 +50,28 @@ public class OutputSlotComponent implements GuiComponent {
 		return null;
 	}
 	
-	private Result getOwnResult() {
+	private OutputTable getOwnResultTable() {
 		OutputEntry ownEntry = getOwnEntry();
 		if (ownEntry != null) {
-			return (Result) ownEntry.getResult();
+			return ownEntry.getOutputTable();
 		} else {
 			return null;
 		}
 	}
 	
-	private void setResult(Result newResult) {
+	private void setResultTable(OutputTable newResultTable) {
 		
 		// Update outputs collection
 		OutputEntry ownEntry = getOwnEntry();
 		if (ownEntry != null) {
 			outputs.remove(ownEntry);
 		}
-		if (newResult != null) {
-			outputs.add(new OutputEntry(name, newResult));
+		if (newResultTable != null) {
+			outputs.add(new OutputEntry(name, newResultTable));
 		}
 		
 		// Update text
-		String bottomText = newResult == null ? "" : newResult.toString();
+		String bottomText = newResultTable == null ? "" : newResultTable.toString();
 		
 		int maxLength = 12;
 		if (bottomText.length() > maxLength) {
@@ -90,7 +89,7 @@ public class OutputSlotComponent implements GuiComponent {
 		this.topTextTexture = state.getWindow().getTextureLoader().loadTexture(
 				TextBuilder.createTexture("output", EditProps.LABEL)
 		);
-		this.setResult(this.getOwnResult());
+		this.setResultTable(this.getOwnResultTable());
 	}
 
 	@Override
@@ -117,8 +116,8 @@ public class OutputSlotComponent implements GuiComponent {
 
 	@Override
 	public void click(float x, float y, int button) {
-		state.getWindow().setMainComponent(new ChooseResult(outerMenu, 
-				this::setResult, true, set
+		state.getWindow().setMainComponent(new EditOutputTable(
+				outerMenu, getOwnResultTable(), this::setResultTable, set
 		));
 	}
 

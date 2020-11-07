@@ -12,6 +12,7 @@ import nl.knokko.customitems.editor.set.ItemSet;
 import nl.knokko.customitems.editor.set.recipe.result.CustomItemResult;
 import nl.knokko.customitems.recipe.ContainerRecipe;
 import nl.knokko.customitems.recipe.ContainerRecipe.OutputEntry;
+import nl.knokko.customitems.recipe.OutputTable;
 import nl.knokko.gui.color.GuiColor;
 import nl.knokko.gui.component.GuiComponent;
 import nl.knokko.gui.component.text.dynamic.DynamicTextButton;
@@ -78,9 +79,12 @@ public class ContainerRecipeCollectionEdit extends CollectionEdit<ContainerRecip
 			
 			// If we find an output with a custom item, take it!
 			for (OutputEntry output : item.getOutputs()) {
-				if (output.getResult() instanceof CustomItemResult) {
-					CustomItemResult customResult = (CustomItemResult) output.getResult();
-					return customResult.getItem().getTexture().getImage();
+				OutputTable currentTable = output.getOutputTable();
+				for (OutputTable.Entry entry : currentTable.getEntries()) {
+					if (entry.getResult() instanceof CustomItemResult) {
+						CustomItemResult customResult = (CustomItemResult) entry.getResult();
+						return customResult.getItem().getTexture().getImage();
+					}
 				}
 			}
 			
@@ -93,11 +97,19 @@ public class ContainerRecipeCollectionEdit extends CollectionEdit<ContainerRecip
 			StringBuilder result = new StringBuilder();
 			result.append('(');
 			for (OutputEntry output : item.getOutputs()) {
-				result.append(output.getResult());
+				result.append(output.getOutputTable());
 				result.append(',');
 			}
 			result.append(')');
-			return result.toString();
+			
+			// Don't make it too long; that will get unreadable
+			int maxLength = 30;
+			String asString = result.toString();
+			if (asString.length() < maxLength) {
+				return asString;
+			} else {
+				return asString.substring(0, maxLength);
+			}
 		}
 		
 		private GuiComponent thisMenu() {

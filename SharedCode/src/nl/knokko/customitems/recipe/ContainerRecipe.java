@@ -20,6 +20,7 @@ public class ContainerRecipe {
 		byte encoding = input.readByte();
 		switch (encoding) {
 		case Encodings.ENCODING1: return load1(input, loadIngredient, loadResult);
+		case Encodings.ENCODING2: return load2(input, loadIngredient, loadResult);
 		default: throw new UnknownEncodingException("ContainerRecipe", encoding);
 		}
 	}
@@ -45,7 +46,39 @@ public class ContainerRecipe {
 			
 			String outputSlotName = input.readString();
 			Object result = loadResult.get();
-			outputs.add(new OutputEntry(outputSlotName, result));
+			OutputTable singletonTable = new OutputTable();
+			singletonTable.getEntries().add(new OutputTable.Entry(result, 100));
+			outputs.add(new OutputEntry(outputSlotName, singletonTable));
+		}
+		
+		int recipeDuration = input.readInt();
+		int experience = input.readInt();
+		
+		return new ContainerRecipe(inputs, outputs, recipeDuration, experience);
+	}
+	
+	private static ContainerRecipe load2(
+			BitInput input,
+			ExceptionSupplier<SCIngredient, UnknownEncodingException> loadIngredient,
+			ExceptionSupplier<Object, UnknownEncodingException> loadResult
+	) throws UnknownEncodingException {
+		
+		int numInputs = input.readInt();
+		Collection<InputEntry> inputs = new ArrayList<>(numInputs);
+		for (int inputCounter = 0; inputCounter < numInputs; inputCounter++) {
+			
+			String inputSlotName = input.readString();
+			SCIngredient ingredient = loadIngredient.get();
+			inputs.add(new InputEntry(inputSlotName, ingredient));
+		}
+		
+		int numOutputs = input.readInt();
+		Collection<OutputEntry> outputs = new ArrayList<>(numOutputs);
+		for (int outputCounter = 0; outputCounter < numOutputs; outputCounter++) {
+			
+			String outputSlotName = input.readString();
+			OutputTable outputTable = OutputTable.load1(input, loadResult);
+			outputs.add(new OutputEntry(outputSlotName, outputTable));
 		}
 		
 		int recipeDuration = input.readInt();
@@ -85,6 +118,14 @@ public class ContainerRecipe {
 	public void save(
 			BitOutput output, 
 			Consumer<SCIngredient> saveIngredient,
+			Consumer<Object> saveResult) {
+		save2(output, saveIngredient, saveResult);
+	}
+	
+	@SuppressWarnings("unused")
+	private void save1(
+			BitOutput output, 
+			Consumer<SCIngredient> saveIngredient,
 			Consumer<Object> saveResult
 	) {
 		output.addByte(Encodings.ENCODING1);
@@ -98,7 +139,31 @@ public class ContainerRecipe {
 		output.addInt(outputs.size());
 		for (OutputEntry outputEntry : outputs) {
 			output.addString(outputEntry.outputSlotName);
-			saveResult.accept(outputEntry.result);
+			//saveResult.accept(outputEntry.result);
+			saveResult.accept(outputEntry.outputTable.getEntries().get(0).getResult());
+		}
+		
+		output.addInt(duration);
+		output.addInt(experience);
+	}
+	
+	private void save2(
+			BitOutput output, 
+			Consumer<SCIngredient> saveIngredient,
+			Consumer<Object> saveResult
+	) {
+		output.addByte(Encodings.ENCODING2);
+		
+		output.addInt(inputs.size());
+		for (InputEntry input : inputs) {
+			output.addString(input.inputSlotName);
+			saveIngredient.accept(input.ingredient);
+		}
+		
+		output.addInt(outputs.size());
+		for (OutputEntry outputEntry : outputs) {
+			output.addString(outputEntry.outputSlotName);
+			outputEntry.outputTable.save1(output, saveResult);
 		}
 		
 		output.addInt(duration);
@@ -151,28 +216,26 @@ public class ContainerRecipe {
 	public static class OutputEntry {
 		
 		private final String outputSlotName;
-		/**
-		 * One of the results of a recipe. In the plug-in, this should be of type
-		 * ItemStack. In the editor, this should be of type Result.
-		 */
-		private final Object result;
 		
-		public OutputEntry(String outputSlotName, Object result) {
+		private final OutputTable outputTable;
+		
+		public OutputEntry(String outputSlotName, OutputTable outputTable) {
 			this.outputSlotName = outputSlotName;
-			this.result = result;
+			this.outputTable = outputTable;
 		}
 		
 		public String getOutputSlotName() {
 			return outputSlotName;
 		}
 		
-		public Object getResult() {
-			return result;
+		public OutputTable getOutputTable() {
+			return outputTable;
 		}
 	}
 	
 	private static class Encodings {
 		
 		static final byte ENCODING1 = 1;
+		static final byte ENCODING2 = 2;
 	}
 }
