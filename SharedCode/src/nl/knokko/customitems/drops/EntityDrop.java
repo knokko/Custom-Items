@@ -1,23 +1,48 @@
 package nl.knokko.customitems.drops;
 
+import java.util.function.BiFunction;
+import java.util.function.Consumer;
+
 import nl.knokko.customitems.encoding.DropEncoding;
-import nl.knokko.customitems.item.ItemSetBase;
 import nl.knokko.customitems.trouble.UnknownEncodingException;
+import nl.knokko.customitems.util.ExceptionSupplier;
 import nl.knokko.util.bits.BitInput;
 import nl.knokko.util.bits.BitOutput;
 
 public class EntityDrop {
 	
-	public static EntityDrop load(BitInput input, ItemSetBase set) throws UnknownEncodingException {
+	public static EntityDrop load(
+			BitInput input, 
+			BiFunction<String, Byte, Object> createCustomItemResultByName,
+			ExceptionSupplier<Object, UnknownEncodingException> loadResult
+	) throws UnknownEncodingException {
 		byte encoding = input.readByte();
 		if (encoding == DropEncoding.Entity.ENCODING1)
-			return load1(input, set);
+			return load1(input, createCustomItemResultByName);
+		else if (encoding == DropEncoding.Entity.ENCODING2)
+			return load2(input, loadResult);
 		else
 			throw new UnknownEncodingException("MobDrop", encoding);
 	}
 	
-	private static EntityDrop load1(BitInput input, ItemSetBase set) {
-		return new EntityDrop(CIEntityType.getByOrdinal(input.readInt()), input.readString(), Drop.load1(input, set));
+	private static EntityDrop load1(
+			BitInput input, 
+			BiFunction<String, Byte, Object> createCustomItemResultByName
+	) {
+		return new EntityDrop(
+				CIEntityType.getByOrdinal(input.readInt()), 
+				input.readString(), Drop.load1(input, createCustomItemResultByName)
+		);
+	}
+	
+	private static EntityDrop load2(
+			BitInput input, 
+			ExceptionSupplier<Object, UnknownEncodingException> loadResult
+	) throws UnknownEncodingException {
+		return new EntityDrop(
+				CIEntityType.getByOrdinal(input.readInt()), 
+				input.readString(), Drop.load2(input, loadResult)
+		);
 	}
 	
 	private CIEntityType entity;
@@ -36,15 +61,23 @@ public class EntityDrop {
 		return drop + " for " + entity + (requiredName == null ? "" : " named " + requiredName);
 	}
 	
-	public void save(BitOutput output) {
-		save1(output);
+	public void save(BitOutput output, Consumer<Object> saveResult) {
+		save2(output, saveResult);
 	}
 	
+	/*
 	protected void save1(BitOutput output) {
 		output.addByte(DropEncoding.Entity.ENCODING1);
 		output.addInt(entity.ordinal());
 		output.addString(requiredName);
 		drop.save1(output);
+	}*/
+	
+	protected void save2(BitOutput output, Consumer<Object> saveResult) {
+		output.addByte(DropEncoding.Entity.ENCODING2);
+		output.addInt(entity.ordinal());
+		output.addString(requiredName);
+		drop.save2(output, saveResult);
 	}
 	
 	public CIEntityType getEntityType() {

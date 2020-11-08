@@ -65,6 +65,7 @@ import java.util.logging.Level;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.GameMode;
+import org.bukkit.Location;
 import org.bukkit.Sound;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.block.Block;
@@ -123,6 +124,7 @@ import org.bukkit.plugin.Plugin;
 import nl.knokko.core.plugin.CorePlugin;
 import nl.knokko.core.plugin.item.ItemHelper;
 import nl.knokko.customitems.damage.DamageSource;
+import nl.knokko.customitems.drops.BlockDrop;
 import nl.knokko.customitems.drops.Drop;
 import nl.knokko.customitems.effect.PotionEffect;
 import nl.knokko.customitems.item.CIMaterial;
@@ -617,45 +619,77 @@ public class CustomItemsEventHandler implements Listener {
 							}
 						}
 	}
+	
+	private boolean collectDrops(Collection<ItemStack> stacksToDrop, Drop drop, Random random) {
+		ItemStack stackToDrop = (ItemStack) drop.getDropTable().pickResult(random);
+		boolean cancelDefaultDrops = false;
+		
+		if (stackToDrop != null) {
+			
+			// Cloning prevents very nasty errors
+			stackToDrop = stackToDrop.clone();
+
+			if (drop.cancelNormalDrop()) {
+				cancelDefaultDrops = true;
+			}
+			
+			CustomItem itemToDrop = set().getItem(stackToDrop);
+			for (ItemStack potentialMerge : stacksToDrop) {
+				if (stackToDrop.isSimilar(potentialMerge)) {
+					
+					int remainingAmount;
+					if (itemToDrop == null) {
+						remainingAmount = potentialMerge.getMaxStackSize() - potentialMerge.getAmount();
+					} else {
+						remainingAmount = itemToDrop.getMaxStacksize() - potentialMerge.getAmount();
+					}
+					
+					if (remainingAmount > 0) {
+						int consumedAmount = Math.min(remainingAmount, stackToDrop.getAmount());
+						stackToDrop.setAmount(stackToDrop.getAmount() - consumedAmount);
+						potentialMerge.setAmount(potentialMerge.getAmount() + consumedAmount);
+						if (stackToDrop.getAmount() <= 0) {
+							break;
+						}
+					}
+				}
+			}
+			
+			if (stackToDrop.getAmount() > 0) {
+				stacksToDrop.add(stackToDrop);
+			}
+		}
+		
+		return cancelDefaultDrops;
+	}
 
 	// Use the highest priority because we want to ignore the event in case it is cancelled
 	// and we may need to modify the setDropItems flag of the event
 	@EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
 	public void onBlockBreak(BlockBreakEvent event) {
 		ItemSet set = set();
-		Drop[] customDrops = set.getDrops(CIMaterial.getOrNull(ItemHelper.getMaterialName(event.getBlock())));
+		
+		ItemStack mainItem = event.getPlayer().getInventory().getItemInMainHand();
+		boolean usedSilkTouch = mainItem != null && mainItem.containsEnchantment(Enchantment.SILK_TOUCH);
+		
+		BlockDrop[] customDrops = set.getDrops(
+				CIMaterial.getOrNull(ItemHelper.getMaterialName(event.getBlock()))
+		);
 
 		Random random = new Random();
 		boolean cancelDefaultDrops = false;
-		for (Drop drop : customDrops) {
-			if (drop.chooseToDrop(random)) {
-				if (drop.cancelNormalDrop()) {
+		Collection<ItemStack> stacksToDrop = new ArrayList<>();
+		
+		for (BlockDrop blockDrop : customDrops) {
+			if (!usedSilkTouch || blockDrop.allowSilkTouch()) {
+				Drop drop = blockDrop.getDrop();
+				if (collectDrops(stacksToDrop, drop, random)) {
 					cancelDefaultDrops = true;
 				}
-				int amountToDrop = drop.chooseDroppedAmount(random);
-				event.getBlock().getWorld().dropItemNaturally(event.getBlock().getLocation(), ((CustomItem) drop.getItemToDrop()).create(amountToDrop));
 			}
 		}
 		
-		ItemStack item = event.getPlayer().getInventory().getItemInMainHand();
-		CustomItem custom = null;
-		if (CustomItem.isCustom(item)) {
-			custom = set.getItem(item);
-			if (custom == null && interestingWarnings())
-				Bukkit.getLogger().warning("Interesting item: " + item);
-		}
-		
-		// Simple custom items with shear internal type should have normal drops
-		// instead of shear drops
-		if (custom != null && custom.getItemType() == CustomItemType.SHEARS && !(custom instanceof CustomShears)) {
-			cancelDefaultDrops = true;
-			
-			for (ItemStack normalDrop : event.getBlock().getDrops())
-				event.getBlock().getWorld().dropItemNaturally(event.getBlock().getLocation(), normalDrop);
-		}
-		
-		if (cancelDefaultDrops)
-			event.setDropItems(false);
+		CustomItem custom = set.getItem(mainItem);
 		
 		if (custom != null) {
 			final CustomItem finalCustom = custom;
@@ -664,8 +698,36 @@ public class CustomItemsEventHandler implements Listener {
 			
 			// Delay this to avoid messing around with other plug-ins
 			Bukkit.getScheduler().scheduleSyncDelayedTask(plugin(), () -> {
-				finalCustom.onBlockBreak(event.getPlayer(), item, event.getBlock(), wasSolid);
+				finalCustom.onBlockBreak(event.getPlayer(), mainItem, wasSolid);
 			});
+		}
+		
+		Location dropLocation = event.getBlock().getLocation().add(0.5, 0.5, 0.5);
+		
+		Bukkit.getScheduler().scheduleSyncDelayedTask(plugin(), () -> {
+			
+			// Delay spawning the items to ensure the block doesn't hinder it
+			for (ItemStack stackToDrop : stacksToDrop) {
+				event.getBlock().getWorld().dropItem(dropLocation, stackToDrop);
+			}
+		});
+
+		// Simple custom items with shear internal type should have normal drops
+		// instead of shear drops
+		if (!cancelDefaultDrops && custom != null && custom.getItemType() == CustomItemType.SHEARS && !(custom instanceof CustomShears)) {
+			cancelDefaultDrops = true;
+			Collection<ItemStack> regularDrops = event.getBlock().getDrops();
+			
+			// Delay spawning the items to ensure the block doesn't hinder it
+			Bukkit.getScheduler().scheduleSyncDelayedTask(plugin(), () -> {
+				for (ItemStack normalDrop : regularDrops) {
+					event.getBlock().getWorld().dropItem(dropLocation, normalDrop);
+				}
+			});
+		}
+		
+		if (cancelDefaultDrops) {
+			event.setDropItems(false);
 		}
 	}
 
@@ -674,14 +736,19 @@ public class CustomItemsEventHandler implements Listener {
 		Drop[] drops = set().getDrops(event.getEntity());
 		Random random = new Random();
 
+		boolean cancelDefaultDrops = false;
+		Collection<ItemStack> stacksToDrop = new ArrayList<>();
 		for (Drop drop : drops) {
-			if (drop.chooseToDrop(random)) {
-				if (drop.cancelNormalDrop()) {
-					event.getDrops().clear();
-				}
-				event.getDrops().add(((CustomItem) drop.getItemToDrop()).create(drop.chooseDroppedAmount(random)));
+			if (collectDrops(stacksToDrop, drop, random)) {
+				cancelDefaultDrops = true;
 			}
 		}
+		
+		if (cancelDefaultDrops) {
+			event.getDrops().clear();
+		}
+		
+		event.getDrops().addAll(stacksToDrop);
 	}
 
 	@EventHandler

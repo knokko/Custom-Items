@@ -111,7 +111,7 @@ public class ItemSet implements ItemSetBase {
 	private Collection<CustomFuelRegistry> fuelRegistries;
 	private Collection<CustomContainer> containers;
 	
-	private Drop[][] blockDropMap;
+	private BlockDrop[][] blockDropMap;
 	private EntityDrop[][] mobDropMap;
 	
 	private String[] deletedItems;
@@ -130,7 +130,7 @@ public class ItemSet implements ItemSetBase {
 		
 		containers = new ArrayList<>(0);
 		
-		blockDropMap = new Drop[BlockType.AMOUNT][0];
+		blockDropMap = new BlockDrop[BlockType.AMOUNT][0];
 		mobDropMap = new EntityDrop[CIEntityType.AMOUNT][0];
 		
 		errors = new ArrayList<>();
@@ -195,7 +195,7 @@ public class ItemSet implements ItemSetBase {
 			register(loadRecipe(input), counter);
 		
 		// There are no drops in this encoding
-		blockDropMap = new Drop[BlockType.AMOUNT][0];
+		blockDropMap = new BlockDrop[BlockType.AMOUNT][0];
 		mobDropMap = new EntityDrop[CIEntityType.AMOUNT][0];
 		
 		// There are no custom containers in this encoding
@@ -225,14 +225,22 @@ public class ItemSet implements ItemSetBase {
 			register(loadRecipe(input), counter);
 		
 		int numBlockDrops = input.readInt();
-		blockDropMap = new Drop[BlockType.AMOUNT][0];
-		for (int counter = 0; counter < numBlockDrops; counter++)
-			register(BlockDrop.load(input, this));
+		blockDropMap = new BlockDrop[BlockType.AMOUNT][0];
+		for (int counter = 0; counter < numBlockDrops; counter++) {
+			register(BlockDrop.load(
+					input, this::createCustomItemResultByName,
+					() -> loadResult(input)
+			));
+		}
 		
 		int numMobDrops = input.readInt();
 		mobDropMap = new EntityDrop[CIEntityType.AMOUNT][0];
-		for (int counter = 0; counter < numMobDrops; counter++)
-			register(EntityDrop.load(input, this));
+		for (int counter = 0; counter < numMobDrops; counter++) {
+			register(EntityDrop.load(
+					input, this::createCustomItemResultByName,
+					() -> loadResult(input)
+			));
+		}
 		
 		// There are no custom containers in this encoding
 		containers = new ArrayList<>(0);
@@ -279,14 +287,22 @@ public class ItemSet implements ItemSetBase {
 			register(loadRecipe(input), counter);
 		
 		int numBlockDrops = input.readInt();
-		blockDropMap = new Drop[BlockType.AMOUNT][0];
-		for (int counter = 0; counter < numBlockDrops; counter++)
-			register(BlockDrop.load(input, this));
+		blockDropMap = new BlockDrop[BlockType.AMOUNT][0];
+		for (int counter = 0; counter < numBlockDrops; counter++) {
+			register(BlockDrop.load(
+					input, this::createCustomItemResultByName,
+					() -> loadResult(input)
+			));
+		}
 		
 		int numMobDrops = input.readInt();
 		mobDropMap = new EntityDrop[CIEntityType.AMOUNT][0];
-		for (int counter = 0; counter < numMobDrops; counter++)
-			register(EntityDrop.load(input, this));
+		for (int counter = 0; counter < numMobDrops; counter++) {
+			register(EntityDrop.load(
+					input, this::createCustomItemResultByName,
+					() -> loadResult(input)
+			));
+		}
 		
 		// There are no custom containers in this encoding
 		containers = new ArrayList<>(0);
@@ -296,13 +312,13 @@ public class ItemSet implements ItemSetBase {
 		deletedItems = new String[0];
 	}
 	
-	private void load6(BitInput input) throws UnknownEncodingException, IntegrityException, UnknownMaterialException {
+	private void load6(BitInput rawInput) throws UnknownEncodingException, IntegrityException, UnknownMaterialException {
 		
-		long expectedHash = input.readLong();
+		long expectedHash = rawInput.readLong();
 		byte[] content;
 		try {
 			// Catch undefined behavior
-			content = input.readByteArray();
+			content = rawInput.readByteArray();
 		} catch (Throwable t) {
 			throw new IntegrityException(t);
 		}
@@ -311,7 +327,7 @@ public class ItemSet implements ItemSetBase {
 			throw new IntegrityException(expectedHash, actualHash);
 		}
 		
-		input = new ByteArrayBitInput(content);
+		BitInput input = new ByteArrayBitInput(content);
 		
 		// We don't store the export time in this encoding, but we do store a hash
 		// Make it negative to prevent collisions with real export times
@@ -348,14 +364,22 @@ public class ItemSet implements ItemSetBase {
 			register(loadRecipe(input), counter);
 		
 		int numBlockDrops = input.readInt();
-		blockDropMap = new Drop[BlockType.AMOUNT][0];
-		for (int counter = 0; counter < numBlockDrops; counter++)
-			register(BlockDrop.load(input, this));
+		blockDropMap = new BlockDrop[BlockType.AMOUNT][0];
+		for (int counter = 0; counter < numBlockDrops; counter++) {
+			register(BlockDrop.load(
+					input, this::createCustomItemResultByName,
+					() -> loadResult(input)
+			));
+		}
 		
 		int numMobDrops = input.readInt();
 		mobDropMap = new EntityDrop[CIEntityType.AMOUNT][0];
-		for (int counter = 0; counter < numMobDrops; counter++)
-			register(EntityDrop.load(input, this));
+		for (int counter = 0; counter < numMobDrops; counter++) {
+			register(EntityDrop.load(
+					input, this::createCustomItemResultByName,
+					() -> loadResult(input)
+			));
+		}
 		
 		// There are no custom containers in this encoding
 		containers = new ArrayList<>(0);
@@ -365,13 +389,13 @@ public class ItemSet implements ItemSetBase {
 		deletedItems = new String[0];
 	}
 	
-	private void load7(BitInput input) throws UnknownEncodingException, IntegrityException, UnknownMaterialException {
+	private void load7(BitInput rawInput) throws UnknownEncodingException, IntegrityException, UnknownMaterialException {
 		
-		long expectedHash = input.readLong();
+		long expectedHash = rawInput.readLong();
 		byte[] content;
 		try {
 			// Catch undefined behavior
-			content = input.readByteArray();
+			content = rawInput.readByteArray();
 		} catch (Throwable t) {
 			throw new IntegrityException(t);
 		}
@@ -380,7 +404,7 @@ public class ItemSet implements ItemSetBase {
 			throw new IntegrityException(expectedHash, actualHash);
 		}
 		
-		input = new ByteArrayBitInput(content);
+		BitInput input = new ByteArrayBitInput(content);
 		
 		// We don't store the export time in this encoding, but we do store a hash
 		// Make it negative to prevent collisions with real export times
@@ -417,14 +441,22 @@ public class ItemSet implements ItemSetBase {
 			register(loadRecipe(input), counter);
 		
 		int numBlockDrops = input.readInt();
-		blockDropMap = new Drop[BlockType.AMOUNT][0];
-		for (int counter = 0; counter < numBlockDrops; counter++)
-			register(BlockDrop.load(input, this));
+		blockDropMap = new BlockDrop[BlockType.AMOUNT][0];
+		for (int counter = 0; counter < numBlockDrops; counter++) {
+			register(BlockDrop.load(
+					input, this::createCustomItemResultByName,
+					() -> loadResult(input)
+			));
+		}
 		
 		int numMobDrops = input.readInt();
 		mobDropMap = new EntityDrop[CIEntityType.AMOUNT][0];
-		for (int counter = 0; counter < numMobDrops; counter++)
-			register(EntityDrop.load(input, this));
+		for (int counter = 0; counter < numMobDrops; counter++) {
+			register(EntityDrop.load(
+					input, this::createCustomItemResultByName,
+					() -> loadResult(input)
+			));
+		}
 		
 		// Custom containers & fuel registries
 		int numFuelRegistries = input.readInt();
@@ -443,13 +475,13 @@ public class ItemSet implements ItemSetBase {
 		deletedItems = new String[0];
 	}
 	
-	private void load8(BitInput input) throws UnknownEncodingException, IntegrityException, UnknownMaterialException {
+	private void load8(BitInput rawInput) throws UnknownEncodingException, IntegrityException, UnknownMaterialException {
 		
-		long expectedHash = input.readLong();
+		long expectedHash = rawInput.readLong();
 		byte[] content;
 		try {
 			// Catch undefined behavior
-			content = input.readByteArray();
+			content = rawInput.readByteArray();
 		} catch (Throwable t) {
 			throw new IntegrityException(t);
 		}
@@ -458,7 +490,7 @@ public class ItemSet implements ItemSetBase {
 			throw new IntegrityException(expectedHash, actualHash);
 		}
 		
-		input = new ByteArrayBitInput(content);
+		BitInput input = new ByteArrayBitInput(content);
 		
 		CustomItemsPlugin.getInstance().setExportTime(input.readLong());
 		
@@ -493,14 +525,22 @@ public class ItemSet implements ItemSetBase {
 			register(loadRecipe(input), counter);
 		
 		int numBlockDrops = input.readInt();
-		blockDropMap = new Drop[BlockType.AMOUNT][0];
-		for (int counter = 0; counter < numBlockDrops; counter++)
-			register(BlockDrop.load(input, this));
+		blockDropMap = new BlockDrop[BlockType.AMOUNT][0];
+		for (int counter = 0; counter < numBlockDrops; counter++) {
+			register(BlockDrop.load(
+					input, this::createCustomItemResultByName,
+					() -> loadResult(input)
+			));
+		}
 		
 		int numMobDrops = input.readInt();
 		mobDropMap = new EntityDrop[CIEntityType.AMOUNT][0];
-		for (int counter = 0; counter < numMobDrops; counter++)
-			register(EntityDrop.load(input, this));
+		for (int counter = 0; counter < numMobDrops; counter++) {
+			register(EntityDrop.load(
+					input, this::createCustomItemResultByName,
+					() -> loadResult(input)
+			));
+		}
 		
 		// Custom containers & fuel registries
 		int numFuelRegistries = input.readInt();
@@ -533,6 +573,10 @@ public class ItemSet implements ItemSetBase {
 				() -> loadIngredient(input),
 				() -> loadResult(input)
 		);
+	}
+	
+	private ItemStack createCustomItemResultByName(String itemName, Byte amount) {
+		return getItem(itemName).create(amount);
 	}
 	
 	private CustomItem loadItem(BitInput input) throws UnknownEncodingException {
@@ -1654,22 +1698,24 @@ public class ItemSet implements ItemSetBase {
 	}
 	
 	private void register(BlockDrop drop) {
-		Drop[] old = blockDropMap[drop.getBlock().ordinal()];
-		Drop[] newDrops = Arrays.copyOf(old, old.length + 1);
-		newDrops[old.length] = drop.getDrop();
+		BlockDrop[] old = blockDropMap[drop.getBlock().ordinal()];
+		BlockDrop[] newDrops = Arrays.copyOf(old, old.length + 1);
+		newDrops[old.length] = drop;
 		blockDropMap[drop.getBlock().ordinal()] = newDrops;
 	}
 	
+	private static final BlockDrop[] NO_BLOCK_DROPS = {};
+	
 	private static final Drop[] NO_DROPS = {};
 	
-	public Drop[] getDrops(CIMaterial block) {
+	public BlockDrop[] getDrops(CIMaterial block) {
 		if (block == null)
-			return NO_DROPS;
+			return NO_BLOCK_DROPS;
 		BlockType blockType = BlockType.fromBukkitMaterial(block);
 		if (blockType != null) {
 			return blockDropMap[blockType.ordinal()];
 		} else {
-			return NO_DROPS;
+			return NO_BLOCK_DROPS;
 		}
 	}
 	

@@ -26,7 +26,6 @@ package nl.knokko.customitems.plugin.set.item;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.bukkit.block.Block;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
@@ -154,7 +153,7 @@ public class CustomTool extends CustomItem {
 	}
 	
 	@Override
-	public void onBlockBreak(Player player, ItemStack tool, Block block, boolean wasSolid) {
+	public void onBlockBreak(Player player, ItemStack tool, boolean wasSolid) {
 		if (wasSolid && blockBreakDurabilityLoss != 0) {
 			
 			ItemStack decreased = decreaseDurability(tool, blockBreakDurabilityLoss);

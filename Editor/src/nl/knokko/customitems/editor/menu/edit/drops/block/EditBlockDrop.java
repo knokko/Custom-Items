@@ -9,6 +9,7 @@ import nl.knokko.customitems.editor.menu.edit.drops.SelectDrop;
 import nl.knokko.customitems.editor.set.ItemSet;
 import nl.knokko.gui.color.GuiColor;
 import nl.knokko.gui.component.GuiComponent;
+import nl.knokko.gui.component.image.CheckboxComponent;
 import nl.knokko.gui.component.menu.GuiMenu;
 import nl.knokko.gui.component.text.dynamic.DynamicTextButton;
 import nl.knokko.gui.component.text.dynamic.DynamicTextComponent;
@@ -22,6 +23,7 @@ public class EditBlockDrop extends GuiMenu {
 	
 	private BlockType selectedBlock;
 	private Drop selectedDrop;
+	private boolean allowSilkTouch;
 	private final DynamicTextComponent errorComponent;
 	
 	public EditBlockDrop(ItemSet set, GuiComponent returnMenu, BlockDrop oldValues, BlockDrop toModify) {
@@ -33,9 +35,11 @@ public class EditBlockDrop extends GuiMenu {
 		if (oldValues == null) {
 			selectedBlock = BlockType.STONE;
 			selectedDrop = null;
+			allowSilkTouch = false;
 		} else {
 			selectedBlock = oldValues.getBlock();
 			selectedDrop = oldValues.getDrop();
+			allowSilkTouch = oldValues.allowSilkTouch();
 		}
 		this.errorComponent = new DynamicTextComponent("", EditProps.ERROR);
 	}
@@ -75,13 +79,17 @@ public class EditBlockDrop extends GuiMenu {
 		});
 		addComponent(changeButtons[1], 0.5f, 0.4f, 0.8f, 0.5f);
 		
+		CheckboxComponent silkTouchBox = new CheckboxComponent(allowSilkTouch);
+		addComponent(silkTouchBox, 0.3f, 0.2f, 0.325f, 0.225f);
+		addComponent(new DynamicTextComponent("Allow silk touch", EditProps.LABEL), 0.35f, 0.2f, 0.6f, 0.3f);
+		
 		if (toModify == null) {
 			addComponent(new DynamicTextButton("Create", EditProps.SAVE_BASE, EditProps.SAVE_HOVER, () -> {
 				if (selectedDrop == null) {
 					errorComponent.setText("You need to select the drop");
 					return;
 				}
-				String error = set.addBlockDrop(new BlockDrop(selectedBlock, selectedDrop));
+				String error = set.addBlockDrop(new BlockDrop(selectedBlock, silkTouchBox.isChecked(), selectedDrop));
 				if (error == null) {
 					state.getWindow().setMainComponent(returnMenu);
 				} else {

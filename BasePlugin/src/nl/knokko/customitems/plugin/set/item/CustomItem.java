@@ -27,7 +27,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
-import org.bukkit.block.Block;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
@@ -182,7 +181,7 @@ public abstract class CustomItem extends nl.knokko.customitems.item.CustomItem i
     	return false;
     }
     
-    public void onBlockBreak(Player player, ItemStack item, Block block, boolean wasSolid) {}
+    public void onBlockBreak(Player player, ItemStack item, boolean wasSolid) {}
     
     public void onEntityHit(LivingEntity attacker, ItemStack weapon, Entity target) {
     	Collection<org.bukkit.potion.PotionEffect> pe = new ArrayList<org.bukkit.potion.PotionEffect>();

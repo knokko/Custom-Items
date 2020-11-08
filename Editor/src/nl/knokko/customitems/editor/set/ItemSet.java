@@ -123,6 +123,7 @@ import nl.knokko.customitems.projectile.ProjectileCover;
 import nl.knokko.customitems.projectile.effects.ProjectileEffect;
 import nl.knokko.customitems.projectile.effects.ProjectileEffects;
 import nl.knokko.customitems.recipe.ContainerRecipe;
+import nl.knokko.customitems.recipe.OutputTable;
 import nl.knokko.customitems.recipe.ContainerRecipe.InputEntry;
 import nl.knokko.customitems.recipe.ContainerRecipe.OutputEntry;
 import nl.knokko.customitems.trouble.IntegrityException;
@@ -1613,13 +1614,21 @@ public class ItemSet implements ItemSetBase {
 		// Drops
 		int numBlockDrops = input.readInt();
 		blockDrops = new ArrayList<>(numBlockDrops);
-		for (int counter = 0; counter < numBlockDrops; counter++)
-			blockDrops.add(BlockDrop.load(input, this));
+		for (int counter = 0; counter < numBlockDrops; counter++) {
+			blockDrops.add(BlockDrop.load(
+					input, this::createCustomItemResult, 
+					() -> Recipe.loadResult(input, this)
+			));
+		}
 		
 		int numMobDrops = input.readInt();
 		mobDrops = new ArrayList<>(numMobDrops);
-		for (int counter = 0; counter < numMobDrops; counter++)
-			mobDrops.add(EntityDrop.load(input, this));
+		for (int counter = 0; counter < numMobDrops; counter++) {
+			mobDrops.add(EntityDrop.load(
+					input, this::createCustomItemResult, 
+					() -> Recipe.loadResult(input, this)
+			));
+		}
 		
 		// Projectiles (there are no projectiles in this encoding)
 		projectileCovers = new ArrayList<>();
@@ -1662,13 +1671,21 @@ public class ItemSet implements ItemSetBase {
 		// Drops
 		int numBlockDrops = input.readInt();
 		blockDrops = new ArrayList<>(numBlockDrops);
-		for (int counter = 0; counter < numBlockDrops; counter++)
-			blockDrops.add(BlockDrop.load(input, this));
+		for (int counter = 0; counter < numBlockDrops; counter++) {
+			blockDrops.add(BlockDrop.load(
+					input, this::createCustomItemResult, 
+					() -> Recipe.loadResult(input, this)
+			));
+		}
 		
 		int numMobDrops = input.readInt();
 		mobDrops = new ArrayList<>(numMobDrops);
-		for (int counter = 0; counter < numMobDrops; counter++)
-			mobDrops.add(EntityDrop.load(input, this));
+		for (int counter = 0; counter < numMobDrops; counter++) {
+			mobDrops.add(EntityDrop.load(
+					input, this::createCustomItemResult, 
+					() -> Recipe.loadResult(input, this)
+			));
+		}
 		
 		// Projectiles (there are no projectiles in this encoding)
 		projectileCovers = new ArrayList<>();
@@ -1727,13 +1744,21 @@ public class ItemSet implements ItemSetBase {
 		// Drops
 		int numBlockDrops = input.readInt();
 		blockDrops = new ArrayList<>(numBlockDrops);
-		for (int counter = 0; counter < numBlockDrops; counter++)
-			blockDrops.add(BlockDrop.load(input, this));
+		for (int counter = 0; counter < numBlockDrops; counter++) {
+			blockDrops.add(BlockDrop.load(
+					input, this::createCustomItemResult, 
+					() -> Recipe.loadResult(input, this)
+			));
+		}
 		
 		int numMobDrops = input.readInt();
 		mobDrops = new ArrayList<>(numMobDrops);
-		for (int counter = 0; counter < numMobDrops; counter++)
-			mobDrops.add(EntityDrop.load(input, this));
+		for (int counter = 0; counter < numMobDrops; counter++) {
+			mobDrops.add(EntityDrop.load(
+					input, this::createCustomItemResult, 
+					() -> Recipe.loadResult(input, this)
+			));
+		}
 		
 		// Containers (there are no containers in this encoding)
 		fuelRegistries = new ArrayList<>();
@@ -1743,14 +1768,14 @@ public class ItemSet implements ItemSetBase {
 		deletedItems = new ArrayList<>();
 	}
 	
-	private void load6(BitInput input) 
+	private void load6(BitInput rawInput) 
 			throws UnknownEncodingException, IntegrityException, IOException {
 		// Check integrity
-		long expectedHash = input.readLong();
+		long expectedHash = rawInput.readLong();
 		byte[] remaining;
 		try {
 			// Catch undefined behavior when the remaining size is wrong
-			remaining = input.readByteArray();
+			remaining = rawInput.readByteArray();
 		} catch (Throwable t) {
 			throw new IntegrityException(t);
 		}
@@ -1758,7 +1783,7 @@ public class ItemSet implements ItemSetBase {
 		if (expectedHash != actualHash)
 			throw new IntegrityException(expectedHash, actualHash);
 		
-		input = new ByteArrayBitInput(remaining);
+		BitInput input = new ByteArrayBitInput(remaining);
 		
 		// Textures
 		int textureAmount = input.readInt();
@@ -1804,13 +1829,21 @@ public class ItemSet implements ItemSetBase {
 		// Drops
 		int numBlockDrops = input.readInt();
 		blockDrops = new ArrayList<>(numBlockDrops);
-		for (int counter = 0; counter < numBlockDrops; counter++)
-			blockDrops.add(BlockDrop.load(input, this));
+		for (int counter = 0; counter < numBlockDrops; counter++) {
+			blockDrops.add(BlockDrop.load(
+					input, this::createCustomItemResult, 
+					() -> Recipe.loadResult(input, this)
+			));
+		}
 		
 		int numMobDrops = input.readInt();
 		mobDrops = new ArrayList<>(numMobDrops);
-		for (int counter = 0; counter < numMobDrops; counter++)
-			mobDrops.add(EntityDrop.load(input, this));
+		for (int counter = 0; counter < numMobDrops; counter++) {
+			mobDrops.add(EntityDrop.load(
+					input, this::createCustomItemResult, 
+					() -> Recipe.loadResult(input, this)
+			));
+		}
 		
 		// Containers (there are no containers in this encoding)
 		fuelRegistries = new ArrayList<>();
@@ -1820,14 +1853,14 @@ public class ItemSet implements ItemSetBase {
 		deletedItems = new ArrayList<>();
 	}
 	
-	private void load7(BitInput input) 
+	private void load7(BitInput rawInput) 
 			throws UnknownEncodingException, IntegrityException, IOException {
 		// Check integrity
-		long expectedHash = input.readLong();
+		long expectedHash = rawInput.readLong();
 		byte[] remaining;
 		try {
 			// Catch undefined behavior when the remaining size is wrong
-			remaining = input.readByteArray();
+			remaining = rawInput.readByteArray();
 		} catch (Throwable t) {
 			throw new IntegrityException(t);
 		}
@@ -1835,7 +1868,7 @@ public class ItemSet implements ItemSetBase {
 		if (expectedHash != actualHash)
 			throw new IntegrityException(expectedHash, actualHash);
 		
-		input = new ByteArrayBitInput(remaining);
+		BitInput input = new ByteArrayBitInput(remaining);
 		
 		// Textures
 		int textureAmount = input.readInt();
@@ -1881,13 +1914,21 @@ public class ItemSet implements ItemSetBase {
 		// Drops
 		int numBlockDrops = input.readInt();
 		blockDrops = new ArrayList<>(numBlockDrops);
-		for (int counter = 0; counter < numBlockDrops; counter++)
-			blockDrops.add(BlockDrop.load(input, this));
+		for (int counter = 0; counter < numBlockDrops; counter++) {
+			blockDrops.add(BlockDrop.load(
+					input, this::createCustomItemResult, 
+					() -> Recipe.loadResult(input, this)
+			));
+		}
 		
 		int numMobDrops = input.readInt();
 		mobDrops = new ArrayList<>(numMobDrops);
-		for (int counter = 0; counter < numMobDrops; counter++)
-			mobDrops.add(EntityDrop.load(input, this));
+		for (int counter = 0; counter < numMobDrops; counter++) {
+			mobDrops.add(EntityDrop.load(
+					input, this::createCustomItemResult, 
+					() -> Recipe.loadResult(input, this)
+			));
+		}
 		
 		// Custom containers and fuel registries
 		int numFuelRegistries = input.readInt();
@@ -1906,14 +1947,14 @@ public class ItemSet implements ItemSetBase {
 		deletedItems = new ArrayList<>();
 	}
 	
-	private void load8(BitInput input) 
+	private void load8(BitInput rawInput) 
 			throws UnknownEncodingException, IntegrityException, IOException {
 		// Check integrity
-		long expectedHash = input.readLong();
+		long expectedHash = rawInput.readLong();
 		byte[] remaining;
 		try {
 			// Catch undefined behavior when the remaining size is wrong
-			remaining = input.readByteArray();
+			remaining = rawInput.readByteArray();
 		} catch (Throwable t) {
 			throw new IntegrityException(t);
 		}
@@ -1921,7 +1962,7 @@ public class ItemSet implements ItemSetBase {
 		if (expectedHash != actualHash)
 			throw new IntegrityException(expectedHash, actualHash);
 		
-		input = new ByteArrayBitInput(remaining);
+		BitInput input = new ByteArrayBitInput(remaining);
 		
 		// Textures
 		int textureAmount = input.readInt();
@@ -1967,13 +2008,21 @@ public class ItemSet implements ItemSetBase {
 		// Drops
 		int numBlockDrops = input.readInt();
 		blockDrops = new ArrayList<>(numBlockDrops);
-		for (int counter = 0; counter < numBlockDrops; counter++)
-			blockDrops.add(BlockDrop.load(input, this));
+		for (int counter = 0; counter < numBlockDrops; counter++) {
+			blockDrops.add(BlockDrop.load(
+					input, this::createCustomItemResult, 
+					() -> Recipe.loadResult(input, this)
+			));
+		}
 		
 		int numMobDrops = input.readInt();
 		mobDrops = new ArrayList<>(numMobDrops);
-		for (int counter = 0; counter < numMobDrops; counter++)
-			mobDrops.add(EntityDrop.load(input, this));
+		for (int counter = 0; counter < numMobDrops; counter++) {
+			mobDrops.add(EntityDrop.load(
+					input, this::createCustomItemResult, 
+					() -> Recipe.loadResult(input, this)
+			));
+		}
 		
 		// Custom containers and fuel registries
 		int numFuelRegistries = input.readInt();
@@ -3315,11 +3364,11 @@ public class ItemSet implements ItemSetBase {
 		// Drops
 		output.addInt(blockDrops.size());
 		for (BlockDrop drop : blockDrops)
-			drop.save(output);
+			drop.save(output, result -> ((Result) result).save(output));
 		
 		output.addInt(mobDrops.size());
 		for (EntityDrop drop : mobDrops)
-			drop.save(output);
+			drop.save(output, result -> ((Result) result).save(output));
 	}
 	
 	// ENCODING_4 is editor-only, so it doesn't have its own export method
@@ -3350,11 +3399,11 @@ public class ItemSet implements ItemSetBase {
 		// Drops
 		output.addInt(blockDrops.size());
 		for (BlockDrop drop : blockDrops)
-			drop.save(output);
+			drop.save(output, result -> ((Result) result).save(output));
 		
 		output.addInt(mobDrops.size());
 		for (EntityDrop drop : mobDrops)
-			drop.save(output);
+			drop.save(output, result -> ((Result) result).save(output));
 	}
 	
 	// Add integrity checks
@@ -3394,11 +3443,11 @@ public class ItemSet implements ItemSetBase {
 		// Drops
 		output.addInt(blockDrops.size());
 		for (BlockDrop drop : blockDrops)
-			drop.save(output);
+			drop.save(output, result -> ((Result) result).save(output));
 		
 		output.addInt(mobDrops.size());
 		for (EntityDrop drop : mobDrops)
-			drop.save(output);
+			drop.save(output, result -> ((Result) result).save(output));
 		
 		// Finish the integrity stuff
 		byte[] contentBytes = output.getBytes();
@@ -3443,11 +3492,11 @@ public class ItemSet implements ItemSetBase {
 		// Drops
 		output.addInt(blockDrops.size());
 		for (BlockDrop drop : blockDrops)
-			drop.save(output);
+			drop.save(output, result -> ((Result) result).save(output));
 		
 		output.addInt(mobDrops.size());
 		for (EntityDrop drop : mobDrops)
-			drop.save(output);
+			drop.save(output, result -> ((Result) result).save(output));
 		
 		// Fuel registries
 		output.addInt(fuelRegistries.size());
@@ -3508,11 +3557,11 @@ public class ItemSet implements ItemSetBase {
 		// Drops
 		output.addInt(blockDrops.size());
 		for (BlockDrop drop : blockDrops)
-			drop.save(output);
+			drop.save(output, result -> ((Result) result).save(output));
 		
 		output.addInt(mobDrops.size());
 		for (EntityDrop drop : mobDrops)
-			drop.save(output);
+			drop.save(output, result -> ((Result) result).save(output));
 		
 		// Fuel registries
 		output.addInt(fuelRegistries.size());
@@ -3664,11 +3713,11 @@ public class ItemSet implements ItemSetBase {
 		
 		output.addInt(blockDrops.size());
 		for (BlockDrop drop : blockDrops)
-			drop.save(output);
+			drop.save(output, result -> ((Result) result).save(output));
 		
 		output.addInt(mobDrops.size());
 		for (EntityDrop drop : mobDrops)
-			drop.save(output);
+			drop.save(output, result -> ((Result) result).save(output));
 	}
 	
 	// Use CustomItem.save2 instead of CustomItem.save1
@@ -3707,11 +3756,11 @@ public class ItemSet implements ItemSetBase {
 		
 		output.addInt(blockDrops.size());
 		for (BlockDrop drop : blockDrops)
-			drop.save(output);
+			drop.save(output, result -> ((Result) result).save(output));
 		
 		output.addInt(mobDrops.size());
 		for (EntityDrop drop : mobDrops)
-			drop.save(output);
+			drop.save(output, result -> ((Result) result).save(output));
 	}
 	
 	// Add projectiles
@@ -3759,11 +3808,11 @@ public class ItemSet implements ItemSetBase {
 		
 		output.addInt(blockDrops.size());
 		for (BlockDrop drop : blockDrops)
-			drop.save(output);
+			drop.save(output, result -> ((Result) result).save(output));
 		
 		output.addInt(mobDrops.size());
 		for (EntityDrop drop : mobDrops)
-			drop.save(output);
+			drop.save(output, result -> ((Result) result).save(output));
 	}
 	
 	// Add integrity check
@@ -3815,11 +3864,11 @@ public class ItemSet implements ItemSetBase {
 		
 		output.addInt(blockDrops.size());
 		for (BlockDrop drop : blockDrops)
-			drop.save(output);
+			drop.save(output, result -> ((Result) result).save(output));
 		
 		output.addInt(mobDrops.size());
 		for (EntityDrop drop : mobDrops)
-			drop.save(output);
+			drop.save(output, result -> ((Result) result).save(output));
 		
 		// Finish the integrity work
 		byte[] contentBytes = output.getBytes();
@@ -3876,11 +3925,11 @@ public class ItemSet implements ItemSetBase {
 		
 		output.addInt(blockDrops.size());
 		for (BlockDrop drop : blockDrops)
-			drop.save(output);
+			drop.save(output, result -> ((Result) result).save(output));
 		
 		output.addInt(mobDrops.size());
 		for (EntityDrop drop : mobDrops)
-			drop.save(output);
+			drop.save(output, result -> ((Result) result).save(output));
 		
 		output.addInt(fuelRegistries.size());
 		for (CustomFuelRegistry registry : fuelRegistries)
@@ -3948,11 +3997,11 @@ public class ItemSet implements ItemSetBase {
 		
 		output.addInt(blockDrops.size());
 		for (BlockDrop drop : blockDrops)
-			drop.save(output);
+			drop.save(output, result -> ((Result) result).save(output));
 		
 		output.addInt(mobDrops.size());
 		for (EntityDrop drop : mobDrops)
-			drop.save(output);
+			drop.save(output, result -> ((Result) result).save(output));
 		
 		output.addInt(fuelRegistries.size());
 		for (CustomFuelRegistry registry : fuelRegistries)
@@ -4981,13 +5030,23 @@ public class ItemSet implements ItemSetBase {
 				}
 			}
 			for (EntityDrop drop : mobDrops) {
-				if (drop.getDrop().getItemToDrop() == item) {
-					return "There is a mob drop for " + drop.getEntityType() + " that drops this item.";
+				for (OutputTable.Entry entry : drop.getDrop().getDropTable().getEntries()) {
+					if (entry.getResult() instanceof CustomItemResult) {
+						CustomItemResult result = (CustomItemResult) entry.getResult();
+						if (result.getItem() == item) {
+							return "There is a mob drop for " + drop.getEntityType() + " that can drop this item.";
+						}
+					}
 				}
 			}
 			for (BlockDrop drop : blockDrops) {
-				if (drop.getDrop().getItemToDrop() == item) {
-					return "There is a block drop for " + drop.getBlock() + " that drops this item.";
+				for (OutputTable.Entry entry : drop.getDrop().getDropTable().getEntries()) {
+					if (entry.getResult() instanceof CustomItemResult) {
+						CustomItemResult result = (CustomItemResult) entry.getResult();
+						if (result.getItem() == item) {
+							return "There is a block drop for " + drop.getBlock() + " that can drop this item.";
+						}
+					}
 				}
 			}
 			for (CustomFuelRegistry registry : fuelRegistries) {
@@ -5126,25 +5185,13 @@ public class ItemSet implements ItemSetBase {
 	}
 	
 	private String validateDrop(Drop d) {
-		if (d == null)
+		if (d == null) {
 			return "The drop is null";
-		if (d.getItemToDrop() == null)
-			return "The item to drop is null";
-		if (d.getMinDropAmount() < 1)
-			return "The minimum drop amount must be at least 1";
-		if (d.getMinDropAmount() > 64)
-			return "The minimum drop amount must be at most 64";
-		if (d.getMaxDropAmount() < 1)
-			return "The maximum drop amount must be at least 1";
-		if (d.getMaxDropAmount() > 64)
-			return "The maximum drop amount must be at most 64";
-		if (d.getMaxDropAmount() < d.getMinDropAmount())
-			return "The maximum drop amount can't be smaller than the minimum drop amount";
-		if (d.getDropChance() < 1)
-			return "The drop chance must be at least 1";
-		if (d.getDropChance() > 100)
-			return "The drop chance must be at most 100";
-		return null;
+		}
+		if (d.getDropTable() == null) {
+			return "The drop table is null";
+		}
+		return d.getDropTable().validate();
 	}
 	
 	public String addBlockDrop(BlockDrop drop) {
@@ -5885,5 +5932,10 @@ public class ItemSet implements ItemSetBase {
 		}
 		
 		return null;
+	}
+	
+	private CustomItemResult createCustomItemResult(String itemName, byte amount) {
+		CustomItem item = getCustomItemByName(itemName);
+		return new CustomItemResult(item, amount);
 	}
 }

@@ -104,7 +104,7 @@ public class ChooseResult extends GuiMenu {
 		addComponent(new ConditionalTextButton("Select", EditProps.BUTTON, EditProps.HOVER, () -> {
 			try {
 				int amount = Integer.parseInt(amountField.getText());
-				if (amount > 0 && amount < 64) {
+				if (amount > 0 && amount <= 64) {
 					listener.onSelect(current.amountClone((byte) amount));
 					state.getWindow().setMainComponent(returnMenu);
 				} else {
