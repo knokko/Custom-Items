@@ -620,7 +620,24 @@ public class CustomItemsEventHandler implements Listener {
 						}
 	}
 	
-	private boolean collectDrops(Collection<ItemStack> stacksToDrop, Drop drop, Random random) {
+	private boolean collectDrops(Collection<ItemStack> stacksToDrop, Drop drop, Random random, CustomItem mainItem) {
+		
+		// Make sure the required held items of drops are really required
+		boolean shouldDrop = true;
+		if (!drop.getRequiredHeldItems().isEmpty()) {
+			shouldDrop = false;
+			for (nl.knokko.customitems.item.CustomItem candidateItem : drop.getRequiredHeldItems()) {
+				if (candidateItem == mainItem) {
+					shouldDrop = true;
+					break;
+				}
+			}
+		}
+		
+		if (!shouldDrop) {
+			return false;
+		}
+		
 		ItemStack stackToDrop = (ItemStack) drop.getDropTable().pickResult(random);
 		boolean cancelDefaultDrops = false;
 		
@@ -671,6 +688,7 @@ public class CustomItemsEventHandler implements Listener {
 		
 		ItemStack mainItem = event.getPlayer().getInventory().getItemInMainHand();
 		boolean usedSilkTouch = mainItem != null && mainItem.containsEnchantment(Enchantment.SILK_TOUCH);
+		CustomItem custom = set.getItem(mainItem);
 		
 		BlockDrop[] customDrops = set.getDrops(
 				CIMaterial.getOrNull(ItemHelper.getMaterialName(event.getBlock()))
@@ -683,22 +701,18 @@ public class CustomItemsEventHandler implements Listener {
 		for (BlockDrop blockDrop : customDrops) {
 			if (!usedSilkTouch || blockDrop.allowSilkTouch()) {
 				Drop drop = blockDrop.getDrop();
-				if (collectDrops(stacksToDrop, drop, random)) {
+				if (collectDrops(stacksToDrop, drop, random, custom)) {
 					cancelDefaultDrops = true;
 				}
 			}
 		}
 		
-		CustomItem custom = set.getItem(mainItem);
-		
 		if (custom != null) {
-			final CustomItem finalCustom = custom;
-			
 			boolean wasSolid = ItemHelper.isMaterialSolid(event.getBlock());
 			
 			// Delay this to avoid messing around with other plug-ins
 			Bukkit.getScheduler().scheduleSyncDelayedTask(plugin(), () -> {
-				finalCustom.onBlockBreak(event.getPlayer(), mainItem, wasSolid);
+				custom.onBlockBreak(event.getPlayer(), mainItem, wasSolid);
 			});
 		}
 		
@@ -735,11 +749,32 @@ public class CustomItemsEventHandler implements Listener {
 	public void onEntityDeath(EntityDeathEvent event) {
 		Drop[] drops = set().getDrops(event.getEntity());
 		Random random = new Random();
+		
+		CustomItem usedItem = null;
+		EntityDamageEvent lastDamageEvent = event.getEntity().getLastDamageCause();
+		Player killer = event.getEntity().getKiller();
+		if (lastDamageEvent != null && killer != null) {
+			CustomItem customMain = set().getItem(killer.getInventory().getItemInMainHand());
+			DamageCause cause = lastDamageEvent.getCause();
+			if (cause == DamageCause.ENTITY_ATTACK || cause == DamageCause.ENTITY_SWEEP_ATTACK) {
+				usedItem = customMain;
+			} else if (cause == DamageCause.PROJECTILE) {
+				if (customMain instanceof CustomBow) {
+					usedItem = customMain;
+				} else if (!ItemHelper.getMaterialName(killer.getInventory().getItemInMainHand()).equals(CIMaterial.BOW.name())){
+					CustomItem customOff = set().getItem(killer.getInventory().getItemInOffHand());
+					if (customOff instanceof CustomBow) {
+						usedItem = customOff;
+					}
+				}
+			}
+			// TODO Add more causes like tridents and wands someday
+		}
 
 		boolean cancelDefaultDrops = false;
 		Collection<ItemStack> stacksToDrop = new ArrayList<>();
 		for (Drop drop : drops) {
-			if (collectDrops(stacksToDrop, drop, random)) {
+			if (collectDrops(stacksToDrop, drop, random, usedItem)) {
 				cancelDefaultDrops = true;
 			}
 		}

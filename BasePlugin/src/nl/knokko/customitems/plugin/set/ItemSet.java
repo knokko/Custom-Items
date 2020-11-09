@@ -229,7 +229,7 @@ public class ItemSet implements ItemSetBase {
 		for (int counter = 0; counter < numBlockDrops; counter++) {
 			register(BlockDrop.load(
 					input, this::createCustomItemResultByName,
-					() -> loadResult(input)
+					() -> loadResult(input), this::getItem
 			));
 		}
 		
@@ -238,7 +238,7 @@ public class ItemSet implements ItemSetBase {
 		for (int counter = 0; counter < numMobDrops; counter++) {
 			register(EntityDrop.load(
 					input, this::createCustomItemResultByName,
-					() -> loadResult(input)
+					() -> loadResult(input), this::getItem
 			));
 		}
 		
@@ -291,7 +291,7 @@ public class ItemSet implements ItemSetBase {
 		for (int counter = 0; counter < numBlockDrops; counter++) {
 			register(BlockDrop.load(
 					input, this::createCustomItemResultByName,
-					() -> loadResult(input)
+					() -> loadResult(input), this::getItem
 			));
 		}
 		
@@ -300,7 +300,7 @@ public class ItemSet implements ItemSetBase {
 		for (int counter = 0; counter < numMobDrops; counter++) {
 			register(EntityDrop.load(
 					input, this::createCustomItemResultByName,
-					() -> loadResult(input)
+					() -> loadResult(input), this::getItem
 			));
 		}
 		
@@ -368,7 +368,7 @@ public class ItemSet implements ItemSetBase {
 		for (int counter = 0; counter < numBlockDrops; counter++) {
 			register(BlockDrop.load(
 					input, this::createCustomItemResultByName,
-					() -> loadResult(input)
+					() -> loadResult(input), this::getItem
 			));
 		}
 		
@@ -377,7 +377,7 @@ public class ItemSet implements ItemSetBase {
 		for (int counter = 0; counter < numMobDrops; counter++) {
 			register(EntityDrop.load(
 					input, this::createCustomItemResultByName,
-					() -> loadResult(input)
+					() -> loadResult(input), this::getItem
 			));
 		}
 		
@@ -445,7 +445,7 @@ public class ItemSet implements ItemSetBase {
 		for (int counter = 0; counter < numBlockDrops; counter++) {
 			register(BlockDrop.load(
 					input, this::createCustomItemResultByName,
-					() -> loadResult(input)
+					() -> loadResult(input), this::getItem
 			));
 		}
 		
@@ -454,7 +454,7 @@ public class ItemSet implements ItemSetBase {
 		for (int counter = 0; counter < numMobDrops; counter++) {
 			register(EntityDrop.load(
 					input, this::createCustomItemResultByName,
-					() -> loadResult(input)
+					() -> loadResult(input), this::getItem
 			));
 		}
 		
@@ -529,7 +529,7 @@ public class ItemSet implements ItemSetBase {
 		for (int counter = 0; counter < numBlockDrops; counter++) {
 			register(BlockDrop.load(
 					input, this::createCustomItemResultByName,
-					() -> loadResult(input)
+					() -> loadResult(input), this::getItem
 			));
 		}
 		
@@ -538,7 +538,7 @@ public class ItemSet implements ItemSetBase {
 		for (int counter = 0; counter < numMobDrops; counter++) {
 			register(EntityDrop.load(
 					input, this::createCustomItemResultByName,
-					() -> loadResult(input)
+					() -> loadResult(input), this::getItem
 			));
 		}
 		

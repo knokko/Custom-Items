@@ -2,8 +2,10 @@ package nl.knokko.customitems.drops;
 
 import java.util.function.BiFunction;
 import java.util.function.Consumer;
+import java.util.function.Function;
 
 import nl.knokko.customitems.encoding.DropEncoding;
+import nl.knokko.customitems.item.CustomItem;
 import nl.knokko.customitems.trouble.UnknownEncodingException;
 import nl.knokko.customitems.util.ExceptionSupplier;
 import nl.knokko.util.bits.BitInput;
@@ -14,13 +16,14 @@ public class EntityDrop {
 	public static EntityDrop load(
 			BitInput input, 
 			BiFunction<String, Byte, Object> createCustomItemResultByName,
-			ExceptionSupplier<Object, UnknownEncodingException> loadResult
+			ExceptionSupplier<Object, UnknownEncodingException> loadResult,
+			Function<String, CustomItem> getCustomItemByName
 	) throws UnknownEncodingException {
 		byte encoding = input.readByte();
 		if (encoding == DropEncoding.Entity.ENCODING1)
 			return load1(input, createCustomItemResultByName);
 		else if (encoding == DropEncoding.Entity.ENCODING2)
-			return load2(input, loadResult);
+			return load2(input, loadResult, getCustomItemByName);
 		else
 			throw new UnknownEncodingException("MobDrop", encoding);
 	}
@@ -37,11 +40,12 @@ public class EntityDrop {
 	
 	private static EntityDrop load2(
 			BitInput input, 
-			ExceptionSupplier<Object, UnknownEncodingException> loadResult
+			ExceptionSupplier<Object, UnknownEncodingException> loadResult,
+			Function<String, CustomItem> getCustomItemByName
 	) throws UnknownEncodingException {
 		return new EntityDrop(
 				CIEntityType.getByOrdinal(input.readInt()), 
-				input.readString(), Drop.load2(input, loadResult)
+				input.readString(), Drop.load2(input, loadResult, getCustomItemByName)
 		);
 	}
 	

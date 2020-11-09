@@ -1617,7 +1617,7 @@ public class ItemSet implements ItemSetBase {
 		for (int counter = 0; counter < numBlockDrops; counter++) {
 			blockDrops.add(BlockDrop.load(
 					input, this::createCustomItemResult, 
-					() -> Recipe.loadResult(input, this)
+					() -> Recipe.loadResult(input, this), this::getCustomItemByName
 			));
 		}
 		
@@ -1626,7 +1626,7 @@ public class ItemSet implements ItemSetBase {
 		for (int counter = 0; counter < numMobDrops; counter++) {
 			mobDrops.add(EntityDrop.load(
 					input, this::createCustomItemResult, 
-					() -> Recipe.loadResult(input, this)
+					() -> Recipe.loadResult(input, this), this::getCustomItemByName
 			));
 		}
 		
@@ -1674,7 +1674,7 @@ public class ItemSet implements ItemSetBase {
 		for (int counter = 0; counter < numBlockDrops; counter++) {
 			blockDrops.add(BlockDrop.load(
 					input, this::createCustomItemResult, 
-					() -> Recipe.loadResult(input, this)
+					() -> Recipe.loadResult(input, this), this::getCustomItemByName
 			));
 		}
 		
@@ -1683,7 +1683,7 @@ public class ItemSet implements ItemSetBase {
 		for (int counter = 0; counter < numMobDrops; counter++) {
 			mobDrops.add(EntityDrop.load(
 					input, this::createCustomItemResult, 
-					() -> Recipe.loadResult(input, this)
+					() -> Recipe.loadResult(input, this), this::getCustomItemByName
 			));
 		}
 		
@@ -1747,7 +1747,7 @@ public class ItemSet implements ItemSetBase {
 		for (int counter = 0; counter < numBlockDrops; counter++) {
 			blockDrops.add(BlockDrop.load(
 					input, this::createCustomItemResult, 
-					() -> Recipe.loadResult(input, this)
+					() -> Recipe.loadResult(input, this), this::getCustomItemByName
 			));
 		}
 		
@@ -1756,7 +1756,7 @@ public class ItemSet implements ItemSetBase {
 		for (int counter = 0; counter < numMobDrops; counter++) {
 			mobDrops.add(EntityDrop.load(
 					input, this::createCustomItemResult, 
-					() -> Recipe.loadResult(input, this)
+					() -> Recipe.loadResult(input, this), this::getCustomItemByName
 			));
 		}
 		
@@ -1832,7 +1832,7 @@ public class ItemSet implements ItemSetBase {
 		for (int counter = 0; counter < numBlockDrops; counter++) {
 			blockDrops.add(BlockDrop.load(
 					input, this::createCustomItemResult, 
-					() -> Recipe.loadResult(input, this)
+					() -> Recipe.loadResult(input, this), this::getCustomItemByName
 			));
 		}
 		
@@ -1841,7 +1841,7 @@ public class ItemSet implements ItemSetBase {
 		for (int counter = 0; counter < numMobDrops; counter++) {
 			mobDrops.add(EntityDrop.load(
 					input, this::createCustomItemResult, 
-					() -> Recipe.loadResult(input, this)
+					() -> Recipe.loadResult(input, this), this::getCustomItemByName
 			));
 		}
 		
@@ -1917,7 +1917,7 @@ public class ItemSet implements ItemSetBase {
 		for (int counter = 0; counter < numBlockDrops; counter++) {
 			blockDrops.add(BlockDrop.load(
 					input, this::createCustomItemResult, 
-					() -> Recipe.loadResult(input, this)
+					() -> Recipe.loadResult(input, this), this::getCustomItemByName
 			));
 		}
 		
@@ -1926,7 +1926,7 @@ public class ItemSet implements ItemSetBase {
 		for (int counter = 0; counter < numMobDrops; counter++) {
 			mobDrops.add(EntityDrop.load(
 					input, this::createCustomItemResult, 
-					() -> Recipe.loadResult(input, this)
+					() -> Recipe.loadResult(input, this), this::getCustomItemByName
 			));
 		}
 		
@@ -2011,7 +2011,7 @@ public class ItemSet implements ItemSetBase {
 		for (int counter = 0; counter < numBlockDrops; counter++) {
 			blockDrops.add(BlockDrop.load(
 					input, this::createCustomItemResult, 
-					() -> Recipe.loadResult(input, this)
+					() -> Recipe.loadResult(input, this), this::getCustomItemByName
 			));
 		}
 		
@@ -2020,7 +2020,7 @@ public class ItemSet implements ItemSetBase {
 		for (int counter = 0; counter < numMobDrops; counter++) {
 			mobDrops.add(EntityDrop.load(
 					input, this::createCustomItemResult, 
-					() -> Recipe.loadResult(input, this)
+					() -> Recipe.loadResult(input, this), this::getCustomItemByName
 			));
 		}
 		
