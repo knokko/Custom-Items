@@ -4897,9 +4897,13 @@ public class ItemSet implements ItemSetBase {
 		}
 		String error = changeItem(item, newType, newDamage, newDisplayName, newLore, newAttributes,
 				newEnchantments, newImage, newItemFlags, newCustomModel, playerEffects, targetEffects, commands);
-		if (error == null) {
-			item.setMaxStacksize(newStacksize);
+		if (error != null) {
+			return error;
 		}
+		if (newStacksize < item.getMaxStacksize()) {
+			return "You can't decrease the stacksize";
+		}
+		item.setMaxStacksize(newStacksize);
 		return error;
 	}
 
