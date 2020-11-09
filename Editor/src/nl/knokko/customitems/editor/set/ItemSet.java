@@ -5685,18 +5685,12 @@ public class ItemSet implements ItemSetBase {
 	 * @return The reason the container couldn't be changed, or null if it was
 	 * changed successfully
 	 */
-	public String changeContainer(CustomContainer toModify, String newName,
+	public String changeContainer(CustomContainer toModify,
 			SlotDisplay newSelectionIcon, Collection<ContainerRecipe> newRecipes,
 			FuelMode newFuelMode, CustomSlot[][] newSlots, 
 			VanillaContainerType newVanillaType, boolean becomesPersistent) {
 		
 		if (!bypassChecks()) {
-			
-			for (CustomContainer existing : containers) {
-				if (existing != toModify && existing.getName().equals(newName)) {
-					return "There is another container with name " + newName;
-				}
-			}
 			
 			if (newSelectionIcon == null) {
 				return "You need to choose a selection icon";
@@ -5730,7 +5724,6 @@ public class ItemSet implements ItemSetBase {
 			}
 		}
 		
-		toModify.setName(newName);
 		toModify.setSelectionIcon(newSelectionIcon);
 		toModify.getRecipes().clear();
 		toModify.getRecipes().addAll(newRecipes);

@@ -42,11 +42,9 @@ public class EditContainer extends GuiMenu {
 		this.toModify = toModify;
 		this.slots = new SlotsComponent(this, menu.getSet(), oldValues);
 		
-		String initialName;
 		boolean initialPersistentStorage;
 		this.recipes = new ArrayList<>();
 		if (oldValues != null) {
-			initialName = oldValues.getName();
 			this.selectionIcon = oldValues.getSelectionIcon();
 			initialPersistentStorage = oldValues.hasPersistentStorage();
 			this.fuelMode = oldValues.getFuelMode();
@@ -57,7 +55,6 @@ public class EditContainer extends GuiMenu {
 				this.recipes.add(recipe.clone());
 			}
 		} else {
-			initialName = "";
 			this.selectionIcon = null;
 			initialPersistentStorage = true;
 			this.fuelMode = FuelMode.ALL;
@@ -65,7 +62,19 @@ public class EditContainer extends GuiMenu {
 			// Keep this.recipes empty
 		}
 		
-		this.nameField = new TextEditField(initialName, EditProps.EDIT_BASE, EditProps.EDIT_ACTIVE);
+		if (toModify == null) {
+			String initialText;
+			if (oldValues != null) {
+				initialText = oldValues.getName();
+			} else {
+				initialText = "";
+			}
+			this.nameField = new TextEditField(initialText, EditProps.EDIT_BASE, EditProps.EDIT_ACTIVE);
+		} else {
+			this.nameField = null;
+		}
+		
+		
 		this.persistentStorage = new CheckboxComponent(initialPersistentStorage);
 		this.errorComponent = new DynamicTextComponent("", EditProps.ERROR);
 	}
@@ -84,7 +93,13 @@ public class EditContainer extends GuiMenu {
 		}), 0.025f, 0.7f, 0.2f, 0.8f);
 		
 		addComponent(new DynamicTextComponent("Name:", EditProps.LABEL), 0.05f, 0.6f, 0.15f, 0.65f);
-		addComponent(nameField, 0.175f, 0.6f, 0.3f, 0.65f);
+		
+		// Name can't be changed anymore once a container has been created
+		if (nameField != null) {
+			addComponent(nameField, 0.175f, 0.6f, 0.3f, 0.65f);
+		} else {
+			addComponent(new DynamicTextComponent(toModify.getName(), EditProps.LABEL), 0.175f, 0.6f, 0.3f, 0.65f);
+		}
 		addComponent(new DynamicTextComponent("Selection icon:", EditProps.LABEL), 0.05f, 0.525f, 0.2f, 0.575f);
 		addComponent(new DynamicTextButton("Change...", EditProps.BUTTON, EditProps.HOVER, () -> {
 			state.getWindow().setMainComponent(new CreateDisplay(
@@ -113,7 +128,7 @@ public class EditContainer extends GuiMenu {
 		
 		if (toModify != null) {
 			addComponent(new DynamicTextButton("Apply", EditProps.SAVE_BASE, EditProps.SAVE_HOVER, () -> {
-				String error = menu.getSet().changeContainer(toModify, nameField.getText(), 
+				String error = menu.getSet().changeContainer(toModify,
 						selectionIcon, recipes, fuelMode, slots.getSlots(), 
 						vanillaType, persistentStorage.isChecked()
 				);

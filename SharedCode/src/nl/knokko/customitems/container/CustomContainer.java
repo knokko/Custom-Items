@@ -111,7 +111,7 @@ public class CustomContainer {
 	// A bukkit/minecraft limitation only allows inventories with a width of 9 slots
 	private static final int WIDTH = 9;
 	
-	private String name;
+	private final String name;
 	private SlotDisplay selectionIcon;
 	
 	private CustomSlot[][] slots;
@@ -188,10 +188,6 @@ public class CustomContainer {
 	
 	public SlotDisplay getSelectionIcon() {
 		return selectionIcon;
-	}
-	
-	public void setName(String newName) {
-		name = newName;
 	}
 	
 	public void setSelectionIcon(SlotDisplay newSelectionIcon) {
