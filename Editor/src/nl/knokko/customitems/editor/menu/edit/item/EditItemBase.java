@@ -111,7 +111,9 @@ public abstract class EditItemBase extends GuiMenu {
 				return new TextureEdit(set, returnMenu, afterSave, null, null);
 		};
 		if (oldValues != null) {
-			//name = new TextEditField(oldValues.getName(), EditProps.EDIT_BASE, EditProps.EDIT_ACTIVE);
+			if (toModify == null) {
+				nameField = new TextEditField(oldValues.getName(), EditProps.EDIT_BASE, EditProps.EDIT_ACTIVE);
+			}
 			internalType = oldValues.getItemType();
 			internalDamage = new IntEditField(oldValues.getItemDamage(), 1, EditProps.EDIT_BASE,
 					EditProps.EDIT_ACTIVE);
@@ -126,7 +128,9 @@ public abstract class EditItemBase extends GuiMenu {
 			targetEffects = oldValues.getTargetEffects();
 			commands = oldValues.getCommands();
 		} else {
-			nameField = new TextEditField("", EditProps.EDIT_BASE, EditProps.EDIT_ACTIVE);
+			if (toModify == null) {
+				nameField = new TextEditField("", EditProps.EDIT_BASE, EditProps.EDIT_ACTIVE);
+			}
 			internalType = chooseInitialItemType(menu.getSet(), category, CustomItemType.DIAMOND_HOE, null);
 			internalDamage = new IntEditField(
 					menu.getSet().nextAvailableDamage(internalType, null), 1, EditProps.EDIT_BASE,
