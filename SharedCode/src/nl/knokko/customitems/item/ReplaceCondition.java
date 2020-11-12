@@ -23,6 +23,16 @@ public class ReplaceCondition {
 		}
 	}
 	
+	@Override public String toString() {
+		String output = "";
+		output += condition.name() + ", ";
+		output += item + ", ";
+		output += op.name() + ", ";
+		output += value + ", ";
+		output += replacingItem;
+		return output;
+	}
+	
 	public ReplacementCondition getCondition() {
 		return condition;
 	}

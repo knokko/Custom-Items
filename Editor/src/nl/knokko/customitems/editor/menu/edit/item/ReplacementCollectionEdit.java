@@ -1,12 +1,14 @@
 package nl.knokko.customitems.editor.menu.edit.item;
 
+import java.util.List;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.function.Consumer;
 
-import nl.knokko.customitems.editor.menu.edit.CollectionSelect;
 import nl.knokko.customitems.editor.menu.edit.EditProps;
 import nl.knokko.customitems.editor.menu.edit.EnumSelect;
 import nl.knokko.customitems.editor.menu.edit.QuickCollectionEdit;
+import nl.knokko.customitems.editor.menu.edit.ReplacementCollectionSelect;
 import nl.knokko.customitems.editor.set.item.CustomItem;
 import nl.knokko.customitems.item.ReplaceCondition;
 import nl.knokko.customitems.item.ReplaceCondition.ConditionOperation;
@@ -21,9 +23,9 @@ import nl.knokko.gui.component.text.dynamic.DynamicTextComponent;
 public class ReplacementCollectionEdit extends QuickCollectionEdit<ReplaceCondition> {
 	private final ReplaceCondition exampleCondition;
 	private final Collection<CustomItem> backingItems;
-	private CustomItem selectedItem;
 	private ConditionOperation op;
 	private Consumer<ConditionOperation> operation;
+	private final List<CustomItem> items;
 	
 	public ReplacementCollectionEdit(Collection<ReplaceCondition> currentCollection, Consumer<Collection<ReplaceCondition>> onApply, GuiComponent returnMenu, 
 			ReplaceCondition exampleCondition, Collection<CustomItem> backingItems, Consumer<ConditionOperation> operation) {
@@ -31,6 +33,8 @@ public class ReplacementCollectionEdit extends QuickCollectionEdit<ReplaceCondit
 		this.exampleCondition = exampleCondition;
 		this.backingItems = backingItems;
 		this.operation = operation;
+		items = new ArrayList<>();
+		items.addAll(backingItems);
 	}
 	
 	@Override
@@ -38,7 +42,7 @@ public class ReplacementCollectionEdit extends QuickCollectionEdit<ReplaceCondit
 		super.addComponents();
 		addComponent(EnumSelect.createSelectButton(ConditionOperation.class, newCondition -> {
 			this.op = newCondition;
-		}, this.op), 0.025f, 0.4f, 0.175f, 0.5f);
+		}, op), 0.025f, 0.4f, 0.175f, 0.5f);
 		
 		SubComponent apply = getComponentAt(0.1f, 0.15f);
 		removeComponent(apply);
@@ -62,23 +66,21 @@ public class ReplacementCollectionEdit extends QuickCollectionEdit<ReplaceCondit
 						newCondition, previous.getItemName(), previous.getOp(), previous.getValue(), previous.getReplacingItemName()));
 			}	
 		}, original.getCondition());
-		GuiComponent itemButton = CollectionSelect.createButton(backingItems, (CustomItem newItem) -> {
+		GuiComponent itemButton = ReplacementCollectionSelect.createButton(backingItems, (CustomItem newItem) -> {
 			ReplaceCondition previous = ownCollection.get(itemIndex);
 			ownCollection.set(itemIndex, new ReplaceCondition(
 					previous.getCondition(), newItem.getName(), previous.getOp(), previous.getValue(), previous.getReplacingItemName()));
-			selectedItem = newItem;
-		}, (CustomItem item) -> { return item.getName(); }, selectedItem);
+		}, (CustomItem item) -> { return item.getName(); }, items.get(itemIndex).getName());
 		GuiComponent operationButton = EnumSelect.createSelectButton(ReplacementOperation.class, newOperation -> {
 			ReplaceCondition previous = ownCollection.get(itemIndex);
 			ownCollection.set(itemIndex, new ReplaceCondition(
 					previous.getCondition(), previous.getItemName(), newOperation, previous.getValue(), previous.getReplacingItemName()));
 		}, original.getOp());
-		GuiComponent replacingItemButton = CollectionSelect.createButton(backingItems, (CustomItem newItem) -> {
+		GuiComponent replacingItemButton = ReplacementCollectionSelect.createButton(backingItems, (CustomItem newItem) -> {
 			ReplaceCondition previous = ownCollection.get(itemIndex);
 			ownCollection.set(itemIndex, new ReplaceCondition(
 					previous.getCondition(), previous.getItemName(), previous.getOp(), previous.getValue(), newItem.getName()));
-			selectedItem = newItem;
-		}, (CustomItem item) -> { return item.getName(); }, selectedItem);
+		}, (CustomItem item) -> { return item.getName(); }, items.get(itemIndex).getName());
 		addComponent(new ImageButton(deleteBase, deleteHover, () -> {
 			removeItem(itemIndex);
 		}), 0.25f, minY, 0.3f, maxY);

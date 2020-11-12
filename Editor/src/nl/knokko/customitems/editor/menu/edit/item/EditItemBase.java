@@ -319,7 +319,7 @@ public abstract class EditItemBase extends GuiMenu {
 	}
 
 	protected String getDisplayName() {
-		return displayName.getText().replace('&', 'ยง');
+		return displayName.getText().replace('&', 'ง');
 	}
 	
 	protected class TextureSelect extends TextureSelectButton {
@@ -339,7 +339,7 @@ public abstract class EditItemBase extends GuiMenu {
 			state.getWindow().setMainComponent(new TextArrayEditMenu(EditItemBase.this, (String[] newLore) -> {
 				lore = newLore;
 				for (int index = 0; index < lore.length; index++)
-					lore[index] = lore[index].replace('&', 'ยง');
+					lore[index] = lore[index].replace('&', 'ง');
 			}, EditProps.BACKGROUND, EditProps.CANCEL_BASE, EditProps.CANCEL_HOVER, EditProps.SAVE_BASE,
 					EditProps.SAVE_HOVER, EditProps.EDIT_BASE, EditProps.EDIT_ACTIVE, lore));
 		}), BUTTON_X, 0.56f, BUTTON_X + 0.1f, 0.61f);
@@ -393,7 +393,7 @@ public abstract class EditItemBase extends GuiMenu {
 			state.getWindow().setMainComponent(new TextArrayEditMenu(EditItemBase.this, (String[] newCommands) -> {
 				commands = newCommands;
 				for (int index = 0; index < commands.length; index++)
-					commands[index] = commands[index].replace('&', 'ยง');
+					commands[index] = commands[index].replace('&', 'ง');
 			}, EditProps.BACKGROUND, EditProps.CANCEL_BASE, EditProps.CANCEL_HOVER, EditProps.SAVE_BASE,
 					EditProps.SAVE_HOVER, EditProps.EDIT_BASE, EditProps.EDIT_ACTIVE, commands));
 		}), BUTTON_X, 0.08f, BUTTON_X + 0.1f, 0.13f);
@@ -404,11 +404,14 @@ public abstract class EditItemBase extends GuiMenu {
 	}
 	
 	private void addReplaceComponent() {
+		System.out.println(Arrays.toString(conditions));
 		addComponent(new DynamicTextButton("Change...", EditProps.BUTTON, EditProps.HOVER, () -> {
 			state.getWindow().setMainComponent(new ReplacementCollectionEdit(Arrays.asList(conditions), 
 					newConditions -> {
 						Checks.nonNull(conditions);
 						this.conditions = newConditions.toArray(new ReplaceCondition[newConditions.size()]);
+						System.out.println(Arrays.toString(newConditions.toArray()));
+						System.out.println(Arrays.toString(conditions));
 					}, EditItemBase.this, getExampleReplaceCondition(), menu.getSet().getBackingItems(), newOp ->  {
 						if (newOp == null) {
 							newOp = ConditionOperation.NONE;
