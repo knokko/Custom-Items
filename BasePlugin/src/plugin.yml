@@ -7,5 +7,5 @@ loadbefore: [UltraChest]
 commands:
   customitems:
     description: Commands for the CustomItems plugin
-    useage: /ci give <item name> [player name] or /ci list or /ci reload
-    aliases: [ci]
+    usage: /kci give <item name> [player name] or /kci list or /kci reload or /kci debug
+    aliases: [ci, kci]

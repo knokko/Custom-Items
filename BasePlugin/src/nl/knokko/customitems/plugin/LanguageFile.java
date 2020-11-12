@@ -35,7 +35,7 @@ public class LanguageFile {
 	
 	private static final String DEFAULT_DURABILITY_PREFIX = "Durability";
 	
-	private static final String DEFAULT_COMMAND_USEAGE = ChatColor.YELLOW + "Use /customitems give <item name> [player name]";
+	private static final String DEFAULT_COMMAND_GIVE_USEAGE = ChatColor.YELLOW + "Use /kci give <item name> [player name] [amount]";
 	private static final String DEFAULT_COMMAND_NO_ACCESS = ChatColor.DARK_RED + "Only operators can use this command.";
 	private static final String DEFAULT_COMMAND_NO_PLAYER_SPECIFIED = "Non-player operators need to specify a player name";
 	private static final String DEFAULT_COMMAND_PLAYER_NOT_FOUND = ChatColor.RED + "Can't find player PLAYER_NAME. This can only be used on online players.";
@@ -48,7 +48,7 @@ public class LanguageFile {
 	
 	private static final String KEY_DURABILITY_PREFIX = "durability-prefix";
 	
-	private static final String KEY_COMMAND_USEAGE = "command-useage";
+	private static final String KEY_COMMAND_GIVE_USEAGE = "command-useage";
 	private static final String KEY_COMMAND_NO_ACCESS = "command-no-access";
 	private static final String KEY_COMMAND_NO_PLAYER_SPECIFIED = "command-no-player-specified";
 	private static final String KEY_COMMAND_PLAYER_NOT_FOUND = "command-player-not-found";
@@ -61,7 +61,7 @@ public class LanguageFile {
 	
 	private String durabilityPrefix;
 	
-	private String commandUseage;
+	private String commandGiveUseage;
 	private String commandNoAccess;
 	private String commandNoPlayerSpecified;
 	private String commandPlayerNotFound;
@@ -93,8 +93,8 @@ public class LanguageFile {
 		return durabilityPrefix;
 	}
 	
-	public String getCommandUseage() {
-		return commandUseage;
+	public String getCommandGiveUseage() {
+		return commandGiveUseage;
 	}
 	
 	public String getCommandNoAccess() {
@@ -131,7 +131,7 @@ public class LanguageFile {
 	
 	public void load(YamlConfiguration config) {
 		durabilityPrefix = config.getString(KEY_DURABILITY_PREFIX, DEFAULT_DURABILITY_PREFIX);
-		commandUseage = config.getString(KEY_COMMAND_USEAGE, DEFAULT_COMMAND_USEAGE);
+		commandGiveUseage = config.getString(KEY_COMMAND_GIVE_USEAGE, DEFAULT_COMMAND_GIVE_USEAGE);
 		commandNoAccess = config.getString(KEY_COMMAND_NO_ACCESS, DEFAULT_COMMAND_NO_ACCESS);
 		commandNoPlayerSpecified = config.getString(KEY_COMMAND_NO_PLAYER_SPECIFIED, DEFAULT_COMMAND_NO_PLAYER_SPECIFIED);
 		commandPlayerNotFound = config.getString(KEY_COMMAND_PLAYER_NOT_FOUND, DEFAULT_COMMAND_PLAYER_NOT_FOUND);
@@ -144,7 +144,7 @@ public class LanguageFile {
 	
 	public void setDefaults() {
 		durabilityPrefix = DEFAULT_DURABILITY_PREFIX;
-		commandUseage = DEFAULT_COMMAND_USEAGE;
+		commandGiveUseage = DEFAULT_COMMAND_GIVE_USEAGE;
 		commandNoAccess = DEFAULT_COMMAND_NO_ACCESS;
 		commandNoPlayerSpecified = DEFAULT_COMMAND_NO_PLAYER_SPECIFIED;
 		commandPlayerNotFound = DEFAULT_COMMAND_PLAYER_NOT_FOUND;
@@ -157,7 +157,7 @@ public class LanguageFile {
 	
 	public void save(YamlConfiguration config) {
 		config.set(KEY_DURABILITY_PREFIX, durabilityPrefix);
-		config.set(KEY_COMMAND_USEAGE, commandUseage);
+		config.set(KEY_COMMAND_GIVE_USEAGE, commandGiveUseage);
 		config.set(KEY_COMMAND_NO_ACCESS, commandNoAccess);
 		config.set(KEY_COMMAND_NO_PLAYER_SPECIFIED, commandNoPlayerSpecified);
 		config.set(KEY_COMMAND_PLAYER_NOT_FOUND, commandPlayerNotFound);

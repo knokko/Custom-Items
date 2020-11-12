@@ -1823,6 +1823,22 @@ public class ItemSet implements ItemSetBase {
 	public CustomItem[] getBackingItems() {
 		return items;
 	}
+	
+	public int getNumItems() {
+		return getBackingItems().length;
+	}
+	
+	public int getNumRecipes() {
+		return recipes.length;
+	}
+	
+	public int getNumProjectiles() {
+		return projectiles.length;
+	}
+	
+	public int getNumContainers() {
+		return containers.size();
+	}
 
 	@Override
 	public CustomItem getCustomItemByName(String name) {
