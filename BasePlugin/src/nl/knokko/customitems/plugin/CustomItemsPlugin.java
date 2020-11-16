@@ -114,6 +114,10 @@ public class CustomItemsPlugin extends JavaPlugin {
 		return setExportTime;
 	}
 	
+	public ItemUpdater getItemUpdater() {
+		return itemUpdater;
+	}
+	
 	public int getMaxFlyingProjectiles() {
 		return maxFlyingProjectiles;
 	}

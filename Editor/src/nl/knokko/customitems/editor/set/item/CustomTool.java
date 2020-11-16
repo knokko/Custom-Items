@@ -251,26 +251,4 @@ public class CustomTool extends CustomItem {
 	public void setBlockBreakDurabilityLoss(int durabilityLoss) {
 		this.blockBreakDurabilityLoss = durabilityLoss;
 	}
-	
-	@Override
-	protected String getLoreContent12() {
-		String lore = super.getLoreContent12();
-		String preLore = "\"Durability " + durability + " / " + durability + "\",\"\"";
-		if (lore.isEmpty()) {
-			return preLore;
-		} else {
-			return preLore + "," + lore;
-		}
-	}
-
-	@Override
-	protected String getLoreContent14() {
-		String lore = super.getLoreContent14();
-		String preLore = "\"\\\"Durability " + durability + " / " + durability + "\\\"\",\"\\\"\\\"\"";
-		if (lore.isEmpty()) {
-			return preLore;
-		} else {
-			return preLore + "," + lore;
-		}
-	}
 }

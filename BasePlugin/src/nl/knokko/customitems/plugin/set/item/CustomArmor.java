@@ -56,24 +56,6 @@ public class CustomArmor extends CustomTool {
 	}
 	
 	@Override
-	protected String getDisplayTagContent12() {
-		if (itemType.isLeatherArmor()) {
-			return super.getDisplayTagContent12() + ",color:" + (color.getBlue() + 256 * color.getGreen() + 65536 * color.getRed());
-		} else {
-			return super.getDisplayTagContent12();
-		}
-	}
-	
-	@Override
-	protected String getDisplayTagContent14() {
-		if (itemType.isLeatherArmor()) {
-			return super.getDisplayTagContent14() + ",color:" + (color.getBlue() + 256 * color.getGreen() + 65536 * color.getRed());
-		} else {
-			return super.getDisplayTagContent14();
-		}
-	}
-	
-	@Override
 	public ItemMeta createItemMeta(ItemStack item, List<String> lore) {
 		ItemMeta meta = super.createItemMeta(item, lore);
 		if (itemType.isLeatherArmor()) {

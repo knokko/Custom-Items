@@ -85,6 +85,7 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.enchantment.PrepareItemEnchantEvent;
+import org.bukkit.event.entity.CreatureSpawnEvent;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
@@ -100,13 +101,11 @@ import org.bukkit.event.inventory.InventoryPickupItemEvent;
 import org.bukkit.event.inventory.InventoryType.SlotType;
 import org.bukkit.event.inventory.PrepareAnvilEvent;
 import org.bukkit.event.inventory.PrepareItemCraftEvent;
-import org.bukkit.event.player.PlayerCommandPreprocessEvent;
 import org.bukkit.event.player.PlayerExpChangeEvent;
 import org.bukkit.event.player.PlayerInteractAtEntityEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerShearEntityEvent;
-import org.bukkit.event.server.ServerCommandEvent;
 import org.bukkit.inventory.AnvilInventory;
 import org.bukkit.inventory.CraftingInventory;
 import org.bukkit.inventory.EntityEquipment;
@@ -121,7 +120,6 @@ import org.bukkit.inventory.meta.Repairable;
 import org.bukkit.metadata.MetadataValue;
 import org.bukkit.plugin.Plugin;
 
-import nl.knokko.core.plugin.CorePlugin;
 import nl.knokko.core.plugin.item.ItemHelper;
 import nl.knokko.customitems.damage.DamageSource;
 import nl.knokko.customitems.drops.BlockDrop;
@@ -143,6 +141,7 @@ import nl.knokko.customitems.plugin.set.item.CustomTool;
 import nl.knokko.customitems.plugin.set.item.CustomTool.IncreaseDurabilityResult;
 import nl.knokko.customitems.plugin.set.item.CustomTrident;
 import nl.knokko.customitems.plugin.set.item.CustomWand;
+import nl.knokko.customitems.plugin.set.item.update.ItemUpdater;
 
 @SuppressWarnings("deprecation")
 public class CustomItemsEventHandler implements Listener {
@@ -1720,99 +1719,6 @@ public class CustomItemsEventHandler implements Listener {
 		shouldInterfere.put(owner.getUniqueId(), false);
 	}
 
-	@EventHandler
-	public void onServerCommand(ServerCommandEvent event) {
-		try {
-			event.setCommand(substituteCommand(event.getCommand()));
-		} catch (IllegalArgumentException | UnsupportedOperationException ex) {
-			event.getSender().sendMessage(ex.getMessage());
-		}
-	}
-
-	@EventHandler
-	public void onPlayerCommand(PlayerCommandPreprocessEvent event) {
-		try {
-			event.setMessage(substituteCommand(event.getMessage()));
-		} catch (IllegalArgumentException | UnsupportedOperationException ex) {
-			event.getPlayer().sendMessage(ex.getMessage());
-		}
-	}
-
-	private static final String SUFFIX = ">";
-	private static final String MATERIAL_PREFIX = "<ci-material ";
-	private static final String DAMAGE_PREFIX = "<ci-damage ";
-	private static final String TAG_PREFIX = "<ci-tag ";
-	private static final String INNER_PREFIX = "<ci-inner ";
-
-	private String substituteCommand(String command) throws IllegalArgumentException {
-		command = substitute(command, MATERIAL_PREFIX, (CustomItem item, int amount) -> {
-			return item.getItemType().getMinecraftName();
-		});
-		command = substitute(command, DAMAGE_PREFIX, (CustomItem item, int amount) -> {
-			return Short.toString(item.getItemDamage());
-		});
-		command = substitute(command, TAG_PREFIX, (CustomItem item, int amount) -> {
-			if (CorePlugin.useNewCommands()) {
-				return item.getNBTTag14();
-			} else {
-				return item.getNBTTag12();
-			}
-		});
-		command = substitute(command, INNER_PREFIX, (CustomItem item, int amount) -> {
-			if (CorePlugin.useNewCommands()) {
-				return item.getEquipmentTag14(amount);
-			} else {
-				return item.getEquipmentTag12(amount);
-			}
-		});
-
-		return command;
-	}
-
-	private String substitute(String string, String prefix, CustomItemSubstitutor substitutor) throws IllegalArgumentException {
-		int prefixIndex = string.indexOf(prefix);
-		while (prefixIndex != -1) {
-			int startIndex = prefixIndex + prefix.length();
-			int suffixIndex = string.indexOf(SUFFIX, startIndex);
-
-			if (suffixIndex == -1) {
-				throw new IllegalArgumentException("Unfinished ci tag: " + string.substring(prefixIndex));
-			}
-
-			String tagContent = string.substring(startIndex, suffixIndex);
-			int amount;
-			int indexSpace = tagContent.indexOf(" ");
-			if (indexSpace != -1) {
-				tagContent = tagContent.substring(0, indexSpace);
-				String amountString = tagContent.substring(indexSpace + 1);
-				try {
-					amount = Integer.parseInt(amountString);
-				} catch (NumberFormatException ex) {
-					throw new IllegalArgumentException("The amount (" + amountString + ") for the custom item \"" + tagContent + "\" should be an integer");
-				}
-			} else {
-				amount = 1;
-			}
-			CustomItem customItem = set().getItem(tagContent);
-
-			if (customItem == null) {
-				throw new IllegalArgumentException("There is no custom item with name \"" + tagContent + "\"");
-			}
-
-			String replacement = substitutor.process(customItem, amount);
-
-			string = string.substring(0, prefixIndex) + replacement + string.substring(suffixIndex + 1);
-			prefixIndex = string.indexOf(prefix);
-		}
-
-		return string;
-	}
-
-	private static interface CustomItemSubstitutor {
-
-		String process(CustomItem item, int amount);
-	}
-
 	private boolean fixCustomItemPickup(final ItemStack stack, ItemStack[] contents) {
 		if (CustomItem.isCustom(stack)) {
 			CustomItem customItem = set().getItem(stack);
@@ -1865,6 +1771,40 @@ public class CustomItemsEventHandler implements Listener {
 					event.getItem().remove();
 				}
 			}
+		}
+	}
+	
+	@EventHandler(priority = EventPriority.MONITOR, ignoreCancelled=true)
+	public void upgradeMobEquipment(CreatureSpawnEvent event) {
+		EntityEquipment equipment = event.getEntity().getEquipment();
+		ItemUpdater updater = plugin().getItemUpdater();
+		
+		ItemStack oldMainHand = equipment.getItemInMainHand();
+		ItemStack newMainHand = updater.maybeUpdate(oldMainHand);
+		if (oldMainHand != newMainHand) {
+			equipment.setItemInMainHand(newMainHand);
+		}
+		
+		ItemStack oldOffHand = equipment.getItemInOffHand();
+		ItemStack newOffHand = updater.maybeUpdate(oldOffHand);
+		if (oldOffHand != newOffHand) {
+			equipment.setItemInOffHand(newOffHand);
+		}
+		
+		ItemStack[] oldArmor = equipment.getArmorContents();
+		ItemStack[] newArmor = new ItemStack[oldArmor.length];
+		boolean updateArmor = false;
+		for (int index = 0; index < oldArmor.length; index++) {
+			ItemStack oldPiece = oldArmor[index];
+			ItemStack newPiece = updater.maybeUpdate(oldPiece);
+			if (oldPiece != newPiece) {
+				updateArmor = true;
+			}
+			newArmor[index] = newPiece;
+		}
+		
+		if (updateArmor) {
+			equipment.setArmorContents(newArmor);
 		}
 	}
 

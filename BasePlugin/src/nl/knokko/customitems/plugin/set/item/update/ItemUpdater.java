@@ -47,16 +47,17 @@ public class ItemUpdater {
 		int invSize = inventory.getSize();
 		for (int index = 0; index < invSize; index++) {
 			ItemStack currentStack = inventory.getItem(index);
-			if (currentStack != null) {
-				ItemStack newStack = maybeUpdate(currentStack);
-				if (newStack != currentStack) {
-					inventory.setItem(index, newStack);
-				}
+			ItemStack newStack = maybeUpdate(currentStack);
+			if (newStack != currentStack) {
+				inventory.setItem(index, newStack);
 			}
 		}
 	}
 	
 	public ItemStack maybeUpdate(ItemStack originalStack) {
+		if (originalStack == null) {
+			return null;
+		}
 		CustomItem[] pOldItem = {null};
 		CustomItem[] pNewItem = {null};
 		UpdateAction[] pAction = {null};

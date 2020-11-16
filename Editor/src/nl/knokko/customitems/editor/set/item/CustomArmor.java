@@ -267,22 +267,4 @@ public class CustomArmor extends CustomTool {
 	public void setDamageResistances(DamageResistances newResistances) {
 		damageResistances = newResistances;
 	}
-	
-	@Override
-	protected String getDisplayTagContent12() {
-		if (itemType.isLeatherArmor()) {
-			return super.getDisplayTagContent12() + ",color:" + (blue + 256 * green + 65536 * red);
-		} else {
-			return super.getDisplayTagContent12();
-		}
-	}
-
-	@Override
-	protected String getDisplayTagContent14() {
-		if (itemType.isLeatherArmor()) {
-			return super.getDisplayTagContent14() + ",color:" + (blue + 256 * green + 65536 * red);
-		} else {
-			return super.getDisplayTagContent14();
-		}
-	}
 }

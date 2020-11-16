@@ -7,7 +7,6 @@ import nl.knokko.customitems.editor.set.item.CustomItem;
 import nl.knokko.gui.color.GuiColor;
 import nl.knokko.gui.component.GuiComponent;
 import nl.knokko.gui.component.WrapperComponent;
-import nl.knokko.gui.component.image.CheckboxComponent;
 import nl.knokko.gui.component.image.SimpleImageComponent;
 import nl.knokko.gui.component.menu.GuiMenu;
 import nl.knokko.gui.component.text.dynamic.DynamicTextButton;
@@ -20,7 +19,6 @@ public class HelpGive extends GuiMenu {
 
 	private final WrapperComponent<SimpleImageComponent> selectedItemImage;
 	private final DynamicTextComponent infoComponent;
-	private final CheckboxComponent useOldCommands;
 	private CustomItem selectedItem;
 
 	public HelpGive(ItemSet set, GuiComponent returnMenu) {
@@ -28,7 +26,6 @@ public class HelpGive extends GuiMenu {
 		this.returnMenu = returnMenu;
 		this.selectedItemImage = new WrapperComponent<SimpleImageComponent>(null);
 		this.infoComponent = new DynamicTextComponent("", EditProps.LABEL);
-		this.useOldCommands = new CheckboxComponent(false);
 		this.selectedItem = null;
 	}
 
@@ -55,18 +52,8 @@ public class HelpGive extends GuiMenu {
 						state.getWindow().getTextureLoader().loadTexture(chosen.getTexture().getImage())));
 			}, set));
 		}), 0.7f, 0.8f, 0.85f, 0.9f);
-		addComponent(useOldCommands, 0.025f, 0.2f, 0.05f, 0.225f);
-		addComponent(new DynamicTextComponent("Use the old long commands", EditProps.LABEL),
-				0.055f, 0.185f, 0.28f, 0.26f);
 		addComponent(new DynamicTextButton("Generate for minecraft 1.12", EditProps.BUTTON, EditProps.HOVER, () -> {
-			String command;
-			if (useOldCommands.isChecked()) {
-				command = "/give @p " + selectedItem.getItemType().getMinecraftName() + " 1 "
-						+ selectedItem.getItemDamage() + " " + selectedItem.getNBTTag12();
-			} else {
-				String name = selectedItem.getName();
-				command = "/give @p <ci-material " + name + "> 1 <ci-damage " + name + "> <ci-tag " + name + ">";
-			}
+			String command = "/give @p stick 1 0 {KnokkosCustomItems:{Name:" + selectedItem.getName() + "}}";
 			String error = CommandBlockHelpOverview.setClipboard(command);
 			if (error == null) {
 				infoComponent.setProperties(EditProps.LABEL);
@@ -76,27 +63,15 @@ public class HelpGive extends GuiMenu {
 				infoComponent.setText("Could not copy command to clipboard because: " + error);
 			}
 		}), 0.2f, 0.05f, 0.45f, 0.15f);
-		addComponent(new DynamicTextButton("Generate for minecraft 1.14", EditProps.BUTTON, EditProps.HOVER, () -> {
-			if (selectedItem.getAttributes().length > 0) {
-				String command;
-				if (useOldCommands.isChecked()) {
-					command = "/give @p " + selectedItem.getItemType().getMinecraftName()
-							+ selectedItem.getNBTTag14();
-				} else {
-					String name = selectedItem.getName();
-					command = "/give @p <ci-material " + name + "><ci-tag " + name + ">";
-				}
-				String error = CommandBlockHelpOverview.setClipboard(command);
-				if (error == null) {
-					infoComponent.setProperties(EditProps.LABEL);
-					infoComponent.setText("Copied command to clipboard");
-				} else {
-					infoComponent.setProperties(EditProps.ERROR);
-					infoComponent.setText("Could not copy command to clipboard because: " + error);
-				}
+		addComponent(new DynamicTextButton("Generate for minecraft 1.13+", EditProps.BUTTON, EditProps.HOVER, () -> {
+			String command = "/give @p stick{KnokkosCustomItems:{Name:" + selectedItem.getName() + "}}";
+			String error = CommandBlockHelpOverview.setClipboard(command);
+			if (error == null) {
+				infoComponent.setProperties(EditProps.LABEL);
+				infoComponent.setText("Copied command to clipboard");
 			} else {
 				infoComponent.setProperties(EditProps.ERROR);
-				infoComponent.setText("You can't give custom items without attribute modifiers in minecraft 1.14");
+				infoComponent.setText("Could not copy command to clipboard because: " + error);
 			}
 		}), 0.55f, 0.05f, 0.8f, 0.15f);
 	}
