@@ -347,12 +347,27 @@ public class ItemUpdater {
 		 */
 		boolean[] oldFlags = oldItem.getItemFlags();
 		boolean[] newFlags = newItem.getItemFlags();
+		boolean hadAttributes = oldItem.getAttributeModifiers().length > 0;
+		boolean hasAttributes = newItem.getAttributeModifiers().length > 0;
 		ItemFlag[] allFlags = ItemFlag.values();
 		for (int flagIndex = 0; flagIndex < allFlags.length; flagIndex++) {
 			boolean oldHasFlag = flagIndex < oldFlags.length && oldFlags[flagIndex];
 			boolean newHasFlag = flagIndex < newFlags.length && newFlags[flagIndex];
-			if (oldHasFlag != newHasFlag) {
-				ItemFlag currentFlag = allFlags[flagIndex];
+			ItemFlag currentFlag = allFlags[flagIndex];
+			
+			// Yeah... there is a special and nasty edge case for the HIDE_ATTRIBUTES flag
+			if (currentFlag == ItemFlag.HIDE_ATTRIBUTES) {
+				if (!hadAttributes && hasAttributes) {
+					toUpgrade.removeItemFlags(
+							org.bukkit.inventory.ItemFlag.valueOf(currentFlag.name())
+					);
+				}
+				if (hadAttributes && !hasAttributes) {
+					toUpgrade.addItemFlags(
+							org.bukkit.inventory.ItemFlag.valueOf(currentFlag.name())
+					);
+				}
+			} else if (oldHasFlag != newHasFlag) {
 				if (newHasFlag) {
 					toUpgrade.addItemFlags(
 							org.bukkit.inventory.ItemFlag.valueOf(currentFlag.name())
@@ -396,7 +411,7 @@ public class ItemUpdater {
 			}
 			
 			// Don't stack dummy attributes
-			if (oldStackAttribute.getAttribute().equals("dummy")) {
+			if (oldStackAttribute.isDummy()) {
 				continue oldStackLoop;
 			}
 			
