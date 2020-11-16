@@ -40,6 +40,7 @@ import nl.knokko.customitems.plugin.data.PluginData;
 import nl.knokko.customitems.plugin.multisupport.crazyenchantments.CrazyEnchantmentsSupport;
 import nl.knokko.customitems.plugin.projectile.ProjectileManager;
 import nl.knokko.customitems.plugin.set.ItemSet;
+import nl.knokko.customitems.plugin.set.item.BooleanRepresentation;
 import nl.knokko.customitems.plugin.set.item.update.ItemUpdater;
 import nl.knokko.customitems.trouble.IntegrityException;
 import nl.knokko.customitems.trouble.UnknownEncodingException;
@@ -188,11 +189,14 @@ public class CustomItemsPlugin extends JavaPlugin {
 			set.addError("It looks like you are using KnokkoCore for mc " + coreMcVersion + " on a mc " + mcVersion + " server. This will probably go wrong.");
 		}
 		
-		// I'm afraid I need to update the next line each time KnokkoCore updates
+		
 		try {
 			CorePluginEventHandler.preventSmithing((stack1, stack2) -> 
 					set.getItem(stack1) != null || set.getItem(stack2) != null
 			);
+			
+			// I'm afraid I need to update the next line each time KnokkoCore updates
+			new BooleanRepresentation(new byte[0]);
 		} catch (NoClassDefFoundError outdated) {
 			set.addError("It looks like your KnokkoCore is outdated. Please install a newer version.");
 		}
