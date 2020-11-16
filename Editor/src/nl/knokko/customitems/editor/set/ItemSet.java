@@ -5637,7 +5637,7 @@ public class ItemSet implements ItemSetBase {
 			}
 			
 			if (toAdd.getSelectionIcon() == null) {
-				return "You need to choose a celection icon";
+				return "You need to choose a selection icon";
 			}
 			
 			if (toAdd.getHeight() < 1) {
