@@ -42,8 +42,6 @@ public abstract class Recipe {
 			return new SimpleVanillaIngredient(input);
 		if (encoding == RecipeEncoding.Ingredient.VANILLA_DATA)
 			return new DataVanillaIngredient(input);
-		if (encoding == RecipeEncoding.Ingredient.VANILLA_ADVANCED_1)
-			throw new UnsupportedOperationException("Advanced vanilla results are not yet supported");
 		if (encoding == RecipeEncoding.Ingredient.CUSTOM)
 			return new CustomItemIngredient(input, set);
 		throw new UnknownEncodingException("Ingredient", encoding);
@@ -55,10 +53,10 @@ public abstract class Recipe {
 			return new SimpleVanillaResult(input);
 		if (encoding == RecipeEncoding.Result.VANILLA_DATA)
 			return new DataVanillaResult(input);
-		if (encoding == RecipeEncoding.Result.VANILLA_ADVANCED_1)
-			throw new UnsupportedOperationException("Advanced vanilla results are not yet supported");
 		if (encoding == RecipeEncoding.Result.CUSTOM)
 			return new CustomItemResult(input, set);
+		if (encoding == RecipeEncoding.Result.COPIED)
+			return new CopiedResult(input);
 		throw new UnknownEncodingException("Result", encoding);
 	}
 	

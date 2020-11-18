@@ -97,6 +97,7 @@ import nl.knokko.customitems.editor.set.recipe.ingredient.DataVanillaIngredient;
 import nl.knokko.customitems.editor.set.recipe.ingredient.Ingredient;
 import nl.knokko.customitems.editor.set.recipe.ingredient.NoIngredient;
 import nl.knokko.customitems.editor.set.recipe.ingredient.SimpleVanillaIngredient;
+import nl.knokko.customitems.editor.set.recipe.result.CopiedResult;
 import nl.knokko.customitems.editor.set.recipe.result.CustomItemResult;
 import nl.knokko.customitems.editor.set.recipe.result.DataVanillaResult;
 import nl.knokko.customitems.editor.set.recipe.result.Result;
@@ -2773,7 +2774,7 @@ public class ItemSet implements ItemSetBase {
 	}
 	
 	private int firstResultVersion(Result result) {
-		if (result instanceof CustomItemResult) {
+		if (result instanceof CustomItemResult || result instanceof CopiedResult) {
 			return FIRST_VERSION;
 		} else if (result instanceof SimpleVanillaResult) {
 			return ((SimpleVanillaResult) result).getType().firstVersion;
@@ -2783,7 +2784,7 @@ public class ItemSet implements ItemSetBase {
 	}
 	
 	private int lastResultVersion(Result result) {
-		if (result instanceof CustomItemResult) {
+		if (result instanceof CustomItemResult || result instanceof CopiedResult) {
 			return LAST_VERSION;
 		} else if (result instanceof SimpleVanillaResult) {
 			return ((SimpleVanillaResult) result).getType().lastVersion;

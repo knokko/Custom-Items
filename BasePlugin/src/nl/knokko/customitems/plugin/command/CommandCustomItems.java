@@ -35,6 +35,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.Calendar;
 import java.util.Collection;
 import java.util.Scanner;
+import java.util.logging.Level;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipException;
 import java.util.zip.ZipInputStream;
@@ -44,12 +45,16 @@ import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
+import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.ItemStack;
 
 import nl.knokko.customitems.plugin.CustomItemsPlugin;
 import nl.knokko.customitems.plugin.LanguageFile;
 import nl.knokko.customitems.plugin.set.ItemSet;
 import nl.knokko.customitems.plugin.set.item.CustomItem;
+import nl.knokko.customitems.plugin.util.ItemUtils;
+import nl.knokko.customitems.util.StringEncoder;
 
 public class CommandCustomItems implements CommandExecutor {
 	
@@ -324,6 +329,24 @@ public class CommandCustomItems implements CommandExecutor {
 								+ "server.properties due to IOException: " 
 								+ serverPropsTrouble.getMessage());
 					}
+				}
+			} else if (args[0].equals("encode")) {
+				if (sender instanceof Player) {
+					Player player = (Player) sender;
+					ItemStack mainItem = player.getInventory().getItemInMainHand();
+					if (!ItemUtils.isEmpty(mainItem)) {
+						YamlConfiguration helperConfig = new YamlConfiguration();
+						helperConfig.set("TheItemStack", mainItem);
+						String serialized = helperConfig.saveToString();
+						
+						// Encode the string to avoid indentation errors when copying
+						Bukkit.getLogger().log(Level.INFO, "Encoded: " + StringEncoder.encode(serialized));
+						sender.sendMessage(ChatColor.GREEN + "The encoding of the item in your main hand has been printed to the server console");
+					} else {
+						sender.sendMessage(ChatColor.RED + "You need to hold an item in your main hand when executing this command");
+					}
+				} else {
+					sender.sendMessage("Only players can use this command");
 				}
 			} else if (args[0].equals("reload")) {
 				CustomItemsPlugin.getInstance().reload();

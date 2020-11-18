@@ -35,6 +35,8 @@ import java.util.logging.Level;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Color;
+import org.bukkit.configuration.InvalidConfigurationException;
+import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
@@ -92,6 +94,7 @@ import nl.knokko.customitems.projectile.CIProjectile;
 import nl.knokko.customitems.projectile.ProjectileCover;
 import nl.knokko.customitems.trouble.IntegrityException;
 import nl.knokko.customitems.trouble.UnknownEncodingException;
+import nl.knokko.customitems.util.StringEncoder;
 import nl.knokko.util.bits.BitInput;
 import nl.knokko.util.bits.BooleanArrayBitOutput;
 import nl.knokko.util.bits.ByteArrayBitInput;
@@ -1670,10 +1673,28 @@ public class ItemSet implements ItemSetBase {
 			stack.setDurability(data.getData());
 			return stack;
 		}
-		if (encoding == RecipeEncoding.Result.VANILLA_ADVANCED_1)
-			throw new UnsupportedOperationException("Advanced vanilla results are not yet supported");
 		if (encoding == RecipeEncoding.Result.CUSTOM)
 			return getItem(input.readJavaString()).create(amount);
+		if (encoding == RecipeEncoding.Result.COPIED) {
+			String encoded = input.readString();
+			String serialized = StringEncoder.decode(encoded);
+			
+			YamlConfiguration helperConfig = new YamlConfiguration();
+			try {
+				helperConfig.loadFromString(serialized);
+				ItemStack result = helperConfig.getItemStack("TheItemStack");
+				if (result == null) {
+					this.addError("A copied item stack result is invalid");
+				} else {
+					return result;
+				}
+			} catch (InvalidConfigurationException invalidConfig) {
+				this.addError("A copied item stack result is invalid");
+			}
+			
+			// I'm not sure how to handle this...
+			return null;
+		}
 		throw new UnknownEncodingException("Result", encoding);
 	}
 
@@ -1686,8 +1707,6 @@ public class ItemSet implements ItemSetBase {
 		if (encoding == RecipeEncoding.Ingredient.VANILLA_DATA)
 			return new DataVanillaIngredient(CIMaterial.valueOf(input.readJavaString()),
 					(byte) input.readNumber((byte) 4, false));
-		if (encoding == RecipeEncoding.Ingredient.VANILLA_ADVANCED_1)
-			throw new UnsupportedOperationException("Advanced vanilla ingredients are not yet supported.");
 		if (encoding == RecipeEncoding.Ingredient.CUSTOM)
 			return new CustomIngredient(getItem(input.readJavaString()));
 		throw new UnknownEncodingException("Ingredient", encoding);
