@@ -29,6 +29,8 @@ import nl.knokko.customitems.effect.PotionEffect;
 import nl.knokko.customitems.item.AttributeModifier;
 import nl.knokko.customitems.item.CustomItemType;
 import nl.knokko.customitems.item.Enchantment;
+import nl.knokko.customitems.item.ReplaceCondition;
+import nl.knokko.customitems.item.ReplaceCondition.ConditionOperation;
 
 public class SimpleCustomItem extends CustomItem {
 	
@@ -36,8 +38,9 @@ public class SimpleCustomItem extends CustomItem {
 
 	public SimpleCustomItem(CustomItemType itemType, short itemDamage, String name, String displayName, String[] lore,
 			AttributeModifier[] attributes, Enchantment[] defaultEnchantments, int stackSize, boolean[] itemFlags, 
-			List<PotionEffect> playerEffects, List<PotionEffect> targetEffects, String[] commands, String replaceItem) {
-		super(itemType, itemDamage, name, displayName, lore, attributes, defaultEnchantments, itemFlags, playerEffects, targetEffects, commands, replaceItem);
+			List<PotionEffect> playerEffects, List<PotionEffect> targetEffects, String[] commands, ReplaceCondition[] conditions, ConditionOperation op) {
+		super(itemType, itemDamage, name, displayName, lore, attributes, defaultEnchantments, itemFlags, playerEffects, 
+				targetEffects, commands, conditions, op);
 		this.stackSize = stackSize;
 	}
 	

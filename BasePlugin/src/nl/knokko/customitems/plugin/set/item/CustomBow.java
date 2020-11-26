@@ -29,6 +29,8 @@ import nl.knokko.customitems.effect.PotionEffect;
 import nl.knokko.customitems.item.AttributeModifier;
 import nl.knokko.customitems.item.CustomItemType;
 import nl.knokko.customitems.item.Enchantment;
+import nl.knokko.customitems.item.ReplaceCondition;
+import nl.knokko.customitems.item.ReplaceCondition.ConditionOperation;
 import nl.knokko.customitems.plugin.recipe.ingredient.Ingredient;
 
 public class CustomBow extends CustomTool {
@@ -44,10 +46,10 @@ public class CustomBow extends CustomTool {
 			Enchantment[] defaultEnchantments, long maxDurability, double damageMultiplier, double speedMultiplier, int knockbackStrength,
 			boolean hasGravity, boolean allowEnchanting, boolean allowAnvil, Ingredient repairItem, 
 			boolean[] itemFlags, int entityHitDurabilityLoss, int blockBreakDurabilityLoss, int shootDurabilityLoss,
-			List<PotionEffect> playerEffects, List<PotionEffect> targetEffects, String[] commands, String replaceItem) {
+			List<PotionEffect> playerEffects, List<PotionEffect> targetEffects, String[] commands, ReplaceCondition[] conditions, ConditionOperation op) {
 		super(CustomItemType.BOW, itemDamage, name, displayName, lore, attributes, defaultEnchantments, 
 				maxDurability, allowEnchanting, allowAnvil, repairItem, itemFlags, entityHitDurabilityLoss,
-				blockBreakDurabilityLoss, playerEffects, targetEffects, commands, replaceItem);
+				blockBreakDurabilityLoss, playerEffects, targetEffects, commands, conditions, op);
 		this.damageMultiplier = damageMultiplier;
 		this.speedMultiplier = speedMultiplier;
 		this.knockbackStrength = knockbackStrength;
