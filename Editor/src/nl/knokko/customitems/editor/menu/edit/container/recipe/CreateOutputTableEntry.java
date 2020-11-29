@@ -2,6 +2,7 @@ package nl.knokko.customitems.editor.menu.edit.container.recipe;
 
 import java.util.function.Consumer;
 
+import nl.knokko.customitems.editor.HelpButtons;
 import nl.knokko.customitems.editor.menu.edit.EditProps;
 import nl.knokko.customitems.editor.menu.edit.recipe.result.ChooseResult;
 import nl.knokko.customitems.editor.set.ItemSet;
@@ -47,7 +48,7 @@ public class CreateOutputTableEntry extends GuiMenu {
 		Result[] pResult = {null};
 		addComponent(new DynamicTextButton("Choose...", EditProps.BUTTON, EditProps.HOVER, () -> {
 			state.getWindow().setMainComponent(new ChooseResult(
-					this, newResult -> pResult[0] = newResult, false, set
+					this, newResult -> pResult[0] = newResult, set
 			));
 		}), 0.3f, 0.4f, 0.45f, 0.5f);
 		
@@ -66,6 +67,8 @@ public class CreateOutputTableEntry extends GuiMenu {
 			onCreate.accept(new Entry(pResult[0], chance.getValue()));
 			state.getWindow().setMainComponent(returnMenu);
 		}), 0.025f, 0.1f, 0.15f, 0.2f);
+		
+		HelpButtons.addHelpLink(this, "edit menu/recipes/output table entry.html");
 	}
 	
 	@Override

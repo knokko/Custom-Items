@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Consumer;
 
+import nl.knokko.customitems.editor.HelpButtons;
 import nl.knokko.customitems.editor.menu.edit.EditProps;
 import nl.knokko.customitems.editor.menu.edit.SafeCollectionEdit;
 import nl.knokko.customitems.editor.set.ItemSet;
@@ -57,6 +58,8 @@ public class EditOutputTable extends SafeCollectionEdit<Entry> {
 		}), 0.025f, 0.55f, 0.2f, 0.65f);
 		
 		addComponent(nothingChanceComponent, 0f, 0.4f, 0.25f, 0.5f);
+		
+		HelpButtons.addHelpLink(this, "edit menu/recipes/output table.html");
 	}
 
 	@Override

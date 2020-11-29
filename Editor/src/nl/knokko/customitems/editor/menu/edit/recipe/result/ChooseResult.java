@@ -23,6 +23,7 @@
  *******************************************************************************/
 package nl.knokko.customitems.editor.menu.edit.recipe.result;
 
+import nl.knokko.customitems.editor.HelpButtons;
 import nl.knokko.customitems.editor.menu.edit.EditProps;
 import nl.knokko.customitems.editor.menu.edit.select.item.SelectCustomItem;
 import nl.knokko.customitems.editor.menu.edit.select.item.SelectDataVanillaItem;
@@ -46,7 +47,6 @@ public class ChooseResult extends GuiMenu {
 	
 	private final ResultListener listener;
 	private final GuiComponent returnMenu;
-	private final boolean allowEmpty;
 	private final ItemSet set;
 	
 	private final DynamicTextComponent errorComponent;
@@ -55,10 +55,9 @@ public class ChooseResult extends GuiMenu {
 	private Result current;
 
 	public ChooseResult(GuiComponent returnMenu, ResultListener listener, 
-			boolean allowEmpty, ItemSet set) {
+			ItemSet set) {
 		this.listener = listener;
 		this.returnMenu = returnMenu;
-		this.allowEmpty = allowEmpty;
 		this.set = set;
 		errorComponent = new DynamicTextComponent("", EditProps.ERROR);
 		amountField = new TextEditField("1", EditProps.EDIT_BASE, EditProps.EDIT_ACTIVE);
@@ -99,14 +98,8 @@ public class ChooseResult extends GuiMenu {
 				state.getWindow().setMainComponent(returnMenu);
 			}));
 		}), 0.6f, 0.25f, 0.8f, 0.35f);
-		if (allowEmpty) {
-			addComponent(new DynamicTextButton("Nothing", EditProps.BUTTON, EditProps.HOVER, () -> {
-				listener.onSelect(null);
-				state.getWindow().setMainComponent(returnMenu);
-			}), 0.6f, 0.1f, 0.8f, 0.2f);
-		}
-		addComponent(new DynamicTextComponent("Amount: ", EditProps.LABEL), 0.2f, 0.1f, 0.35f, 0.2f);
-		addComponent(amountField, 0.4f, 0.1f, 0.5f, 0.2f);
+		addComponent(new DynamicTextComponent("Amount: ", EditProps.LABEL), 0.4f, 0.1f, 0.55f, 0.2f);
+		addComponent(amountField, 0.6f, 0.1f, 0.7f, 0.2f);
 		addComponent(new ConditionalTextButton("Select", EditProps.BUTTON, EditProps.HOVER, () -> {
 			try {
 				int amount = Integer.parseInt(amountField.getText());
@@ -123,6 +116,8 @@ public class ChooseResult extends GuiMenu {
 			return current != null;
 		}), 0.2f, 0.1f, 0.35f, 0.2f);
 		addComponent(errorComponent, 0.05f, 0.85f, 0.95f, 0.95f);
+		
+		HelpButtons.addHelpLink(this, "edit%20menu/recipes/output%20type%20select.html");
 	}
 	
 	@Override

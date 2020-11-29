@@ -5,6 +5,7 @@ import java.util.Collection;
 import java.util.Locale;
 import java.util.function.Consumer;
 
+import nl.knokko.customitems.editor.HelpButtons;
 import nl.knokko.customitems.editor.menu.edit.EditProps;
 import nl.knokko.customitems.item.CustomItem;
 import nl.knokko.gui.color.GuiColor;
@@ -64,6 +65,8 @@ public class ChooseRequiredHeldItems extends GuiMenu {
 			onSelect.accept(selectedItems);
 			state.getWindow().setMainComponent(returnMenu);
 		}), 0.025f, 0.1f, 0.15f, 0.2f);
+		
+		HelpButtons.addHelpLink(this, "edit menu/drops/custom items selection.html");
 	}
 	
 	@Override

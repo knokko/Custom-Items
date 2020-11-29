@@ -81,7 +81,7 @@ public class IngredientView extends GuiMenu {
 			state.getWindow().setMainComponent(component.getMenu());
 		}), 0.75f, 0.15f, 0.95f, 0.25f);
 		
-		HelpButtons.addHelpLink(this, "edit%20menu/recipes/type%20select.html");
+		HelpButtons.addHelpLink(this, "edit%20menu/recipes/input%20type%20select.html");
 	}
 	
 	@Override
