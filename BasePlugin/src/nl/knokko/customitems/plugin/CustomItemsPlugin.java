@@ -68,6 +68,14 @@ public class CustomItemsPlugin extends JavaPlugin {
 	public void reload() {
 		loadConfig();
 		loadSet();
+		
+		// Inform the item updater about the new items
+		itemUpdater.onReload(set.getBackingItems(), set::isItemDeleted, setExportTime);
+		
+		// The PluginData maintains a map from custom objects to data
+		// That will have to be updated as well
+		data.saveData();
+		data = PluginData.loadData();
 	}
 
 	@Override
@@ -90,11 +98,7 @@ public class CustomItemsPlugin extends JavaPlugin {
 		Bukkit.getPluginManager().registerEvents(projectileManager, this);
 		CustomItemPickups.start();
 		
-		// Don't start item updater if there are no custom items, for instance due to
-		// errors on start-up
-		if (set.getBackingItems().length > 0) {
-			itemUpdater.start();
-		}
+		itemUpdater.start();
 		CrazyEnchantmentsSupport.onEnable();
 	}
 

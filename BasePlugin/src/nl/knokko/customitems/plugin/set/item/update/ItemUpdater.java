@@ -25,14 +25,23 @@ import nl.knokko.customitems.plugin.set.item.CustomItemNBT;
 
 public class ItemUpdater {
 
-	private final CustomItem[] items;
+	private CustomItem[] items;
 	private Function<String, Boolean> isItemDeleted;
-	private final long setExportTime;
+	private long setExportTime;
 	
 	public ItemUpdater(CustomItem[] items, Function<String, Boolean> isItemDeleted, long setExportTime) {
 		this.items = items;
 		this.isItemDeleted = isItemDeleted;
 		this.setExportTime = setExportTime;
+	}
+	
+	public void onReload(
+			CustomItem[] newItems, 
+			Function<String, Boolean> newIsItemDeleted,
+			long newSetExportTime) {
+		this.items = newItems;
+		this.isItemDeleted = newIsItemDeleted;
+		this.setExportTime = newSetExportTime;
 	}
 	
 	public void start() {
