@@ -1506,6 +1506,33 @@ public class CustomItemsEventHandler implements Listener {
 								contents[index].setAmount(contents[index].getAmount() / 2);
 							}
 						});
+					} else if (action == InventoryAction.DROP_ONE_SLOT) {
+						
+						// Some action needs to be taken when players try to drop custom items like this
+						ItemStack[] contents = event.getInventory().getContents();
+						int[] contentSizes = new int[contents.length];
+						for (int index = 1; index < contents.length; index++) {
+							contentSizes[index] = contents[index].getAmount() - 1;
+							if (contentSizes[index] < 0) {
+								contentSizes[index] = 0;
+							}
+						}
+						
+						ItemStack currentItem = event.getCurrentItem().clone();
+						
+						// Weird shit happens if I don't delay this action
+						Bukkit.getScheduler().scheduleSyncDelayedTask(plugin(), () -> {
+							
+							event.getWhoClicked().getWorld().dropItem(
+									event.getWhoClicked().getLocation(), 
+									currentItem
+							);
+							
+							for (int index = 0; index < contents.length; index++) {
+								contents[index].setAmount(contentSizes[index]);
+							}
+						});
+						
 					} else if (action == InventoryAction.MOVE_TO_OTHER_INVENTORY) {
 						// This block deals with shift clicks on the result slot
 						int amountPerCraft = event.getCurrentItem().getAmount();
