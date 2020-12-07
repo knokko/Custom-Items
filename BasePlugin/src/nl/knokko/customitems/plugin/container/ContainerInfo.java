@@ -54,6 +54,9 @@ public class ContainerInfo {
 				if (slot instanceof FuelCustomSlot) {
 					FuelCustomSlot fuelSlot = (FuelCustomSlot) slot;
 					fuelSlots.put(fuelSlot.getName(), new FuelProps(invIndex, fuelSlot));
+					if (!fuelIndicators.containsKey(fuelSlot.getName())) {
+						fuelIndicators.put(fuelSlot.getName(), new ArrayList<>());
+					}
 				} else if (slot instanceof FuelIndicatorCustomSlot) {
 					FuelIndicatorCustomSlot indicatorSlot = (FuelIndicatorCustomSlot) slot;
 					Collection<IndicatorProps> indicators = fuelIndicators.get(indicatorSlot.getFuelSlotName());

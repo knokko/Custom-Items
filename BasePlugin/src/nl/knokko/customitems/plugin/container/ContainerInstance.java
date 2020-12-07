@@ -9,6 +9,7 @@ import java.util.Random;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 import java.util.function.Function;
+import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 
 import org.bukkit.Bukkit;
@@ -102,10 +103,13 @@ public class ContainerInstance {
 			inv.setItem(indicator.getInventoryIndex(), fromDisplay(indicator.getPlaceholder()));
 		}
 		typeInfo.getFuelSlots().forEach(entry -> {
-			for (IndicatorProps indicator : entry.getValue().getIndicators()) {
+			FuelProps props = entry.getValue();
+			for (IndicatorProps indicator : props.getIndicators()) {
 				inv.setItem(indicator.getInventoryIndex(), fromDisplay(indicator.getPlaceholder()));
 			}
-			inv.setItem(entry.getValue().getSlotIndex(), fromDisplay(entry.getValue().getPlaceholder()));
+			if (props.getPlaceholder() != null) {
+				inv.setItem(props.getSlotIndex(), fromDisplay(props.getPlaceholder()));
+			}
 		});
 		
 		return inv;
@@ -356,7 +360,7 @@ public class ContainerInstance {
 		return StreamSupport.stream(entries.spliterator(), false).map(entry -> {
 			Entry<T, Integer> resultEntry = new SimpleEntry<T, Integer>(entry.getKey(), getIndex.apply(entry.getValue()));
 			return resultEntry;
-		})::iterator;
+		}).collect(Collectors.toList());
 	}
 
 	private final ContainerInfo typeInfo;
@@ -535,10 +539,35 @@ public class ContainerInstance {
 		return currentCraftingProgress;
 	}
 	
+	private void updatePlaceholders() {
+		typeInfo.getFuelSlots().forEach(entry -> {
+			FuelProps props = entry.getValue();
+			if (props.getPlaceholder() != null) {
+				ItemStack currentItem = inventory.getItem(props.getSlotIndex());
+				
+				// DONT use ItemUtils.isEmpty because that considers placeholders
+				// as empty items
+				if (
+						currentItem == null 
+						|| currentItem.getAmount() <= 0
+						|| ItemHelper.getMaterialName(currentItem)
+						.equals(CIMaterial.AIR.name())
+				) {
+					inventory.setItem(
+							props.getSlotIndex(), 
+							fromDisplay(props.getPlaceholder())
+					);
+				}
+			}
+		});
+	}
+	
 	public void update() {
 		ContainerRecipe oldRecipe = currentRecipe;
 		currentRecipe = null;
 		
+		updatePlaceholders();
+
 		candidateLoop:
 		for (ContainerRecipe candidate : typeInfo.getContainer().getRecipes()) {
 			for (InputEntry input : candidate.getInputs()) {

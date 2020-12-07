@@ -117,7 +117,7 @@ public class ContainerEventHandler implements Listener {
 					
 					// Make sure slots can only be used the way they should be used
 					if (isTake(event.getAction())) {
-						if (!slot.canTakeItems()) {
+						if (!slot.canTakeItems() || ItemUtils.isEmpty(event.getCurrentItem())) {
 							event.setCancelled(true);
 						}
 					} else if (isInsert(event.getAction())) {

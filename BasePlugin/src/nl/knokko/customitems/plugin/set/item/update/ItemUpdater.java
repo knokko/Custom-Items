@@ -12,12 +12,14 @@ import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
+import nl.knokko.core.plugin.item.GeneralItemNBT;
 import nl.knokko.core.plugin.item.ItemHelper;
 import nl.knokko.core.plugin.item.attributes.ItemAttributes;
 import nl.knokko.customitems.item.Enchantment;
 import nl.knokko.customitems.item.EnchantmentType;
 import nl.knokko.customitems.item.ItemFlag;
 import nl.knokko.customitems.plugin.CustomItemsPlugin;
+import nl.knokko.customitems.plugin.container.ContainerInstance;
 import nl.knokko.customitems.plugin.set.ItemSet;
 import nl.knokko.customitems.plugin.set.item.BooleanRepresentation;
 import nl.knokko.customitems.plugin.set.item.CustomItem;
@@ -67,6 +69,15 @@ public class ItemUpdater {
 		if (originalStack == null) {
 			return null;
 		}
+		
+		// If players somehow obtain placeholder items, get rid of those!
+		if (
+				GeneralItemNBT.readOnlyInstance(originalStack)
+				.getOrDefault(ContainerInstance.PLACEHOLDER_KEY, 0) == 1
+		) {
+			return null;
+		}
+		
 		CustomItem[] pOldItem = {null};
 		CustomItem[] pNewItem = {null};
 		UpdateAction[] pAction = {null};

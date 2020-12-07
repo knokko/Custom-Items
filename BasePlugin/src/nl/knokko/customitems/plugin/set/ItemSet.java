@@ -139,6 +139,7 @@ public class ItemSet implements ItemSetBase {
 		mobDropMap = new EntityDrop[CIEntityType.AMOUNT][0];
 		
 		errors = new ArrayList<>();
+		deletedItems = new String[0];
 	}
 
 	public ItemSet(BitInput input) throws UnknownEncodingException, IntegrityException, UnknownMaterialException {
