@@ -22,7 +22,10 @@ public class TestIndicatorDomain {
 	public void testStacksize() {
 		IndicatorDomain domain = new IndicatorDomain(60, 80);
 		assertEquals(32, domain.getStacksize(700, 1000));
+		assertEquals(0, domain.getStacksize(599, 1000));
 		assertEquals(0, domain.getStacksize(600, 1000));
+		assertEquals(1, domain.getStacksize(601, 1000));
+		assertEquals(63, domain.getStacksize(799, 1000));
 		assertEquals(64, domain.getStacksize(800, 1000));
 		assertEquals(0, domain.getStacksize(500, 1000));
 		assertEquals(64, domain.getStacksize(900, 1000));

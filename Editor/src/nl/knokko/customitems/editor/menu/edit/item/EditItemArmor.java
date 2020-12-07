@@ -76,11 +76,22 @@ public class EditItemArmor extends EditItemTool {
 		double armor;
 		Slot slot;
 		CustomItemType i = internalType;
-		if (i == CustomItemType.DIAMOND_HELMET) {
+		if (i == CustomItemType.NETHERITE_HELMET) {
 			armor = 3;
 			slot = Slot.HEAD;
-		}
-		else if (i == CustomItemType.DIAMOND_CHESTPLATE) {
+		} else if (i == CustomItemType.NETHERITE_CHESTPLATE) {
+			armor = 8;
+			slot = Slot.CHEST;
+		} else if (i == CustomItemType.NETHERITE_LEGGINGS) {
+			armor = 6;
+			slot = Slot.LEGS;
+		} else if (i == CustomItemType.NETHERITE_BOOTS) {
+			armor = 3;
+			slot = Slot.FEET;
+		} else if (i == CustomItemType.DIAMOND_HELMET) {
+			armor = 3;
+			slot = Slot.HEAD;
+		} else if (i == CustomItemType.DIAMOND_CHESTPLATE) {
 			armor = 8;
 			slot = Slot.CHEST;
 		} else if (i == CustomItemType.DIAMOND_LEGGINGS) {

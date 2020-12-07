@@ -16,6 +16,7 @@ import org.bukkit.event.entity.EntityExplodeEvent;
 import org.bukkit.event.inventory.InventoryAction;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryCloseEvent;
+import org.bukkit.event.inventory.InventoryDragEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
@@ -96,6 +97,26 @@ public class ContainerEventHandler implements Listener {
 	}
 
 	@EventHandler(priority = EventPriority.LOW, ignoreCancelled = true)
+	public void onInventoryDrag(InventoryDragEvent event) {
+		if (event.getWhoClicked() instanceof Player) {
+			Player player = (Player) event.getWhoClicked();
+			
+			ContainerInstance customContainer = pluginData().getCustomContainer(player);
+			if (customContainer != null) {
+				for (int slotIndex : event.getRawSlots()) {
+					if (slotIndex >= 0 && slotIndex < 9 * customContainer.getType().getHeight()) {
+						CustomSlot slot = customContainer.getType().getSlot(slotIndex % 9, slotIndex / 9);
+						if (!slot.canInsertItems()) {
+							event.setCancelled(true);
+							return;
+						}
+					}
+				}
+			}
+		}
+	}
+
+	@EventHandler(priority = EventPriority.LOW, ignoreCancelled = true)
 	public void onInventoryClick(InventoryClickEvent event) {
 		
 		if (event.getWhoClicked() instanceof Player) {
@@ -107,6 +128,8 @@ public class ContainerEventHandler implements Listener {
 				
 				int slotIndex = event.getRawSlot();
 				CustomContainer containerType = customContainer.getType();
+				
+				// Check if the player clicked inside the custom container
 				if (slotIndex >= 0 && slotIndex < 9 * containerType.getHeight()) {
 					CustomSlot slot = customContainer.getType().getSlot(slotIndex % 9, slotIndex / 9);
 					
@@ -148,6 +171,41 @@ public class ContainerEventHandler implements Listener {
 						// I don't know whether or not this should be allowed
 						// But better safe than sorry
 						event.setCancelled(true);
+					}
+				} else {
+					
+					// If the player clicked outside the custom container, we need
+					// to make sure he can't transfer the item to container inventory.
+					if (event.getAction() == InventoryAction.MOVE_TO_OTHER_INVENTORY) {
+						
+						// TODO Cancel and handle manually!
+						// I'm afraid I can't see to which slot the item will be
+						// transferred, so better safe than sorry.
+						event.setCancelled(true);
+					}
+					
+					// We also block collect to cursor moves if it might take out an item
+					// from a slot that doesn't allow this
+					// TODO Check if this is still necessary, since decorations always
+					// have the placeholder nbt marker
+					if (event.getAction() == InventoryAction.COLLECT_TO_CURSOR) {
+						CustomContainer container = customContainer.getType();
+						ItemStack itemToCollect = event.getCursor();
+						if (!ItemUtils.isEmpty(itemToCollect)) {
+							String toCollect = ItemHelper.getMaterialName(itemToCollect);
+							for (int x = 0; x < 9; x++) {
+								for (int y = 0; y < container.getHeight(); y++) {
+									CustomSlot slot = container.getSlot(x, y);
+									if (!slot.canTakeItems()) {
+										ItemStack containerItem = customContainer.getInventory().getItem(x + 9 * y);
+										if (!ItemUtils.isEmpty(containerItem) && ItemHelper.getMaterialName(containerItem).equals(toCollect)) {
+											event.setCancelled(true);
+											return;
+										}
+									}
+								}
+							}
+						}
 					}
 				}
 			}
@@ -207,7 +265,8 @@ public class ContainerEventHandler implements Listener {
 		return action == InventoryAction.PICKUP_ONE ||
 				action == InventoryAction.PICKUP_SOME ||
 				action == InventoryAction.PICKUP_HALF ||
-				action == InventoryAction.PICKUP_ALL;
+				action == InventoryAction.PICKUP_ALL ||
+				action == InventoryAction.MOVE_TO_OTHER_INVENTORY;
 	}
 	
 	private boolean isInsert(InventoryAction action) {

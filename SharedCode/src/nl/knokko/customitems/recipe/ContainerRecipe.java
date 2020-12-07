@@ -37,7 +37,12 @@ public class ContainerRecipe {
 			
 			String inputSlotName = input.readString();
 			SCIngredient ingredient = loadIngredient.get();
-			inputs.add(new InputEntry(inputSlotName, ingredient));
+			
+			// A bug in the past made it possible that NoIngredient instances are
+			// encoded ;( This seems like the easiest way to nullify the damage.
+			if (!ingredient.getClass().getSimpleName().equals("NoIngredient")) {
+				inputs.add(new InputEntry(inputSlotName, ingredient));
+			}
 		}
 		
 		int numOutputs = input.readInt();
@@ -113,6 +118,11 @@ public class ContainerRecipe {
 		return new ContainerRecipe(new ArrayList<>(inputs), 
 				new ArrayList<>(outputs), duration, experience
 		);
+	}
+	
+	@Override
+	public String toString() {
+		return "ContainerRecipe(inputs=" + inputs + ", outputs=" + outputs + ")";
 	}
 	
 	public void save(
@@ -204,6 +214,11 @@ public class ContainerRecipe {
 			this.ingredient = ingredient;
 		}
 		
+		@Override
+		public String toString() {
+			return inputSlotName + "==" + ingredient;
+		}
+		
 		public String getInputSlotName() {
 			return inputSlotName;
 		}
@@ -222,6 +237,11 @@ public class ContainerRecipe {
 		public OutputEntry(String outputSlotName, OutputTable outputTable) {
 			this.outputSlotName = outputSlotName;
 			this.outputTable = outputTable;
+		}
+		
+		@Override
+		public String toString() {
+			return outputSlotName + ":=" + outputTable;
 		}
 		
 		public String getOutputSlotName() {

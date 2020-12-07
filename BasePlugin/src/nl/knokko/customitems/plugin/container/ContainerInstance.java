@@ -62,8 +62,10 @@ public class ContainerInstance {
 	@SuppressWarnings("deprecation")
 	public static ItemStack fromDisplay(SlotDisplay display) {
 		ItemStack stack;
-		if (display.getItem() instanceof CustomItemDisplayItem) {
-			stack = ((CustomItem)((CustomItemDisplayItem) display.getItem()).getItem()).create(display.getAmount());
+		boolean isCustom = display.getItem() instanceof CustomItemDisplayItem;
+		if (isCustom) {
+			CustomItem customItem = ((CustomItem)((CustomItemDisplayItem) display.getItem()).getItem());
+			stack = customItem.create(display.getAmount());
 		} else {
 			CIMaterial material;
 			if (display.getItem() instanceof DataVanillaDisplayItem) {
@@ -83,8 +85,15 @@ public class ContainerInstance {
 		}
 		
 		ItemMeta meta = stack.getItemMeta();
-		meta.setDisplayName(display.getDisplayName());
-		meta.setLore(Lists.newArrayList(display.getLore()));
+		
+		// If a custom item is used, only overwrite display name and lore if its
+		// specifically specified
+		if (!isCustom || !display.getDisplayName().isEmpty())
+			meta.setDisplayName(display.getDisplayName());
+		if (!isCustom || display.getLore().length > 0)
+			meta.setLore(Lists.newArrayList(display.getLore()));
+		
+		// Store changes in item meta
 		stack.setItemMeta(meta);
 		
 		GeneralItemNBT nbt = GeneralItemNBT.readWriteInstance(stack);
@@ -640,10 +649,30 @@ public class ContainerInstance {
 
 		candidateLoop:
 		for (ContainerRecipe candidate : typeInfo.getContainer().getRecipes()) {
+			
+			// Check that all inputs are present
 			for (InputEntry input : candidate.getInputs()) {
 				ItemStack inSlot = getInput(input.getInputSlotName());
 				Ingredient ingredient = (Ingredient) input.getIngredient();
 				if (!ingredient.accept(inSlot)) {
+					continue candidateLoop;
+				}
+			}
+			
+			// Check that all other inputs are empty
+			inputLoop:
+			for (Entry<String, InputProps> inputEntry : typeInfo.getInputSlots()) {
+				for (InputEntry usedInput : candidate.getInputs()) {
+					
+					// If this input is used, we shouldn't check if its empty
+					if (usedInput.getInputSlotName().equals(inputEntry.getKey())) {
+						continue inputLoop;
+					}
+				}
+				
+				// If this input slot is not used, it should be empty!
+				ItemStack inSlot = inventory.getItem(inputEntry.getValue().getSlotIndex());
+				if (!ItemUtils.isEmpty(inSlot)) {
 					continue candidateLoop;
 				}
 			}
@@ -729,10 +758,13 @@ public class ContainerInstance {
 		if (oldCraftingProgress != currentCraftingProgress) {
 			for (IndicatorProps indicator : typeInfo.getCraftingIndicators()) {
 				
+				int newStacksize = 0;
 				if (currentCraftingProgress > 0) {
 					IndicatorDomain domain = indicator.getIndicatorDomain();
-					int newStacksize = domain.getStacksize(currentCraftingProgress, currentRecipe.getDuration());
-					
+					newStacksize = domain.getStacksize(currentCraftingProgress, currentRecipe.getDuration());
+				}
+				
+				if (newStacksize > 0) {
 					ItemStack newItemStack = fromDisplay(indicator.getSlotDisplay());
 					newItemStack.setAmount(newStacksize);
 					inventory.setItem(indicator.getInventoryIndex(), newItemStack);

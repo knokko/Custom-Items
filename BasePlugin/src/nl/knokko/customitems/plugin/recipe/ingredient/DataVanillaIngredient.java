@@ -52,4 +52,9 @@ public class DataVanillaIngredient implements Ingredient {
 					&& item.getData().getData() == data;
 		}
 	}
+	
+	@Override
+	public String toString() {
+		return type.name() + "[" + data + "]";
+	}
 }
