@@ -42,6 +42,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.material.MaterialData;
 
+import nl.knokko.core.plugin.item.GeneralItemNBT;
 import nl.knokko.core.plugin.item.ItemHelper;
 import nl.knokko.core.plugin.item.UnknownMaterialException;
 import nl.knokko.customitems.container.CustomContainer;
@@ -71,6 +72,7 @@ import nl.knokko.customitems.item.ItemSetBase;
 import nl.knokko.customitems.item.WandCharges;
 import nl.knokko.customitems.plugin.CustomItemsPlugin;
 import nl.knokko.customitems.plugin.container.ContainerInfo;
+import nl.knokko.customitems.plugin.container.ContainerInstance;
 import nl.knokko.customitems.plugin.recipe.CustomRecipe;
 import nl.knokko.customitems.plugin.recipe.ShapedCustomRecipe;
 import nl.knokko.customitems.plugin.recipe.ShapelessCustomRecipe;
@@ -1807,6 +1809,10 @@ public class ItemSet implements ItemSetBase {
 	}
 	
 	public CustomItem getItem(ItemStack item) {
+		if (GeneralItemNBT.readOnlyInstance(item).getOrDefault(
+				ContainerInstance.PLACEHOLDER_KEY, 0) == 1) {
+			return null;
+		}
 		ItemDamageClaim claim = getItemDamageClaim(item);
 		if (claim instanceof CustomItem)
 			return (CustomItem) claim;

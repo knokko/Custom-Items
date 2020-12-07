@@ -5,6 +5,7 @@ import java.util.function.Consumer;
 import nl.knokko.customitems.container.fuel.CustomFuelRegistry;
 import nl.knokko.customitems.container.slot.CustomSlot;
 import nl.knokko.customitems.container.slot.FuelCustomSlot;
+import nl.knokko.customitems.container.slot.display.SlotDisplay;
 import nl.knokko.customitems.editor.HelpButtons;
 import nl.knokko.customitems.editor.menu.edit.CollectionSelect;
 import nl.knokko.customitems.editor.menu.edit.EditProps;
@@ -60,6 +61,17 @@ public class CreateFuelSlot extends GuiMenu {
 			state.getWindow().setMainComponent(new EditFuelRegistry(this, set, null, null));
 		}), 0.6f, 0.6f, 0.75f, 0.65f);
 		
+		SlotDisplay[] pPlaceholder = { null };
+		addComponent(new DynamicTextComponent("Placeholder:", EditProps.LABEL), 0.25f, 0.5f, 0.45f, 0.55f);
+		addComponent(new DynamicTextButton("Choose...", EditProps.BUTTON, EditProps.HOVER, () -> {
+			state.getWindow().setMainComponent(new CreateDisplay(this, 
+					newDisplay -> pPlaceholder[0] = newDisplay, true, 
+			set.getBackingItems()));
+		}), 0.475f, 0.5f, 0.625f, 0.55f);
+		addComponent(new DynamicTextButton("Clear", EditProps.CANCEL_BASE, EditProps.CANCEL_HOVER, () -> {
+			pPlaceholder[0] = null;
+		}), 0.65f, 0.5f, 0.75f, 0.55f);
+		
 		addComponent(new DynamicTextButton("Apply", EditProps.SAVE_BASE, EditProps.SAVE_HOVER, () -> {
 			if (nameField.getText().isEmpty()) {
 				errorComponent.setText("You need to give this fuel slot a name");
@@ -78,7 +90,8 @@ public class CreateFuelSlot extends GuiMenu {
 				errorComponent.setText("You need to select a fuel registry");
 				return;
 			}
-			submitSlot.accept(new FuelCustomSlot(nameField.getText(), pChosenRegistry[0]));
+			// Placeholder is allowed to be null
+			submitSlot.accept(new FuelCustomSlot(nameField.getText(), pChosenRegistry[0], pPlaceholder[0]));
 			state.getWindow().setMainComponent(returnMenu);
 		}), 0.025f, 0.2f, 0.2f, 0.3f);
 		HelpButtons.addHelpLink(this, "edit menu/containers/slots/fuel.html");

@@ -25,13 +25,12 @@ package nl.knokko.customitems.plugin.recipe.ingredient;
 
 import org.bukkit.inventory.ItemStack;
 
-import nl.knokko.core.plugin.item.ItemHelper;
-import nl.knokko.customitems.item.CIMaterial;
+import nl.knokko.customitems.plugin.util.ItemUtils;
 
 public class NoIngredient implements Ingredient {
 
 	@Override
 	public boolean accept(ItemStack item) {
-		return item == null || ItemHelper.getMaterialName(item).equals(CIMaterial.AIR.name());
+		return ItemUtils.isEmpty(item);
 	}
 }

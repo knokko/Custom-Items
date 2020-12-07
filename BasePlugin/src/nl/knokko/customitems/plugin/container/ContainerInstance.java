@@ -22,6 +22,7 @@ import org.bukkit.material.MaterialData;
 
 import com.google.common.collect.Lists;
 
+import nl.knokko.core.plugin.item.GeneralItemNBT;
 import nl.knokko.core.plugin.item.ItemHelper;
 import nl.knokko.customitems.container.CustomContainer;
 import nl.knokko.customitems.container.IndicatorDomain;
@@ -33,6 +34,7 @@ import nl.knokko.customitems.container.slot.display.SimpleVanillaDisplayItem;
 import nl.knokko.customitems.container.slot.display.SlotDisplay;
 import nl.knokko.customitems.item.CIMaterial;
 import nl.knokko.customitems.plugin.container.ContainerInfo.DecorationProps;
+import nl.knokko.customitems.plugin.container.ContainerInfo.FuelProps;
 import nl.knokko.customitems.plugin.container.ContainerInfo.IndicatorProps;
 import nl.knokko.customitems.plugin.recipe.ingredient.Ingredient;
 import nl.knokko.customitems.plugin.set.item.CustomItem;
@@ -51,6 +53,8 @@ import nl.knokko.util.bits.BitOutput;
  * (smelting) recipes are currently in progress.
  */
 public class ContainerInstance {
+	
+	public static final String[] PLACEHOLDER_KEY = {"KnokkosItemFlags", "IsSlotDisplay"};
 	
 	@SuppressWarnings("deprecation")
 	public static ItemStack fromDisplay(SlotDisplay display) {
@@ -80,7 +84,9 @@ public class ContainerInstance {
 		meta.setLore(Lists.newArrayList(display.getLore()));
 		stack.setItemMeta(meta);
 		
-		return stack;
+		GeneralItemNBT nbt = GeneralItemNBT.readWriteInstance(stack);
+		nbt.set(PLACEHOLDER_KEY, 1);
+		return nbt.backToBukkit();
 	}
 	
 	private static Inventory createInventory(ContainerInfo typeInfo) {
@@ -96,9 +102,10 @@ public class ContainerInstance {
 			inv.setItem(indicator.getInventoryIndex(), fromDisplay(indicator.getPlaceholder()));
 		}
 		typeInfo.getFuelSlots().forEach(entry -> {
-			for (IndicatorProps indicator : typeInfo.getFuelIndicators(entry.getKey())) {
+			for (IndicatorProps indicator : entry.getValue().getIndicators()) {
 				inv.setItem(indicator.getInventoryIndex(), fromDisplay(indicator.getPlaceholder()));
 			}
+			inv.setItem(entry.getValue().getSlotIndex(), fromDisplay(entry.getValue().getPlaceholder()));
 		});
 		
 		return inv;
@@ -261,30 +268,30 @@ public class ContainerInstance {
 		// But first the simple cases
 		inputStacks.removeIf(inputStack -> inputStack.putSimple(typeInfo::getInputSlotIndex, inv));
 		outputStacks.removeIf(outputStack -> outputStack.putSimple(typeInfo::getOutputSlotIndex, inv));
-		fuelStacks.removeIf(fuelStack -> fuelStack.putSimple(typeInfo::getFuelSlotIndex, inv));
+		fuelStacks.removeIf(fuelStack -> fuelStack.putSimple(fuelSlotName -> typeInfo.getFuelSlot(fuelSlotName).getSlotIndex(), inv));
 		
 		// Now the annoying cases where the slot is changed or renamed
 		for (StringStack inputStack : inputStacks) {
 			inputStack.putInEmptySlot(
-					takeValues(typeInfo.getInputSlots()), 
-					takeValues(typeInfo.getOutputSlots()), 
-					takeValues(typeInfo.getFuelSlots())
+					takeValues(typeInfo.getInputSlots(), props -> props), 
+					takeValues(typeInfo.getOutputSlots(), props -> props), 
+					takeValues(typeInfo.getFuelSlots(), props -> props.getSlotIndex())
 			);
 		}
 		
 		for (StringStack outputStack : outputStacks) {
 			outputStack.putInEmptySlot(
-					takeValues(typeInfo.getOutputSlots()), 
-					takeValues(typeInfo.getFuelSlots()), 
-					takeValues(typeInfo.getInputSlots())
+					takeValues(typeInfo.getOutputSlots(), props -> props), 
+					takeValues(typeInfo.getFuelSlots(), props -> props.getSlotIndex()), 
+					takeValues(typeInfo.getInputSlots(), props -> props)
 			);
 		}
 		
 		for (StringStack fuelStack : fuelStacks) {
 			fuelStack.putInEmptySlot(
-					takeValues(typeInfo.getFuelSlots()), 
-					takeValues(typeInfo.getOutputSlots()), 
-					takeValues(typeInfo.getInputSlots())
+					takeValues(typeInfo.getFuelSlots(), props -> props.getSlotIndex()), 
+					takeValues(typeInfo.getOutputSlots(), props -> props), 
+					takeValues(typeInfo.getInputSlots(), props -> props)
 			);
 		}
 		
@@ -315,8 +322,41 @@ public class ContainerInstance {
 		return instance;
 	}
 	
-	private static <T> Iterable<Integer> takeValues(Iterable<Entry<T, Integer>> entries) {
-		return StreamSupport.stream(entries.spliterator(), false).map(entry -> entry.getValue())::iterator;
+	private static <T, U> Iterable<Integer> takeValues(Iterable<Entry<T, U>> entries, Function<U, Integer> getIndex) {
+		return StreamSupport.stream(entries.spliterator(), false).map(entry -> getIndex.apply(entry.getValue()))::iterator;
+	}
+	
+	private static class SimpleEntry<K, V> implements Entry<K, V> {
+		
+		final K key;
+		final V value;
+		
+		SimpleEntry(K key, V value) {
+			this.key = key;
+			this.value = value;
+		}
+
+		@Override
+		public K getKey() {
+			return key;
+		}
+
+		@Override
+		public V getValue() {
+			return value;
+		}
+
+		@Override
+		public V setValue(V value) {
+			throw new UnsupportedOperationException();
+		}
+	}
+	
+	private static <T, U> Iterable<Entry<T, Integer>> mapEntries(Iterable<Entry<T, U>> entries, Function<U, Integer> getIndex) {
+		return StreamSupport.stream(entries.spliterator(), false).map(entry -> {
+			Entry<T, Integer> resultEntry = new SimpleEntry<T, Integer>(entry.getKey(), getIndex.apply(entry.getValue()));
+			return resultEntry;
+		})::iterator;
 	}
 
 	private final ContainerInfo typeInfo;
@@ -353,7 +393,7 @@ public class ContainerInstance {
 	}
 	
 	private void initFuelSlots() {
-		for (Entry<String, Integer> fuelSlot : typeInfo.getFuelSlots()) {
+		for (Entry<String, FuelProps> fuelSlot : typeInfo.getFuelSlots()) {
 			fuelSlots.put(fuelSlot.getKey(), new FuelBurnEntry());
 		}
 	}
@@ -393,7 +433,7 @@ public class ContainerInstance {
 		
 		slotsSaver.accept(typeInfo.getInputSlots());
 		slotsSaver.accept(typeInfo.getOutputSlots());
-		slotsSaver.accept(typeInfo.getFuelSlots());
+		slotsSaver.accept(mapEntries(typeInfo.getFuelSlots(), props -> props.getSlotIndex()));
 		
 		int numBurningFuelSlots = 0;
 		for (FuelBurnEntry burn : fuelSlots.values()) {
@@ -431,17 +471,18 @@ public class ContainerInstance {
 	}
 	
 	public void dropAllItems(Location location) {
-		dropAllItems(location, typeInfo.getInputSlots());
-		dropAllItems(location, typeInfo.getOutputSlots());
-		dropAllItems(location, typeInfo.getFuelSlots());
+		dropAllItems(location, typeInfo.getInputSlots(), props -> props);
+		dropAllItems(location, typeInfo.getOutputSlots(), props -> props);
+		dropAllItems(location, typeInfo.getFuelSlots(), props -> props.getSlotIndex());
 	}
 	
-	private void dropAllItems(Location location, Iterable<Entry<String, Integer>> slots) {
+	private <T> void dropAllItems(Location location, Iterable<Entry<String, T>> slots, Function<T, Integer> getIndex) {
 		slots.forEach(entry -> {
-			ItemStack stack = inventory.getItem(entry.getValue());
+			int index = getIndex.apply(entry.getValue());
+			ItemStack stack = inventory.getItem(index);
 			if (!ItemUtils.isEmpty(stack)) {
 				location.getWorld().dropItem(location, stack);
-				inventory.setItem(entry.getValue(), null);
+				inventory.setItem(index, null);
 			}
 		});
 	}
@@ -468,7 +509,14 @@ public class ContainerInstance {
 	}
 	
 	public ItemStack getFuel(String fuelSlotName) {
-		return inventory.getItem(typeInfo.getFuelSlotIndex(fuelSlotName));
+		ItemStack potentialFuel = inventory.getItem(
+				typeInfo.getFuelSlot(fuelSlotName).getSlotIndex()
+		);
+		if (!ItemUtils.isEmpty(potentialFuel)) {
+			return potentialFuel;
+		} else {
+			return null;
+		}
 	}
 	
 	public void setInput(String inputSlotName, ItemStack newStack) {
@@ -480,7 +528,7 @@ public class ContainerInstance {
 	}
 	
 	public void setFuel(String fuelSlotName, ItemStack newStack) {
-		inventory.setItem(typeInfo.getFuelSlotIndex(fuelSlotName), newStack);
+		inventory.setItem(typeInfo.getFuelSlot(fuelSlotName).getSlotIndex(), newStack);
 	}
 	
 	public int getCurrentCraftingProgress() {
@@ -604,7 +652,7 @@ public class ContainerInstance {
 	
 	private void updateFuelIndicator(String fuelSlotName) {
 		
-		for (IndicatorProps indicator : typeInfo.getFuelIndicators(fuelSlotName)) {
+		for (IndicatorProps indicator : typeInfo.getFuelSlot(fuelSlotName).getIndicators()) {
 			
 			ItemStack indicatingStack = fromDisplay(indicator.getSlotDisplay());
 			IndicatorDomain domain = indicator.getIndicatorDomain();
@@ -661,7 +709,10 @@ public class ContainerInstance {
 	}
 	
 	private Integer getBurnTime(String fuelSlotName, FuelBurnEntry slot, ItemStack fuel) {
-		for (FuelEntry registryEntry : typeInfo.getFuelRegistry(fuelSlotName)) {
+		if (ItemUtils.isEmpty(fuel)) {
+			return null;
+		}
+		for (FuelEntry registryEntry : typeInfo.getFuelSlot(fuelSlotName).getRegistry().getEntries()) {
 			Ingredient ingredient = (Ingredient) registryEntry.getFuel();
 			if (ingredient.accept(fuel)) {
 				return registryEntry.getBurnTime();

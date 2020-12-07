@@ -3,17 +3,47 @@ package nl.knokko.customitems.container.slot;
 import java.util.function.Function;
 
 import nl.knokko.customitems.container.fuel.CustomFuelRegistry;
+import nl.knokko.customitems.container.slot.display.SimpleVanillaDisplayItem;
+import nl.knokko.customitems.container.slot.display.SlotDisplay;
+import nl.knokko.customitems.item.CIMaterial;
+import nl.knokko.customitems.item.CustomItem;
+import nl.knokko.customitems.trouble.UnknownEncodingException;
 import nl.knokko.util.bits.BitInput;
 import nl.knokko.util.bits.BitOutput;
 
 public class FuelCustomSlot implements CustomSlot {
 	
 	public static FuelCustomSlot load1(
-			BitInput input, Function<String, CustomFuelRegistry> fuelRegistryByName) {
+			BitInput input, 
+			Function<String, CustomFuelRegistry> fuelRegistryByName) {
 		
 		String name = input.readString();
 		CustomFuelRegistry fuelRegistry = fuelRegistryByName.apply(input.readString());
-		return new FuelCustomSlot(name, fuelRegistry);
+		
+		// Use an empty placeholder by default, because there were no placeholders
+		// in the first fuel encoding
+		SlotDisplay placeholder = new SlotDisplay(
+				new SimpleVanillaDisplayItem(CIMaterial.AIR), "", new String[0], 1
+		);
+		return new FuelCustomSlot(name, fuelRegistry, placeholder);
+	}
+	
+	public static FuelCustomSlot load2(
+			BitInput input, 
+			Function<String, CustomFuelRegistry> fuelRegistryByName,
+			Function<String, CustomItem> itemByName
+	) throws UnknownEncodingException {
+		
+		String name = input.readString();
+		CustomFuelRegistry fuelRegistry = fuelRegistryByName.apply(input.readString());
+		SlotDisplay placeholder;
+		if (input.readBoolean()) {
+			placeholder = SlotDisplay.load(input, itemByName);
+		} else {
+			placeholder = null;
+		}
+		
+		return new FuelCustomSlot(name, fuelRegistry, placeholder);
 	}
 	
 	private final String name;
@@ -21,16 +51,34 @@ public class FuelCustomSlot implements CustomSlot {
 	// TODO Add possibility for vanilla fuel registry
 	private final CustomFuelRegistry fuelRegistry;
 	
-	public FuelCustomSlot(String name, CustomFuelRegistry fuelRegistry) {
+	private final SlotDisplay placeholder;
+	
+	public FuelCustomSlot(String name, CustomFuelRegistry fuelRegistry, SlotDisplay placeholder) {
 		this.name = name;
 		this.fuelRegistry = fuelRegistry;
+		this.placeholder = placeholder;
 	}
 	
 	@Override
 	public void save(BitOutput output) {
+		save2(output);
+	}
+	
+	@SuppressWarnings("unused")
+	private void save1(BitOutput output) {
 		output.addByte(CustomSlot.Encodings.FUEL1);
 		output.addString(name);
 		output.addString(fuelRegistry.getName());
+	}
+	
+	private void save2(BitOutput output) {
+		output.addByte(CustomSlot.Encodings.FUEL2);
+		output.addString(name);
+		output.addString(fuelRegistry.getName());
+		output.addBoolean(placeholder != null);
+		if (placeholder != null) {
+			placeholder.save(output);
+		}
 	}
 	
 	public String getName() {
@@ -39,6 +87,10 @@ public class FuelCustomSlot implements CustomSlot {
 	
 	public CustomFuelRegistry getRegistry() {
 		return fuelRegistry;
+	}
+	
+	public SlotDisplay getPlaceholder() {
+		return placeholder;
 	}
 
 	@Override
@@ -64,7 +116,7 @@ public class FuelCustomSlot implements CustomSlot {
 		while (!tryName(name + counter, existingSlots)) {
 			counter++;
 		}
-		return new FuelCustomSlot(name + counter, fuelRegistry);
+		return new FuelCustomSlot(name + counter, fuelRegistry, placeholder);
 	}
 
 	private boolean tryName(String fuelSlotName, CustomSlot[][] existingSlots) {

@@ -24,6 +24,7 @@ public interface CustomSlot {
 		case DECORATION1: return DecorationCustomSlot.load1(input, itemByName);
 		case EMPTY: return new EmptyCustomSlot();
 		case FUEL1: return FuelCustomSlot.load1(input, fuelRegistryByName);
+		case FUEL2: return FuelCustomSlot.load2(input, fuelRegistryByName, itemByName);
 		case FUEL_INDICATOR1: return FuelIndicatorCustomSlot.load1(input, itemByName);
 		case INPUT1: return InputCustomSlot.load1(input);
 		case OUTPUT1: return OutputCustomSlot.load1(input);
@@ -49,5 +50,8 @@ public interface CustomSlot {
 		public static final byte INPUT1 = 4;
 		public static final byte OUTPUT1 = 5;
 		public static final byte PROGRESS_INDICATOR1 = 6;
+		
+		/** Added fuel slot placeholders */
+		public static final byte FUEL2 = 7;
 	}
 }

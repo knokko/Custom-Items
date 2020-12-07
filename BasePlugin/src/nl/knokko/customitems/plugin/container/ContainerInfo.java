@@ -9,7 +9,6 @@ import java.util.Map.Entry;
 import nl.knokko.customitems.container.CustomContainer;
 import nl.knokko.customitems.container.IndicatorDomain;
 import nl.knokko.customitems.container.fuel.CustomFuelRegistry;
-import nl.knokko.customitems.container.fuel.FuelEntry;
 import nl.knokko.customitems.container.slot.CustomSlot;
 import nl.knokko.customitems.container.slot.DecorationCustomSlot;
 import nl.knokko.customitems.container.slot.FuelCustomSlot;
@@ -29,11 +28,9 @@ public class ContainerInfo {
 	
 	private final Map<String, Integer> inputSlots;
 	private final Map<String, Integer> outputSlots;
-	private final Map<String, Integer> fuelSlots;
+	private final Map<String, FuelProps> fuelSlots;
 	
 	private final Collection<IndicatorProps> craftingIndicators;
-	private final Map<String, Collection<IndicatorProps>> fuelIndicators;
-	private final Map<String, CustomFuelRegistry> fuelRegistries;
 	
 	private final Collection<DecorationProps> decorations;
 	
@@ -44,9 +41,10 @@ public class ContainerInfo {
 		this.outputSlots = new HashMap<>();
 		this.fuelSlots = new HashMap<>();
 		this.craftingIndicators = new ArrayList<>();
-		this.fuelIndicators = new HashMap<>();
-		this.fuelRegistries = new HashMap<>();
 		this.decorations = new ArrayList<>();
+		
+		// This is only temporarily
+		Map<String, Collection<IndicatorProps>> fuelIndicators = new HashMap<>();
 		
 		int invIndex = 0;
 		for (int y = 0; y < container.getHeight(); y++) {
@@ -55,11 +53,7 @@ public class ContainerInfo {
 				CustomSlot slot = container.getSlot(x, y);
 				if (slot instanceof FuelCustomSlot) {
 					FuelCustomSlot fuelSlot = (FuelCustomSlot) slot;
-					fuelSlots.put(fuelSlot.getName(), invIndex);
-					fuelRegistries.put(fuelSlot.getName(), fuelSlot.getRegistry());
-					if (!fuelIndicators.containsKey(fuelSlot.getName())) {
-						fuelIndicators.put(fuelSlot.getName(), new ArrayList<>(1));
-					}
+					fuelSlots.put(fuelSlot.getName(), new FuelProps(invIndex, fuelSlot));
 				} else if (slot instanceof FuelIndicatorCustomSlot) {
 					FuelIndicatorCustomSlot indicatorSlot = (FuelIndicatorCustomSlot) slot;
 					Collection<IndicatorProps> indicators = fuelIndicators.get(indicatorSlot.getFuelSlotName());
@@ -87,6 +81,11 @@ public class ContainerInfo {
 				invIndex++;
 			}
 		}
+		
+		// Link the fuel indicators to the fuel slots
+		fuelSlots.forEach((fuelSlotName, fuelSlotProps) -> {
+			fuelSlotProps.getIndicators().addAll(fuelIndicators.get(fuelSlotName));
+		});
 	}
 	
 	public CustomContainer getContainer() {
@@ -101,23 +100,12 @@ public class ContainerInfo {
 		return outputSlots.get(slotName);
 	}
 	
-	public Integer getFuelSlotIndex(String slotName) {
-		return fuelSlots.get(slotName);
-	}
-	
 	public Iterable<IndicatorProps> getCraftingIndicators() {
 		return craftingIndicators;
 	}
 	
-	public Iterable<IndicatorProps> getFuelIndicators(String fuelSlotName) {
-		Collection<IndicatorProps> result = fuelIndicators.get(fuelSlotName);
-		if (result == null) 
-			throw new IllegalArgumentException("Bad fuelSlotName " + fuelSlotName);
-		return result;
-	}
-	
-	public Iterable<FuelEntry> getFuelRegistry(String fuelSlotName) {
-		return fuelRegistries.get(fuelSlotName).getEntries();
+	public FuelProps getFuelSlot(String fuelSlotName) {
+		return fuelSlots.get(fuelSlotName);
 	}
 	
 	public Iterable<DecorationProps> getDecorations() {
@@ -132,7 +120,7 @@ public class ContainerInfo {
 		return outputSlots.entrySet();
 	}
 	
-	public Iterable<Entry<String, Integer>> getFuelSlots() {
+	public Iterable<Entry<String, FuelProps>> getFuelSlots() {
 		return fuelSlots.entrySet();
 	}
 	
@@ -186,6 +174,45 @@ public class ContainerInfo {
 		
 		public SlotDisplay getSlotDisplay() {
 			return display;
+		}
+	}
+	
+	public static class FuelProps {
+		
+		private final int slotIndex;
+		private final Collection<IndicatorProps> indicators;
+		private final CustomFuelRegistry registry;
+		private final SlotDisplay placeholder;
+		
+		private FuelProps(
+				int slotIndex,
+				Collection<IndicatorProps> indicators, 
+				CustomFuelRegistry registry, 
+				SlotDisplay placeholder) {
+			this.slotIndex = slotIndex;
+			this.indicators = indicators;
+			this.registry = registry;
+			this.placeholder = placeholder;
+		}
+		
+		private FuelProps(int slotIndex, FuelCustomSlot slot) {
+			this(slotIndex, new ArrayList<>(), slot.getRegistry(), slot.getPlaceholder());
+		}
+		
+		public int getSlotIndex() {
+			return slotIndex;
+		}
+		
+		public Collection<IndicatorProps> getIndicators() {
+			return indicators;
+		}
+		
+		public CustomFuelRegistry getRegistry() {
+			return registry;
+		}
+		
+		public SlotDisplay getPlaceholder() {
+			return placeholder;
 		}
 	}
 }

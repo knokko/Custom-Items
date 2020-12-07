@@ -28,6 +28,7 @@ import org.bukkit.inventory.ItemStack;
 import nl.knokko.core.plugin.item.ItemHelper;
 import nl.knokko.customitems.item.CIMaterial;
 import nl.knokko.customitems.plugin.set.item.CustomItem;
+import nl.knokko.customitems.plugin.util.ItemUtils;
 
 public class DataVanillaIngredient implements Ingredient {
 	
@@ -42,7 +43,13 @@ public class DataVanillaIngredient implements Ingredient {
 	@Override
 	@SuppressWarnings("deprecation")
 	public boolean accept(ItemStack item) {
-		return item != null && !CustomItem.isCustom(item)
-				&& ItemHelper.getMaterialName(item).equals(type.name()) && item.getData().getData() == data;
+		if (type == CIMaterial.AIR) {
+			return ItemUtils.isEmpty(item);
+		} else {
+			return !ItemUtils.isEmpty(item)
+					&& !CustomItem.isCustom(item)
+					&& ItemHelper.getMaterialName(item).equals(type.name()) 
+					&& item.getData().getData() == data;
+		}
 	}
 }

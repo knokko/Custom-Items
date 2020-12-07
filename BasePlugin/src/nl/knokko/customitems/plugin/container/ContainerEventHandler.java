@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.bukkit.Bukkit;
 import org.bukkit.block.Block;
+import org.bukkit.entity.HumanEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -17,7 +18,9 @@ import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryCloseEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.Inventory;
+import org.bukkit.inventory.ItemStack;
 
+import nl.knokko.core.plugin.item.GeneralItemNBT;
 import nl.knokko.core.plugin.item.ItemHelper;
 import nl.knokko.customitems.container.CustomContainer;
 import nl.knokko.customitems.container.VanillaContainerType;
@@ -26,6 +29,7 @@ import nl.knokko.customitems.container.slot.OutputCustomSlot;
 import nl.knokko.customitems.item.CIMaterial;
 import nl.knokko.customitems.plugin.CustomItemsPlugin;
 import nl.knokko.customitems.plugin.data.PluginData;
+import nl.knokko.customitems.plugin.util.ItemUtils;
 
 public class ContainerEventHandler implements Listener {
 	
@@ -76,6 +80,20 @@ public class ContainerEventHandler implements Listener {
 			pluginData().clearContainerSelectionLocation((Player) event.getPlayer());
 		}
 	}
+	
+	@EventHandler(priority = EventPriority.MONITOR)
+	public void destroyPlaceholderItems(InventoryClickEvent event) {
+		HumanEntity clicker = event.getWhoClicked();
+		Bukkit.getScheduler().scheduleSyncDelayedTask(
+				CustomItemsPlugin.getInstance(), () -> {
+					ItemStack cursor = clicker.getItemOnCursor();
+					if (GeneralItemNBT.readOnlyInstance(cursor).getOrDefault(
+							ContainerInstance.PLACEHOLDER_KEY, 0) == 1) {
+						clicker.setItemOnCursor(null);
+					}
+				}
+		);
+	}
 
 	@EventHandler(priority = EventPriority.LOW, ignoreCancelled = true)
 	public void onInventoryClick(InventoryClickEvent event) {
@@ -118,7 +136,10 @@ public class ContainerEventHandler implements Listener {
 							 * if the slot supports both insert and take actions.
 							 */
 							event.getAction() == InventoryAction.NOTHING) {
-						if (!slot.canTakeItems() || !slot.canInsertItems()) {
+						if (
+								// Placeholder items are considered empty
+								(!slot.canTakeItems() && !ItemUtils.isEmpty(event.getCurrentItem())) 
+								|| !slot.canInsertItems()) {
 							event.setCancelled(true);
 						}
 					} else {

@@ -102,6 +102,11 @@ public class TestCustomContainer {
 							FuelCustomSlot fuelSlot = (FuelCustomSlot) container.getSlot(5, 1);
 							assertEquals("theFuel", fuelSlot.getName());
 							assertEquals("theRegistry", fuelSlot.getRegistry().getName());
+							SlotDisplay placeholder = fuelSlot.getPlaceholder();
+							assertEquals(10, placeholder.getAmount());
+							assertEquals("Insert fuel here", placeholder.getDisplayName());
+							assertArrayEquals(new String[] {"Replace this dummy item with the fuel you want"}, placeholder.getLore());
+							assertTrue(placeholder.getItem() instanceof SimpleVanillaDisplayItem);
 						}
 						{
 							FuelIndicatorCustomSlot indicator = (FuelIndicatorCustomSlot) container.getSlot(4, 0);
@@ -163,7 +168,12 @@ public class TestCustomContainer {
 		slots[1][1] = new OutputCustomSlot("ingot");
 		slots[3][0] = new InputCustomSlot("ingot");
 		slots[3][1] = new InputCustomSlot("dust");
-		slots[5][1] = new FuelCustomSlot("theFuel", fuelRegistry);
+		slots[5][1] = new FuelCustomSlot("theFuel", fuelRegistry, new SlotDisplay(
+				new SimpleVanillaDisplayItem(CIMaterial.CHARCOAL),
+				"Insert fuel here", new String[] {
+						"Replace this dummy item with the fuel you want"
+				}, 10
+		));
 		slots[4][0] = new FuelIndicatorCustomSlot("theFuel", 
 				new SlotDisplay(new SimpleVanillaDisplayItem(CIMaterial.LOG), 
 						"SomeLog", new String[] { "Just some log" }, 1), 
