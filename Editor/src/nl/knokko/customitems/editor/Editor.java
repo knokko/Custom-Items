@@ -28,6 +28,7 @@ import java.io.FileNotFoundException;
 
 import javax.swing.filechooser.FileSystemView;
 
+import nl.knokko.customitems.editor.SystemTests.SystemTestResult;
 import nl.knokko.customitems.editor.menu.main.MainMenu;
 import nl.knokko.gui.window.AWTGuiWindow;
 import nl.knokko.gui.window.GuiWindow;
@@ -65,7 +66,16 @@ public class Editor {
 		System.out.println("test out");
 		System.err.println("test error");
 		window = new AWTGuiWindow();
-		window.setMainComponent(MainMenu.INSTANCE);
+		
+		SystemTestResult systemTestResult = SystemTests.performTests();
+		if (systemTestResult == SystemTestResult.SUCCESS) {
+			System.out.println("All system tests succeeded");
+			window.setMainComponent(MainMenu.INSTANCE);
+		} else {
+			System.err.println("The system tests failed: " + systemTestResult);
+			window.setMainComponent(new SystemTestFailureMenu(systemTestResult, 1));
+		}
+		
 		window.open("Custom Items Editor", true);
 		window.run(30);
 	}
