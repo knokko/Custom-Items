@@ -30,6 +30,8 @@ import nl.knokko.customitems.container.slot.OutputCustomSlot;
 import nl.knokko.customitems.item.CIMaterial;
 import nl.knokko.customitems.plugin.CustomItemsPlugin;
 import nl.knokko.customitems.plugin.data.PluginData;
+import nl.knokko.customitems.plugin.set.ItemSet;
+import nl.knokko.customitems.plugin.set.item.CustomItem;
 import nl.knokko.customitems.plugin.util.ItemUtils;
 
 public class ContainerEventHandler implements Listener {
@@ -178,34 +180,73 @@ public class ContainerEventHandler implements Listener {
 					// to make sure he can't transfer the item to container inventory.
 					if (event.getAction() == InventoryAction.MOVE_TO_OTHER_INVENTORY) {
 						
-						// TODO Cancel and handle manually!
 						// I'm afraid I can't see to which slot the item will be
 						// transferred, so better safe than sorry.
 						event.setCancelled(true);
-					}
-					
-					// We also block collect to cursor moves if it might take out an item
-					// from a slot that doesn't allow this
-					// TODO Check if this is still necessary, since decorations always
-					// have the placeholder nbt marker
-					if (event.getAction() == InventoryAction.COLLECT_TO_CURSOR) {
-						CustomContainer container = customContainer.getType();
-						ItemStack itemToCollect = event.getCursor();
-						if (!ItemUtils.isEmpty(itemToCollect)) {
-							String toCollect = ItemHelper.getMaterialName(itemToCollect);
+						
+						ItemSet set = CustomItemsPlugin.getInstance().getSet();
+						
+						ItemStack toTransfer = event.getCurrentItem();
+						CustomItem customTransfer = set.getItem(toTransfer);
+
+						// First try to find a slot that already contains the item
+						for (int y = 0; y < customContainer.getType().getHeight(); y++) {
 							for (int x = 0; x < 9; x++) {
-								for (int y = 0; y < container.getHeight(); y++) {
-									CustomSlot slot = container.getSlot(x, y);
-									if (!slot.canTakeItems()) {
-										ItemStack containerItem = customContainer.getInventory().getItem(x + 9 * y);
-										if (!ItemUtils.isEmpty(containerItem) && ItemHelper.getMaterialName(containerItem).equals(toCollect)) {
-											event.setCancelled(true);
-											return;
+								CustomSlot slot = customContainer.getType().getSlot(x, y);
+								if (slot.canInsertItems()) {
+									ItemStack existingItem = event.getInventory().getItem(x + 9 * y);
+									if (!ItemUtils.isEmpty(existingItem)) {
+										int transferredAmount = 0;
+										if (customTransfer != null) {
+											CustomItem customExisting = set.getItem(existingItem);
+											if (customExisting == customTransfer) {
+												transferredAmount = Math.min(
+														customTransfer.getMaxStacksize() 
+														- existingItem.getAmount(),
+														toTransfer.getAmount()
+												);
+											}
+										} else if (toTransfer.isSimilar(existingItem)){
+											transferredAmount = Math.min(
+													existingItem.getMaxStackSize() 
+													- existingItem.getAmount(), 
+													toTransfer.getAmount()
+											);
+										}
+										
+										if (transferredAmount != 0) {
+											existingItem.setAmount(
+													existingItem.getAmount() 
+													+ transferredAmount
+											);
+											toTransfer.setAmount(
+													toTransfer.getAmount() - transferredAmount
+											);
+											if (toTransfer.getAmount() == 0) {
+												return;
+											}
 										}
 									}
 								}
 							}
 						}
+						
+						// Place the remainder in a suitable slot that is still empty
+						for (int y = 0; y < customContainer.getType().getHeight(); y++) {
+							for (int x = 0; x < 9; x++) {
+								CustomSlot slot = customContainer.getType().getSlot(x, y);
+								if (slot.canInsertItems()) {
+									ItemStack existing = event.getInventory().getItem(x + 9 * y);
+									if (ItemUtils.isEmpty(existing)) {
+										event.getInventory().setItem(x + 9 * y, toTransfer);
+										event.setCurrentItem(null);
+										return;
+									}
+								}
+							}
+						}
+						
+						// If no slot fits, do nothing
 					}
 				}
 			}
