@@ -34,14 +34,14 @@ public class SystemTestFailureMenu extends GuiMenu {
 		addComponent(new DynamicTextComponent(
 				"It looks like your computer doesn't allow the Editor to perform "
 				+ "critical tasks like writing and reading files.", EditProps.LABEL),
-		0.025f, 0.8f, 0.975f, 0.9f);
+		0f, 0.8f, 1f, 0.9f);
 		addComponent(new DynamicTextComponent(
 				"This will probably cause errors when you need to save or export your"
 				+ " items.", EditProps.LABEL),
-		0.025f, 0.7f, 0.9f, 0.8f);
+		0f, 0.7f, 0.9f, 0.8f);
 		addComponent(new DynamicTextComponent(
 				"Possible causes (but there could be more):", EditProps.LABEL),
-		0.025f, 0.6f, 0.5f, 0.7f);
+		0f, 0.6f, 0.5f, 0.7f);
 		
 		boolean weirdResult = result == SystemTestResult.INCORRECT_BINARY_FILE 
 				|| result == SystemTestResult.INCORRECT_TEXT_FILE;
@@ -77,9 +77,14 @@ public class SystemTestFailureMenu extends GuiMenu {
 			);
 		}
 		
+		addComponent(new DynamicTextComponent(
+				"If your anti-virus is the culprit, try disabling it temporarily now "
+				+ "and right before saving/exporting", EditProps.LABEL
+		), 0f, 0.1f, 1f, 0.2f);
+		
 		addComponent(new DynamicTextButton("Quit", EditProps.CANCEL_BASE, EditProps.CANCEL_HOVER, () -> {
 			state.getWindow().stopRunning();
-		}), 0.1f, 0.1f, 0.2f, 0.2f);
+		}), 0.1f, 0f, 0.2f, 0.1f);
 		addComponent(new DynamicTextButton("Retry", EditProps.BUTTON, EditProps.HOVER, () -> {
 			SystemTestResult newResult = SystemTests.performTests();
 			if (newResult == SystemTestResult.SUCCESS) {
@@ -87,10 +92,10 @@ public class SystemTestFailureMenu extends GuiMenu {
 			} else {
 				state.getWindow().setMainComponent(new SystemTestFailureMenu(newResult, testCounter + 1));
 			}
-		}), 0.45f, 0.1f, 0.55f, 0.2f);
+		}), 0.45f, 0f, 0.55f, 0.1f);
 		addComponent(new DynamicTextButton("Continue anyway", EditProps.QUIT_BASE, EditProps.QUIT_HOVER, () -> {
 			state.getWindow().setMainComponent(MainMenu.INSTANCE);
-		}), 0.65f, 0.1f, 0.85f, 0.2f);
+		}), 0.65f, 0f, 0.85f, 0.1f);
 	}
 
 	@Override
