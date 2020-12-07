@@ -3,9 +3,7 @@ package nl.knokko.customitems.container.slot;
 import java.util.function.Function;
 
 import nl.knokko.customitems.container.fuel.CustomFuelRegistry;
-import nl.knokko.customitems.container.slot.display.SimpleVanillaDisplayItem;
 import nl.knokko.customitems.container.slot.display.SlotDisplay;
-import nl.knokko.customitems.item.CIMaterial;
 import nl.knokko.customitems.item.CustomItem;
 import nl.knokko.customitems.trouble.UnknownEncodingException;
 import nl.knokko.util.bits.BitInput;
@@ -22,9 +20,7 @@ public class FuelCustomSlot implements CustomSlot {
 		
 		// Use an empty placeholder by default, because there were no placeholders
 		// in the first fuel encoding
-		SlotDisplay placeholder = new SlotDisplay(
-				new SimpleVanillaDisplayItem(CIMaterial.AIR), "", new String[0], 1
-		);
+		SlotDisplay placeholder = null;
 		return new FuelCustomSlot(name, fuelRegistry, placeholder);
 	}
 	

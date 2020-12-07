@@ -20,13 +20,15 @@ public class CreateSlot extends GuiMenu {
 	private final Consumer<CustomSlot> changeSlot;
 	private final ItemSet set;
 	private final Iterable<CustomSlot> existingSlots;
+	private final CustomSlot slotToReplace;
 	
 	public CreateSlot(GuiComponent returnMenu, Consumer<CustomSlot> changeSlot,
-			ItemSet set, Iterable<CustomSlot> existingSlots) {
+			ItemSet set, Iterable<CustomSlot> existingSlots, CustomSlot slotToReplace) {
 		this.returnMenu = returnMenu;
 		this.changeSlot = changeSlot;
 		this.set = set;
 		this.existingSlots = existingSlots;
+		this.slotToReplace = slotToReplace;
 	}
 
 	@Override
@@ -47,7 +49,7 @@ public class CreateSlot extends GuiMenu {
 		}), 0.6f, 0.525f, 0.7f, 0.575f);
 		addComponent(new DynamicTextButton("Fuel", EditProps.BUTTON, EditProps.HOVER, () -> {
 			state.getWindow().setMainComponent(new CreateFuelSlot(returnMenu, 
-					changeSlot, set, existingSlots
+					changeSlot, set, existingSlots, slotToReplace
 			));
 		}), 0.6f, 0.45f, 0.7f, 0.5f);
 		addComponent(new DynamicTextButton("Fuel indicator", EditProps.BUTTON, EditProps.HOVER, () -> {
@@ -57,12 +59,12 @@ public class CreateSlot extends GuiMenu {
 		}), 0.6f, 0.375f, 0.8f, 0.425f);
 		addComponent(new DynamicTextButton("Input", EditProps.BUTTON, EditProps.HOVER, () -> {
 			state.getWindow().setMainComponent(new CreateInputSlot(returnMenu,
-					changeSlot, existingSlots
+					changeSlot, existingSlots, set.getBackingItems(), slotToReplace
 			));
 		}), 0.6f, 0.3f, 0.7f, 0.35f);
 		addComponent(new DynamicTextButton("Output", EditProps.BUTTON, EditProps.HOVER, () -> {
 			state.getWindow().setMainComponent(new CreateOutputSlot(returnMenu,
-					changeSlot, existingSlots
+					changeSlot, existingSlots, set.getBackingItems(), slotToReplace
 			));
 		}), 0.6f, 0.225f, 0.7f, 0.275f);
 		addComponent(new DynamicTextButton("Crafting progress indicator", EditProps.BUTTON, EditProps.HOVER, () -> {

@@ -24,14 +24,16 @@ public class CreateFuelSlot extends GuiMenu {
 	private final Consumer<CustomSlot> submitSlot;
 	private final ItemSet set;
 	private final Iterable<CustomSlot> existingSlots;
+	private final CustomSlot slotToReplace;
 	private final DynamicTextComponent errorComponent;
 	
 	public CreateFuelSlot(GuiComponent returnMenu, Consumer<CustomSlot> submitSlot,
-			ItemSet set, Iterable<CustomSlot> existingSlots) {
+			ItemSet set, Iterable<CustomSlot> existingSlots, CustomSlot slotToReplace) {
 		this.returnMenu = returnMenu;
 		this.submitSlot = submitSlot;
 		this.set = set;
 		this.existingSlots = existingSlots;
+		this.slotToReplace = slotToReplace;
 		this.errorComponent = new DynamicTextComponent("", EditProps.ERROR);
 	}
 
@@ -80,7 +82,10 @@ public class CreateFuelSlot extends GuiMenu {
 			for (CustomSlot existingSlot : existingSlots) {
 				if (existingSlot instanceof FuelCustomSlot) {
 					FuelCustomSlot existingFuelSlot = (FuelCustomSlot) existingSlot;
-					if (existingFuelSlot.getName().equals(nameField.getText())) {
+					if (
+							existingFuelSlot != slotToReplace && 
+							existingFuelSlot.getName().equals(nameField.getText())
+					) {
 						errorComponent.setText("There is an existing fuel slot with name " + nameField.getText());
 						return;
 					}

@@ -37,6 +37,8 @@ import nl.knokko.customitems.item.CIMaterial;
 import nl.knokko.customitems.plugin.container.ContainerInfo.DecorationProps;
 import nl.knokko.customitems.plugin.container.ContainerInfo.FuelProps;
 import nl.knokko.customitems.plugin.container.ContainerInfo.IndicatorProps;
+import nl.knokko.customitems.plugin.container.ContainerInfo.InputProps;
+import nl.knokko.customitems.plugin.container.ContainerInfo.OutputProps;
 import nl.knokko.customitems.plugin.recipe.ingredient.Ingredient;
 import nl.knokko.customitems.plugin.set.item.CustomItem;
 import nl.knokko.customitems.plugin.util.ItemUtils;
@@ -270,32 +272,38 @@ public class ContainerInstance {
 		 */
 		
 		// But first the simple cases
-		inputStacks.removeIf(inputStack -> inputStack.putSimple(typeInfo::getInputSlotIndex, inv));
-		outputStacks.removeIf(outputStack -> outputStack.putSimple(typeInfo::getOutputSlotIndex, inv));
-		fuelStacks.removeIf(fuelStack -> fuelStack.putSimple(fuelSlotName -> typeInfo.getFuelSlot(fuelSlotName).getSlotIndex(), inv));
+		inputStacks.removeIf(inputStack -> inputStack.putSimple(
+				inputSlotName -> typeInfo.getInputSlot(inputSlotName).getSlotIndex(), 
+		inv));
+		outputStacks.removeIf(outputStack -> outputStack.putSimple(
+				outputSlotName -> typeInfo.getOutputSlot(outputSlotName).getSlotIndex(), 
+		inv));
+		fuelStacks.removeIf(fuelStack -> fuelStack.putSimple(
+				fuelSlotName -> typeInfo.getFuelSlot(fuelSlotName).getSlotIndex(), 
+		inv));
 		
 		// Now the annoying cases where the slot is changed or renamed
 		for (StringStack inputStack : inputStacks) {
 			inputStack.putInEmptySlot(
-					takeValues(typeInfo.getInputSlots(), props -> props), 
-					takeValues(typeInfo.getOutputSlots(), props -> props), 
+					takeValues(typeInfo.getInputSlots(), props -> props.getSlotIndex()), 
+					takeValues(typeInfo.getOutputSlots(), props -> props.getSlotIndex()), 
 					takeValues(typeInfo.getFuelSlots(), props -> props.getSlotIndex())
 			);
 		}
 		
 		for (StringStack outputStack : outputStacks) {
 			outputStack.putInEmptySlot(
-					takeValues(typeInfo.getOutputSlots(), props -> props), 
+					takeValues(typeInfo.getOutputSlots(), props -> props.getSlotIndex()), 
 					takeValues(typeInfo.getFuelSlots(), props -> props.getSlotIndex()), 
-					takeValues(typeInfo.getInputSlots(), props -> props)
+					takeValues(typeInfo.getInputSlots(), props -> props.getSlotIndex())
 			);
 		}
 		
 		for (StringStack fuelStack : fuelStacks) {
 			fuelStack.putInEmptySlot(
 					takeValues(typeInfo.getFuelSlots(), props -> props.getSlotIndex()), 
-					takeValues(typeInfo.getOutputSlots(), props -> props), 
-					takeValues(typeInfo.getInputSlots(), props -> props)
+					takeValues(typeInfo.getOutputSlots(), props -> props.getSlotIndex()), 
+					takeValues(typeInfo.getInputSlots(), props -> props.getSlotIndex())
 			);
 		}
 		
@@ -435,9 +443,15 @@ public class ContainerInstance {
 			}
 		};
 		
-		slotsSaver.accept(typeInfo.getInputSlots());
-		slotsSaver.accept(typeInfo.getOutputSlots());
-		slotsSaver.accept(mapEntries(typeInfo.getFuelSlots(), props -> props.getSlotIndex()));
+		slotsSaver.accept(mapEntries(
+				typeInfo.getInputSlots(), props -> props.getSlotIndex()
+		));
+		slotsSaver.accept(mapEntries(
+				typeInfo.getOutputSlots(), props -> props.getSlotIndex()
+		));
+		slotsSaver.accept(mapEntries(
+				typeInfo.getFuelSlots(), props -> props.getSlotIndex()
+		));
 		
 		int numBurningFuelSlots = 0;
 		for (FuelBurnEntry burn : fuelSlots.values()) {
@@ -475,8 +489,8 @@ public class ContainerInstance {
 	}
 	
 	public void dropAllItems(Location location) {
-		dropAllItems(location, typeInfo.getInputSlots(), props -> props);
-		dropAllItems(location, typeInfo.getOutputSlots(), props -> props);
+		dropAllItems(location, typeInfo.getInputSlots(), props -> props.getSlotIndex());
+		dropAllItems(location, typeInfo.getOutputSlots(), props -> props.getSlotIndex());
 		dropAllItems(location, typeInfo.getFuelSlots(), props -> props.getSlotIndex());
 	}
 	
@@ -505,11 +519,25 @@ public class ContainerInstance {
 	}
 	
 	public ItemStack getInput(String inputSlotName) {
-		return inventory.getItem(typeInfo.getInputSlotIndex(inputSlotName));
+		ItemStack potentialInput = inventory.getItem(
+				typeInfo.getInputSlot(inputSlotName).getSlotIndex()
+		);
+		if (!ItemUtils.isEmpty(potentialInput)) {
+			return potentialInput;
+		} else {
+			return null;
+		}
 	}
 	
 	public ItemStack getOutput(String outputSlotName) {
-		return inventory.getItem(typeInfo.getOutputSlotIndex(outputSlotName));
+		ItemStack potentialOutput = inventory.getItem(
+				typeInfo.getOutputSlot(outputSlotName).getSlotIndex()
+		);
+		if (!ItemUtils.isEmpty(potentialOutput)) {
+			return potentialOutput;
+		} else {
+			return null;
+		}
 	}
 	
 	public ItemStack getFuel(String fuelSlotName) {
@@ -524,11 +552,11 @@ public class ContainerInstance {
 	}
 	
 	public void setInput(String inputSlotName, ItemStack newStack) {
-		inventory.setItem(typeInfo.getInputSlotIndex(inputSlotName), newStack);
+		inventory.setItem(typeInfo.getInputSlot(inputSlotName).getSlotIndex(), newStack);
 	}
 	
 	public void setOutput(String outputSlotName, ItemStack newStack) {
-		inventory.setItem(typeInfo.getOutputSlotIndex(outputSlotName), newStack);
+		inventory.setItem(typeInfo.getOutputSlot(outputSlotName).getSlotIndex(), newStack);
 	}
 	
 	public void setFuel(String fuelSlotName, ItemStack newStack) {
@@ -542,6 +570,48 @@ public class ContainerInstance {
 	private void updatePlaceholders() {
 		typeInfo.getFuelSlots().forEach(entry -> {
 			FuelProps props = entry.getValue();
+			if (props.getPlaceholder() != null) {
+				ItemStack currentItem = inventory.getItem(props.getSlotIndex());
+				
+				// DONT use ItemUtils.isEmpty because that considers placeholders
+				// as empty items
+				if (
+						currentItem == null 
+						|| currentItem.getAmount() <= 0
+						|| ItemHelper.getMaterialName(currentItem)
+						.equals(CIMaterial.AIR.name())
+				) {
+					inventory.setItem(
+							props.getSlotIndex(), 
+							fromDisplay(props.getPlaceholder())
+					);
+				}
+			}
+		});
+		
+		typeInfo.getInputSlots().forEach(entry -> {
+			InputProps props = entry.getValue();
+			if (props.getPlaceholder() != null) {
+				ItemStack currentItem = inventory.getItem(props.getSlotIndex());
+				
+				// DONT use ItemUtils.isEmpty because that considers placeholders
+				// as empty items
+				if (
+						currentItem == null 
+						|| currentItem.getAmount() <= 0
+						|| ItemHelper.getMaterialName(currentItem)
+						.equals(CIMaterial.AIR.name())
+				) {
+					inventory.setItem(
+							props.getSlotIndex(), 
+							fromDisplay(props.getPlaceholder())
+					);
+				}
+			}
+		});
+		
+		typeInfo.getOutputSlots().forEach(entry -> {
+			OutputProps props = entry.getValue();
 			if (props.getPlaceholder() != null) {
 				ItemStack currentItem = inventory.getItem(props.getSlotIndex());
 				
@@ -620,7 +690,7 @@ public class ContainerInstance {
 					// Decrease the stacksize of all relevant input slots by 1
 					for (InputEntry input : currentRecipe.getInputs()) {
 						
-						int invIndex = typeInfo.getInputSlotIndex(input.getInputSlotName());
+						int invIndex = typeInfo.getInputSlot(input.getInputSlotName()).getSlotIndex();
 						ItemStack inputItem = inventory.getItem(invIndex);
 						inputItem.setAmount(inputItem.getAmount() - 1);
 						
@@ -634,7 +704,7 @@ public class ContainerInstance {
 					// Add the results to the output slots
 					for (OutputEntry output : currentRecipe.getOutputs()) {
 						
-						int invIndex = typeInfo.getOutputSlotIndex(output.getOutputSlotName());
+						int invIndex = typeInfo.getOutputSlot(output.getOutputSlotName()).getSlotIndex();
 						ItemStack outputItem = inventory.getItem(invIndex);
 						ItemStack result = (ItemStack) output.getOutputTable().pickResult(new Random());
 						

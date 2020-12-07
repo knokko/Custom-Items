@@ -1,5 +1,10 @@
 package nl.knokko.customitems.container.slot;
 
+import java.util.function.Function;
+
+import nl.knokko.customitems.container.slot.display.SlotDisplay;
+import nl.knokko.customitems.item.CustomItem;
+import nl.knokko.customitems.trouble.UnknownEncodingException;
 import nl.knokko.util.bits.BitInput;
 import nl.knokko.util.bits.BitOutput;
 
@@ -7,23 +12,64 @@ public class InputCustomSlot implements CustomSlot {
 	
 	public static InputCustomSlot load1(BitInput input) {
 		String name = input.readString();
-		return new InputCustomSlot(name);
+		
+		// Don't give a placeholder because input slots didn't have placeholders
+		// in this encoding
+		SlotDisplay placeholder = null;
+		
+		return new InputCustomSlot(name, placeholder);
+	}
+	
+	public static InputCustomSlot load2(
+			BitInput input,
+			Function<String, CustomItem> itemByName
+	) throws UnknownEncodingException {
+		String name = input.readString();
+		
+		SlotDisplay placeholder;
+		if (input.readBoolean()) {
+			placeholder = SlotDisplay.load(input, itemByName);
+		} else {
+			placeholder = null;
+		}
+		
+		return new InputCustomSlot(name, placeholder);
 	}
 	
 	private final String name;
+	private final SlotDisplay placeholder;
 	
-	public InputCustomSlot(String name) {
+	public InputCustomSlot(String name, SlotDisplay placeholder) {
 		this.name = name;
+		this.placeholder = placeholder;
 	}
 	
 	@Override
 	public void save(BitOutput output) {
+		save2(output);
+	}
+	
+	@SuppressWarnings("unused")
+	private void save1(BitOutput output) {
 		output.addByte(CustomSlot.Encodings.INPUT1);
 		output.addString(name);
 	}
 	
+	private void save2(BitOutput output) {
+		output.addByte(CustomSlot.Encodings.INPUT2);
+		output.addString(name);
+		output.addBoolean(placeholder != null);
+		if (placeholder != null) {
+			placeholder.save(output);
+		}
+	}
+	
 	public String getName() {
 		return name;
+	}
+	
+	public SlotDisplay getPlaceholder() {
+		return placeholder;
 	}
 
 	@Override
@@ -49,7 +95,7 @@ public class InputCustomSlot implements CustomSlot {
 		while (!tryName(name + counter, existingSlots)) {
 			counter++;
 		}
-		return new InputCustomSlot(name + counter);
+		return new InputCustomSlot(name + counter, placeholder);
 	}
 
 	private boolean tryName(String inputSlotName, CustomSlot[][] existingSlots) {

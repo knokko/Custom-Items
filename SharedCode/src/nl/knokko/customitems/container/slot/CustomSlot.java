@@ -27,7 +27,9 @@ public interface CustomSlot {
 		case FUEL2: return FuelCustomSlot.load2(input, fuelRegistryByName, itemByName);
 		case FUEL_INDICATOR1: return FuelIndicatorCustomSlot.load1(input, itemByName);
 		case INPUT1: return InputCustomSlot.load1(input);
+		case INPUT2: return InputCustomSlot.load2(input, itemByName);
 		case OUTPUT1: return OutputCustomSlot.load1(input);
+		case OUTPUT2: return OutputCustomSlot.load2(input, itemByName);
 		case PROGRESS_INDICATOR1: return ProgressIndicatorCustomSlot.load1(input, itemByName);
 		default: throw new UnknownEncodingException("CustomSlot", encoding);
 		}
@@ -53,5 +55,11 @@ public interface CustomSlot {
 		
 		/** Added fuel slot placeholders */
 		public static final byte FUEL2 = 7;
+		
+		/** Added input slot placeholders */
+		public static final byte INPUT2 = 8;
+		
+		/** Added output slot placeholders */
+		public static final byte OUTPUT2 = 9;
 	}
 }

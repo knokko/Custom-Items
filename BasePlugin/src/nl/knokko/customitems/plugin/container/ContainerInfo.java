@@ -26,8 +26,8 @@ public class ContainerInfo {
 
 	private final CustomContainer container;
 	
-	private final Map<String, Integer> inputSlots;
-	private final Map<String, Integer> outputSlots;
+	private final Map<String, InputProps> inputSlots;
+	private final Map<String, OutputProps> outputSlots;
 	private final Map<String, FuelProps> fuelSlots;
 	
 	private final Collection<IndicatorProps> craftingIndicators;
@@ -69,10 +69,21 @@ public class ContainerInfo {
 							indicatorSlot.getDomain()
 					));
 				} else if (slot instanceof InputCustomSlot) {
-					inputSlots.put(((InputCustomSlot) slot).getName(), invIndex);
+					
+					InputCustomSlot inputSlot = (InputCustomSlot) slot;
+					inputSlots.put(
+							inputSlot.getName(), 
+							new InputProps(invIndex, inputSlot.getPlaceholder())
+					);
 				} else if (slot instanceof OutputCustomSlot) {
-					outputSlots.put(((OutputCustomSlot) slot).getName(), invIndex);
+					
+					OutputCustomSlot outputSlot = (OutputCustomSlot) slot;
+					outputSlots.put(
+							outputSlot.getName(), 
+							new OutputProps(invIndex, outputSlot.getPlaceholder())
+					);
 				} else if (slot instanceof ProgressIndicatorCustomSlot) {
+					
 					ProgressIndicatorCustomSlot indicatorSlot = (ProgressIndicatorCustomSlot) slot;
 					craftingIndicators.add(new IndicatorProps(invIndex, 
 							indicatorSlot.getDisplay(), indicatorSlot.getPlaceHolder(),
@@ -95,11 +106,11 @@ public class ContainerInfo {
 		return container;
 	}
 	
-	public Integer getInputSlotIndex(String slotName) {
+	public InputProps getInputSlot(String slotName) {
 		return inputSlots.get(slotName);
 	}
 	
-	public Integer getOutputSlotIndex(String slotName) {
+	public OutputProps getOutputSlot(String slotName) {
 		return outputSlots.get(slotName);
 	}
 	
@@ -115,11 +126,11 @@ public class ContainerInfo {
 		return decorations;
 	}
 	
-	public Iterable<Entry<String, Integer>> getInputSlots() {
+	public Iterable<Entry<String, InputProps>> getInputSlots() {
 		return inputSlots.entrySet();
 	}
 	
-	public Iterable<Entry<String, Integer>> getOutputSlots() {
+	public Iterable<Entry<String, OutputProps>> getOutputSlots() {
 		return outputSlots.entrySet();
 	}
 	
@@ -212,6 +223,44 @@ public class ContainerInfo {
 		
 		public CustomFuelRegistry getRegistry() {
 			return registry;
+		}
+		
+		public SlotDisplay getPlaceholder() {
+			return placeholder;
+		}
+	}
+	
+	public static class InputProps {
+		
+		private final int slotIndex;
+		private final SlotDisplay placeholder;
+		
+		public InputProps(int slotIndex, SlotDisplay placeholder) {
+			this.slotIndex = slotIndex;
+			this.placeholder = placeholder;
+		}
+		
+		public int getSlotIndex() {
+			return slotIndex;
+		}
+		
+		public SlotDisplay getPlaceholder() {
+			return placeholder;
+		}
+	}
+	
+	public static class OutputProps {
+		
+		private final int slotIndex;
+		private final SlotDisplay placeholder;
+		
+		public OutputProps(int slotIndex, SlotDisplay placeholder) {
+			this.slotIndex = slotIndex;
+			this.placeholder = placeholder;
+		}
+		
+		public int getSlotIndex() {
+			return slotIndex;
 		}
 		
 		public SlotDisplay getPlaceholder() {

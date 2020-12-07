@@ -131,7 +131,7 @@ public class SlotComponent implements GuiComponent {
 	@Override
 	public void click(float x, float y, int button) {
 		state.getWindow().setMainComponent(new CreateSlot(outerMenu, 
-				this::setSlot, set, allSlots
+				this::setSlot, set, allSlots, currentSlot
 		));
 	}
 

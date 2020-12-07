@@ -96,7 +96,19 @@ public class TestCustomContainer {
 						assertEquals(2, container.getHeight());
 						
 						assertEquals("ingot", ((OutputCustomSlot)container.getSlot(1, 1)).getName());
+						{
+							SlotDisplay placeholder = ((OutputCustomSlot) container.getSlot(1, 1)).getPlaceholder();
+							assertEquals(5, placeholder.getAmount());
+							assertEquals("Output wool", placeholder.getDisplayName());
+							assertArrayEquals(new String[] {"Actually metal"}, placeholder.getLore());
+						}
 						assertEquals("ingot", ((InputCustomSlot)container.getSlot(3, 0)).getName());
+						{
+							SlotDisplay placeholder = ((InputCustomSlot) container.getSlot(3, 0)).getPlaceholder();
+							assertEquals(2, placeholder.getAmount());
+							assertEquals("Iron input", placeholder.getDisplayName());
+							assertEquals(0, placeholder.getLore().length);
+						}
 						assertEquals("dust", ((InputCustomSlot)container.getSlot(3, 1)).getName());
 						{
 							FuelCustomSlot fuelSlot = (FuelCustomSlot) container.getSlot(5, 1);
@@ -165,9 +177,15 @@ public class TestCustomContainer {
 		
 		CustomFuelRegistry fuelRegistry = new CustomFuelRegistry("theRegistry", new ArrayList<>(0));
 		
-		slots[1][1] = new OutputCustomSlot("ingot");
-		slots[3][0] = new InputCustomSlot("ingot");
-		slots[3][1] = new InputCustomSlot("dust");
+		slots[1][1] = new OutputCustomSlot("ingot", new SlotDisplay(
+				new SimpleVanillaDisplayItem(CIMaterial.WOOL),
+				"Output wool", new String[] {"Actually metal"}, 5
+		));
+		slots[3][0] = new InputCustomSlot("ingot", new SlotDisplay(
+				new SimpleVanillaDisplayItem(CIMaterial.IRON_AXE),
+				"Iron input", new String[0], 2
+		));
+		slots[3][1] = new InputCustomSlot("dust", null);
 		slots[5][1] = new FuelCustomSlot("theFuel", fuelRegistry, new SlotDisplay(
 				new SimpleVanillaDisplayItem(CIMaterial.CHARCOAL),
 				"Insert fuel here", new String[] {
