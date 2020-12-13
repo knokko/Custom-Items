@@ -57,6 +57,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Objects;
 import java.util.Random;
 import java.util.Set;
 import java.util.UUID;
@@ -79,6 +80,7 @@ import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.Projectile;
 import org.bukkit.event.Event.Result;
+import org.bukkit.event.Event;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
@@ -114,6 +116,7 @@ import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.MerchantInventory;
 import org.bukkit.inventory.MerchantRecipe;
+import org.bukkit.inventory.PlayerInventory;
 import org.bukkit.inventory.meta.BlockStateMeta;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.inventory.meta.Repairable;
@@ -133,6 +136,7 @@ import nl.knokko.customitems.plugin.recipe.ShapelessCustomRecipe;
 import nl.knokko.customitems.plugin.set.ItemSet;
 import nl.knokko.customitems.plugin.set.item.CustomArmor;
 import nl.knokko.customitems.plugin.set.item.CustomBow;
+import nl.knokko.customitems.plugin.set.item.CustomHelmet3D;
 import nl.knokko.customitems.plugin.set.item.CustomHoe;
 import nl.knokko.customitems.plugin.set.item.CustomItem;
 import nl.knokko.customitems.plugin.set.item.CustomShears;
@@ -173,12 +177,73 @@ public class CustomItemsEventHandler implements Listener {
 			}
 		}
 	}
+	
+	@EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
+	public void equip3dHelmets(InventoryClickEvent event) {
+		if (event.getSlotType() == SlotType.ARMOR) {
+			
+			InventoryAction action = event.getAction();
+			
+			// For some reason, the result is ALLOW, even when nothing will happen
+			if (event.getResult() == Event.Result.ALLOW && 
+					(action == InventoryAction.PLACE_ALL || action == InventoryAction.SWAP_WITH_CURSOR)) {
+				int slot = event.getSlot();
+				
+				// 39 is the helmet slot
+				if (slot == 39) {
+					
+					ItemStack newCursor = event.getCurrentItem().clone();
+					
+					ItemStack newArmor = event.getCursor().clone();
+					CustomItem newCustomArmor = set().getItem(newArmor);
+
+					if (newCustomArmor instanceof CustomHelmet3D) {
+						HumanEntity player = event.getWhoClicked();
+						
+						Bukkit.getScheduler().scheduleSyncDelayedTask(plugin(), () -> {
+							ItemStack actualNewArmor = player.getInventory().getHelmet();
+							if (!Objects.equals(actualNewArmor, newArmor)) {
+								player.getInventory().setHelmet(newArmor);
+								player.setItemOnCursor(newCursor);
+							}
+						});
+					}
+				}
+			}
+		}
+	}
+	
+	@EventHandler
+	public void equip3dHelmets(PlayerInteractEvent event) {
+		ItemStack item = event.getItem();
+		CustomItem custom = set().getItem(item);
+		
+		// Equip 3d custom helmets upon right click
+		if (custom instanceof CustomHelmet3D) {
+			PlayerInventory inv = event.getPlayer().getInventory();
+			
+			EquipmentSlot hand = event.getHand();
+			
+			Bukkit.getScheduler().scheduleSyncDelayedTask(plugin(), () -> {
+				ItemStack oldHelmet = inv.getHelmet();
+				if (hand == EquipmentSlot.HAND) {
+					inv.setItemInMainHand(oldHelmet);
+					inv.setHelmet(item);
+				} else if (hand == EquipmentSlot.OFF_HAND) {
+					inv.setItemInOffHand(oldHelmet);
+					inv.setHelmet(item);
+				}
+			});
+		}
+	}
 
 	@EventHandler(ignoreCancelled = true)
 	public void onItemUse(PlayerInteractEvent event) {
 		if (event.getAction() == Action.RIGHT_CLICK_BLOCK) {
+			
 			ItemStack item = event.getItem();
 			CustomItem custom = set().getItem(item);
+			
 			if (custom != null) {
 				// Don't let custom items be used as their internal item
 				if (custom.forbidDefaultUse(item))

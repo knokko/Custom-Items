@@ -84,6 +84,7 @@ import nl.knokko.customitems.plugin.recipe.ingredient.SimpleVanillaIngredient;
 import nl.knokko.customitems.plugin.set.item.BooleanRepresentation;
 import nl.knokko.customitems.plugin.set.item.CustomArmor;
 import nl.knokko.customitems.plugin.set.item.CustomBow;
+import nl.knokko.customitems.plugin.set.item.CustomHelmet3D;
 import nl.knokko.customitems.plugin.set.item.CustomHoe;
 import nl.knokko.customitems.plugin.set.item.CustomItem;
 import nl.knokko.customitems.plugin.set.item.CustomShears;
@@ -694,6 +695,7 @@ public class ItemSet implements ItemSetBase {
 		case ItemEncoding.ENCODING_HOE_5 : return loadHoe5(input, loadIngredient);
 		case ItemEncoding.ENCODING_HOE_6 : return loadHoe6(input, loadIngredient);
 		case ItemEncoding.ENCODING_WAND_8: return loadWand8(input, getProjectileByName);
+		case ItemEncoding.ENCODING_HELMET3D_8: return loadHelmet3d8(input, loadIngredient);
 		default : throw new UnknownEncodingException("Item", encoding);
 	}
 	}
@@ -1286,6 +1288,55 @@ public class ItemSet implements ItemSetBase {
 			commands[index] = input.readJavaString();
 		}
 		return new CustomArmor(itemType, damage, name, displayName, lore, attributes, defaultEnchantments, durability,
+				allowEnchanting, allowAnvil, repairItem, color, itemFlags, entityHitDurabilityLoss,
+				blockBreakDurabilityLoss, damageResistances, playerEffects, targetEffects, commands);
+	}
+	
+	private static CustomItem loadHelmet3d8(
+			BitInput input, LoadIngredient loadIngredient
+	) throws UnknownEncodingException {
+		CustomItemType itemType = CustomItemType.valueOf(input.readJavaString());
+		short damage = input.readShort();
+		String name = input.readJavaString();
+		String displayName = input.readJavaString();
+		String[] lore = new String[input.readByte() & 0xFF];
+		for (int index = 0; index < lore.length; index++)
+			lore[index] = input.readJavaString();
+		AttributeModifier[] attributes = new AttributeModifier[input.readByte() & 0xFF];
+		for (int index = 0; index < attributes.length; index++)
+			attributes[index] = loadAttribute2(input);
+		Enchantment[] defaultEnchantments = new Enchantment[input.readByte() & 0xFF];
+		for (int index = 0; index < defaultEnchantments.length; index++)
+			defaultEnchantments[index] = new Enchantment(EnchantmentType.valueOf(input.readString()), input.readInt());
+		long durability = input.readLong();
+		boolean allowEnchanting = input.readBoolean();
+		boolean allowAnvil = input.readBoolean();
+		Ingredient repairItem = loadIngredient.apply(input);
+		Color color;
+		if (itemType.isLeatherArmor()) {
+			color = Color.fromRGB(input.readByte() & 0xFF, input.readByte() & 0xFF, input.readByte() & 0xFF);
+		} else {
+			color = null;
+		}
+		boolean[] itemFlags = input.readBooleans(6);
+		int entityHitDurabilityLoss = input.readInt();
+		int blockBreakDurabilityLoss = input.readInt();
+		DamageResistances damageResistances = DamageResistances.load14(input);
+		List<PotionEffect> playerEffects = new ArrayList<PotionEffect>();
+		int peLength = (input.readByte() & 0xFF);
+		for (int index = 0; index < peLength; index++) {
+			playerEffects.add(new PotionEffect(EffectType.valueOf(input.readJavaString()), input.readInt(), input.readInt()));
+		}
+		List<PotionEffect> targetEffects = new ArrayList<PotionEffect>();
+		int teLength = (input.readByte() & 0xFF);
+		for (int index = 0; index < teLength; index++) {
+			targetEffects.add(new PotionEffect(EffectType.valueOf(input.readJavaString()), input.readInt(), input.readInt()));
+		}
+		String[] commands = new String[input.readByte() & 0xFF];
+		for (int index = 0; index < commands.length; index++) {
+			commands[index] = input.readJavaString();
+		}
+		return new CustomHelmet3D(itemType, damage, name, displayName, lore, attributes, defaultEnchantments, durability,
 				allowEnchanting, allowAnvil, repairItem, color, itemFlags, entityHitDurabilityLoss,
 				blockBreakDurabilityLoss, damageResistances, playerEffects, targetEffects, commands);
 	}

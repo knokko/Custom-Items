@@ -272,7 +272,8 @@ public abstract class EditItemBase extends GuiMenu {
 				state.getWindow().setMainComponent(new EditCustomModel(ItemSet.getDefaultModel(
 						internalType, 
 						textureSelect.getSelected() != null ? textureSelect.getSelected().getName()
-								: "%TEXTURE_NAME%", internalType.isLeatherArmor())
+								: "%TEXTURE_NAME%", internalType.isLeatherArmor(), 
+								!(this instanceof EditItemHelmet3D))
 								, this, (byte[] array) -> {
 									customModel = array;
 								}, customModel));

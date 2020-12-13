@@ -84,6 +84,9 @@ public class CreateItem extends GuiMenu {
 		}), 0.5f, 0.025f, 0.7f, 0.125f);
 		
 		// The row for the advanced combat stuff
+		addComponent(new DynamicTextButton("3D helmet", EditProps.CHOOSE_BASE, EditProps.CHOOSE_HOVER, () -> {
+			state.getWindow().setMainComponent(new EditItemHelmet3D(menu, null, null));
+		}), 0.75f, 0.775f, 0.95f, 0.875f);
 		addComponent(new DynamicTextButton("Bow", EditProps.CHOOSE_BASE, EditProps.CHOOSE_HOVER, () -> {
 			state.getWindow().setMainComponent(new EditItemBow(menu, null, null));
 		}), 0.75f, 0.65f, 0.95f, 0.75f);

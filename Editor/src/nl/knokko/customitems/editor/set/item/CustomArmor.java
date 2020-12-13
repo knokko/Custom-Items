@@ -184,7 +184,7 @@ public class CustomArmor extends CustomTool {
 		output.addInts(entityHitDurabilityLoss, blockBreakDurabilityLoss);
 		damageResistances.save14(output); */
 		
-		output.addByte(ItemEncoding.ENCODING_ARMOR_8);
+		output.addByte(getEncoding8());
 		output.addJavaString(itemType.name());
 		output.addShort(itemDamage);
 		output.addJavaString(name);
@@ -230,6 +230,10 @@ public class CustomArmor extends CustomTool {
 		for (String command : commands) {
 			output.addJavaString(command);
 		}
+	}
+	
+	protected byte getEncoding8() {
+		return ItemEncoding.ENCODING_ARMOR_8;
 	}
 	
 	private boolean isLeather() {

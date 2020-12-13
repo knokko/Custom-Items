@@ -76,6 +76,7 @@ import nl.knokko.customitems.drops.EntityDrop;
 import nl.knokko.customitems.editor.Editor;
 import nl.knokko.customitems.editor.set.item.CustomArmor;
 import nl.knokko.customitems.editor.set.item.CustomBow;
+import nl.knokko.customitems.editor.set.item.CustomHelmet3D;
 import nl.knokko.customitems.editor.set.item.CustomHoe;
 import nl.knokko.customitems.editor.set.item.CustomItem;
 import nl.knokko.customitems.editor.set.item.CustomShears;
@@ -191,6 +192,7 @@ public class ItemSet implements ItemSetBase {
 			case ItemEncoding.ENCODING_HOE_5 : return loadHoe5(input, checkCustomModel);
 			case ItemEncoding.ENCODING_HOE_6 : return loadHoe6(input, checkCustomModel);
 			case ItemEncoding.ENCODING_WAND_8: return loadWand8(input);
+			case ItemEncoding.ENCODING_HELMET3D_8: return loadHelmet3d8(input, checkCustomModel);
 			default : throw new UnknownEncodingException("Item", encoding);
 		}
 	}
@@ -1174,6 +1176,64 @@ public class ItemSet implements ItemSetBase {
 				blockBreakDurabilityLoss, resistances, customModel, playerEffects, targetEffects, commands);
 	}
 	
+	private CustomItem loadHelmet3d8(BitInput input, boolean checkCustomModel) throws UnknownEncodingException {
+		CustomItemType itemType = CustomItemType.valueOf(input.readJavaString());
+		short damage = input.readShort();
+		String name = input.readJavaString();
+		String displayName = input.readJavaString();
+		String[] lore = new String[input.readByte() & 0xFF];
+		for (int index = 0; index < lore.length; index++) {
+			lore[index] = input.readJavaString();
+		}
+		AttributeModifier[] attributes = new AttributeModifier[input.readByte() & 0xFF];
+		for (int index = 0; index < attributes.length; index++)
+			attributes[index] = loadAttribute2(input);
+		Enchantment[] defaultEnchantments = new Enchantment[input.readByte() & 0xFF];
+		for (int index = 0; index < defaultEnchantments.length; index++)
+			defaultEnchantments[index] = new Enchantment(EnchantmentType.valueOf(input.readString()), input.readInt());
+		long durability = input.readLong();
+		boolean allowEnchanting = input.readBoolean();
+		boolean allowAnvil = input.readBoolean();
+		Ingredient repairItem = Recipe.loadIngredient(input, this);
+		
+		// Don't use ItemFlag.values().length because it only had 6 flags during the version it was saved
+		boolean[] itemFlags = input.readBooleans(6);
+		int entityHitDurabilityLoss = input.readInt();
+		int blockBreakDurabilityLoss = input.readInt();
+		
+		DamageResistances resistances = DamageResistances.load14(input);
+		
+		List<PotionEffect> playerEffects = new ArrayList<PotionEffect>();
+		int peLength = (input.readByte() & 0xFF);
+		for (int index = 0; index < peLength; index++) {
+			playerEffects.add(new PotionEffect(EffectType.valueOf(input.readJavaString()), input.readInt(), input.readInt()));
+		}
+		List<PotionEffect> targetEffects = new ArrayList<PotionEffect>();
+		int teLength = (input.readByte() & 0xFF);
+		for (int index = 0; index < teLength; index++) {
+			targetEffects.add(new PotionEffect(EffectType.valueOf(input.readJavaString()), input.readInt(), input.readInt()));
+		}
+		String[] commands = new String[input.readByte() & 0xFF];
+		for (int index = 0; index < commands.length; index++) {
+			commands[index] = input.readJavaString();
+		}
+		
+		String imageName = input.readJavaString();
+		NamedImage texture = null;
+		for (NamedImage current : textures) {
+			if (current.getName().equals(imageName)) {
+				texture = current;
+				break;
+			}
+		}
+		if (texture == null)
+			throw new IllegalArgumentException("Can't find texture " + imageName);
+		byte[] customModel = loadCustomModel(input, checkCustomModel);
+		return new CustomHelmet3D(itemType, damage, name, displayName, lore, attributes, defaultEnchantments, durability, allowEnchanting,
+				allowAnvil, repairItem, texture, itemFlags, entityHitDurabilityLoss, 
+				blockBreakDurabilityLoss, resistances, customModel, playerEffects, targetEffects, commands);
+	}
+	
 	private CustomItem loadShield6(BitInput input, boolean checkCustomModel) throws UnknownEncodingException {
 		CustomItemType itemType = CustomItemType.valueOf(input.readJavaString());
 		short damage = input.readShort();
@@ -2053,11 +2113,22 @@ public class ItemSet implements ItemSetBase {
 	private static final String Q = "" + '"';
 	
 	public static String[] getDefaultModel(CustomItem item) {
-		return getDefaultModel(item.getItemType(), item.getTexture().getName(), item.getItemType().isLeatherArmor());
+		return getDefaultModel(
+				item.getItemType(), item.getTexture().getName(), 
+				item.getItemType().isLeatherArmor(), 
+				!(item instanceof CustomHelmet3D)
+		);
 	}
 	
-	public static String[] getDefaultModel(CustomItemType type, String textureName, boolean isLeather) {
-		if (type == CustomItemType.BOW) {
+	public static String[] getDefaultModel(CustomItemType type, String textureName, boolean isLeather, boolean hasDefault) {
+		if (!hasDefault) {
+			return new String[] {
+					"There is no default model for this item type",
+					"because it requires a custom model. This is a",
+					"complex task, so only do this if you know what",
+					"you're doing."
+			};
+		} else if (type == CustomItemType.BOW) {
 			return getDefaultModelBow(textureName);
 		} else if (type == CustomItemType.SHIELD) {
 			return getDefaultModelShield(textureName);
@@ -4229,6 +4300,57 @@ public class ItemSet implements ItemSetBase {
 		} else {
 			return error;
 		}
+	}
+	
+	/**
+	 * Attempts to add the specified 3d helmet to this item set. If the helmet can be added,
+	 * it will be added. If the helmet can't be added, the reason is returned.
+	 * 
+	 * @param helmet The helmet that should be added to this item set
+	 * @return The reason the helmet could not be added or null if it was added
+	 *         successfully
+	 */
+	public String addHelmet3D(CustomHelmet3D helmet, boolean checkClass) {
+		if (!bypassChecks()) {
+			if (helmet == null) return "Can't add null helmets";
+			if (helmet.getCustomModel() == null) 
+				return "3d helmets must have a custom model";
+			if (checkClass && helmet.getClass() != CustomHelmet3D.class)
+				return "Use the appropriate method for the class";
+		}
+		return addArmor(helmet, false);
+	}
+	
+	/**
+	 * Attempts to change the properties of the given 3d helmet. If the helmet can
+	 * be changed, it will be changed. If not (because some validation error
+	 * occurred), the helmet won't be changed, and the reason will be returned as
+	 * string.
+	 * @return The reason the helmet couldn't be changed, or null if it was changed
+	 * successfully
+	 */
+	public String changeHelmet3D(CustomHelmet3D helmet, CustomItemType newType, short newDamage,
+			String newDisplayName, String[] newLore, AttributeModifier[] newAttributes, 
+			Enchantment[] newEnchantments, boolean allowEnchanting, boolean allowAnvil, 
+			Ingredient repairItem, long newDurability, NamedImage newTexture,
+			boolean[] itemFlags, int entityHitDurabilityLoss, int blockBreakDurabilityLoss, 
+			DamageResistances resistances, byte[] newCustomModel, List<PotionEffect> playerEffects, 
+			List<PotionEffect> targetEffects, String[] commands, boolean checkClass) {
+		if (!bypassChecks()) {
+			if (helmet == null) return "Can't change null helmets";
+			if (checkClass && helmet.getClass() != CustomHelmet3D.class)
+				return "Use the appropriate method for the class of this helmet";
+			if (newCustomModel == null)
+				return "3d helmets must have a custom model";
+		}
+		String error = changeArmor(helmet, newType, newDamage, newDisplayName, newLore,
+				newAttributes, newEnchantments, allowEnchanting, allowAnvil,
+				repairItem, newDurability, newTexture, 0, 0, 0, itemFlags, entityHitDurabilityLoss,
+				blockBreakDurabilityLoss, resistances, newCustomModel, playerEffects,
+				targetEffects, commands, checkClass);
+		
+		// CustomHelmet3D doesn't have any properties CustomArmor doesn't have
+		return error;
 	}
 
 	/**

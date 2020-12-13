@@ -140,7 +140,10 @@ public class EditItemTool extends EditItemBase {
 			errorComponent.setText("Hint: Set the 'Max uses' to -1 to make it unbreakable.");
 		}
 		
-		HelpButtons.addHelpLink(this, "edit%20menu/items/edit/tool.html");
+		// Subclasses have their own help menu
+		if (getClass() == EditItemTool.class) {
+			HelpButtons.addHelpLink(this, "edit%20menu/items/edit/tool.html");
+		}
 	}
 	
 	protected String create(short damage, long maxUses, int entityHitDurabilityLoss, int blockBreakDurabilityLoss) {

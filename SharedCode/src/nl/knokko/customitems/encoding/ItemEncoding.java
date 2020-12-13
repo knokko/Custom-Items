@@ -122,4 +122,9 @@ public class ItemEncoding {
 	 * The first encoding of (custom) wands
 	 */
 	public static final byte ENCODING_WAND_8 = 28;
+	
+	/**
+	 * The first encoding of 3d helmets
+	 */
+	public static final byte ENCODING_HELMET3D_8 = 29;
 }

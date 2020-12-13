@@ -47,13 +47,13 @@ public class EditItemArmor extends EditItemTool {
 	private static final int DEFAULT_GREEN = 101;
 	private static final int DEFAULT_BLUE = 64;
 	
-	private final CustomArmor toModify;
+	protected final CustomArmor toModify;
 	
 	private final ColorEditField red;
 	private final ColorEditField green;
 	private final ColorEditField blue;
 	
-	private DamageResistances damageResistances;
+	protected DamageResistances damageResistances;
 
 	public EditItemArmor(EditMenu menu, CustomArmor oldValues, CustomArmor toModify, Category toolCategory) {
 		super(menu, oldValues, toModify, toolCategory);
@@ -222,7 +222,10 @@ public class EditItemArmor extends EditItemTool {
 		errorComponent.setProperties(EditProps.LABEL);
 		errorComponent.setText("Hint: Use attribute modifiers to set the armor (toughness) of this piece.");
 		
-		HelpButtons.addHelpLink(this, "edit%20menu/items/edit/armor.html");
+		// 3d helmets are a bit different
+		if (!(this instanceof EditItemHelmet3D)) {
+			HelpButtons.addHelpLink(this, "edit%20menu/items/edit/armor.html");
+		}
 	}
 	
 	private boolean showColors() {

@@ -48,6 +48,8 @@ public class ItemCollectionEdit extends CollectionEdit<CustomItem> {
 			CustomItem secondParam = copy ? null : item;
 			if (item instanceof CustomBow)
 				return new EditItemBow(menu, (CustomBow) item, (CustomBow) secondParam);
+			else if (item instanceof CustomHelmet3D)
+				return new EditItemHelmet3D(menu, (CustomArmor) item, (CustomArmor) secondParam);
 			else if (item instanceof CustomArmor)
 				return new EditItemArmor(menu, (CustomArmor) item, (CustomArmor) secondParam, item.getItemType().getMainCategory());
 			else if (item instanceof CustomShears) 
