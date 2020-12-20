@@ -158,8 +158,6 @@ public abstract class EditItemBase extends GuiMenu {
 		addComponent(new DynamicTextComponent("Name: ", EditProps.LABEL), LABEL_X, 0.8f, LABEL_X + 0.1f, 0.85f);
 		addComponent(new DynamicTextComponent("Internal item type: ", EditProps.LABEL), LABEL_X, 0.74f, LABEL_X + 0.2f,
 				0.79f);
-		addComponent(new DynamicTextComponent("INTERNAL item damage: ", EditProps.LABEL), LABEL_X, 0.68f,
-				LABEL_X + 0.2f, 0.73f);
 		addComponent(new DynamicTextComponent("Display name: ", EditProps.LABEL), LABEL_X, 0.62f, LABEL_X + 0.18f,
 				0.67f);
 		addComponent(new DynamicTextComponent("Lore: ", EditProps.LABEL), LABEL_X, 0.56f, LABEL_X + 0.1f, 0.61f);
@@ -253,7 +251,6 @@ public abstract class EditItemBase extends GuiMenu {
 	protected abstract String apply();
 
 	protected String getDisplayName() {
-		// TODO Test this
 		return displayName.getText().replace('&', (char) 167);
 	}
 	

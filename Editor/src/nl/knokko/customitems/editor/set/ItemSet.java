@@ -3054,6 +3054,15 @@ public class ItemSet implements ItemSetBase {
 		if (versionError != null) {
 			return versionError;
 		}
+		
+		// Make sure every item has the right internal item damage before exporting
+		Map<CustomItemType, List<DurabilityClaim>> claimMap;
+		try {
+			claimMap = assignDurabilities();
+		} catch (DurabilityClaimException claimTrouble) {
+			return "Too many items have " + claimTrouble.exceededType + " as internal item type";
+		}
+		
 		try {
 			
 			// See exportOld for explanation
@@ -3192,12 +3201,7 @@ public class ItemSet implements ItemSetBase {
 				zipOutput.flush();
 			}
 			
-			Map<CustomItemType, List<DurabilityClaim>> claimMap;
-			try {
-				claimMap = assignDurabilities();
-			} catch (DurabilityClaimException claimTrouble) {
-				return "Too many items have " + claimTrouble.exceededType + " as internal item type";
-			}
+			
 			
 			for (Entry<CustomItemType, List<DurabilityClaim>> claimsEntry : claimMap.entrySet()) {
 				
@@ -3719,6 +3723,15 @@ public class ItemSet implements ItemSetBase {
 		if (error != null) {
 			return error;
 		}
+		
+		// Assign each item an internal item damage BEFORE exporting
+		Map<CustomItemType, List<DurabilityClaim>> assignedDurabilities;
+		try {
+			assignedDurabilities = assignDurabilities();
+		} catch (DurabilityClaimException claimTrouble) {
+			return "Too many items have item type " + claimTrouble.exceededType;
+		}
+		
 		try {
 			ByteArrayBitOutput output = new ByteArrayBitOutput();
 			export8(output);
@@ -3835,13 +3848,6 @@ public class ItemSet implements ItemSetBase {
 				zipOutput.putNextEntry(entry);
 				cover.writeModel(zipOutput);
 				zipOutput.flush();
-			}
-			
-			Map<CustomItemType, List<DurabilityClaim>> assignedDurabilities;
-			try {
-				assignedDurabilities = assignDurabilities();
-			} catch (DurabilityClaimException claimTrouble) {
-				return "Too many items have item type " + claimTrouble.exceededType;
 			}
 
 			// Now create the item model files for those models

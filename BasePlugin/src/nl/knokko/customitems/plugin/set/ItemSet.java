@@ -1192,7 +1192,7 @@ public class ItemSet implements ItemSetBase {
 	private static CustomItem loadShear5(
 			BitInput input, LoadIngredient loadIngredient
 	) throws UnknownEncodingException {
-		CustomItemType itemType = CustomItemType.valueOf(input.readJavaString());
+		CustomItemType.valueOf(input.readJavaString());
 		short damage = input.readShort();
 		String name = input.readJavaString();
 		String displayName = input.readJavaString();
@@ -1213,7 +1213,7 @@ public class ItemSet implements ItemSetBase {
 		int entityHitDurabilityLoss = input.readInt();
 		int blockBreakDurabilityLoss = input.readInt();
 		int shearDurabilityLoss = input.readInt();
-		return new CustomShears(itemType, damage, name, displayName, lore, attributes, defaultEnchantments, durability,
+		return new CustomShears(damage, name, displayName, lore, attributes, defaultEnchantments, durability,
 				allowEnchanting, allowAnvil, repairItem, itemFlags, entityHitDurabilityLoss, blockBreakDurabilityLoss, 
 				shearDurabilityLoss, new ArrayList<PotionEffect>(), new ArrayList<PotionEffect>(), new String[] {}, 
 				new ReplaceCondition[] {}, ConditionOperation.NONE);
@@ -1222,7 +1222,7 @@ public class ItemSet implements ItemSetBase {
 	private static CustomItem loadShear6(
 			BitInput input, LoadIngredient loadIngredient
 	) throws UnknownEncodingException {
-		CustomItemType itemType = CustomItemType.valueOf(input.readJavaString());
+		CustomItemType.valueOf(input.readJavaString());
 		short damage = input.readShort();
 		String name = input.readJavaString();
 		String displayName = input.readJavaString();
@@ -1257,7 +1257,7 @@ public class ItemSet implements ItemSetBase {
 		for (int index = 0; index < commands.length; index++) {
 			commands[index] = input.readJavaString();
 		}
-		return new CustomShears(itemType, damage, name, displayName, lore, attributes, defaultEnchantments, durability,
+		return new CustomShears(damage, name, displayName, lore, attributes, defaultEnchantments, durability,
 				allowEnchanting, allowAnvil, repairItem, itemFlags, entityHitDurabilityLoss, blockBreakDurabilityLoss, 
 				shearDurabilityLoss, playerEffects, targetEffects, commands, new ReplaceCondition[] {}, ConditionOperation.NONE);
 	}
@@ -1265,7 +1265,6 @@ public class ItemSet implements ItemSetBase {
 	private static CustomItem loadShear9(
 			BitInput input, LoadIngredient loadIngredient
 	) throws UnknownEncodingException {
-		CustomItemType itemType = CustomItemType.valueOf(input.readJavaString());
 		short damage = input.readShort();
 		String name = input.readJavaString();
 		String displayName = input.readJavaString();
@@ -1307,7 +1306,7 @@ public class ItemSet implements ItemSetBase {
 		}
 		ConditionOperation op = ConditionOperation.valueOf(input.readJavaString());
 		
-		return new CustomShears(itemType, damage, name, displayName, lore, attributes, defaultEnchantments, durability,
+		return new CustomShears(damage, name, displayName, lore, attributes, defaultEnchantments, durability,
 				allowEnchanting, allowAnvil, repairItem, itemFlags, entityHitDurabilityLoss, blockBreakDurabilityLoss, 
 				shearDurabilityLoss, playerEffects, targetEffects, commands, conditions, op);
 	}
@@ -1807,7 +1806,7 @@ public class ItemSet implements ItemSetBase {
 	private static CustomItem loadShield6(
 			BitInput input, LoadIngredient loadIngredient
 	) throws UnknownEncodingException {
-		CustomItemType itemType = CustomItemType.valueOf(input.readJavaString());
+		CustomItemType.valueOf(input.readJavaString());
 		short damage = input.readShort();
 		String name = input.readJavaString();
 		String displayName = input.readJavaString();
@@ -1828,7 +1827,7 @@ public class ItemSet implements ItemSetBase {
 		int entityHitDurabilityLoss = input.readInt();
 		int blockBreakDurabilityLoss = input.readInt();
 		double durabilityThreshold = input.readDouble();
-		return new CustomShield(itemType, damage, name, displayName, lore, attributes, defaultEnchantments, durability,
+		return new CustomShield(damage, name, displayName, lore, attributes, defaultEnchantments, durability,
 				allowEnchanting, allowAnvil, repairItem, itemFlags, entityHitDurabilityLoss, blockBreakDurabilityLoss, durabilityThreshold, 
 				new ArrayList<PotionEffect>(), new ArrayList<PotionEffect>(), new String[] {}, new ReplaceCondition[] {}, ConditionOperation.NONE);
 	}
@@ -1836,7 +1835,7 @@ public class ItemSet implements ItemSetBase {
 	private static CustomItem loadShield7(
 			BitInput input, LoadIngredient loadIngredient
 	) throws UnknownEncodingException {
-		CustomItemType itemType = CustomItemType.valueOf(input.readJavaString());
+		CustomItemType.valueOf(input.readJavaString());
 		short damage = input.readShort();
 		String name = input.readJavaString();
 		String displayName = input.readJavaString();
@@ -1871,7 +1870,7 @@ public class ItemSet implements ItemSetBase {
 		for (int index = 0; index < commands.length; index++) {
 			commands[index] = input.readJavaString();
 		}
-		return new CustomShield(itemType, damage, name, displayName, lore, attributes, defaultEnchantments, durability,
+		return new CustomShield(damage, name, displayName, lore, attributes, defaultEnchantments, durability,
 				allowEnchanting, allowAnvil, repairItem, itemFlags, entityHitDurabilityLoss, blockBreakDurabilityLoss, durabilityThreshold, 
 				playerEffects, targetEffects, commands, new ReplaceCondition[] {}, ConditionOperation.NONE);
 	}
@@ -1879,7 +1878,6 @@ public class ItemSet implements ItemSetBase {
 	private static CustomItem loadShield9(
 			BitInput input, LoadIngredient loadIngredient
 	) throws UnknownEncodingException {
-		CustomItemType itemType = CustomItemType.valueOf(input.readJavaString());
 		short damage = input.readShort();
 		String name = input.readJavaString();
 		String displayName = input.readJavaString();
@@ -1921,7 +1919,7 @@ public class ItemSet implements ItemSetBase {
 		}
 		ConditionOperation op = ConditionOperation.valueOf(input.readJavaString());
 		
-		return new CustomShield(itemType, damage, name, displayName, lore, attributes, defaultEnchantments, durability,
+		return new CustomShield(damage, name, displayName, lore, attributes, defaultEnchantments, durability,
 				allowEnchanting, allowAnvil, repairItem, itemFlags, entityHitDurabilityLoss, blockBreakDurabilityLoss, durabilityThreshold, 
 				playerEffects, targetEffects, commands, conditions, op);
 	}

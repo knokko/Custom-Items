@@ -14,13 +14,13 @@ public class CustomShield extends CustomTool {
 	
 	private final double durabilityThreshold;
 
-	public CustomShield(CustomItemType itemType, short itemDamage, String name, String displayName, String[] lore,
+	public CustomShield(short itemDamage, String name, String displayName, String[] lore,
 			AttributeModifier[] attributes, Enchantment[] defaultEnchantments, long maxDurability,
 			boolean allowEnchanting, boolean allowAnvil, Ingredient repairItem, boolean[] itemFlags,
 			int entityHitDurabilityLoss, int blockBreakDurabilityLoss, double durabilityThreshold,  
 			List<PotionEffect> playerEffects, List<PotionEffect> targetEffects, String[] commands, 
 			ReplaceCondition[] conditions, ConditionOperation op) {
-		super(itemType, itemDamage, name, displayName, lore, attributes, defaultEnchantments, maxDurability, allowEnchanting,
+		super(CustomItemType.SHIELD, itemDamage, name, displayName, lore, attributes, defaultEnchantments, maxDurability, allowEnchanting,
 				allowAnvil, repairItem, itemFlags, entityHitDurabilityLoss, blockBreakDurabilityLoss, playerEffects, targetEffects, 
 				commands, conditions, op);
 		this.durabilityThreshold = durabilityThreshold;

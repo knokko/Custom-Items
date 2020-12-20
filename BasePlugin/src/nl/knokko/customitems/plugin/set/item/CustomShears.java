@@ -18,13 +18,13 @@ public class CustomShears extends CustomTool {
 	
 	private final int shearDurabilityLoss;
 
-	public CustomShears(CustomItemType itemType, short itemDamage, String name, String displayName, String[] lore,
+	public CustomShears(short itemDamage, String name, String displayName, String[] lore,
 			AttributeModifier[] attributes, Enchantment[] defaultEnchantments, long maxDurability,
 			boolean allowEnchanting, boolean allowAnvil, Ingredient repairItem, boolean[] itemFlags,
 			int entityHitDurabilityLoss, int blockBreakDurabilityLoss, int shearDurabilityLoss, 
 			List<PotionEffect> playerEffects, List<PotionEffect> targetEffects, String[] commands, 
 			ReplaceCondition[] conditions, ConditionOperation op) {
-		super(itemType, itemDamage, name, displayName, lore, attributes, defaultEnchantments, maxDurability, allowEnchanting,
+		super(CustomItemType.SHEARS, itemDamage, name, displayName, lore, attributes, defaultEnchantments, maxDurability, allowEnchanting,
 				allowAnvil, repairItem, itemFlags, entityHitDurabilityLoss, blockBreakDurabilityLoss, playerEffects, targetEffects, 
 				commands, conditions, op);
 		this.shearDurabilityLoss = shearDurabilityLoss;
