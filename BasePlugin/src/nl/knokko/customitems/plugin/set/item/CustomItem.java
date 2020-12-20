@@ -45,6 +45,8 @@ import nl.knokko.customitems.item.CIMaterial;
 import nl.knokko.customitems.item.CustomItemType;
 import nl.knokko.customitems.item.Enchantment;
 import nl.knokko.customitems.plugin.CustomItemsPlugin;
+import nl.knokko.customitems.item.ReplaceCondition;
+import nl.knokko.customitems.item.ReplaceCondition.ConditionOperation;
 import nl.knokko.customitems.plugin.set.ItemDamageClaim;
 import nl.knokko.customitems.plugin.util.ItemUtils;
 import nl.knokko.customitems.effect.PotionEffect;
@@ -77,8 +79,8 @@ public abstract class CustomItem extends nl.knokko.customitems.item.CustomItem i
     
     public CustomItem(CustomItemType itemType, short itemDamage, String name, String displayName, 
     		String[] lore, AttributeModifier[] attributes, Enchantment[] defaultEnchantments, boolean[] itemFlags, 
-    		List<PotionEffect> playerEffects, List<PotionEffect> targetEffects, String[] commands){
-        super(itemType, itemDamage, name, displayName, lore, attributes, defaultEnchantments, itemFlags, playerEffects, targetEffects, commands);
+    		List<PotionEffect> playerEffects, List<PotionEffect> targetEffects, String[] commands, ReplaceCondition[] conditions, ConditionOperation op){
+        super(itemType, itemDamage, name, displayName, lore, attributes, defaultEnchantments, itemFlags, playerEffects, targetEffects, commands, conditions, op);
         
         material = getMaterial(itemType);
         

@@ -93,8 +93,8 @@ public class EditItemWand extends EditItemBase {
 		return withProperties((int cooldown, WandCharges charges, int amount) -> {
 			return menu.getSet().addWand(new CustomWand(internalType, internalItemDamage, nameField.getText(), 
 					getDisplayName(), lore, attributes, enchantments, textureSelect.getSelected(), 
-					itemFlags, customModel, playerEffects, targetEffects, commands, projectile, cooldown, 
-					charges, amount));
+					itemFlags, customModel, playerEffects, targetEffects, commands, conditions, op, 
+					projectile, cooldown, charges, amount));
 		});
 	}
 
@@ -103,8 +103,8 @@ public class EditItemWand extends EditItemBase {
 		return withProperties((int cooldown, WandCharges charges, int amount) -> {
 			return menu.getSet().changeWand(toModify, internalType, internalItemDamage,
 					getDisplayName(), lore, attributes, enchantments, textureSelect.getSelected(), 
-					itemFlags, customModel, playerEffects, targetEffects, commands, projectile, cooldown, 
-					charges, amount);
+					itemFlags, customModel, playerEffects, targetEffects, commands, conditions, op, 
+					projectile, cooldown, charges, amount);
 		});
 	}
 	

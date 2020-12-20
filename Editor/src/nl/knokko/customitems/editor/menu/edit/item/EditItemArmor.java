@@ -176,14 +176,13 @@ public class EditItemArmor extends EditItemTool {
 		if (greenValue == -1) return "The green must be an integer at least 0 and at most 255";
 		int blueValue = getColorValue(blue, DEFAULT_BLUE);
 		if (blueValue == -1) return "The blue must be an integer at least 0 and at most 255";
-		
 		return menu.getSet().addArmor(
 				new CustomArmor(internalType, damage, nameField.getText(), getDisplayName(),
 						lore, attributes, enchantments, maxUses, allowEnchanting.isChecked(),
 						allowAnvil.isChecked(), repairItem.getIngredient(), textureSelect.getSelected(),
 						redValue, greenValue, blueValue, itemFlags, entityHitDurabilityLoss, 
-						blockBreakDurabilityLoss, damageResistances, customModel, playerEffects, targetEffects, commands),
-						true);
+						blockBreakDurabilityLoss, damageResistances, customModel, playerEffects, targetEffects, 
+						commands, conditions, op), true);
 	}
 	
 	@Override
@@ -198,7 +197,7 @@ public class EditItemArmor extends EditItemTool {
 				getDisplayName(), lore, attributes, enchantments, allowEnchanting.isChecked(),
 				allowAnvil.isChecked(), repairItem.getIngredient(), maxUses, textureSelect.getSelected(),
 				redValue, greenValue, blueValue, itemFlags, entityHit, blockBreak, damageResistances,
-				customModel, playerEffects, targetEffects, commands, true);
+				customModel, playerEffects, targetEffects, commands, conditions, op, true);
 	}
 	
 	@Override

@@ -1,6 +1,7 @@
 package nl.knokko.customitems.plugin.data;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 import java.util.Collections;
 
@@ -18,6 +19,8 @@ import nl.knokko.customitems.item.CustomItemType;
 import nl.knokko.customitems.item.Enchantment;
 import nl.knokko.customitems.item.EnchantmentType;
 import nl.knokko.customitems.item.ItemFlag;
+import nl.knokko.customitems.item.ReplaceCondition;
+import nl.knokko.customitems.item.ReplaceCondition.ConditionOperation;
 import nl.knokko.customitems.item.WandCharges;
 import nl.knokko.customitems.plugin.set.item.CustomWand;
 import nl.knokko.util.bits.BitInput;
@@ -31,12 +34,14 @@ public class TestPlayerWandData {
 			new AttributeModifier[] {new AttributeModifier(Attribute.ATTACK_SPEED, Slot.OFFHAND, 
 					Operation.ADD, 0.3)}, new Enchantment[] {new Enchantment(EnchantmentType.FIRE_ASPECT, 1)},
 			new boolean[ItemFlag.values().length], 
-			Lists.newArrayList(new PotionEffect(EffectType.ABSORPTION, 15, 1)), null, null, null, 
+			Lists.newArrayList(new PotionEffect(EffectType.ABSORPTION, 15, 1)), 
+			null, null, new ReplaceCondition[0], ConditionOperation.NONE, null, 
 			5, new WandCharges(5, 20), 2);
 	
 	static final CustomWand WITHOUT = new CustomWand(CustomItemType.SHEARS, (short) 3,
 			"without_charges_one", "Without charges 1", new String[0], new AttributeModifier[0],
-			new Enchantment[0], ItemFlag.getDefaultValues(), Collections.emptyList(), null, null, null, 20, null, 3);
+			new Enchantment[0], ItemFlag.getDefaultValues(), Collections.emptyList(), 
+			null, null, new ReplaceCondition[0], ConditionOperation.NONE, null, 20, null, 3);
 
 	@Test
 	public void testSaveLoadDiscard() {

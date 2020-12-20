@@ -31,6 +31,8 @@ import nl.knokko.customitems.effect.PotionEffect;
 import nl.knokko.customitems.item.AttributeModifier;
 import nl.knokko.customitems.item.CustomItemType;
 import nl.knokko.customitems.item.Enchantment;
+import nl.knokko.customitems.item.ReplaceCondition;
+import nl.knokko.customitems.item.ReplaceCondition.ConditionOperation;
 import nl.knokko.util.bits.BitOutput;
 
 public abstract class CustomItem extends nl.knokko.customitems.item.CustomItem implements ItemDamageClaim {
@@ -40,8 +42,10 @@ public abstract class CustomItem extends nl.knokko.customitems.item.CustomItem i
 
 	public CustomItem(CustomItemType itemType, short itemDamage, String name, String displayName, String[] lore,
 			AttributeModifier[] attributes, Enchantment[] defaultEnchantments, NamedImage texture,
-			boolean[] itemFlags, byte[] customModel, List<PotionEffect> playerEffects, List<PotionEffect> targetEffects, String[] commands) {
-		super(itemType, itemDamage, name, displayName, lore, attributes, defaultEnchantments, itemFlags, playerEffects, targetEffects, commands);
+			boolean[] itemFlags, byte[] customModel, List<PotionEffect> playerEffects, List<PotionEffect> targetEffects, 
+			String[] commands, ReplaceCondition[] conditions, ConditionOperation op) {
+		super(itemType, itemDamage, name, displayName, lore, attributes, defaultEnchantments, itemFlags, playerEffects, 
+				targetEffects, commands, conditions, op);
 		this.texture = texture;
 		this.customModel = customModel;
 	}
@@ -117,6 +121,14 @@ public abstract class CustomItem extends nl.knokko.customitems.item.CustomItem i
 	
 	public void setCommands(String[] commands) {
 		this.commands = commands;
+	}
+	
+	public void setConditions(ReplaceCondition[] conditions) {
+		this.conditions = conditions;
+	}
+	
+	public void setConditionOperator(ConditionOperation op) {
+		this.op = op;
 	}
 
 	public final void save1(BitOutput output) {

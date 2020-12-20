@@ -152,7 +152,7 @@ public class EditItemTool extends EditItemBase {
 						lore, attributes, enchantments, maxUses, allowEnchanting.isChecked(),
 						allowAnvil.isChecked(), repairItem.getIngredient(), textureSelect.getSelected(), 
 						itemFlags, entityHitDurabilityLoss, blockBreakDurabilityLoss, customModel, 
-						playerEffects, targetEffects, commands), true);
+						playerEffects, targetEffects, commands, conditions, op), true);
 	}
 
 	@Override
@@ -174,7 +174,7 @@ public class EditItemTool extends EditItemBase {
 				getDisplayName(), lore, attributes, enchantments, allowEnchanting.isChecked(),
 				allowAnvil.isChecked(), repairItem.getIngredient(), maxUses, textureSelect.getSelected(),
 				itemFlags, entityHitDurabilityLoss, blockBreakDurabilityLoss, customModel,
-				playerEffects, targetEffects, commands, true);
+				playerEffects, targetEffects, commands, conditions, op, true);
 	}
 
 	@Override

@@ -43,8 +43,8 @@ public class EditItemHelmet3D extends EditItemArmor {
 						lore, attributes, enchantments, maxUses, allowEnchanting.isChecked(),
 						allowAnvil.isChecked(), repairItem.getIngredient(), textureSelect.getSelected(),
 						itemFlags, entityHitDurabilityLoss, 
-						blockBreakDurabilityLoss, damageResistances, customModel, playerEffects, targetEffects, commands),
-						true);
+						blockBreakDurabilityLoss, damageResistances, customModel, playerEffects, 
+						targetEffects, commands, conditions, op), true);
 	}
 	
 	@Override
@@ -53,6 +53,7 @@ public class EditItemHelmet3D extends EditItemArmor {
 				getDisplayName(), lore, attributes, enchantments, allowEnchanting.isChecked(),
 				allowAnvil.isChecked(), repairItem.getIngredient(), maxUses, textureSelect.getSelected(),
 				itemFlags, entityHit, blockBreak, damageResistances,
-				customModel, playerEffects, targetEffects, commands, true);
+				customModel, playerEffects, targetEffects, 
+				commands, conditions, op, true);
 	}
 }

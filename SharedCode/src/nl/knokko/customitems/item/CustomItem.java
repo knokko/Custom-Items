@@ -25,6 +25,7 @@ package nl.knokko.customitems.item;
 import java.util.List;
 
 import nl.knokko.customitems.effect.PotionEffect;
+import nl.knokko.customitems.item.ReplaceCondition.ConditionOperation;
 
 public abstract class CustomItem {
 	
@@ -45,9 +46,11 @@ public abstract class CustomItem {
     protected List<PotionEffect> targetEffects;
     
     protected String[] commands;
+    protected ReplaceCondition[] conditions;
+    protected ConditionOperation op;
     public CustomItem(CustomItemType itemType, short itemDamage, String name, String displayName, 
     		String[] lore, AttributeModifier[] attributes, Enchantment[] defaultEnchantments, boolean[] itemFlags, 
-    		List<PotionEffect> playerEffects, List<PotionEffect> targetEffects, String[] commands){
+    		List<PotionEffect> playerEffects, List<PotionEffect> targetEffects, String[] commands, ReplaceCondition[] conditions, ConditionOperation op){
         this.itemType = itemType;
         this.itemDamage = itemDamage;
         if (name == null) throw new NullPointerException("name");
@@ -60,6 +63,8 @@ public abstract class CustomItem {
         this.playerEffects = playerEffects;
         this.targetEffects = targetEffects;
         this.commands = commands;
+        this.conditions = conditions;
+        this.op = op;
     }
     
     // For validation checks (and some other stuff), it is very important that the equals() method of custom 
@@ -111,5 +116,13 @@ public abstract class CustomItem {
     
     public String[] getCommands() {
     	return commands;
+    }
+    
+    public ReplaceCondition[] getReplaceConditions() {
+    	return conditions;
+    }
+    
+    public ConditionOperation getConditionOperator() {
+    	return op;
     }
 }

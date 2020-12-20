@@ -9,6 +9,8 @@ import nl.knokko.customitems.encoding.ItemEncoding;
 import nl.knokko.customitems.item.AttributeModifier;
 import nl.knokko.customitems.item.CustomItemType;
 import nl.knokko.customitems.item.Enchantment;
+import nl.knokko.customitems.item.ReplaceCondition;
+import nl.knokko.customitems.item.ReplaceCondition.ConditionOperation;
 
 public class CustomHelmet3D extends CustomArmor {
 
@@ -17,14 +19,16 @@ public class CustomHelmet3D extends CustomArmor {
 			boolean allowAnvil, Ingredient repairItem, NamedImage texture, 
 			boolean[] itemFlags, int entityHitDurabilityLoss, int blockBreakDurabilityLoss,
 			DamageResistances damageResistances, byte[] customModel, List<PotionEffect> playerEffects,
-			List<PotionEffect> targetEffects, String[] commands) {
+			List<PotionEffect> targetEffects, String[] commands, 
+			ReplaceCondition[] conditions, ConditionOperation op) {
 		super(itemType, itemDamage, name, displayName, lore, attributes, defaultEnchantments, durability, allowEnchanting,
 				allowAnvil, repairItem, texture, 0, 0, 0, itemFlags, entityHitDurabilityLoss, blockBreakDurabilityLoss,
-				damageResistances, customModel, playerEffects, targetEffects, commands);
+				damageResistances, customModel, playerEffects, targetEffects, 
+				commands, conditions, op);
 	}
 	
 	@Override
-	protected byte getEncoding8() {
-		return ItemEncoding.ENCODING_HELMET3D_8;
+	protected byte getEncoding9() {
+		return ItemEncoding.ENCODING_HELMET3D_9;
 	}
 }

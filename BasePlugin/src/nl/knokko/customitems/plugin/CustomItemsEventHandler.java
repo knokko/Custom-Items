@@ -289,6 +289,36 @@ public class CustomItemsEventHandler implements Listener {
 	}
 	
 	@EventHandler(ignoreCancelled = false)
+	public void handleReplacement (PlayerInteractEvent event) {
+		if (event.getAction() == Action.RIGHT_CLICK_AIR || event.getAction() == Action.RIGHT_CLICK_BLOCK) {
+			ItemStack item = event.getItem();
+			CustomItem custom = set().getItem(item);
+			if (custom != null) {
+				if (custom.forbidDefaultUse(item))
+					event.setCancelled(true);
+				// TODO Uncomment once this is finished!
+				/*
+				if (!custom.getReplaceItem().equals(new String())) {
+					item.setAmount(item.getAmount() - 1);
+					CustomItem replaceItem = set().getItem(custom.getReplaceItem());
+					Player player = event.getPlayer();
+					EquipmentSlot slot = event.getHand();
+					if (replaceItem != null) {
+						ItemStack stack = replaceItem.create(1);
+						if (slot.equals(EquipmentSlot.OFF_HAND)) {
+							player.getInventory().setItemInOffHand(stack);
+						} else {
+							player.getInventory().setItemInMainHand(stack);
+						}
+					} else {
+						Bukkit.getLogger().log(Level.WARNING, "The item: " + custom.getDisplayName() + " tried to replace itself with nothing. This indicates an error during exporting or a bug in the plugin.");
+					}
+				}*/
+			}
+		}
+	}
+	
+	@EventHandler(ignoreCancelled = false)
 	public void updateGunsAndWands(PlayerInteractEvent event) {
 		if (event.getAction() == Action.RIGHT_CLICK_AIR || event.getAction() == Action.RIGHT_CLICK_BLOCK) {
 			ItemSet set = set();
