@@ -69,7 +69,7 @@ public class EditItemTrident extends EditItemTool {
 	}
 	
 	@Override
-	protected String create(short damage, long maxUses, int entityHitDurabilityLoss, int blockBreakDurabilityLoss) {
+	protected String create(long maxUses, int entityHitDurabilityLoss, int blockBreakDurabilityLoss) {
 		Option.Int durLoss = throwDurabilityLoss.getInt();
 		if (!durLoss.hasValue())
 			return "The throw durability loss must be a positive integer";
@@ -80,7 +80,7 @@ public class EditItemTrident extends EditItemTool {
 		if (!speedMult.hasValue())
 			return "The throw speed multiplier must be a positive number";
 		return menu.getSet().addTrident(
-				new CustomTrident(damage, nameField.getText(), getDisplayName(),
+				new CustomTrident(nameField.getText(), getDisplayName(),
 						lore, attributes, enchantments, maxUses, allowEnchanting.isChecked(),
 						allowAnvil.isChecked(), damageMult.getValue(), speedMult.getValue(), repairItem.getIngredient(), 
 						textureSelect.getSelected(), itemFlags, entityHitDurabilityLoss, blockBreakDurabilityLoss, 
@@ -89,7 +89,7 @@ public class EditItemTrident extends EditItemTool {
 	}
 	
 	@Override
-	protected String apply(short damage, long maxUses, int entityHitDurabilityLoss, int blockBreakDurabilityLoss) {
+	protected String apply(long maxUses, int entityHitDurabilityLoss, int blockBreakDurabilityLoss) {
 		Option.Int durLoss = throwDurabilityLoss.getInt();
 		if (!durLoss.hasValue())
 			return "The shear durability loss must be a positive integer";
@@ -99,7 +99,7 @@ public class EditItemTrident extends EditItemTool {
 		Option.Double speedMult = throwSpeedMultiplier.getDouble();
 		if (!speedMult.hasValue())
 			return "The throw speed multiplier must be a positive number";
-		return menu.getSet().changeTrident(toModify, internalType, damage,
+		return menu.getSet().changeTrident(toModify, internalType,
 				getDisplayName(), lore, attributes, enchantments, allowEnchanting.isChecked(),
 				allowAnvil.isChecked(), damageMult.getValue(), speedMult.getValue(), repairItem.getIngredient(), 
 				maxUses, textureSelect.getSelected(), itemFlags, entityHitDurabilityLoss, blockBreakDurabilityLoss, 

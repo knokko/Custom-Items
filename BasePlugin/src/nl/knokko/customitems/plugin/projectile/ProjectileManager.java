@@ -16,6 +16,7 @@ import org.bukkit.event.inventory.InventoryPickupItemEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.util.Vector;
 
+import nl.knokko.core.plugin.item.GeneralItemNBT;
 import nl.knokko.customitems.plugin.CustomItemsPlugin;
 import nl.knokko.customitems.projectile.CIProjectile;
 
@@ -111,7 +112,8 @@ public class ProjectileManager implements Listener {
 	}
 	
 	private boolean isProjectileCover(ItemStack item) {
-		return CustomItemsPlugin.getInstance().getSet().getCover(item) != null;
+		// TODO Test this again
+		return GeneralItemNBT.readOnlyInstance(item).getOrDefault(FlyingProjectile.KEY_COVER_ITEM, 0) == 1;
 	}
 	
 	@EventHandler

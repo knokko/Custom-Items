@@ -47,12 +47,12 @@ public class EditItemShield extends EditItemTool {
 	}
 	
 	@Override
-	protected String create(short damage, long maxUses, int entityHitDurabilityLoss, int blockBreakDurabilityLoss) {
+	protected String create(long maxUses, int entityHitDurabilityLoss, int blockBreakDurabilityLoss) {
 		Option.Double thresholdDamage = thresholdField.getDouble();
 		if (!thresholdDamage.hasValue())
 			return "The required damage must be a positive number";
 		return menu.getSet().addShield(
-				new CustomShield(internalType, damage, nameField.getText(), getDisplayName(),
+				new CustomShield(nameField.getText(), getDisplayName(),
 						lore, attributes, enchantments, maxUses, allowEnchanting.isChecked(),
 						allowAnvil.isChecked(), repairItem.getIngredient(), textureSelect.getSelected(), 
 						itemFlags, entityHitDurabilityLoss, blockBreakDurabilityLoss, 
@@ -61,11 +61,11 @@ public class EditItemShield extends EditItemTool {
 	}
 	
 	@Override
-	protected String apply(short damage, long maxUses, int entityHitDurabilityLoss, int blockBreakDurabilityLoss) {
+	protected String apply(long maxUses, int entityHitDurabilityLoss, int blockBreakDurabilityLoss) {
 		Option.Double thresholdDamage = thresholdField.getDouble();
 		if (!thresholdDamage.hasValue())
 			return "The required damage must be a positive number";
-		return menu.getSet().changeShield(toModify, internalType, damage,
+		return menu.getSet().changeShield(toModify, 
 				getDisplayName(), lore, attributes, enchantments, allowEnchanting.isChecked(),
 				allowAnvil.isChecked(), repairItem.getIngredient(), maxUses, textureSelect.getSelected(),
 				itemFlags, entityHitDurabilityLoss, blockBreakDurabilityLoss, thresholdDamage.getValue(),

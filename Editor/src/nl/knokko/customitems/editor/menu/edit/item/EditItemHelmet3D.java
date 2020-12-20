@@ -37,9 +37,9 @@ public class EditItemHelmet3D extends EditItemArmor {
 	}
 	
 	@Override
-	protected String create(short damage, long maxUses, int entityHitDurabilityLoss, int blockBreakDurabilityLoss) {
+	protected String create(long maxUses, int entityHitDurabilityLoss, int blockBreakDurabilityLoss) {
 		return menu.getSet().addHelmet3D(
-				new CustomHelmet3D(internalType, damage, nameField.getText(), getDisplayName(),
+				new CustomHelmet3D(internalType, nameField.getText(), getDisplayName(),
 						lore, attributes, enchantments, maxUses, allowEnchanting.isChecked(),
 						allowAnvil.isChecked(), repairItem.getIngredient(), textureSelect.getSelected(),
 						itemFlags, entityHitDurabilityLoss, 
@@ -48,8 +48,8 @@ public class EditItemHelmet3D extends EditItemArmor {
 	}
 	
 	@Override
-	protected String apply(short damage, long maxUses, int entityHit, int blockBreak) {
-		return menu.getSet().changeHelmet3D((CustomHelmet3D) toModify, internalType, damage,
+	protected String apply(long maxUses, int entityHit, int blockBreak) {
+		return menu.getSet().changeHelmet3D((CustomHelmet3D) toModify, internalType,
 				getDisplayName(), lore, attributes, enchantments, allowEnchanting.isChecked(),
 				allowAnvil.isChecked(), repairItem.getIngredient(), maxUses, textureSelect.getSelected(),
 				itemFlags, entityHit, blockBreak, damageResistances,

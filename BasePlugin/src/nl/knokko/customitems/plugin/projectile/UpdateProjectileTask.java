@@ -7,6 +7,7 @@ import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.util.Vector;
 
 import nl.knokko.core.plugin.entity.EntityDamageHelper;
+import nl.knokko.core.plugin.item.GeneralItemNBT;
 import nl.knokko.core.plugin.item.ItemHelper;
 import nl.knokko.core.plugin.world.RaytraceResult;
 import nl.knokko.core.plugin.world.Raytracer;
@@ -95,6 +96,9 @@ public class UpdateProjectileTask implements Runnable {
 		coverMeta.setUnbreakable(true);
 		coverStack.setItemMeta(coverMeta);
 		coverStack.setDurability(projectile.prototype.cover.itemDamage);
+		GeneralItemNBT nbt = GeneralItemNBT.readWriteInstance(coverStack);
+		nbt.set(FlyingProjectile.KEY_COVER_ITEM, 1);
+		coverStack = nbt.backToBukkit();
 		
 		coverItem = projectile.world.dropItem(position.toLocation(projectile.world), coverStack);
 		coverItem.setGravity(false);

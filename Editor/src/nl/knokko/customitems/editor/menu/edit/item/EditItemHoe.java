@@ -46,12 +46,12 @@ public class EditItemHoe extends EditItemTool {
 	}
 	
 	@Override
-	protected String create(short damage, long maxUses, int entityHitDurabilityLoss, int blockBreakDurabilityLoss) {
+	protected String create(long maxUses, int entityHitDurabilityLoss, int blockBreakDurabilityLoss) {
 		Option.Int durLoss = tillDurabilityLoss.getInt();
 		if (!durLoss.hasValue())
 			return "The till durability loss must be a positive integer";
 		return menu.getSet().addHoe(
-				new CustomHoe(internalType, damage, nameField.getText(), getDisplayName(),
+				new CustomHoe(internalType, nameField.getText(), getDisplayName(),
 						lore, attributes, enchantments, maxUses, allowEnchanting.isChecked(),
 						allowAnvil.isChecked(), repairItem.getIngredient(), textureSelect.getSelected(), itemFlags,
 						entityHitDurabilityLoss, blockBreakDurabilityLoss, durLoss.getValue(), customModel, 
@@ -59,11 +59,11 @@ public class EditItemHoe extends EditItemTool {
 	}
 	
 	@Override
-	protected String apply(short damage, long maxUses, int entityHitDurabilityLoss, int blockBreakDurabilityLoss) {
+	protected String apply(long maxUses, int entityHitDurabilityLoss, int blockBreakDurabilityLoss) {
 		Option.Int durLoss = tillDurabilityLoss.getInt();
 		if (!durLoss.hasValue())
 			return "The shear durability loss must be a positive integer";
-		return menu.getSet().changeHoe(toModify, internalType, damage,
+		return menu.getSet().changeHoe(toModify, internalType,
 				getDisplayName(), lore, attributes, enchantments, allowEnchanting.isChecked(),
 				allowAnvil.isChecked(), repairItem.getIngredient(), maxUses, textureSelect.getSelected(),
 				itemFlags, entityHitDurabilityLoss, blockBreakDurabilityLoss, durLoss.getValue(),

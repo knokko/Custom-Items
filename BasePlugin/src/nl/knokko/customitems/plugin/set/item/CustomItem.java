@@ -37,7 +37,6 @@ import org.bukkit.inventory.meta.ItemMeta;
 import com.google.common.collect.Lists;
 
 import nl.knokko.core.plugin.CorePlugin;
-import nl.knokko.core.plugin.item.ItemHelper;
 import nl.knokko.core.plugin.item.attributes.ItemAttributes;
 import nl.knokko.core.plugin.item.attributes.ItemAttributes.Single;
 import nl.knokko.customitems.item.AttributeModifier;
@@ -47,11 +46,10 @@ import nl.knokko.customitems.item.Enchantment;
 import nl.knokko.customitems.plugin.CustomItemsPlugin;
 import nl.knokko.customitems.item.ReplaceCondition;
 import nl.knokko.customitems.item.ReplaceCondition.ConditionOperation;
-import nl.knokko.customitems.plugin.set.ItemDamageClaim;
 import nl.knokko.customitems.plugin.util.ItemUtils;
 import nl.knokko.customitems.effect.PotionEffect;
 
-public abstract class CustomItem extends nl.knokko.customitems.item.CustomItem implements ItemDamageClaim {
+public abstract class CustomItem extends nl.knokko.customitems.item.CustomItem {
 	
 	public static boolean isCustom(ItemStack item) {
 		return item != null && item.hasItemMeta() && item.getItemMeta().isUnbreakable() && item.getDurability() > 0;
@@ -89,6 +87,11 @@ public abstract class CustomItem extends nl.knokko.customitems.item.CustomItem i
         	AttributeModifier a = attributes[index];
         	attributeModifiers[index] = new Single(a.getAttribute().getName(), a.getSlot().getSlot(), a.getOperation().getOperation(), a.getValue());
         }
+    }
+    
+    // Needed in ItemUpdater
+    public short getInternalItemDamage() {
+    	return itemDamage;
     }
     
     public void setBooleanRepresentation(BooleanRepresentation boolRep) {
@@ -163,11 +166,20 @@ public abstract class CustomItem extends nl.knokko.customitems.item.CustomItem i
     }
     
     public boolean is(ItemStack item){
-        return !ItemUtils.isEmpty(item) 
-        		&& item.hasItemMeta() 
-        		&& item.getItemMeta().isUnbreakable() 
-        		&& ItemHelper.getMaterialName(item).equals(material.name()) 
-        		&& getDamage(item) == itemDamage;
+    	if (!ItemUtils.isEmpty(item)) {
+    		boolean[] pResult = {false};
+    		CustomItemNBT.readOnly(item, nbt -> {
+    			if (nbt.hasOurNBT()) {
+    				if (nbt.getName().equals(this.name)) {
+    					pResult[0] = true;
+    				}
+    			}
+    		});
+    		
+    		return pResult[0];
+    	} else {
+    		return false;
+    	}
     }
     
     public CIMaterial getMaterial() {

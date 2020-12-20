@@ -23,11 +23,11 @@ public class CustomWand extends CustomItem {
 	/** The amount of projectiles to shoot each time the wand is used */
 	public int amountPerShot;
 
-	public CustomWand(CustomItemType itemType, short itemDamage, String name, String displayName, String[] lore,
+	public CustomWand(CustomItemType itemType, String name, String displayName, String[] lore,
 			AttributeModifier[] attributes, Enchantment[] defaultEnchantments, NamedImage texture, boolean[] itemFlags,
 			byte[] customModel, List<PotionEffect> playerEffects, List<PotionEffect> targetEffects, String[] commands, 
 			ReplaceCondition[] conditions, ConditionOperation op, CIProjectile projectile, int cooldown, WandCharges charges, int amountPerShot) {
-		super(itemType, itemDamage, name, displayName, lore, attributes, defaultEnchantments, texture, itemFlags,
+		super(itemType, name, displayName, lore, attributes, defaultEnchantments, texture, itemFlags,
 				customModel, playerEffects, targetEffects, commands, conditions, op);
 		this.projectile = projectile;
 		this.cooldown = cooldown;

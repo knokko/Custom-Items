@@ -18,13 +18,13 @@ public class CustomShield extends CustomTool {
 	
 	private byte[] customBlockingModel;
 
-	public CustomShield(CustomItemType itemType, short itemDamage, String name, String displayName, String[] lore,
+	public CustomShield(String name, String displayName, String[] lore,
 			AttributeModifier[] attributes, Enchantment[] defaultEnchantments, long durability, boolean allowEnchanting,
 			boolean allowAnvil, Ingredient repairItem, NamedImage texture, boolean[] itemFlags,
 			int entityHitDurabilityLoss, int blockBreakDurabilityLoss, double thresholdDamage, 
 			byte[] customModel, byte[] customBlockingModel, List<PotionEffect> playerEffects, List<PotionEffect> targetEffects, 
 			String[] commands, ReplaceCondition[] conditions, ConditionOperation op) {
-		super(itemType, itemDamage, name, displayName, lore, attributes, defaultEnchantments, durability, allowEnchanting,
+		super(CustomItemType.SHIELD, name, displayName, lore, attributes, defaultEnchantments, durability, allowEnchanting,
 				allowAnvil, repairItem, texture, itemFlags, entityHitDurabilityLoss, blockBreakDurabilityLoss, customModel, 
 				playerEffects, targetEffects, commands, conditions, op);
 		this.thresholdDamage = thresholdDamage;
@@ -108,7 +108,6 @@ public class CustomShield extends CustomTool {
 		} */
 		
 		output.addByte(ItemEncoding.ENCODING_SHIELD_9);
-		output.addJavaString(itemType.name());
 		output.addShort(itemDamage);
 		output.addJavaString(name);
 		output.addJavaString(displayName);

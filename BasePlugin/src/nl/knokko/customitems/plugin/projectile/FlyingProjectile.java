@@ -24,6 +24,8 @@ import nl.knokko.customitems.projectile.effects.*;
  */
 class FlyingProjectile {
 	
+	static final String[] KEY_COVER_ITEM = { "KnokkosCustomItemsProjectileCover" };
+	
 	final CIProjectile prototype;
 	
 	/** 

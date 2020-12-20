@@ -26,7 +26,6 @@ package nl.knokko.customitems.plugin.set;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -91,6 +90,7 @@ import nl.knokko.customitems.plugin.set.item.CustomBow;
 import nl.knokko.customitems.plugin.set.item.CustomHelmet3D;
 import nl.knokko.customitems.plugin.set.item.CustomHoe;
 import nl.knokko.customitems.plugin.set.item.CustomItem;
+import nl.knokko.customitems.plugin.set.item.CustomItemNBT;
 import nl.knokko.customitems.plugin.set.item.CustomShears;
 import nl.knokko.customitems.plugin.set.item.CustomShield;
 import nl.knokko.customitems.plugin.set.item.CustomTool;
@@ -110,7 +110,6 @@ public class ItemSet implements ItemSetBase {
 
 	private CustomRecipe[] recipes;
 
-	private final Map<CIMaterial, Map<Short, ItemDamageClaim>> customItemMap;
 	private final Map<String, ContainerInfo> containerInfo;
 
 	private CustomItem[] items;
@@ -129,7 +128,6 @@ public class ItemSet implements ItemSetBase {
 	private final Collection<String> errors;
 
 	public ItemSet() {
-		customItemMap = new EnumMap<>(CIMaterial.class);
 		containerInfo = new HashMap<>();
 		
 		items = new CustomItem[0];
@@ -148,7 +146,6 @@ public class ItemSet implements ItemSetBase {
 	}
 
 	public ItemSet(BitInput input) throws UnknownEncodingException, IntegrityException, UnknownMaterialException {
-		customItemMap = new EnumMap<>(CIMaterial.class);
 		containerInfo = new HashMap<>();
 		
 		byte encoding = input.readByte();
@@ -273,7 +270,6 @@ public class ItemSet implements ItemSetBase {
 		for (int index = 0; index < numProjectileCovers; index++) {
 			PluginProjectileCover cover = new PluginProjectileCover(input);
 			projectileCovers[index] = cover;
-			registerItemDamageClaim(cover);
 		}
 		
 		int numProjectiles = input.readInt();
@@ -350,7 +346,6 @@ public class ItemSet implements ItemSetBase {
 		for (int index = 0; index < numProjectileCovers; index++) {
 			PluginProjectileCover cover = new PluginProjectileCover(input);
 			projectileCovers[index] = cover;
-			registerItemDamageClaim(cover);
 		}
 		
 		int numProjectiles = input.readInt();
@@ -427,7 +422,6 @@ public class ItemSet implements ItemSetBase {
 		for (int index = 0; index < numProjectileCovers; index++) {
 			PluginProjectileCover cover = new PluginProjectileCover(input);
 			projectileCovers[index] = cover;
-			registerItemDamageClaim(cover);
 		}
 		
 		int numProjectiles = input.readInt();
@@ -511,7 +505,6 @@ public class ItemSet implements ItemSetBase {
 		for (int index = 0; index < numProjectileCovers; index++) {
 			PluginProjectileCover cover = new PluginProjectileCover(input);
 			projectileCovers[index] = cover;
-			registerItemDamageClaim(cover);
 		}
 		
 		int numProjectiles = input.readInt();
@@ -2171,16 +2164,6 @@ public class ItemSet implements ItemSetBase {
 
 	private void register(CustomItem item, int index) {
 		items[index] = item;
-		registerItemDamageClaim(item);
-	}
-	
-	private void registerItemDamageClaim(ItemDamageClaim item) {
-		Map<Short, ItemDamageClaim> map = customItemMap.get(item.getMaterial());
-		if (map == null) {
-			map = new HashMap<>();
-			customItemMap.put(item.getMaterial(), map);
-		}
-		map.put(item.getItemDamage(), item);
 	}
 
 	private CustomRecipe loadRecipe(BitInput input) throws UnknownEncodingException, UnknownMaterialException {
@@ -2344,18 +2327,10 @@ public class ItemSet implements ItemSetBase {
 	}
 
 	public CustomItem getItem(String name) {
+		// TODO Perhaps improve performance
 		for (CustomItem item : items)
 			if (item.getName().equals(name))
 				return item;
-		return null;
-	}
-
-	public ItemDamageClaim getItemDamageClaim(ItemStack item) {
-		if (item != null && item.hasItemMeta() && item.getItemMeta().isUnbreakable()) {
-			Map<Short, ItemDamageClaim> map = customItemMap.get(CIMaterial.valueOf(ItemHelper.getMaterialName(item)));
-			if (map != null) 
-				return map.get(item.getDurability());
-		}
 		return null;
 	}
 	
@@ -2364,19 +2339,18 @@ public class ItemSet implements ItemSetBase {
 				ContainerInstance.PLACEHOLDER_KEY, 0) == 1) {
 			return null;
 		}
-		ItemDamageClaim claim = getItemDamageClaim(item);
-		if (claim instanceof CustomItem)
-			return (CustomItem) claim;
-		else
-			return null;
-	}
-	
-	public ProjectileCover getCover(ItemStack item) {
-		ItemDamageClaim claim = getItemDamageClaim(item);
-		if (claim instanceof ProjectileCover)
-			return (ProjectileCover) claim;
-		else
-			return null;
+		
+		String[] pItemName = {null};
+		CustomItemNBT.readOnly(item, nbt -> {
+			if (nbt.hasOurNBT()) {
+				pItemName[0] = nbt.getName();
+			}
+		});
+		
+		String itemName = pItemName[0];
+		if (itemName == null) return null;
+		
+		return getCustomItemByName(itemName);
 	}
 	
 	public ContainerInfo getContainerInfo(CustomContainer container) {

@@ -5,7 +5,7 @@ import nl.knokko.customitems.plugin.set.item.CustomItem;
 import nl.knokko.customitems.projectile.ProjectileCover;
 import nl.knokko.util.bits.BitInput;
 
-class PluginProjectileCover extends ProjectileCover implements ItemDamageClaim {
+class PluginProjectileCover extends ProjectileCover {
 	
 	private final CIMaterial material;
 
@@ -13,14 +13,8 @@ class PluginProjectileCover extends ProjectileCover implements ItemDamageClaim {
 		super(input);
 		this.material = CustomItem.getMaterial(itemType);
 	}
-
-	@Override
+	
 	public CIMaterial getMaterial() {
 		return material;
-	}
-
-	@Override
-	public short getItemDamage() {
-		return itemDamage;
 	}
 }

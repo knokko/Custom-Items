@@ -38,11 +38,12 @@ public class SimpleCustomItem extends CustomItem {
 	
 	private int maxStacksize;
 
-	public SimpleCustomItem(CustomItemType itemType, short itemDamage, String name, String displayName, String[] lore,
+	public SimpleCustomItem(CustomItemType itemType, String name, String displayName, String[] lore,
 			AttributeModifier[] attributes, Enchantment[] defaultEnchantments, int maxStacksize, 
 			NamedImage texture, boolean[] itemFlags, byte[] customModel, List<PotionEffect> playerEffects, List<PotionEffect> targetEffects, 
 			String[] commands, ReplaceCondition[] conditions, ConditionOperation op) {
-		super(itemType, itemDamage, name, displayName, lore, attributes, defaultEnchantments, texture, 
+		// Use internal item damage of -1 until exporting
+		super(itemType, name, displayName, lore, attributes, defaultEnchantments, texture, 
 				itemFlags, customModel, playerEffects, targetEffects, commands, conditions, op);
 		this.maxStacksize = maxStacksize;
 	}

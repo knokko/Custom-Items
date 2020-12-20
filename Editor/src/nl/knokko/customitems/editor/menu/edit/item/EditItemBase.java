@@ -34,7 +34,6 @@ import nl.knokko.customitems.editor.menu.edit.EnumSelect;
 import nl.knokko.customitems.editor.menu.edit.item.SelectTexture.CreateMenuFactory;
 import nl.knokko.customitems.editor.menu.edit.texture.BowTextureEdit;
 import nl.knokko.customitems.editor.menu.edit.texture.TextureEdit;
-import nl.knokko.customitems.editor.set.ItemDamageClaim;
 import nl.knokko.customitems.editor.set.ItemSet;
 import nl.knokko.customitems.editor.set.item.CustomItem;
 import nl.knokko.customitems.editor.set.item.NamedImage;
@@ -53,30 +52,9 @@ import nl.knokko.gui.component.menu.GuiMenu;
 import nl.knokko.gui.component.menu.TextArrayEditMenu;
 import nl.knokko.gui.component.text.dynamic.DynamicTextButton;
 import nl.knokko.gui.component.text.dynamic.DynamicTextComponent;
-import nl.knokko.gui.util.Option;
-import nl.knokko.gui.component.text.IntEditField;
 import nl.knokko.gui.component.text.TextEditField;
 
 public abstract class EditItemBase extends GuiMenu {
-	
-	public static CustomItemType chooseInitialItemType(ItemSet set, Category category, CustomItemType preferred, 
-			ItemDamageClaim original) {
-		
-		// First check if the preferred internal item type is available
-		if (set.nextAvailableDamage(preferred, original) != -1)
-			return preferred;
-		
-		// If it is not, try all other item types
-		CustomItemType[] all = CustomItemType.values();
-		for (CustomItemType type : all)
-			if (type.canServe(category) && set.nextAvailableDamage(type, original) != -1)
-				return type;
-		
-		// If we reach this point, there are no suitable pairs of item type and item damage left.
-		// This means that no new item for the given category can be created.
-		// To prevent null pointer exceptions, we will just return preferred.
-		return preferred;
-	}
 
 	protected static final float LABEL_X = 0.2f;
 	protected static final float BUTTON_X = 0.4f;
@@ -91,7 +69,6 @@ public abstract class EditItemBase extends GuiMenu {
 
 	protected TextEditField nameField;
 	protected CustomItemType internalType;
-	protected IntEditField internalDamage;
 	protected TextEditField displayName;
 	protected String[] lore;
 	protected AttributeModifier[] attributes;
@@ -121,8 +98,6 @@ public abstract class EditItemBase extends GuiMenu {
 				nameField = new TextEditField(oldValues.getName(), EditProps.EDIT_BASE, EditProps.EDIT_ACTIVE);
 			}
 			internalType = oldValues.getItemType();
-			internalDamage = new IntEditField(oldValues.getItemDamage(), 1, EditProps.EDIT_BASE,
-					EditProps.EDIT_ACTIVE);
 			displayName = new TextEditField(oldValues.getDisplayName(), EditProps.EDIT_BASE, EditProps.EDIT_ACTIVE);
 			textureSelect = new TextureSelect(oldValues.getTexture(), textureCreateFactory);
 			lore = oldValues.getLore();
@@ -139,10 +114,7 @@ public abstract class EditItemBase extends GuiMenu {
 			if (toModify == null) {
 				nameField = new TextEditField("", EditProps.EDIT_BASE, EditProps.EDIT_ACTIVE);
 			}
-			internalType = chooseInitialItemType(menu.getSet(), category, CustomItemType.DIAMOND_HOE, null);
-			internalDamage = new IntEditField(
-					menu.getSet().nextAvailableDamage(internalType, null), 1, EditProps.EDIT_BASE,
-					EditProps.EDIT_ACTIVE);
+			internalType = CustomItemType.DIAMOND_HOE;
 			displayName = new TextEditField("", EditProps.EDIT_BASE, EditProps.EDIT_ACTIVE);
 			textureSelect = new TextureSelect(null, textureCreateFactory);
 			lore = new String[] {};
@@ -238,35 +210,13 @@ public abstract class EditItemBase extends GuiMenu {
 					BUTTON_X, 0.8f, BUTTON_X + 0.1f, 0.85f
 			);
 		}
-		//addComponent(internalType, BUTTON_X, 0.74f, BUTTON_X + 0.1f, 0.79f);
-		addComponent(EnumSelect.createSelectButton(CustomItemType.class, (CustomItemType newType) -> {
+		addComponent(EnumSelect.createSelectButton(
+				CustomItemType.class, 
+				(CustomItemType newType) -> {
 			internalType = newType;
-			
-			// Check if we should change the internal item damage
-			Option.Short maybeInternalDamage = internalDamage.getInt().toShort();
-			ItemSet set = menu.getSet();
-			boolean editInternalDamage;
-			
-			if (maybeInternalDamage.hasValue()) {
-				short internalDamage = maybeInternalDamage.getValue();
-				editInternalDamage = !set.isItemDamageTypeFree(newType, internalDamage, null);
-			} else {
-				editInternalDamage = true;
-			}
-			
-			if (editInternalDamage) {
-				short newDamage = set.nextAvailableDamage(newType, toModify);
-				if (newDamage == -1) {
-					errorComponent.setText("There is no internal item damage available for this type!");
-				} else {
-					errorComponent.setText("");
-					internalDamage.setText(newDamage + "");
-				}
-			}
 		}, (CustomItemType maybe) -> {
 			return maybe.canServe(getCategory());
 		}, internalType), BUTTON_X, 0.74f, BUTTON_X + 0.1f, 0.79f);
-		addComponent(internalDamage, BUTTON_X, 0.68f, BUTTON_X + 0.1f, 0.73f);
 		addComponent(displayName, BUTTON_X, 0.62f, BUTTON_X + 0.1f, 0.67f);
 		addLoreComponent();
 		addAttributesComponent();
@@ -298,42 +248,13 @@ public abstract class EditItemBase extends GuiMenu {
 		this.itemFlags = newFlags;
 	}
 
-	protected abstract String create(short internalItemDamage);
+	protected abstract String create();
 
-	protected abstract String apply(short internalItemDamage);
-
-	protected String create() {
-		String error = null;
-		try {
-			short damage = Short.parseShort(internalDamage.getText());
-			if (damage > 0 && damage < internalType.getMaxDurability())
-				return create(damage);
-			else
-				error = "The internal item damage must be larger than 0 and smaller than "
-						+ internalType.getMaxDurability();
-		} catch (NumberFormatException nfe) {
-			error = "The internal item damage must be an integer.";
-		}
-		return error;
-	}
-
-	protected String apply() {
-		String error = null;
-		try {
-			short damage = Short.parseShort(internalDamage.getText());
-			if (damage > 0 && damage < internalType.getMaxDurability())
-				return apply(damage);
-			else
-				error = "The internal item damage must be larger than 0 and smaller than "
-						+ internalType.getMaxDurability();
-		} catch (NumberFormatException nfe) {
-			error = "The internal item damage must be an integer.";
-		}
-		return error;
-	}
+	protected abstract String apply();
 
 	protected String getDisplayName() {
-		return displayName.getText().replace('&', '§');
+		// TODO Test this
+		return displayName.getText().replace('&', (char) 167);
 	}
 	
 	protected class TextureSelect extends TextureSelectButton {
@@ -353,7 +274,7 @@ public abstract class EditItemBase extends GuiMenu {
 			state.getWindow().setMainComponent(new TextArrayEditMenu(EditItemBase.this, (String[] newLore) -> {
 				lore = newLore;
 				for (int index = 0; index < lore.length; index++)
-					lore[index] = lore[index].replace('&', '§');
+					lore[index] = lore[index].replace('&', (char) 167);
 			}, EditProps.BACKGROUND, EditProps.CANCEL_BASE, EditProps.CANCEL_HOVER, EditProps.SAVE_BASE,
 					EditProps.SAVE_HOVER, EditProps.EDIT_BASE, EditProps.EDIT_ACTIVE, lore));
 		}), BUTTON_X, 0.56f, BUTTON_X + 0.1f, 0.61f);
@@ -407,7 +328,7 @@ public abstract class EditItemBase extends GuiMenu {
 			state.getWindow().setMainComponent(new TextArrayEditMenu(EditItemBase.this, (String[] newCommands) -> {
 				commands = newCommands;
 				for (int index = 0; index < commands.length; index++)
-					commands[index] = commands[index].replace('&', '§');
+					commands[index] = commands[index].replace('&', (char) 167);
 			}, EditProps.BACKGROUND, EditProps.CANCEL_BASE, EditProps.CANCEL_HOVER, EditProps.SAVE_BASE,
 					EditProps.SAVE_HOVER, EditProps.EDIT_BASE, EditProps.EDIT_ACTIVE, commands));
 		}), BUTTON_X, 0.08f, BUTTON_X + 0.1f, 0.13f);

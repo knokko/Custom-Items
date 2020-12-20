@@ -325,7 +325,7 @@ public class ItemUpdater {
 		meta.setUnbreakable(true);
 		newStack.setItemMeta(meta);
 		
-		newStack.setDurability(newItem.getItemDamage());
+		newStack.setDurability(newItem.getInternalItemDamage());
 		
 		return newStack;
 	}

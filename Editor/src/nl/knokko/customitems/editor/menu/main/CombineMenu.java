@@ -11,8 +11,7 @@ import nl.knokko.customitems.container.fuel.CustomFuelRegistry;
 import nl.knokko.customitems.editor.Editor;
 import nl.knokko.customitems.editor.menu.edit.EditProps;
 import nl.knokko.customitems.editor.set.ItemSet;
-import nl.knokko.customitems.editor.set.item.CustomItem;
-import nl.knokko.customitems.editor.set.item.NamedImage;
+import nl.knokko.customitems.editor.set.item.*;
 import nl.knokko.customitems.editor.set.item.texture.BowTextures;
 import nl.knokko.customitems.editor.set.projectile.cover.CustomProjectileCover;
 import nl.knokko.customitems.editor.set.projectile.cover.EditorProjectileCover;
@@ -20,7 +19,6 @@ import nl.knokko.customitems.editor.set.projectile.cover.SphereProjectileCover;
 import nl.knokko.customitems.editor.set.recipe.Recipe;
 import nl.knokko.customitems.editor.set.recipe.ShapedRecipe;
 import nl.knokko.customitems.editor.set.recipe.ShapelessRecipe;
-import nl.knokko.customitems.item.CustomItemType;
 import nl.knokko.customitems.projectile.CIProjectile;
 import nl.knokko.gui.color.GuiColor;
 import nl.knokko.gui.component.menu.GuiMenu;
@@ -177,56 +175,47 @@ public class CombineMenu extends GuiMenu {
 					}
 				}
 				
-				TypeDamageMap typeDamageMap = new TypeDamageMap();
-				Collection<CustomItem> primaryItems = primarySet.getBackingItems();
-				Collection<EditorProjectileCover> primaryCovers = primarySet.getBackingProjectileCovers();
 				Collection<CustomItem> secundaryItems = secundarySet.getBackingItems();
 				Collection<EditorProjectileCover> secundaryCovers = secundarySet.getBackingProjectileCovers();
 				
-				for (CustomItem item : primaryItems)
-					typeDamageMap.set(item.getItemType(), item.getItemDamage());
-				for (EditorProjectileCover cover : primaryCovers)
-					typeDamageMap.set(cover.itemType, cover.itemDamage);
-				
 				for (CustomItem item : secundaryItems) {
 					
-					// Do not tolerate multiple items with the same name
-					String name = item.getName();
-					if (primarySet.hasCustomItem(item.getName())) {
-						errorComponent.setText("Both item sets have an item with name " + name);
-						return;
+					String error;
+					
+					// Use the add methods of the primary ItemSet for its validation checks
+					if (item instanceof CustomBow) {
+						error = primarySet.addBow((CustomBow) item, true);
+					} else if (item instanceof CustomTrident) {
+						error = primarySet.addTrident((CustomTrident) item, true);
+					} else if (item instanceof CustomHelmet3D) {
+						error = primarySet.addHelmet3D((CustomHelmet3D) item, true);
+					} else if (item instanceof CustomWand) {
+						error = primarySet.addWand((CustomWand) item);
+					} else if (item instanceof CustomShield) {
+						error = primarySet.addShield((CustomShield) item, true);
+					} else if (item instanceof CustomArmor) {
+						error = primarySet.addArmor((CustomArmor) item, true);
+					} else if (item instanceof CustomShears) {
+						error = primarySet.addShears((CustomShears) item, true);
+					} else if (item instanceof CustomHoe) {
+						error = primarySet.addHoe((CustomHoe) item, true);
+					} else if (item instanceof CustomTool) {
+						error = primarySet.addTool((CustomTool) item, true);
+					} else if (item instanceof SimpleCustomItem) {
+						error = primarySet.addSimpleItem((SimpleCustomItem) item);
+					} else {
+						error = "Don't know item class " + item.getClass().getSimpleName() + ": Please report on discord or BukkitDev";
 					}
 					
-					// If there will be multiple items with the same internal item type and damage
-					// we will try to find an internal item damage that will not cause conflicts.
-					short newDamage = item.getItemDamage();
-					CustomItemType type = item.getItemType();
-					if (typeDamageMap.has(type, newDamage)) {
-						newDamage = typeDamageMap.find(type);
-						if (newDamage == 0) {
-							errorComponent.setText("There are too many items with internal item type " + type);
-							return;
-						}
+					if (error != null) {
+						errorComponent.setText(error);
+						return;
 					}
-					item.setItemDamage(newDamage);
-					typeDamageMap.set(type, newDamage);
-					primaryItems.add(item);
 				}
 				
 				for (EditorProjectileCover cover : secundaryCovers) {
 					
-					// Don't allow mutliple projectile covers to have the same name in the combined set
-					short newDamage = cover.itemDamage;
-					if (typeDamageMap.has(cover.itemType, newDamage)) {
-						newDamage = typeDamageMap.find(cover.itemType);
-						if (newDamage == 0) {
-							errorComponent.setText("There are too many items with internal item type " + cover.itemType);
-							return;
-						}
-					}
-					cover.itemDamage = newDamage;
-					typeDamageMap.set(cover.itemType, newDamage);
-					
+					// Use the methods of the primary ItemSet to use its validation checks
 					String error;
 					if (cover instanceof SphereProjectileCover) {
 						error = primarySet.addSphereProjectileCover((SphereProjectileCover) cover);
@@ -307,48 +296,6 @@ public class CombineMenu extends GuiMenu {
 		@Override
 		public GuiColor getBackgroundColor() {
 			return EditProps.BACKGROUND;
-		}
-		
-		private static class TypeDamageMap {
-			
-			private final boolean[][] has;
-			
-			private TypeDamageMap() {
-				CustomItemType[] types = CustomItemType.values();
-				has = new boolean[types.length][];
-				for (CustomItemType type : types) {
-					has[type.ordinal()] = new boolean[type.getMaxDurability()];
-				}
-			}
-			
-			private void set(CustomItemType type, short damage) {
-				if (has(type, damage)) {
-					
-					// Just to protect programmer, should never happen in production
-					throw new IllegalStateException("Already claimed");
-				}
-				
-				has[type.ordinal()][damage - 1] = true;
-			}
-			
-			private boolean has(CustomItemType type, short damage) {
-				return has[type.ordinal()][damage - 1];
-			}
-			
-			/**
-			 * @return An available internal item damage, or 0 if there is no available
-			 */
-			private short find(CustomItemType type) {
-				boolean[] damages = has[type.ordinal()];
-				short length = (short) damages.length;
-				for (short index = 0; index < length; index++) {
-					if (!damages[index]) {
-						index++;
-						return index;
-					}
-				}
-				return 0;
-			}
 		}
 	}
 }

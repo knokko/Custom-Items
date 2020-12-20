@@ -90,10 +90,6 @@ public abstract class CustomItem {
     	return itemType;
     }
     
-    public short getItemDamage() {
-    	return itemDamage;
-    }
-    
     public AttributeModifier[] getAttributes() {
     	return attributes;
     }

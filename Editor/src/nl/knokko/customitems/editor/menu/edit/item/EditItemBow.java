@@ -103,7 +103,7 @@ public class EditItemBow extends EditItemTool {
 	}
 
 	@Override
-	protected String create(short damage, long maxUses, int entityHitDurabilityLoss, int blockBreakDurabilityLoss) {
+	protected String create(long maxUses, int entityHitDurabilityLoss, int blockBreakDurabilityLoss) {
 		Option.Double damageMultiplier = this.damageMultiplier.getDouble();
 		if (!damageMultiplier.hasValue()) return "The damage multiplier must be a positive number";
 		Option.Double speedMultiplier = this.speedMultiplier.getDouble();
@@ -112,7 +112,7 @@ public class EditItemBow extends EditItemTool {
 		if (!knockbackStrength.hasValue()) return "The knockback strength must be a positive integer";
 		Option.Int shootDurabilityLoss = this.shootDurabilityLoss.getInt();
 		if (!shootDurabilityLoss.hasValue()) return "The shoot durability loss must be a positive integer";
-		return menu.getSet().addBow(new CustomBow(damage, nameField.getText(), getDisplayName(), lore, attributes, 
+		return menu.getSet().addBow(new CustomBow(nameField.getText(), getDisplayName(), lore, attributes, 
 				enchantments, maxUses, damageMultiplier.getValue(), speedMultiplier.getValue(), 
 				knockbackStrength.getValue(), gravity.isChecked(), allowEnchanting.isChecked(), 
 				allowAnvil.isChecked(), repairItem.getIngredient(),
@@ -122,7 +122,7 @@ public class EditItemBow extends EditItemTool {
 	}
 
 	@Override
-	protected String apply(short damage, long maxUses, int entityHitDurabilityLoss, int blockBreakDurabilityLoss) {
+	protected String apply(long maxUses, int entityHitDurabilityLoss, int blockBreakDurabilityLoss) {
 		Option.Double damageMultiplier = this.damageMultiplier.getDouble();
 		if (!damageMultiplier.hasValue()) return "The damage multiplier must be a positive number";
 		Option.Double speedMultiplier = this.speedMultiplier.getDouble();
@@ -131,7 +131,7 @@ public class EditItemBow extends EditItemTool {
 		if (!knockbackStrength.hasValue()) return "The knockback strength must be a positive integer";
 		Option.Int shootDurabilityLoss = this.shootDurabilityLoss.getInt();
 		if (!shootDurabilityLoss.hasValue()) return "The shoot durability loss must be a positive integer";
-		return menu.getSet().changeBow(toModify, damage, getDisplayName(), lore, attributes, 
+		return menu.getSet().changeBow(toModify, getDisplayName(), lore, attributes, 
 				enchantments, damageMultiplier.getValue(), speedMultiplier.getValue(), 
 				knockbackStrength.getValue(), gravity.isChecked(), allowEnchanting.isChecked(), 
 				allowAnvil.isChecked(), repairItem.getIngredient(), maxUses, 

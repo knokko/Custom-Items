@@ -22,14 +22,14 @@ public class CustomTrident extends CustomTool {
 	public byte[] customInHandModel;
 	public byte[] customThrowingModel;
 
-	public CustomTrident(short itemDamage, String name, String displayName, String[] lore,
+	public CustomTrident(String name, String displayName, String[] lore,
 			AttributeModifier[] attributes, Enchantment[] defaultEnchantments, long durability, boolean allowEnchanting,
 			boolean allowAnvil, double throwDamageMultiplier, double speedMultiplier, Ingredient repairItem, 
 			NamedImage texture, boolean[] itemFlags, int entityHitDurabilityLoss, 
 			int blockBreakDurabilityLoss, int throwDurabilityLoss, byte[] customModel,
 			byte[] customInHandModel, byte[] customThrowingModel, List<PotionEffect> playerEffects, List<PotionEffect> targetEffects, 
 			String[] commands, ReplaceCondition[] conditions, ConditionOperation op) {
-		super(CustomItemType.TRIDENT, itemDamage, name, displayName, lore, attributes, defaultEnchantments, durability, allowEnchanting,
+		super(CustomItemType.TRIDENT, name, displayName, lore, attributes, defaultEnchantments, durability, allowEnchanting,
 				allowAnvil, repairItem, texture, itemFlags, entityHitDurabilityLoss, blockBreakDurabilityLoss, customModel, playerEffects, 
 				targetEffects, commands, conditions, op);
 		this.throwDamageMultiplier = throwDamageMultiplier;

@@ -3,14 +3,13 @@ package nl.knokko.customitems.editor.set.projectile.cover;
 import java.io.IOException;
 import java.util.zip.ZipOutputStream;
 
-import nl.knokko.customitems.editor.set.ItemDamageClaim;
 import nl.knokko.customitems.editor.set.ItemSet;
 import nl.knokko.customitems.item.CustomItemType;
 import nl.knokko.customitems.projectile.ProjectileCover;
 import nl.knokko.util.bits.BitInput;
 import nl.knokko.util.bits.BitOutput;
 
-public abstract class EditorProjectileCover extends ProjectileCover implements ItemDamageClaim {
+public abstract class EditorProjectileCover extends ProjectileCover {
 	
 	static final byte ID_SPHERE = 0;
 	static final byte ID_CUSTOM = 1;
@@ -38,17 +37,6 @@ public abstract class EditorProjectileCover extends ProjectileCover implements I
     @Override
     public abstract String toString();
     
-    @Override
-    public CustomItemType getItemType() {
-    	return itemType;
-    }
-    
-    @Override
-    public short getItemDamage() {
-    	return itemDamage;
-    }
-    
-    @Override
     public String getResourcePath() {
     	return "customprojectiles/" + name;
     }

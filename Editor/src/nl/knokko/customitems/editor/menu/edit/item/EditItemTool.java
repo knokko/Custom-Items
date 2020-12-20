@@ -99,8 +99,7 @@ public class EditItemTool extends EditItemBase {
 				preferredType = CustomItemType.TRIDENT;
 			else
 				throw new Error("Unsupported category for EditItemTool: " + toolCategory);
-			internalType = chooseInitialItemType(menu.getSet(), toolCategory, preferredType, null);
-			internalDamage.setDirectText(Short.toString(menu.getSet().nextAvailableDamage(preferredType, null)));
+			internalType = preferredType;
 			entityHitDurabilityLoss = new IntEditField(
 					CustomToolDurability.defaultEntityHitDurabilityLoss(preferredType), 0, 
 					EditProps.EDIT_BASE, EditProps.EDIT_ACTIVE);
@@ -146,9 +145,9 @@ public class EditItemTool extends EditItemBase {
 		}
 	}
 	
-	protected String create(short damage, long maxUses, int entityHitDurabilityLoss, int blockBreakDurabilityLoss) {
+	protected String create(long maxUses, int entityHitDurabilityLoss, int blockBreakDurabilityLoss) {
 		return menu.getSet().addTool(
-				new CustomTool(internalType, damage, nameField.getText(), getDisplayName(),
+				new CustomTool(internalType, nameField.getText(), getDisplayName(),
 						lore, attributes, enchantments, maxUses, allowEnchanting.isChecked(),
 						allowAnvil.isChecked(), repairItem.getIngredient(), textureSelect.getSelected(), 
 						itemFlags, entityHitDurabilityLoss, blockBreakDurabilityLoss, customModel, 
@@ -156,7 +155,7 @@ public class EditItemTool extends EditItemBase {
 	}
 
 	@Override
-	protected String create(short damage) {
+	protected String create() {
 		Option.Long maybeDurability = this.durability.getLong();
 		if (!maybeDurability.hasValue()) return "The durability must be an integer";
 		long durability = maybeDurability.getValue();
@@ -166,11 +165,11 @@ public class EditItemTool extends EditItemBase {
 		if (!entityHit.hasValue()) return "The entity hit durability loss should be a positive integer";
 		Option.Int blockBreak = blockBreakDurabilityLoss.getInt();
 		if (!blockBreak.hasValue()) return "The block break durability loss should be a positive integer";
-		return create(damage, durability, entityHit.getValue(), blockBreak.getValue());
+		return create(durability, entityHit.getValue(), blockBreak.getValue());
 	}
 	
-	protected String apply(short damage, long maxUses, int entityHitDurabilityLoss, int blockBreakDurabilityLoss) {
-		return menu.getSet().changeTool(toModify, internalType, damage,
+	protected String apply(long maxUses, int entityHitDurabilityLoss, int blockBreakDurabilityLoss) {
+		return menu.getSet().changeTool(toModify, internalType,
 				getDisplayName(), lore, attributes, enchantments, allowEnchanting.isChecked(),
 				allowAnvil.isChecked(), repairItem.getIngredient(), maxUses, textureSelect.getSelected(),
 				itemFlags, entityHitDurabilityLoss, blockBreakDurabilityLoss, customModel,
@@ -178,7 +177,7 @@ public class EditItemTool extends EditItemBase {
 	}
 
 	@Override
-	protected String apply(short damage) {
+	protected String apply() {
 		Option.Long maybeDurability = this.durability.getLong();
 		if (!maybeDurability.hasValue()) return "The durability must be an integer";
 		long durability = maybeDurability.getValue();
@@ -188,7 +187,7 @@ public class EditItemTool extends EditItemBase {
 		if (!entityHit.hasValue()) return "The entity hit durability loss should be a positive integer";
 		Option.Int blockBreak = blockBreakDurabilityLoss.getInt();
 		if (!blockBreak.hasValue()) return "The block break durability loss should be a positive integer";
-		return apply(damage, durability, entityHit.getValue(), blockBreak.getValue());
+		return apply(durability, entityHit.getValue(), blockBreak.getValue());
 	}
 
 	@Override

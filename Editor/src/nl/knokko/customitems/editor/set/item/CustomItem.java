@@ -23,8 +23,6 @@
  *******************************************************************************/
 package nl.knokko.customitems.editor.set.item;
 
-import nl.knokko.customitems.editor.set.ItemDamageClaim;
-
 import java.util.List;
 
 import nl.knokko.customitems.effect.PotionEffect;
@@ -35,16 +33,17 @@ import nl.knokko.customitems.item.ReplaceCondition;
 import nl.knokko.customitems.item.ReplaceCondition.ConditionOperation;
 import nl.knokko.util.bits.BitOutput;
 
-public abstract class CustomItem extends nl.knokko.customitems.item.CustomItem implements ItemDamageClaim {
+public abstract class CustomItem extends nl.knokko.customitems.item.CustomItem {
 
 	protected NamedImage texture;
 	protected byte[] customModel;
 
-	public CustomItem(CustomItemType itemType, short itemDamage, String name, String displayName, String[] lore,
+	public CustomItem(CustomItemType itemType, String name, String displayName, String[] lore,
 			AttributeModifier[] attributes, Enchantment[] defaultEnchantments, NamedImage texture,
 			boolean[] itemFlags, byte[] customModel, List<PotionEffect> playerEffects, List<PotionEffect> targetEffects, 
 			String[] commands, ReplaceCondition[] conditions, ConditionOperation op) {
-		super(itemType, itemDamage, name, displayName, lore, attributes, defaultEnchantments, itemFlags, playerEffects, 
+		// Use internal item damage of -1 until exporting
+		super(itemType, (short) -1, name, displayName, lore, attributes, defaultEnchantments, itemFlags, playerEffects, 
 				targetEffects, commands, conditions, op);
 		this.texture = texture;
 		this.customModel = customModel;
@@ -106,7 +105,6 @@ public abstract class CustomItem extends nl.knokko.customitems.item.CustomItem i
 		customModel = content;
 	}
 	
-	@Override
 	public String getResourcePath() {
 		return "customitems/" + name;
 	}

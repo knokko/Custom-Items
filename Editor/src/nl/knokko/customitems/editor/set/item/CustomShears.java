@@ -16,13 +16,13 @@ public class CustomShears extends CustomTool {
 	
 	protected int shearDurabilityLoss;
 
-	public CustomShears(CustomItemType itemType, short itemDamage, String name, String displayName, String[] lore,
+	public CustomShears(String name, String displayName, String[] lore,
 			AttributeModifier[] attributes, Enchantment[] defaultEnchantments, long durability, boolean allowEnchanting,
 			boolean allowAnvil, Ingredient repairItem, NamedImage texture, boolean[] itemFlags,
 			int entityHitDurabilityLoss, int blockBreakDurabilityLoss, int shearDurabilityLoss, 
 			byte[] customModel, List<PotionEffect> playerEffects, List<PotionEffect> targetEffects, String[] commands, 
 			ReplaceCondition[] conditions, ConditionOperation op) {
-		super(itemType, itemDamage, name, displayName, lore, attributes, defaultEnchantments, durability, allowEnchanting,
+		super(CustomItemType.SHEARS, name, displayName, lore, attributes, defaultEnchantments, durability, allowEnchanting,
 				allowAnvil, repairItem, texture, itemFlags, entityHitDurabilityLoss, blockBreakDurabilityLoss, customModel, 
 				playerEffects, targetEffects, commands, conditions, op);
 		this.shearDurabilityLoss = shearDurabilityLoss;
@@ -103,7 +103,6 @@ public class CustomShears extends CustomTool {
 		} */
 		
 		output.addByte(ItemEncoding.ENCODING_SHEAR_9);
-		output.addJavaString(itemType.name());
 		output.addShort(itemDamage);
 		output.addJavaString(name);
 		output.addJavaString(displayName);

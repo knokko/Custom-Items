@@ -169,7 +169,7 @@ public class EditItemArmor extends EditItemTool {
 	}
 	
 	@Override
-	protected String create(short damage, long maxUses, int entityHitDurabilityLoss, int blockBreakDurabilityLoss) {
+	protected String create(long maxUses, int entityHitDurabilityLoss, int blockBreakDurabilityLoss) {
 		int redValue = getColorValue(red, DEFAULT_RED);
 		if (redValue == -1) return "The red must be an integer at least 0 and at most 255";
 		int greenValue = getColorValue(green, DEFAULT_GREEN);
@@ -177,7 +177,7 @@ public class EditItemArmor extends EditItemTool {
 		int blueValue = getColorValue(blue, DEFAULT_BLUE);
 		if (blueValue == -1) return "The blue must be an integer at least 0 and at most 255";
 		return menu.getSet().addArmor(
-				new CustomArmor(internalType, damage, nameField.getText(), getDisplayName(),
+				new CustomArmor(internalType, nameField.getText(), getDisplayName(),
 						lore, attributes, enchantments, maxUses, allowEnchanting.isChecked(),
 						allowAnvil.isChecked(), repairItem.getIngredient(), textureSelect.getSelected(),
 						redValue, greenValue, blueValue, itemFlags, entityHitDurabilityLoss, 
@@ -186,14 +186,14 @@ public class EditItemArmor extends EditItemTool {
 	}
 	
 	@Override
-	protected String apply(short damage, long maxUses, int entityHit, int blockBreak) {
+	protected String apply(long maxUses, int entityHit, int blockBreak) {
 		int redValue = getColorValue(red, DEFAULT_RED);
 		if (redValue == -1) return "The red must be an integer at least 0 and at most 255";
 		int greenValue = getColorValue(green, DEFAULT_GREEN);
 		if (greenValue == -1) return "The green must be an integer at least 0 and at most 255";
 		int blueValue = getColorValue(blue, DEFAULT_BLUE);
 		if (blueValue == -1) return "The blue must be an integer at least 0 and at most 255";
-		return menu.getSet().changeArmor(toModify, internalType, damage,
+		return menu.getSet().changeArmor(toModify, internalType,
 				getDisplayName(), lore, attributes, enchantments, allowEnchanting.isChecked(),
 				allowAnvil.isChecked(), repairItem.getIngredient(), maxUses, textureSelect.getSelected(),
 				redValue, greenValue, blueValue, itemFlags, entityHit, blockBreak, damageResistances,

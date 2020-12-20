@@ -47,12 +47,12 @@ public class CustomTool extends CustomItem {
 	protected int entityHitDurabilityLoss;
 	protected int blockBreakDurabilityLoss;
 
-	public CustomTool(CustomItemType itemType, short itemDamage, String name, String displayName, String[] lore,
+	public CustomTool(CustomItemType itemType, String name, String displayName, String[] lore,
 			AttributeModifier[] attributes, Enchantment[] defaultEnchantments, long durability, boolean allowEnchanting, boolean allowAnvil, 
 			Ingredient repairItem, NamedImage texture, boolean[] itemFlags, int entityHitDurabilityLoss,
 			int blockBreakDurabilityLoss, byte[] customModel, List<PotionEffect> playerEffects, List<PotionEffect> targetEffects, 
 			String[] commands, ReplaceCondition[] conditions, ConditionOperation op) {
-		super(itemType, itemDamage, name, displayName, lore, attributes, defaultEnchantments, texture, 
+		super(itemType, name, displayName, lore, attributes, defaultEnchantments, texture, 
 				itemFlags, customModel, playerEffects, targetEffects, commands, conditions, op);
 		this.durability = durability;
 		this.allowEnchanting = allowEnchanting;
