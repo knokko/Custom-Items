@@ -83,18 +83,18 @@ public class EditSphereProjectileCover extends EditProjectileCover {
 	}
 
 	@Override
-	protected void tryCreate(String name, CustomItemType internalType, short internalDamage) {
+	protected void tryCreate(String name, CustomItemType internalType) {
 		if (validate()) {
 			handleError(menu.getSet().addSphereProjectileCover(new SphereProjectileCover(internalType, 
-					internalDamage, name, texture.getSelected(), slotsPerAxis.getInt().getValue(), 
+					name, texture.getSelected(), slotsPerAxis.getInt().getValue(), 
 					scale.getDouble().getValue())));
 		}
 	}
 
 	@Override
-	protected void tryApply(String name, CustomItemType internalType, short internalDamage) {
+	protected void tryApply(String name, CustomItemType internalType) {
 		if (validate()) {
-			handleError(menu.getSet().changeSphereProjectileCover(toModify, internalType, internalDamage, 
+			handleError(menu.getSet().changeSphereProjectileCover(toModify, internalType,
 					name, texture.getSelected(), slotsPerAxis.getInt().getValue(), scale.getDouble().getValue()));
 		}
 	}

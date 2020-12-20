@@ -26,8 +26,9 @@ public abstract class EditorProjectileCover extends ProjectileCover {
 		}
 	}
     
-    EditorProjectileCover(CustomItemType type, short itemDamage, String name){
-    	super(type, itemDamage, name);
+    EditorProjectileCover(CustomItemType type,  String name){
+    	// The internal item damage will be picked right before exporting
+    	super(type, (short) -1, name);
     }
     
     EditorProjectileCover(BitInput input){

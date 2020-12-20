@@ -50,12 +50,12 @@ public class EditCustomProjectileCover extends EditProjectileCover {
 	}
 
 	@Override
-	protected void tryCreate(String name, CustomItemType internalType, short internalDamage) {
-		handleError(menu.getSet().addCustomProjectileCover(new CustomProjectileCover(internalType, internalDamage, name, customModel)));
+	protected void tryCreate(String name, CustomItemType internalType) {
+		handleError(menu.getSet().addCustomProjectileCover(new CustomProjectileCover(internalType, name, customModel)));
 	}
 
 	@Override
-	protected void tryApply(String name, CustomItemType internalType, short internalDamage) {
-		handleError(menu.getSet().changeCustomProjectileCover(toModify, internalType, internalDamage, name, customModel));
+	protected void tryApply(String name, CustomItemType internalType) {
+		handleError(menu.getSet().changeCustomProjectileCover(toModify, internalType, name, customModel));
 	}
 }

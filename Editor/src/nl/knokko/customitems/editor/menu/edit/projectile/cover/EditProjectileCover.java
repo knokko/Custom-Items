@@ -8,11 +8,9 @@ import nl.knokko.customitems.item.CustomItemType;
 import nl.knokko.customitems.item.CustomItemType.Category;
 import nl.knokko.gui.color.GuiColor;
 import nl.knokko.gui.component.menu.GuiMenu;
-import nl.knokko.gui.component.text.IntEditField;
 import nl.knokko.gui.component.text.TextEditField;
 import nl.knokko.gui.component.text.dynamic.DynamicTextButton;
 import nl.knokko.gui.component.text.dynamic.DynamicTextComponent;
-import nl.knokko.gui.util.Option;
 
 public abstract class EditProjectileCover extends GuiMenu {
 	
@@ -22,7 +20,6 @@ public abstract class EditProjectileCover extends GuiMenu {
 	
 	protected TextEditField nameField;
 	protected CustomItemType internalType;
-	protected IntEditField internalDamageField;
 	
 	public EditProjectileCover(EditMenu menu) {
 		this.menu = menu;
@@ -62,26 +59,14 @@ public abstract class EditProjectileCover extends GuiMenu {
 		}, (CustomItemType option) -> {
 			return option.canServe(Category.PROJECTILE_COVER);
 		}, internalType), 0.6f, 0.71f, 0.8f, 0.79f);
-		addComponent(new DynamicTextComponent("Internal item damage:", EditProps.LABEL), 0.25f, 0.6f, 0.59f, 0.7f);
-		addComponent(internalDamageField, 0.6f, 0.61f, 0.8f, 0.69f);
 		
 		if (getToModify() == null) {
 			addComponent(new DynamicTextButton("Create", EditProps.SAVE_BASE, EditProps.SAVE_HOVER, () -> {
-				Option.Short internalDamage = internalDamageField.getInt().toShort();
-				if (internalDamage.hasValue()) {
-					tryCreate(nameField.getText(), internalType, internalDamage.getValue());
-				} else {
-					errorComponent.setText("The internal item damage must be a positive integer");
-				}
+				tryCreate(nameField.getText(), internalType);
 			}), 0.025f, 0.2f, 0.2f, 0.3f);
 		} else {
 			addComponent(new DynamicTextButton("Apply", EditProps.SAVE_BASE, EditProps.SAVE_HOVER, () -> {
-				Option.Short internalDamage = internalDamageField.getInt().toShort();
-				if (internalDamage.hasValue()) {
-					tryApply(nameField.getText(), internalType, internalDamage.getValue());
-				} else {
-					errorComponent.setText("The internal item damage must be a positive integer");
-				}
+				tryApply(nameField.getText(), internalType);
 			}), 0.025f, 0.2f, 0.2f, 0.3f);
 		}
 	}
@@ -95,9 +80,9 @@ public abstract class EditProjectileCover extends GuiMenu {
 	
 	protected abstract EditorProjectileCover getToModify();
 	
-	protected abstract void tryCreate(String name, CustomItemType internalType, short internalDamage);
+	protected abstract void tryCreate(String name, CustomItemType internalType);
 	
-	protected abstract void tryApply(String name, CustomItemType internalType, short internalDamage);
+	protected abstract void tryApply(String name, CustomItemType internalType);
 	
 	protected void handleError(String error) {
 		if (error == null) {

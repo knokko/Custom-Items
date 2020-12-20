@@ -19,9 +19,9 @@ public class SphereProjectileCover extends EditorProjectileCover {
 	public int slotsPerAxis;
 	public double scale;
 	
-	public SphereProjectileCover(CustomItemType type, short itemDamage, String name, 
+	public SphereProjectileCover(CustomItemType type, String name, 
 			NamedImage texture, int slotsPerAxis, double scale) {
-		super(type, itemDamage, name);
+		super(type, name);
 		this.texture = texture;
 		this.slotsPerAxis = slotsPerAxis;
 		this.scale = scale;

@@ -11,8 +11,8 @@ public class CustomProjectileCover extends EditorProjectileCover {
 	
 	public byte[] model;
 
-	public CustomProjectileCover(CustomItemType type, short itemDamage, String name, byte[] model) {
-		super(type, itemDamage, name);
+	public CustomProjectileCover(CustomItemType type, String name, byte[] model) {
+		super(type, name);
 		this.model = model;
 	}
 	

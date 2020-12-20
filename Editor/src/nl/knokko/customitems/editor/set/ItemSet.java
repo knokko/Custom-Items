@@ -6099,10 +6099,6 @@ public class ItemSet implements ItemSetBase {
 				return "The internal item type can't be null";
 			if (!cover.itemType.canServe(Category.PROJECTILE_COVER))
 				return "The selected internal item type can't be used as projectile cover";
-			if (cover.itemDamage <= 0)
-				return "The internal item damage must be positive";
-			if (cover.itemDamage > cover.itemType.getMaxDurability())
-				return "The internal item damage can't be greater than the maximum durability " + cover.itemType.getMaxDurability();
 			if (hasProjectileCover(cover.name))
 				return "There is already a projectile cover with that name";
 			if (projectileCovers.contains(cover))
@@ -6112,7 +6108,7 @@ public class ItemSet implements ItemSetBase {
 		return null;
 	}
 	
-	private String changeProjectileCover(EditorProjectileCover original, CustomItemType newType, short newDamage,
+	private String changeProjectileCover(EditorProjectileCover original, CustomItemType newType,
 			String newName) {
 		if (!bypassChecks()) {
 			if (original == null)
@@ -6123,10 +6119,6 @@ public class ItemSet implements ItemSetBase {
 				return "The internal item type can't be null";
 			if (!newType.canServe(Category.PROJECTILE_COVER))
 				return "This internal item type can't be used as projectile cover";
-			if (newDamage <= 0)
-				return "The internal item damage must be a positive integer";
-			if (newDamage > newType.getMaxDurability())
-				return "The internal item damage can't be greater than the maximum durability " + newType.getMaxDurability();
 			String nameError = checkName(newName);
 			if (nameError != null)
 				return nameError;
@@ -6136,7 +6128,6 @@ public class ItemSet implements ItemSetBase {
 		}
 		
 		original.itemType = newType;
-		original.itemDamage = newDamage;
 		original.name = newName;
 		return null;
 	}
@@ -6149,7 +6140,6 @@ public class ItemSet implements ItemSetBase {
 	 * invalid will be returned.
 	 * @param original The old projectile cover
 	 * @param newType The new internal item type
-	 * @param newDamage The new internal item damage
 	 * @param newName The new name
 	 * @param newTexture The new texture
 	 * @param newSlotsPerAxis The new value for the slotsPerAxis field
@@ -6157,7 +6147,7 @@ public class ItemSet implements ItemSetBase {
 	 * @return null if the cover was changed successfully, or the reason it wasn't
 	 */
 	public String changeSphereProjectileCover(SphereProjectileCover original, CustomItemType newType, 
-			short newDamage, String newName, NamedImage newTexture, int newSlotsPerAxis, double newScale) {
+			String newName, NamedImage newTexture, int newSlotsPerAxis, double newScale) {
 		
 		if (!bypassChecks()) {
 			if (newTexture == null)
@@ -6172,7 +6162,7 @@ public class ItemSet implements ItemSetBase {
 				return "The scale must be greater than zero";
 		}
 		
-		String error = changeProjectileCover(original, newType, newDamage, newName);
+		String error = changeProjectileCover(original, newType, newName);
 		if (error == null) {
 			original.texture = newTexture;
 			original.slotsPerAxis = newSlotsPerAxis;
@@ -6218,20 +6208,19 @@ public class ItemSet implements ItemSetBase {
 	 * will be returned.
 	 * @param original The projectile cover to change
 	 * @param newType The new internal item type
-	 * @param newDamage The new internal item damage
 	 * @param newName The new name
 	 * @param newModel The new item model
 	 * @return null if the projectile cover was changed successfully, or the reason it wasn't
 	 */
 	public String changeCustomProjectileCover(CustomProjectileCover original, CustomItemType newType, 
-			short newDamage, String newName, byte[] newModel) {
+			String newName, byte[] newModel) {
 		
 		if (!bypassChecks()) {
 			if (newModel == null)
 				return "You must select a model";
 		}
 		
-		String error = changeProjectileCover(original, newType, newDamage, newName);
+		String error = changeProjectileCover(original, newType, newName);
 		if (error == null) {
 			original.model = newModel;
 		}
