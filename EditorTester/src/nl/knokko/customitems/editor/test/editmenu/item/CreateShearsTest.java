@@ -22,12 +22,12 @@ public class CreateShearsTest {
 		ItemNameTest.test(test, itemName);
 		SimpleTextureTest.test(test, textureName);
 		DisplayNameTest.test(test, itemName, 2);
-		LoreTest.test(test, lore1, lore2, 8);
+		LoreTest.test(test, lore1, lore2, 9);
 		
 		CustomItemType customItemType = CustomItemType.SHEARS;
 		AttributeModTest.test(test, "generic.movementSpeed", "Offhand", "Add factor", "1.5", 
-				attribute1, slot1, op1, value1, attribute2, slot2, op2, value2, 8);
-		EnchantmentsTest.test(test, enchantment1, level1, enchantment2, level2, 8);
+				attribute1, slot1, op1, value1, attribute2, slot2, op2, value2, 9);
+		EnchantmentsTest.test(test, enchantment1, level1, enchantment2, level2, 9);
 		CreateToolTest.toolOnly(test, customItemType, maxUses, repairItemCategory, repairItem, attackDurLoss, breakDurLoss, 7);
 		
 		// Shears only:

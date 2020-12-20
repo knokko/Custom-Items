@@ -52,10 +52,10 @@ public class CreateSimpleItemTest {
 		ItemNameTest.test(test, itemName);
 		SimpleTextureTest.test(test, textureName);
 		DisplayNameTest.test(test, itemName, 2);
-		LoreTest.test(test, lore1, lore2, 8);
+		LoreTest.test(test, lore1, lore2, 9);
 		AttributeModTest.test(test, "generic.attackDamage", "Mainhand", "Add", "5", 
-				attribute1, slot1, op1, value1, attribute2, slot2, op2, value2, 8);
-		EnchantmentsTest.test(test, enchantment1, level1, enchantment2, level2, 8);
+				attribute1, slot1, op1, value1, attribute2, slot2, op2, value2, 9);
+		EnchantmentsTest.test(test, enchantment1, level1, enchantment2, level2, 9);
 		
 		// This part is only for simple custom items
 		test.click("64");

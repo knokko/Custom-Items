@@ -56,14 +56,14 @@ public class CreateToolTest {
 		ItemNameTest.test(test, itemName);
 		SimpleTextureTest.test(test, textureName);
 		DisplayNameTest.test(test, itemName, 2);
-		LoreTest.test(test, lore1, lore2, 8);
+		LoreTest.test(test, lore1, lore2, 9);
 		
 		// Not my most pretty solution ever, but will do the trick
 		CustomItemType customItemType = CustomItemType.valueOf("IRON_" + toolType.toUpperCase(Locale.ROOT));
 		AttributeModTest.test(test, "generic.attackDamage", "Mainhand", "Add", 
 				new DecimalFormat("#.############").format(CustomItemDamage.getDefaultAttackDamage(customItemType)), 
-				attribute1, slot1, op1, value1, attribute2, slot2, op2, value2, 8);
-		EnchantmentsTest.test(test, enchantment1, level1, enchantment2, level2, 8);
+				attribute1, slot1, op1, value1, attribute2, slot2, op2, value2, 9);
+		EnchantmentsTest.test(test, enchantment1, level1, enchantment2, level2, 9);
 		
 		toolOnly(test, customItemType, maxUses, repairItemCategory, repairItem, attackDurLoss, breakDurLoss, 6);
 
