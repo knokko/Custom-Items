@@ -39,6 +39,7 @@ import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.EnumMap;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -3682,14 +3683,28 @@ public class ItemSet implements ItemSetBase {
 		for (CustomItemType itemType : CustomItemType.values()) {
 			short nextItemDamage = 1;
 			List<DurabilityClaim> claims = new ArrayList<>();
+			Map<NamedImage, Short> textureAssignments = new HashMap<>();
+			
 			for (CustomItem item : items) {
 				if (item.getItemType() == itemType) {
-					item.setItemDamage(nextItemDamage);
-					claims.add(new DurabilityClaim(
-							nextItemDamage, item.getResourcePath(),
-							itemType == CustomItemType.BOW ? (BowTextures) item.getTexture() : null
-					));
-					nextItemDamage++;
+					
+					// Try to reuse its texture
+					Short existingAssignment = textureAssignments.get(item.getTexture());
+					if (item.getCustomModel() == null && existingAssignment != null) {
+						item.setItemDamage(existingAssignment);
+					} else {
+						item.setItemDamage(nextItemDamage);
+						claims.add(new DurabilityClaim(
+								nextItemDamage, item.getResourcePath(),
+								itemType == CustomItemType.BOW ? (BowTextures) item.getTexture() : null
+						));
+						
+						if (item.getCustomModel() == null) {
+							textureAssignments.put(item.getTexture(), nextItemDamage);
+						}
+						
+						nextItemDamage++;
+					}
 				}
 			}
 			
