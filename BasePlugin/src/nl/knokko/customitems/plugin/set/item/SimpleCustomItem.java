@@ -23,8 +23,10 @@
  *******************************************************************************/
 package nl.knokko.customitems.plugin.set.item;
 
+import java.util.Collection;
 import java.util.List;
 
+import nl.knokko.customitems.effect.EquippedPotionEffect;
 import nl.knokko.customitems.effect.PotionEffect;
 import nl.knokko.customitems.item.AttributeModifier;
 import nl.knokko.customitems.item.CustomItemType;
@@ -36,11 +38,19 @@ public class SimpleCustomItem extends CustomItem {
 	
 	private int stackSize;
 
-	public SimpleCustomItem(CustomItemType itemType, short itemDamage, String name, String displayName, String[] lore,
-			AttributeModifier[] attributes, Enchantment[] defaultEnchantments, int stackSize, boolean[] itemFlags, 
-			List<PotionEffect> playerEffects, List<PotionEffect> targetEffects, String[] commands, ReplaceCondition[] conditions, ConditionOperation op) {
-		super(itemType, itemDamage, name, displayName, lore, attributes, defaultEnchantments, itemFlags, playerEffects, 
-				targetEffects, commands, conditions, op);
+	public SimpleCustomItem(
+			CustomItemType itemType, short itemDamage, String name, String alias,
+			String displayName, String[] lore, AttributeModifier[] attributes, 
+			Enchantment[] defaultEnchantments, int stackSize, boolean[] itemFlags, 
+			List<PotionEffect> playerEffects, List<PotionEffect> targetEffects, 
+			Collection<EquippedPotionEffect> equippedEffects, String[] commands, 
+			ReplaceCondition[] conditions, ConditionOperation op
+	) {
+		super(
+				itemType, itemDamage, name, alias, displayName, lore, attributes, 
+				defaultEnchantments, itemFlags, playerEffects, targetEffects, 
+				equippedEffects, commands, conditions, op
+		);
 		this.stackSize = stackSize;
 	}
 	

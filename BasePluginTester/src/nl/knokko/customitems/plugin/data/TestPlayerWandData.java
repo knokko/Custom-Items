@@ -30,18 +30,18 @@ import nl.knokko.util.bits.ByteArrayBitOutput;
 public class TestPlayerWandData {
 	
 	static final CustomWand WITH = new CustomWand(CustomItemType.GOLD_HOE, (short) 10, 
-			"with_charges_one", "With charges 1", new String[] {"A wand that needs charges"}, 
+			"with_charges_one", "", "With charges 1", new String[] {"A wand that needs charges"}, 
 			new AttributeModifier[] {new AttributeModifier(Attribute.ATTACK_SPEED, Slot.OFFHAND, 
 					Operation.ADD, 0.3)}, new Enchantment[] {new Enchantment(EnchantmentType.FIRE_ASPECT, 1)},
 			new boolean[ItemFlag.values().length], 
 			Lists.newArrayList(new PotionEffect(EffectType.ABSORPTION, 15, 1)), 
-			null, null, new ReplaceCondition[0], ConditionOperation.NONE, null, 
+			null, null, null, new ReplaceCondition[0], ConditionOperation.NONE, null, 
 			5, new WandCharges(5, 20), 2);
 	
 	static final CustomWand WITHOUT = new CustomWand(CustomItemType.SHEARS, (short) 3,
-			"without_charges_one", "Without charges 1", new String[0], new AttributeModifier[0],
+			"without_charges_one", "", "Without charges 1", new String[0], new AttributeModifier[0],
 			new Enchantment[0], ItemFlag.getDefaultValues(), Collections.emptyList(), 
-			null, null, new ReplaceCondition[0], ConditionOperation.NONE, null, 20, null, 3);
+			null, null, null, new ReplaceCondition[0], ConditionOperation.NONE, null, 20, null, 3);
 
 	@Test
 	public void testSaveLoadDiscard() {

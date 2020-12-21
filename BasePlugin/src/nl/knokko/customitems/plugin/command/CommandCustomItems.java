@@ -87,7 +87,20 @@ public class CommandCustomItems implements CommandExecutor {
 		} else {
 			if(args[0].equals("give")) {
 				if(args.length == 2 || args.length == 3 || args.length == 4) {
+					
+					// Try to find a custom item with the give name
 					CustomItem item = CustomItemsPlugin.getInstance().getSet().getItem(args[1]);
+					
+					// If no such item is found, try to find one with the given alias
+					if (item == null) {
+						for (CustomItem candidate : CustomItemsPlugin.getInstance().getSet().getBackingItems()) {
+							if (candidate.getAlias().equals(args[1])) {
+								item = candidate;
+								break;
+							}
+						}
+					}
+					
 					if(item != null) {
 						Player receiver = null;
 						int amount = 1;
@@ -131,7 +144,11 @@ public class CommandCustomItems implements CommandExecutor {
 				if (items.length > 0) {
 					sender.sendMessage("All custom items:");
 					for (CustomItem item : items) {
-						sender.sendMessage(item.getName());
+						if (item.getAlias().isEmpty()) {
+							sender.sendMessage(item.getName());
+						} else {
+							sender.sendMessage(item.getName() + " (" + item.getAlias() + ")");
+						}
 					}
 				} else {
 					sender.sendMessage(ChatColor.RED + "There are 0 custom items");

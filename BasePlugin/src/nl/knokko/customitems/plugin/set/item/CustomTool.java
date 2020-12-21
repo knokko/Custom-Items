@@ -24,6 +24,7 @@
 package nl.knokko.customitems.plugin.set.item;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 import org.bukkit.entity.Entity;
@@ -32,6 +33,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
+import nl.knokko.customitems.effect.EquippedPotionEffect;
 import nl.knokko.customitems.effect.PotionEffect;
 import nl.knokko.customitems.item.AttributeModifier;
 import nl.knokko.customitems.item.CustomItemType;
@@ -64,12 +66,22 @@ public class CustomTool extends CustomItem {
 	protected final int entityHitDurabilityLoss;
 	protected final int blockBreakDurabilityLoss;
 
-	public CustomTool(CustomItemType itemType, short itemDamage, String name, String displayName, String[] lore, 
-			AttributeModifier[] attributes, Enchantment[] defaultEnchantments, long maxDurability, boolean allowEnchanting, boolean allowAnvil, 
-			Ingredient repairItem, boolean[] itemFlags, int entityHitDurabilityLoss, int blockBreakDurabilityLoss, List<PotionEffect> playerEffects, 
-			List<PotionEffect> targetEffects, String[] commands, ReplaceCondition[] conditions, ConditionOperation op) {
-		super(itemType, itemDamage, name, displayName, lore, attributes, defaultEnchantments, itemFlags, playerEffects, targetEffects, commands, 
-				conditions, op);
+	public CustomTool(
+			CustomItemType itemType, short itemDamage, String name, String alias,
+			String displayName, String[] lore, AttributeModifier[] attributes, 
+			Enchantment[] defaultEnchantments, long maxDurability, 
+			boolean allowEnchanting, boolean allowAnvil, Ingredient repairItem, 
+			boolean[] itemFlags, int entityHitDurabilityLoss, 
+			int blockBreakDurabilityLoss, List<PotionEffect> playerEffects, 
+			List<PotionEffect> targetEffects, 
+			Collection<EquippedPotionEffect> equippedEffects, String[] commands, 
+			ReplaceCondition[] conditions, ConditionOperation op
+	) {
+		super(
+				itemType, itemDamage, name, alias, displayName, lore, attributes, 
+				defaultEnchantments, itemFlags, playerEffects, targetEffects, 
+				equippedEffects, commands, conditions, op
+		);
 		this.maxDurability = maxDurability;
 		this.allowEnchanting = allowEnchanting;
 		this.allowAnvil = allowAnvil;

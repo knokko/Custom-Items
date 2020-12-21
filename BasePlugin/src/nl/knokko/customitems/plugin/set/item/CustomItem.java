@@ -39,15 +39,16 @@ import com.google.common.collect.Lists;
 import nl.knokko.core.plugin.CorePlugin;
 import nl.knokko.core.plugin.item.attributes.ItemAttributes;
 import nl.knokko.core.plugin.item.attributes.ItemAttributes.Single;
+import nl.knokko.customitems.effect.EquippedPotionEffect;
+import nl.knokko.customitems.effect.PotionEffect;
 import nl.knokko.customitems.item.AttributeModifier;
 import nl.knokko.customitems.item.CIMaterial;
 import nl.knokko.customitems.item.CustomItemType;
 import nl.knokko.customitems.item.Enchantment;
-import nl.knokko.customitems.plugin.CustomItemsPlugin;
 import nl.knokko.customitems.item.ReplaceCondition;
 import nl.knokko.customitems.item.ReplaceCondition.ConditionOperation;
+import nl.knokko.customitems.plugin.CustomItemsPlugin;
 import nl.knokko.customitems.plugin.util.ItemUtils;
-import nl.knokko.customitems.effect.PotionEffect;
 
 public abstract class CustomItem extends nl.knokko.customitems.item.CustomItem {
 	
@@ -71,10 +72,19 @@ public abstract class CustomItem extends nl.knokko.customitems.item.CustomItem {
 	
 	protected BooleanRepresentation boolRepresentation;
     
-    public CustomItem(CustomItemType itemType, short itemDamage, String name, String displayName, 
-    		String[] lore, AttributeModifier[] attributes, Enchantment[] defaultEnchantments, boolean[] itemFlags, 
-    		List<PotionEffect> playerEffects, List<PotionEffect> targetEffects, String[] commands, ReplaceCondition[] conditions, ConditionOperation op){
-        super(itemType, itemDamage, name, displayName, lore, attributes, defaultEnchantments, itemFlags, playerEffects, targetEffects, commands, conditions, op);
+    public CustomItem(
+    		CustomItemType itemType, short itemDamage, String name, String alias, 
+    		String displayName, String[] lore, AttributeModifier[] attributes, 
+    		Enchantment[] defaultEnchantments, boolean[] itemFlags, 
+    		List<PotionEffect> playerEffects, List<PotionEffect> targetEffects, 
+    		Collection<EquippedPotionEffect> equippedEffects, String[] commands, 
+    		ReplaceCondition[] conditions, ConditionOperation op
+    ){
+        super(
+        		itemType, itemDamage, name, alias, displayName, lore, attributes, 
+        		defaultEnchantments, itemFlags, playerEffects, targetEffects, 
+        		equippedEffects, commands, conditions, op
+        );
         
         material = getMaterial(itemType);
         

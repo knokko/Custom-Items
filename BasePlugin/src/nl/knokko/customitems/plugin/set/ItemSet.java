@@ -41,7 +41,6 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.material.MaterialData;
 
-import nl.knokko.core.plugin.item.GeneralItemNBT;
 import nl.knokko.core.plugin.item.ItemHelper;
 import nl.knokko.core.plugin.item.UnknownMaterialException;
 import nl.knokko.customitems.container.CustomContainer;
@@ -53,6 +52,7 @@ import nl.knokko.customitems.drops.CIEntityType;
 import nl.knokko.customitems.drops.Drop;
 import nl.knokko.customitems.drops.EntityDrop;
 import nl.knokko.customitems.effect.EffectType;
+import nl.knokko.customitems.effect.EquippedPotionEffect;
 import nl.knokko.customitems.effect.PotionEffect;
 import nl.knokko.customitems.encoding.ItemEncoding;
 import nl.knokko.customitems.encoding.RecipeEncoding;
@@ -75,7 +75,6 @@ import nl.knokko.customitems.item.ReplaceCondition.ReplacementOperation;
 import nl.knokko.customitems.item.WandCharges;
 import nl.knokko.customitems.plugin.CustomItemsPlugin;
 import nl.knokko.customitems.plugin.container.ContainerInfo;
-import nl.knokko.customitems.plugin.container.ContainerInstance;
 import nl.knokko.customitems.plugin.recipe.CustomRecipe;
 import nl.knokko.customitems.plugin.recipe.ShapedCustomRecipe;
 import nl.knokko.customitems.plugin.recipe.ShapelessCustomRecipe;
@@ -97,6 +96,7 @@ import nl.knokko.customitems.plugin.set.item.CustomTool;
 import nl.knokko.customitems.plugin.set.item.CustomTrident;
 import nl.knokko.customitems.plugin.set.item.CustomWand;
 import nl.knokko.customitems.plugin.set.item.SimpleCustomItem;
+import nl.knokko.customitems.plugin.util.ItemUtils;
 import nl.knokko.customitems.projectile.CIProjectile;
 import nl.knokko.customitems.projectile.ProjectileCover;
 import nl.knokko.customitems.trouble.IntegrityException;
@@ -715,9 +715,12 @@ public class ItemSet implements ItemSetBase {
 		for (int index = 0; index < lore.length; index++)
 			lore[index] = input.readJavaString();
 		AttributeModifier[] attributes = new AttributeModifier[0];
-		return new SimpleCustomItem(itemType, damage, name, displayName, lore, attributes, new Enchantment[0], 64,
-				ItemFlag.getDefaultValues(), new ArrayList<PotionEffect>(), new ArrayList<PotionEffect>(), new String[] {}, 
-				new ReplaceCondition[] {}, ConditionOperation.NONE);
+		return new SimpleCustomItem(
+				itemType, damage, name, "", displayName, lore, attributes, 
+				new Enchantment[0], 64, ItemFlag.getDefaultValues(), 
+				new ArrayList<>(), new ArrayList<>(), new ArrayList<>(),
+				new String[] {}, new ReplaceCondition[] {}, ConditionOperation.NONE
+		);
 	}
 
 	private static CustomItem loadSimpleItem2(BitInput input) {
@@ -731,9 +734,12 @@ public class ItemSet implements ItemSetBase {
 		AttributeModifier[] attributes = new AttributeModifier[input.readByte() & 0xFF];
 		for (int index = 0; index < attributes.length; index++)
 			attributes[index] = loadAttribute2(input);
-		return new SimpleCustomItem(itemType, damage, name, displayName, lore, attributes, new Enchantment[0], 64,
-				ItemFlag.getDefaultValues(), new ArrayList<PotionEffect>(), new ArrayList<PotionEffect>(), new String[] {}, 
-				new ReplaceCondition[] {}, ConditionOperation.NONE);
+		return new SimpleCustomItem(
+				itemType, damage, name, "", displayName, lore, attributes, 
+				new Enchantment[0], 64, ItemFlag.getDefaultValues(), 
+				new ArrayList<>(), new ArrayList<>(), new ArrayList<>(),
+				new String[] {}, new ReplaceCondition[] {}, ConditionOperation.NONE
+		);
 	}
 
 	private static CustomItem loadSimpleItem3(BitInput input) {
@@ -750,9 +756,12 @@ public class ItemSet implements ItemSetBase {
 		Enchantment[] defaultEnchantments = new Enchantment[input.readByte() & 0xFF];
 		for (int index = 0; index < defaultEnchantments.length; index++)
 			defaultEnchantments[index] = new Enchantment(EnchantmentType.valueOf(input.readString()), input.readInt());
-		return new SimpleCustomItem(itemType, damage, name, displayName, lore, attributes, defaultEnchantments, 64,
-				ItemFlag.getDefaultValues(), new ArrayList<PotionEffect>(), new ArrayList<PotionEffect>(), new String[] {},
-				new ReplaceCondition[] {}, ConditionOperation.NONE);
+		return new SimpleCustomItem(
+				itemType, damage, name, "", displayName, lore, attributes, 
+				defaultEnchantments, 64, ItemFlag.getDefaultValues(), 
+				new ArrayList<>(), new ArrayList<>(), new ArrayList<>(),
+				new String[] {}, new ReplaceCondition[] {}, ConditionOperation.NONE
+		);
 	}
 
 	private static CustomItem loadSimpleItem4(BitInput input) {
@@ -770,9 +779,12 @@ public class ItemSet implements ItemSetBase {
 		for (int index = 0; index < defaultEnchantments.length; index++)
 			defaultEnchantments[index] = new Enchantment(EnchantmentType.valueOf(input.readString()), input.readInt());
 		int stackSize = input.readByte();
-		return new SimpleCustomItem(itemType, damage, name, displayName, lore, attributes, defaultEnchantments,
-				stackSize, ItemFlag.getDefaultValues(), new ArrayList<PotionEffect>(), new ArrayList<PotionEffect>(), 
-				new String[] {},new ReplaceCondition[] {}, ConditionOperation.NONE);
+		return new SimpleCustomItem(
+				itemType, damage, name, "", displayName, lore, attributes, 
+				defaultEnchantments, stackSize, ItemFlag.getDefaultValues(), 
+				new ArrayList<>(), new ArrayList<>(), new ArrayList<>(),
+				new String[] {}, new ReplaceCondition[] {}, ConditionOperation.NONE
+		);
 	}
 
 	private static CustomItem loadSimpleItem5(BitInput input) {
@@ -791,9 +803,12 @@ public class ItemSet implements ItemSetBase {
 			defaultEnchantments[index] = new Enchantment(EnchantmentType.valueOf(input.readString()), input.readInt());
 		int stackSize = input.readByte();
 		boolean[] itemFlags = input.readBooleans(6);
-		return new SimpleCustomItem(itemType, damage, name, displayName, lore, attributes, defaultEnchantments,
-				stackSize, itemFlags, new ArrayList<PotionEffect>(), new ArrayList<PotionEffect>(), new String[] {},
-				new ReplaceCondition[] {}, ConditionOperation.NONE);
+		return new SimpleCustomItem(
+				itemType, damage, name, "", displayName, lore, attributes, 
+				defaultEnchantments, stackSize, itemFlags, new ArrayList<>(), 
+				new ArrayList<>(), new ArrayList<>(), new String[] {},
+				new ReplaceCondition[] {}, ConditionOperation.NONE
+		);
 	}
 	
 	private static CustomItem loadSimpleItem6(BitInput input) {
@@ -826,14 +841,19 @@ public class ItemSet implements ItemSetBase {
 		for (int index = 0; index < commands.length; index++) {
 			commands[index] = input.readJavaString();
 		}
-		return new SimpleCustomItem(itemType, damage, name, displayName, lore, attributes, defaultEnchantments,
-				stackSize, itemFlags, playerEffects, targetEffects, commands, new ReplaceCondition[] {}, ConditionOperation.NONE);
+		return new SimpleCustomItem(
+				itemType, damage, name, "", displayName, lore, attributes, 
+				defaultEnchantments, stackSize, itemFlags, playerEffects, 
+				targetEffects, new ArrayList<>(), commands, 
+				new ReplaceCondition[] {}, ConditionOperation.NONE
+		);
 	}
 	
 	private static CustomItem loadSimpleItem9(BitInput input) {
 		CustomItemType itemType = CustomItemType.valueOf(input.readJavaString());
 		short damage = input.readShort();
 		String name = input.readJavaString();
+		String alias = input.readString();
 		String displayName = input.readJavaString();
 		String[] lore = new String[input.readByte() & 0xFF];
 		for (int index = 0; index < lore.length; index++)
@@ -856,6 +876,7 @@ public class ItemSet implements ItemSetBase {
 		for (int index = 0; index < teLength; index++) {
 			targetEffects.add(new PotionEffect(EffectType.valueOf(input.readJavaString()), input.readInt(), input.readInt()));
 		}
+		Collection<EquippedPotionEffect> equippedEffects = CustomItem.readEquippedEffects(input);
 		String[] commands = new String[input.readByte() & 0xFF];
 		for (int index = 0; index < commands.length; index++) {
 			commands[index] = input.readJavaString();
@@ -867,8 +888,11 @@ public class ItemSet implements ItemSetBase {
 		}
 		ConditionOperation op = ConditionOperation.valueOf(input.readJavaString());
 		
-		return new SimpleCustomItem(itemType, damage, name, displayName, lore, attributes, defaultEnchantments,
-				stackSize, itemFlags, playerEffects, targetEffects, commands, conditions, op);
+		return new SimpleCustomItem(
+				itemType, damage, name, alias, displayName, lore, attributes, 
+				defaultEnchantments, stackSize, itemFlags, playerEffects, 
+				targetEffects, equippedEffects, commands, conditions, op
+		);
 	}
 
 	private static CustomItem loadTool2(BitInput input) throws UnknownEncodingException {
@@ -885,12 +909,15 @@ public class ItemSet implements ItemSetBase {
 		int durability = input.readInt();
 		boolean allowEnchanting = input.readBoolean();
 		boolean allowAnvil = input.readBoolean();
-		return new CustomTool(itemType, damage, name, displayName, lore, attributes, new Enchantment[0], durability,
-				allowEnchanting, allowAnvil, new NoIngredient(), ItemFlag.getDefaultValues(),
+		return new CustomTool(
+				itemType, damage, name, "", displayName, lore, attributes, 
+				new Enchantment[0], durability, allowEnchanting, allowAnvil, 
+				new NoIngredient(), ItemFlag.getDefaultValues(),
 				CustomToolDurability.defaultEntityHitDurabilityLoss(itemType),
 				CustomToolDurability.defaultBlockBreakDurabilityLoss(itemType), 
-				new ArrayList<PotionEffect>(), new ArrayList<PotionEffect>(), new String[] {}, 
-				new ReplaceCondition[] {}, ConditionOperation.NONE);
+				new ArrayList<>(), new ArrayList<>(), new ArrayList<>(), 
+				new String[] {}, new ReplaceCondition[] {}, ConditionOperation.NONE
+		);
 	}
 
 	private static CustomItem loadTool3(
@@ -910,12 +937,15 @@ public class ItemSet implements ItemSetBase {
 		boolean allowEnchanting = input.readBoolean();
 		boolean allowAnvil = input.readBoolean();
 		Ingredient repairItem = loadIngredient.apply(input);
-		return new CustomTool(itemType, damage, name, displayName, lore, attributes, new Enchantment[0], durability,
-				allowEnchanting, allowAnvil, repairItem, ItemFlag.getDefaultValues(),
+		return new CustomTool(
+				itemType, damage, name, "", displayName, lore, attributes, 
+				new Enchantment[0], durability, allowEnchanting, allowAnvil, 
+				repairItem, ItemFlag.getDefaultValues(),
 				CustomToolDurability.defaultEntityHitDurabilityLoss(itemType),
 				CustomToolDurability.defaultBlockBreakDurabilityLoss(itemType), 
-				new ArrayList<PotionEffect>(), new ArrayList<PotionEffect>(), new String[] {},
-				new ReplaceCondition[] {}, ConditionOperation.NONE);
+				new ArrayList<>(), new ArrayList<>(), new ArrayList<>(),
+				new String[] {}, new ReplaceCondition[] {}, ConditionOperation.NONE
+		);
 	}
 
 	private static CustomItem loadTool4(
@@ -938,12 +968,15 @@ public class ItemSet implements ItemSetBase {
 		boolean allowEnchanting = input.readBoolean();
 		boolean allowAnvil = input.readBoolean();
 		Ingredient repairItem = loadIngredient.apply(input);
-		return new CustomTool(itemType, damage, name, displayName, lore, attributes, defaultEnchantments, durability,
-				allowEnchanting, allowAnvil, repairItem, ItemFlag.getDefaultValues(),
+		return new CustomTool(
+				itemType, damage, name, "", displayName, lore, attributes, 
+				defaultEnchantments, durability, allowEnchanting, allowAnvil, 
+				repairItem, ItemFlag.getDefaultValues(),
 				CustomToolDurability.defaultEntityHitDurabilityLoss(itemType),
 				CustomToolDurability.defaultBlockBreakDurabilityLoss(itemType), 
-				new ArrayList<PotionEffect>(), new ArrayList<PotionEffect>(), new String[] {}, 
-				new ReplaceCondition[] {}, ConditionOperation.NONE);
+				new ArrayList<>(), new ArrayList<>(), new ArrayList<>(), 
+				new String[] {}, new ReplaceCondition[] {}, ConditionOperation.NONE
+		);
 	}
 
 	private static CustomItem loadTool5(
@@ -969,10 +1002,14 @@ public class ItemSet implements ItemSetBase {
 		boolean[] itemFlags = input.readBooleans(6);
 		int entityHitDurabilityLoss = input.readInt();
 		int blockBreakDurabilityLoss = input.readInt();
-		return new CustomTool(itemType, damage, name, displayName, lore, attributes, defaultEnchantments, durability,
-				allowEnchanting, allowAnvil, repairItem, itemFlags, entityHitDurabilityLoss, blockBreakDurabilityLoss, 
-				new ArrayList<PotionEffect>(), new ArrayList<PotionEffect>(), new String[] {}, new ReplaceCondition[] {}, 
-				ConditionOperation.NONE);
+		return new CustomTool(
+				itemType, damage, name, "", displayName, lore, attributes, 
+				defaultEnchantments, durability, allowEnchanting, allowAnvil, 
+				repairItem, itemFlags, entityHitDurabilityLoss, 
+				blockBreakDurabilityLoss, new ArrayList<>(), new ArrayList<>(), 
+				new ArrayList<>(), new String[] {}, new ReplaceCondition[] {}, 
+				ConditionOperation.NONE
+		);
 	}
 	
 	private static CustomItem loadTool6(
@@ -1012,9 +1049,14 @@ public class ItemSet implements ItemSetBase {
 		for (int index = 0; index < commands.length; index++) {
 			commands[index] = input.readJavaString();
 		}
-		return new CustomTool(itemType, damage, name, displayName, lore, attributes, defaultEnchantments, durability,
-				allowEnchanting, allowAnvil, repairItem, itemFlags, entityHitDurabilityLoss, blockBreakDurabilityLoss, 
-				playerEffects, targetEffects, commands, new ReplaceCondition[] {}, ConditionOperation.NONE);
+		return new CustomTool(
+				itemType, damage, name, "", displayName, lore, attributes, 
+				defaultEnchantments, durability, allowEnchanting, allowAnvil, 
+				repairItem, itemFlags, entityHitDurabilityLoss, 
+				blockBreakDurabilityLoss, playerEffects, targetEffects, 
+				new ArrayList<>(), commands, 
+				new ReplaceCondition[] {}, ConditionOperation.NONE
+		);
 	}
 	
 	private static CustomItem loadTool9(
@@ -1023,6 +1065,7 @@ public class ItemSet implements ItemSetBase {
 		CustomItemType itemType = CustomItemType.valueOf(input.readJavaString());
 		short damage = input.readShort();
 		String name = input.readJavaString();
+		String alias = input.readString();
 		String displayName = input.readJavaString();
 		String[] lore = new String[input.readByte() & 0xFF];
 		for (int index = 0; index < lore.length; index++)
@@ -1050,6 +1093,7 @@ public class ItemSet implements ItemSetBase {
 		for (int index = 0; index < teLength; index++) {
 			targetEffects.add(new PotionEffect(EffectType.valueOf(input.readJavaString()), input.readInt(), input.readInt()));
 		}
+		Collection<EquippedPotionEffect> equippedEffects = CustomItem.readEquippedEffects(input);
 		String[] commands = new String[input.readByte() & 0xFF];
 		for (int index = 0; index < commands.length; index++) {
 			commands[index] = input.readJavaString();
@@ -1061,9 +1105,13 @@ public class ItemSet implements ItemSetBase {
 		}
 		ConditionOperation op = ConditionOperation.valueOf(input.readJavaString());
 		
-		return new CustomTool(itemType, damage, name, displayName, lore, attributes, defaultEnchantments, durability,
-				allowEnchanting, allowAnvil, repairItem, itemFlags, entityHitDurabilityLoss, blockBreakDurabilityLoss, 
-				playerEffects, targetEffects, commands, conditions, op);
+		return new CustomTool(
+				itemType, damage, name, alias, displayName, lore, attributes, 
+				defaultEnchantments, durability, allowEnchanting, allowAnvil, 
+				repairItem, itemFlags, entityHitDurabilityLoss, blockBreakDurabilityLoss, 
+				playerEffects, targetEffects, equippedEffects,
+				commands, conditions, op
+		);
 	}
 	
 	private static CustomItem loadHoe5(
@@ -1090,10 +1138,14 @@ public class ItemSet implements ItemSetBase {
 		int entityHitDurabilityLoss = input.readInt();
 		int blockBreakDurabilityLoss = input.readInt();
 		int tillDurabilityLoss = input.readInt();
-		return new CustomHoe(itemType, damage, name, displayName, lore, attributes, defaultEnchantments, durability,
-				allowEnchanting, allowAnvil, repairItem, itemFlags, entityHitDurabilityLoss, blockBreakDurabilityLoss, 
-				tillDurabilityLoss, new ArrayList<PotionEffect>(), new ArrayList<PotionEffect>(), new String[] {}, 
-				new ReplaceCondition[] {}, ConditionOperation.NONE);
+		return new CustomHoe(
+				itemType, damage, name, "", displayName, lore, attributes, 
+				defaultEnchantments, durability, allowEnchanting, allowAnvil, 
+				repairItem, itemFlags, entityHitDurabilityLoss, 
+				blockBreakDurabilityLoss, tillDurabilityLoss, new ArrayList<>(), 
+				new ArrayList<>(), new ArrayList<>(), new String[] {}, 
+				new ReplaceCondition[] {}, ConditionOperation.NONE
+		);
 	}
 	
 	private static CustomItem loadHoe6(
@@ -1134,9 +1186,14 @@ public class ItemSet implements ItemSetBase {
 		for (int index = 0; index < commands.length; index++) {
 			commands[index] = input.readJavaString();
 		}
-		return new CustomHoe(itemType, damage, name, displayName, lore, attributes, defaultEnchantments, durability,
-				allowEnchanting, allowAnvil, repairItem, itemFlags, entityHitDurabilityLoss, blockBreakDurabilityLoss, 
-				tillDurabilityLoss, playerEffects, targetEffects, commands, new ReplaceCondition[] {}, ConditionOperation.NONE);
+		return new CustomHoe(
+				itemType, damage, name, "", displayName, lore, attributes, 
+				defaultEnchantments, durability, allowEnchanting, allowAnvil, 
+				repairItem, itemFlags, entityHitDurabilityLoss, 
+				blockBreakDurabilityLoss, tillDurabilityLoss, playerEffects, 
+				targetEffects, new ArrayList<>(), commands, 
+				new ReplaceCondition[] {}, ConditionOperation.NONE
+		);
 	}
 	
 	private static CustomItem loadHoe9(
@@ -1145,6 +1202,7 @@ public class ItemSet implements ItemSetBase {
 		CustomItemType itemType = CustomItemType.valueOf(input.readJavaString());
 		short damage = input.readShort();
 		String name = input.readJavaString();
+		String alias = input.readString();
 		String displayName = input.readJavaString();
 		String[] lore = new String[input.readByte() & 0xFF];
 		for (int index = 0; index < lore.length; index++)
@@ -1173,6 +1231,7 @@ public class ItemSet implements ItemSetBase {
 		for (int index = 0; index < teLength; index++) {
 			targetEffects.add(new PotionEffect(EffectType.valueOf(input.readJavaString()), input.readInt(), input.readInt()));
 		}
+		Collection<EquippedPotionEffect> equippedEffects = CustomItem.readEquippedEffects(input);
 		String[] commands = new String[input.readByte() & 0xFF];
 		for (int index = 0; index < commands.length; index++) {
 			commands[index] = input.readJavaString();
@@ -1184,9 +1243,13 @@ public class ItemSet implements ItemSetBase {
 		}
 		ConditionOperation op = ConditionOperation.valueOf(input.readJavaString());
 		
-		return new CustomHoe(itemType, damage, name, displayName, lore, attributes, defaultEnchantments, durability,
-				allowEnchanting, allowAnvil, repairItem, itemFlags, entityHitDurabilityLoss, blockBreakDurabilityLoss, 
-				tillDurabilityLoss, playerEffects, targetEffects, commands, conditions, op);
+		return new CustomHoe(
+				itemType, damage, name, alias, displayName, lore, attributes, 
+				defaultEnchantments, durability, allowEnchanting, allowAnvil, 
+				repairItem, itemFlags, entityHitDurabilityLoss, 
+				blockBreakDurabilityLoss, tillDurabilityLoss, playerEffects, 
+				targetEffects, equippedEffects, commands, conditions, op
+		);
 	}
 	
 	private static CustomItem loadShear5(
@@ -1213,10 +1276,14 @@ public class ItemSet implements ItemSetBase {
 		int entityHitDurabilityLoss = input.readInt();
 		int blockBreakDurabilityLoss = input.readInt();
 		int shearDurabilityLoss = input.readInt();
-		return new CustomShears(damage, name, displayName, lore, attributes, defaultEnchantments, durability,
-				allowEnchanting, allowAnvil, repairItem, itemFlags, entityHitDurabilityLoss, blockBreakDurabilityLoss, 
-				shearDurabilityLoss, new ArrayList<PotionEffect>(), new ArrayList<PotionEffect>(), new String[] {}, 
-				new ReplaceCondition[] {}, ConditionOperation.NONE);
+		return new CustomShears(
+				damage, name, "", displayName, lore, attributes, 
+				defaultEnchantments, durability, allowEnchanting, allowAnvil, 
+				repairItem, itemFlags, entityHitDurabilityLoss, blockBreakDurabilityLoss, 
+				shearDurabilityLoss, new ArrayList<>(), new ArrayList<>(), 
+				new ArrayList<>(), new String[] {}, 
+				new ReplaceCondition[] {}, ConditionOperation.NONE
+		);
 	}
 	
 	private static CustomItem loadShear6(
@@ -1257,9 +1324,14 @@ public class ItemSet implements ItemSetBase {
 		for (int index = 0; index < commands.length; index++) {
 			commands[index] = input.readJavaString();
 		}
-		return new CustomShears(damage, name, displayName, lore, attributes, defaultEnchantments, durability,
-				allowEnchanting, allowAnvil, repairItem, itemFlags, entityHitDurabilityLoss, blockBreakDurabilityLoss, 
-				shearDurabilityLoss, playerEffects, targetEffects, commands, new ReplaceCondition[] {}, ConditionOperation.NONE);
+		return new CustomShears(
+				damage, name, "", displayName, lore, attributes, 
+				defaultEnchantments, durability, allowEnchanting, allowAnvil, 
+				repairItem, itemFlags, entityHitDurabilityLoss, 
+				blockBreakDurabilityLoss, shearDurabilityLoss, playerEffects, 
+				targetEffects, new ArrayList<>(), commands, 
+				new ReplaceCondition[] {}, ConditionOperation.NONE
+		);
 	}
 	
 	private static CustomItem loadShear9(
@@ -1267,6 +1339,7 @@ public class ItemSet implements ItemSetBase {
 	) throws UnknownEncodingException {
 		short damage = input.readShort();
 		String name = input.readJavaString();
+		String alias = input.readString();
 		String displayName = input.readJavaString();
 		String[] lore = new String[input.readByte() & 0xFF];
 		for (int index = 0; index < lore.length; index++)
@@ -1295,6 +1368,7 @@ public class ItemSet implements ItemSetBase {
 		for (int index = 0; index < teLength; index++) {
 			targetEffects.add(new PotionEffect(EffectType.valueOf(input.readJavaString()), input.readInt(), input.readInt()));
 		}
+		Collection<EquippedPotionEffect> equippedEffects = CustomItem.readEquippedEffects(input);
 		String[] commands = new String[input.readByte() & 0xFF];
 		for (int index = 0; index < commands.length; index++) {
 			commands[index] = input.readJavaString();
@@ -1306,9 +1380,13 @@ public class ItemSet implements ItemSetBase {
 		}
 		ConditionOperation op = ConditionOperation.valueOf(input.readJavaString());
 		
-		return new CustomShears(damage, name, displayName, lore, attributes, defaultEnchantments, durability,
-				allowEnchanting, allowAnvil, repairItem, itemFlags, entityHitDurabilityLoss, blockBreakDurabilityLoss, 
-				shearDurabilityLoss, playerEffects, targetEffects, commands, conditions, op);
+		return new CustomShears(
+				damage, name, alias, displayName, lore, attributes, 
+				defaultEnchantments, durability, allowEnchanting, allowAnvil, 
+				repairItem, itemFlags, entityHitDurabilityLoss, 
+				blockBreakDurabilityLoss, shearDurabilityLoss, playerEffects, 
+				targetEffects, equippedEffects, commands, conditions, op
+		);
 	}
 
 	private static CustomItem loadArmor4(
@@ -1337,10 +1415,14 @@ public class ItemSet implements ItemSetBase {
 		} else {
 			color = null;
 		}
-		return new CustomArmor(itemType, damage, name, displayName, lore, attributes, defaultEnchantments, durability,
-				allowEnchanting, allowAnvil, repairItem, color, ItemFlag.getDefaultValues(), 0, 0,
-				new DamageResistances(), new ArrayList<PotionEffect>(), new ArrayList<PotionEffect>(), new String[] {}, 
-				new ReplaceCondition[] {}, ConditionOperation.NONE);
+		return new CustomArmor(
+				itemType, damage, name, "", displayName, lore, attributes, 
+				defaultEnchantments, durability, allowEnchanting, allowAnvil, 
+				repairItem, color, ItemFlag.getDefaultValues(), 0, 0,
+				new DamageResistances(), new ArrayList<>(), new ArrayList<>(), 
+				new ArrayList<>(), new String[] {}, 
+				new ReplaceCondition[] {}, ConditionOperation.NONE
+		);
 	}
 
 	private static CustomItem loadArmor5(
@@ -1372,10 +1454,14 @@ public class ItemSet implements ItemSetBase {
 		boolean[] itemFlags = input.readBooleans(6);
 		int entityHitDurabilityLoss = input.readInt();
 		int blockBreakDurabilityLoss = input.readInt();
-		return new CustomArmor(itemType, damage, name, displayName, lore, attributes, defaultEnchantments, durability,
-				allowEnchanting, allowAnvil, repairItem, color, itemFlags, entityHitDurabilityLoss,
-				blockBreakDurabilityLoss, new DamageResistances(), new ArrayList<PotionEffect>(), 
-				new ArrayList<PotionEffect>(), new String[] {}, new ReplaceCondition[] {}, ConditionOperation.NONE);
+		return new CustomArmor(
+				itemType, damage, name, "", displayName, lore, attributes, 
+				defaultEnchantments, durability, allowEnchanting, allowAnvil, 
+				repairItem, color, itemFlags, entityHitDurabilityLoss,
+				blockBreakDurabilityLoss, new DamageResistances(), new ArrayList<>(), 
+				new ArrayList<>(), new ArrayList<>(), new String[] {}, 
+				new ReplaceCondition[] {}, ConditionOperation.NONE
+		);
 	}
 
 	private static CustomItem loadArmor6(
@@ -1408,10 +1494,14 @@ public class ItemSet implements ItemSetBase {
 		int entityHitDurabilityLoss = input.readInt();
 		int blockBreakDurabilityLoss = input.readInt();
 		DamageResistances damageResistances = DamageResistances.load12(input);
-		return new CustomArmor(itemType, damage, name, displayName, lore, attributes, defaultEnchantments, durability,
-				allowEnchanting, allowAnvil, repairItem, color, itemFlags, entityHitDurabilityLoss,
-				blockBreakDurabilityLoss, damageResistances, new ArrayList<PotionEffect>(), 
-				new ArrayList<PotionEffect>(), new String[] {}, new ReplaceCondition[] {}, ConditionOperation.NONE);
+		return new CustomArmor(
+				itemType, damage, name, "", displayName, lore, attributes, 
+				defaultEnchantments, durability, allowEnchanting, allowAnvil, 
+				repairItem, color, itemFlags, entityHitDurabilityLoss,
+				blockBreakDurabilityLoss, damageResistances, new ArrayList<>(), 
+				new ArrayList<>(), new ArrayList<>(), new String[] {}, 
+				new ReplaceCondition[] {}, ConditionOperation.NONE
+		);
 	}
 	
 	private static CustomItem loadArmor7(
@@ -1444,10 +1534,14 @@ public class ItemSet implements ItemSetBase {
 		int entityHitDurabilityLoss = input.readInt();
 		int blockBreakDurabilityLoss = input.readInt();
 		DamageResistances damageResistances = DamageResistances.load14(input);
-		return new CustomArmor(itemType, damage, name, displayName, lore, attributes, defaultEnchantments, durability,
-				allowEnchanting, allowAnvil, repairItem, color, itemFlags, entityHitDurabilityLoss,
-				blockBreakDurabilityLoss, damageResistances, new ArrayList<PotionEffect>(), 
-				new ArrayList<PotionEffect>(), new String[] {}, new ReplaceCondition[] {}, ConditionOperation.NONE);
+		return new CustomArmor(
+				itemType, damage, name, "", displayName, lore, attributes, 
+				defaultEnchantments, durability, allowEnchanting, allowAnvil, 
+				repairItem, color, itemFlags, entityHitDurabilityLoss,
+				blockBreakDurabilityLoss, damageResistances, new ArrayList<>(), 
+				new ArrayList<>(), new ArrayList<>(), new String[] {}, 
+				new ReplaceCondition[] {}, ConditionOperation.NONE
+		);
 	}
 	
 	private static CustomItem loadArmor8(
@@ -1494,10 +1588,14 @@ public class ItemSet implements ItemSetBase {
 		for (int index = 0; index < commands.length; index++) {
 			commands[index] = input.readJavaString();
 		}
-		return new CustomArmor(itemType, damage, name, displayName, lore, attributes, defaultEnchantments, durability,
-				allowEnchanting, allowAnvil, repairItem, color, itemFlags, entityHitDurabilityLoss,
-				blockBreakDurabilityLoss, damageResistances, playerEffects, targetEffects, commands, 
-				new ReplaceCondition[] {}, ConditionOperation.NONE);
+		return new CustomArmor(
+				itemType, damage, name, "", displayName, lore, attributes, 
+				defaultEnchantments, durability, allowEnchanting, allowAnvil, 
+				repairItem, color, itemFlags, entityHitDurabilityLoss,
+				blockBreakDurabilityLoss, damageResistances, playerEffects, 
+				targetEffects, new ArrayList<>(), commands, 
+				new ReplaceCondition[] {}, ConditionOperation.NONE
+		);
 	}
 	
 	private static CustomItem loadArmor9(
@@ -1506,6 +1604,7 @@ public class ItemSet implements ItemSetBase {
 		CustomItemType itemType = CustomItemType.valueOf(input.readJavaString());
 		short damage = input.readShort();
 		String name = input.readJavaString();
+		String alias = input.readString();
 		String displayName = input.readJavaString();
 		String[] lore = new String[input.readByte() & 0xFF];
 		for (int index = 0; index < lore.length; index++)
@@ -1540,6 +1639,7 @@ public class ItemSet implements ItemSetBase {
 		for (int index = 0; index < teLength; index++) {
 			targetEffects.add(new PotionEffect(EffectType.valueOf(input.readJavaString()), input.readInt(), input.readInt()));
 		}
+		Collection<EquippedPotionEffect> equippedEffects = CustomItem.readEquippedEffects(input);
 		String[] commands = new String[input.readByte() & 0xFF];
 		for (int index = 0; index < commands.length; index++) {
 			commands[index] = input.readJavaString();
@@ -1551,9 +1651,13 @@ public class ItemSet implements ItemSetBase {
 		}
 		ConditionOperation op = ConditionOperation.valueOf(input.readJavaString());
 		
-		return new CustomArmor(itemType, damage, name, displayName, lore, attributes, defaultEnchantments, durability,
-				allowEnchanting, allowAnvil, repairItem, color, itemFlags, entityHitDurabilityLoss,
-				blockBreakDurabilityLoss, damageResistances, playerEffects, targetEffects, commands, conditions, op);
+		return new CustomArmor(
+				itemType, damage, name, alias, displayName, lore, attributes, 
+				defaultEnchantments, durability, allowEnchanting, allowAnvil, 
+				repairItem, color, itemFlags, entityHitDurabilityLoss,
+				blockBreakDurabilityLoss, damageResistances, playerEffects, 
+				targetEffects, equippedEffects, commands, conditions, op
+		);
 	}
 	
 	private static CustomItem loadHelmet3d9(
@@ -1562,6 +1666,7 @@ public class ItemSet implements ItemSetBase {
 		CustomItemType itemType = CustomItemType.valueOf(input.readJavaString());
 		short damage = input.readShort();
 		String name = input.readJavaString();
+		String alias = input.readString();
 		String displayName = input.readJavaString();
 		String[] lore = new String[input.readByte() & 0xFF];
 		for (int index = 0; index < lore.length; index++)
@@ -1596,6 +1701,7 @@ public class ItemSet implements ItemSetBase {
 		for (int index = 0; index < teLength; index++) {
 			targetEffects.add(new PotionEffect(EffectType.valueOf(input.readJavaString()), input.readInt(), input.readInt()));
 		}
+		Collection<EquippedPotionEffect> equippedEffects = CustomItem.readEquippedEffects(input);
 		String[] commands = new String[input.readByte() & 0xFF];
 		for (int index = 0; index < commands.length; index++) {
 			commands[index] = input.readJavaString();
@@ -1607,10 +1713,13 @@ public class ItemSet implements ItemSetBase {
 		}
 		ConditionOperation op = ConditionOperation.valueOf(input.readJavaString());
 		
-		return new CustomHelmet3D(itemType, damage, name, displayName, lore, attributes, defaultEnchantments, durability,
-				allowEnchanting, allowAnvil, repairItem, color, itemFlags, entityHitDurabilityLoss,
-				blockBreakDurabilityLoss, damageResistances, 
-				playerEffects, targetEffects, commands, conditions, op);
+		return new CustomHelmet3D(
+				itemType, damage, name, alias, displayName, lore, attributes, 
+				defaultEnchantments, durability, allowEnchanting, allowAnvil, 
+				repairItem, color, itemFlags, entityHitDurabilityLoss,
+				blockBreakDurabilityLoss, damageResistances, playerEffects, 
+				targetEffects, equippedEffects, commands, conditions, op
+		);
 	}
 
 	private static CustomBow loadBow3(
@@ -1633,10 +1742,14 @@ public class ItemSet implements ItemSetBase {
 		boolean allowEnchanting = input.readBoolean();
 		boolean allowAnvil = input.readBoolean();
 		Ingredient repairItem = loadIngredient.apply(input);
-		return new CustomBow(damage, name, displayName, lore, attributes, new Enchantment[0], durability,
-				damageMultiplier, speedMultiplier, knockbackStrength, gravity, allowEnchanting, allowAnvil, repairItem,
-				ItemFlag.getDefaultValues(), 0, 0, 1, new ArrayList<PotionEffect>(), new ArrayList<PotionEffect>(), 
-				new String[] {}, new ReplaceCondition[] {}, ConditionOperation.NONE);
+		return new CustomBow(
+				damage, name, "", displayName, lore, attributes, new Enchantment[0], 
+				durability, damageMultiplier, speedMultiplier, knockbackStrength, 
+				gravity, allowEnchanting, allowAnvil, repairItem,
+				ItemFlag.getDefaultValues(), 0, 0, 1, new ArrayList<>(), 
+				new ArrayList<>(), new ArrayList<>(), new String[] {}, 
+				new ReplaceCondition[] {}, ConditionOperation.NONE
+		);
 	}
 
 	private static CustomBow loadBow4(
@@ -1662,10 +1775,14 @@ public class ItemSet implements ItemSetBase {
 		boolean allowEnchanting = input.readBoolean();
 		boolean allowAnvil = input.readBoolean();
 		Ingredient repairItem = loadIngredient.apply(input);
-		return new CustomBow(damage, name, displayName, lore, attributes, defaultEnchantments, durability,
-				damageMultiplier, speedMultiplier, knockbackStrength, gravity, allowEnchanting, allowAnvil, repairItem,
-				ItemFlag.getDefaultValues(), 0, 0, 1, new ArrayList<PotionEffect>(), new ArrayList<PotionEffect>(), 
-				new String[] {}, new ReplaceCondition[] {}, ConditionOperation.NONE);
+		return new CustomBow(
+				damage, name, "", displayName, lore, attributes, defaultEnchantments, 
+				durability, damageMultiplier, speedMultiplier, knockbackStrength, 
+				gravity, allowEnchanting, allowAnvil, repairItem,
+				ItemFlag.getDefaultValues(), 0, 0, 1, new ArrayList<>(), 
+				new ArrayList<>(), new ArrayList<>(), new String[] {}, 
+				new ReplaceCondition[] {}, ConditionOperation.NONE
+		);
 	}
 
 	private static CustomBow loadBow5(
@@ -1695,11 +1812,15 @@ public class ItemSet implements ItemSetBase {
 		int entityHitDurabilityLoss = input.readInt();
 		int blockBreakDurabilityLoss = input.readInt();
 		int shootDurabilityLoss = input.readInt();
-		return new CustomBow(damage, name, displayName, lore, attributes, defaultEnchantments, durability,
-				damageMultiplier, speedMultiplier, knockbackStrength, gravity, allowEnchanting, allowAnvil, repairItem,
-				itemFlags, entityHitDurabilityLoss, blockBreakDurabilityLoss, shootDurabilityLoss, 
-				new ArrayList<PotionEffect>(), new ArrayList<PotionEffect>(), new String[] {}, new ReplaceCondition[] {}, 
-				ConditionOperation.NONE);
+		return new CustomBow(
+				damage, name, "", displayName, lore, attributes, 
+				defaultEnchantments, durability, damageMultiplier, speedMultiplier, 
+				knockbackStrength, gravity, allowEnchanting, allowAnvil, repairItem,
+				itemFlags, entityHitDurabilityLoss, blockBreakDurabilityLoss, 
+				shootDurabilityLoss, new ArrayList<>(), new ArrayList<>(), 
+				new ArrayList<>(), new String[] {}, 
+				new ReplaceCondition[] {}, ConditionOperation.NONE
+		);
 	}
 	
 	private static CustomBow loadBow6(
@@ -1743,10 +1864,14 @@ public class ItemSet implements ItemSetBase {
 		for (int index = 0; index < commands.length; index++) {
 			commands[index] = input.readJavaString();
 		}
-		return new CustomBow(damage, name, displayName, lore, attributes, defaultEnchantments, durability,
-				damageMultiplier, speedMultiplier, knockbackStrength, gravity, allowEnchanting, allowAnvil, repairItem,
-				itemFlags, entityHitDurabilityLoss, blockBreakDurabilityLoss, shootDurabilityLoss, 
-				playerEffects, targetEffects, commands, new ReplaceCondition[] {}, ConditionOperation.NONE);
+		return new CustomBow(
+				damage, name, "", displayName, lore, attributes, 
+				defaultEnchantments, durability, damageMultiplier, speedMultiplier, 
+				knockbackStrength, gravity, allowEnchanting, allowAnvil, repairItem,
+				itemFlags, entityHitDurabilityLoss, blockBreakDurabilityLoss, 
+				shootDurabilityLoss, playerEffects, targetEffects, new ArrayList<>(), 
+				commands, new ReplaceCondition[] {}, ConditionOperation.NONE
+		);
 	}
 	
 	private static CustomBow loadBow9(
@@ -1754,6 +1879,7 @@ public class ItemSet implements ItemSetBase {
 			) throws UnknownEncodingException {
 		short damage = input.readShort();
 		String name = input.readJavaString();
+		String alias = input.readString();
 		String displayName = input.readJavaString();
 		String[] lore = new String[input.readByte() & 0xFF];
 		for (int index = 0; index < lore.length; index++)
@@ -1786,6 +1912,7 @@ public class ItemSet implements ItemSetBase {
 		for (int index = 0; index < teLength; index++) {
 			targetEffects.add(new PotionEffect(EffectType.valueOf(input.readJavaString()), input.readInt(), input.readInt()));
 		}
+		Collection<EquippedPotionEffect> equippedEffects = CustomItem.readEquippedEffects(input);
 		String[] commands = new String[input.readByte() & 0xFF];
 		for (int index = 0; index < commands.length; index++) {
 			commands[index] = input.readJavaString();
@@ -1797,10 +1924,14 @@ public class ItemSet implements ItemSetBase {
 		}
 		ConditionOperation op = ConditionOperation.valueOf(input.readJavaString());
 		
-		return new CustomBow(damage, name, displayName, lore, attributes, defaultEnchantments, durability,
-				damageMultiplier, speedMultiplier, knockbackStrength, gravity, allowEnchanting, allowAnvil, repairItem,
-				itemFlags, entityHitDurabilityLoss, blockBreakDurabilityLoss, shootDurabilityLoss, 
-				playerEffects, targetEffects, commands, conditions, op);
+		return new CustomBow(
+				damage, name, alias, displayName, lore, attributes, 
+				defaultEnchantments, durability, damageMultiplier, speedMultiplier, 
+				knockbackStrength, gravity, allowEnchanting, allowAnvil, repairItem,
+				itemFlags, entityHitDurabilityLoss, blockBreakDurabilityLoss, 
+				shootDurabilityLoss, playerEffects, targetEffects, 
+				equippedEffects, commands, conditions, op
+		);
 	}
 	
 	private static CustomItem loadShield6(
@@ -1827,9 +1958,14 @@ public class ItemSet implements ItemSetBase {
 		int entityHitDurabilityLoss = input.readInt();
 		int blockBreakDurabilityLoss = input.readInt();
 		double durabilityThreshold = input.readDouble();
-		return new CustomShield(damage, name, displayName, lore, attributes, defaultEnchantments, durability,
-				allowEnchanting, allowAnvil, repairItem, itemFlags, entityHitDurabilityLoss, blockBreakDurabilityLoss, durabilityThreshold, 
-				new ArrayList<PotionEffect>(), new ArrayList<PotionEffect>(), new String[] {}, new ReplaceCondition[] {}, ConditionOperation.NONE);
+		return new CustomShield(
+				damage, name, "", displayName, lore, attributes, defaultEnchantments, 
+				durability, allowEnchanting, allowAnvil, repairItem, itemFlags, 
+				entityHitDurabilityLoss, blockBreakDurabilityLoss, 
+				durabilityThreshold, new ArrayList<>(), new ArrayList<>(), 
+				new ArrayList<>(), new String[] {}, 
+				new ReplaceCondition[] {}, ConditionOperation.NONE
+		);
 	}
 	
 	private static CustomItem loadShield7(
@@ -1870,9 +2006,14 @@ public class ItemSet implements ItemSetBase {
 		for (int index = 0; index < commands.length; index++) {
 			commands[index] = input.readJavaString();
 		}
-		return new CustomShield(damage, name, displayName, lore, attributes, defaultEnchantments, durability,
-				allowEnchanting, allowAnvil, repairItem, itemFlags, entityHitDurabilityLoss, blockBreakDurabilityLoss, durabilityThreshold, 
-				playerEffects, targetEffects, commands, new ReplaceCondition[] {}, ConditionOperation.NONE);
+		return new CustomShield(
+				damage, name, "", displayName, lore, attributes, defaultEnchantments, 
+				durability, allowEnchanting, allowAnvil, repairItem, itemFlags, 
+				entityHitDurabilityLoss, blockBreakDurabilityLoss, 
+				durabilityThreshold, playerEffects, targetEffects, 
+				new ArrayList<>(), commands, 
+				new ReplaceCondition[] {}, ConditionOperation.NONE
+		);
 	}
 	
 	private static CustomItem loadShield9(
@@ -1880,6 +2021,7 @@ public class ItemSet implements ItemSetBase {
 	) throws UnknownEncodingException {
 		short damage = input.readShort();
 		String name = input.readJavaString();
+		String alias = input.readString();
 		String displayName = input.readJavaString();
 		String[] lore = new String[input.readByte() & 0xFF];
 		for (int index = 0; index < lore.length; index++)
@@ -1908,6 +2050,7 @@ public class ItemSet implements ItemSetBase {
 		for (int index = 0; index < teLength; index++) {
 			targetEffects.add(new PotionEffect(EffectType.valueOf(input.readJavaString()), input.readInt(), input.readInt()));
 		}
+		Collection<EquippedPotionEffect> equippedEffects = CustomItem.readEquippedEffects(input);
 		String[] commands = new String[input.readByte() & 0xFF];
 		for (int index = 0; index < commands.length; index++) {
 			commands[index] = input.readJavaString();
@@ -1919,9 +2062,14 @@ public class ItemSet implements ItemSetBase {
 		}
 		ConditionOperation op = ConditionOperation.valueOf(input.readJavaString());
 		
-		return new CustomShield(damage, name, displayName, lore, attributes, defaultEnchantments, durability,
-				allowEnchanting, allowAnvil, repairItem, itemFlags, entityHitDurabilityLoss, blockBreakDurabilityLoss, durabilityThreshold, 
-				playerEffects, targetEffects, commands, conditions, op);
+		return new CustomShield(
+				damage, name, alias, displayName, lore, attributes, 
+				defaultEnchantments, durability, allowEnchanting, allowAnvil, 
+				repairItem, itemFlags, entityHitDurabilityLoss, 
+				blockBreakDurabilityLoss, durabilityThreshold, 
+				playerEffects, targetEffects, equippedEffects, 
+				commands, conditions, op
+		);
 	}
 	
 	private static CustomItem loadTrident7(
@@ -1949,11 +2097,15 @@ public class ItemSet implements ItemSetBase {
 		int throwDurabilityLoss = input.readInt();
 		double throwDamageMultiplier = input.readDouble();
 		double speedMultiplier = input.readDouble();
-		return new CustomTrident(damage, name, displayName, lore, attributes, defaultEnchantments, 
-				durability, allowEnchanting, allowAnvil, throwDamageMultiplier, speedMultiplier, repairItem, 
-				itemFlags, entityHitDurabilityLoss, blockBreakDurabilityLoss, throwDurabilityLoss, 
-				new ArrayList<PotionEffect>(), new ArrayList<PotionEffect>(), new String[] {}, 
-				new ReplaceCondition[] {}, ConditionOperation.NONE);
+		return new CustomTrident(
+				damage, name, "", displayName, lore, attributes, 
+				defaultEnchantments, durability, allowEnchanting, allowAnvil, 
+				throwDamageMultiplier, speedMultiplier, repairItem, itemFlags, 
+				entityHitDurabilityLoss, blockBreakDurabilityLoss, 
+				throwDurabilityLoss, new ArrayList<>(), new ArrayList<>(), 
+				new ArrayList<>(), new String[] {}, 
+				new ReplaceCondition[] {}, ConditionOperation.NONE
+		);
 	}
 	
 	private static CustomItem loadTrident8(
@@ -1995,10 +2147,15 @@ public class ItemSet implements ItemSetBase {
 		for (int index = 0; index < commands.length; index++) {
 			commands[index] = input.readJavaString();
 		}
-		return new CustomTrident(damage, name, displayName, lore, attributes, defaultEnchantments, 
-				durability, allowEnchanting, allowAnvil, throwDamageMultiplier, speedMultiplier, repairItem, 
-				itemFlags, entityHitDurabilityLoss, blockBreakDurabilityLoss, throwDurabilityLoss, 
-				playerEffects, targetEffects, commands, new ReplaceCondition[] {}, ConditionOperation.NONE);
+		return new CustomTrident(
+				damage, name, "", displayName, lore, attributes, 
+				defaultEnchantments, durability, allowEnchanting, allowAnvil, 
+				throwDamageMultiplier, speedMultiplier, repairItem, itemFlags, 
+				entityHitDurabilityLoss, blockBreakDurabilityLoss, 
+				throwDurabilityLoss, playerEffects, targetEffects, 
+				new ArrayList<>(), commands, 
+				new ReplaceCondition[] {}, ConditionOperation.NONE
+		);
 	}
 	
 	private static CustomItem loadTrident9(
@@ -2006,6 +2163,7 @@ public class ItemSet implements ItemSetBase {
 	) throws UnknownEncodingException {
 		short damage = input.readShort();
 		String name = input.readJavaString();
+		String alias = input.readString();
 		String displayName = input.readJavaString();
 		String[] lore = new String[input.readByte() & 0xFF];
 		for (int index = 0; index < lore.length; index++)
@@ -2036,6 +2194,7 @@ public class ItemSet implements ItemSetBase {
 		for (int index = 0; index < teLength; index++) {
 			targetEffects.add(new PotionEffect(EffectType.valueOf(input.readJavaString()), input.readInt(), input.readInt()));
 		}
+		Collection<EquippedPotionEffect> equippedEffects = CustomItem.readEquippedEffects(input);
 		String[] commands = new String[input.readByte() & 0xFF];
 		for (int index = 0; index < commands.length; index++) {
 			commands[index] = input.readJavaString();
@@ -2047,10 +2206,14 @@ public class ItemSet implements ItemSetBase {
 		}
 		ConditionOperation op = ConditionOperation.valueOf(input.readJavaString());
 		
-		return new CustomTrident(damage, name, displayName, lore, attributes, defaultEnchantments, 
-				durability, allowEnchanting, allowAnvil, throwDamageMultiplier, speedMultiplier, repairItem, 
-				itemFlags, entityHitDurabilityLoss, blockBreakDurabilityLoss, throwDurabilityLoss, 
-				playerEffects, targetEffects, commands, conditions, op);
+		return new CustomTrident(
+				damage, name, alias, displayName, lore, attributes, 
+				defaultEnchantments, durability, allowEnchanting, allowAnvil, 
+				throwDamageMultiplier, speedMultiplier, repairItem, itemFlags, 
+				entityHitDurabilityLoss, blockBreakDurabilityLoss, 
+				throwDurabilityLoss, playerEffects, targetEffects, 
+				equippedEffects, commands, conditions, op
+		);
 	}
 	
 	private static CustomItem loadWand8(
@@ -2096,9 +2259,13 @@ public class ItemSet implements ItemSetBase {
 		
 		CIProjectile projectile = getProjectileByName.apply(projectileName);
 		
-		return new CustomWand(itemType, damage, name, displayName, lore, attributes, defaultEnchantments,
-				itemFlags, playerEffects, targetEffects, commands, new ReplaceCondition[] {}, ConditionOperation.NONE,
-				projectile, cooldown, charges, amountPerShot);
+		return new CustomWand(
+				itemType, damage, name, "", displayName, lore, attributes, 
+				defaultEnchantments, itemFlags, playerEffects, targetEffects, 
+				new ArrayList<>(), commands, new ReplaceCondition[] {}, 
+				ConditionOperation.NONE, projectile, cooldown, charges,
+				amountPerShot
+		);
 	}
 	
 	private static CustomItem loadWand9(
@@ -2107,6 +2274,7 @@ public class ItemSet implements ItemSetBase {
 		CustomItemType itemType = CustomItemType.valueOf(input.readJavaString());
 		short damage = input.readShort();
 		String name = input.readJavaString();
+		String alias = input.readString();
 		String displayName = input.readJavaString();
 		String[] lore = new String[input.readByte() & 0xFF];
 		for (int index = 0; index < lore.length; index++)
@@ -2128,6 +2296,7 @@ public class ItemSet implements ItemSetBase {
 		for (int index = 0; index < teLength; index++) {
 			targetEffects.add(new PotionEffect(EffectType.valueOf(input.readJavaString()), input.readInt(), input.readInt()));
 		}
+		Collection<EquippedPotionEffect> equippedEffects = CustomItem.readEquippedEffects(input);
 		String[] commands = new String[input.readByte() & 0xFF];
 		for (int index = 0; index < commands.length; index++) {
 			commands[index] = input.readJavaString();
@@ -2150,9 +2319,12 @@ public class ItemSet implements ItemSetBase {
 		
 		CIProjectile projectile = getProjectileByName.apply(projectileName);
 		
-		return new CustomWand(itemType, damage, name, displayName, lore, attributes, defaultEnchantments,
-				itemFlags, playerEffects, targetEffects, commands, conditions, op,
-				projectile, cooldown, charges, amountPerShot);
+		return new CustomWand(
+				itemType, damage, name, alias, displayName, lore, attributes, 
+				defaultEnchantments, itemFlags, playerEffects, targetEffects, 
+				equippedEffects, commands, conditions, op, projectile, cooldown, 
+				charges, amountPerShot
+		);
 	}
 
 	private static AttributeModifier loadAttribute2(BitInput input) {
@@ -2333,8 +2505,7 @@ public class ItemSet implements ItemSetBase {
 	}
 	
 	public CustomItem getItem(ItemStack item) {
-		if (GeneralItemNBT.readOnlyInstance(item).getOrDefault(
-				ContainerInstance.PLACEHOLDER_KEY, 0) == 1) {
+		if (ItemUtils.isEmpty(item)) {
 			return null;
 		}
 		

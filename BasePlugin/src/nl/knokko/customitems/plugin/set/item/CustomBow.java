@@ -23,8 +23,10 @@
  *******************************************************************************/
 package nl.knokko.customitems.plugin.set.item;
 
+import java.util.Collection;
 import java.util.List;
 
+import nl.knokko.customitems.effect.EquippedPotionEffect;
 import nl.knokko.customitems.effect.PotionEffect;
 import nl.knokko.customitems.item.AttributeModifier;
 import nl.knokko.customitems.item.CustomItemType;
@@ -42,14 +44,25 @@ public class CustomBow extends CustomTool {
 	
 	private final int shootDurabilityLoss;
 
-	public CustomBow(short itemDamage, String name, String displayName, String[] lore, AttributeModifier[] attributes,
-			Enchantment[] defaultEnchantments, long maxDurability, double damageMultiplier, double speedMultiplier, int knockbackStrength,
-			boolean hasGravity, boolean allowEnchanting, boolean allowAnvil, Ingredient repairItem, 
-			boolean[] itemFlags, int entityHitDurabilityLoss, int blockBreakDurabilityLoss, int shootDurabilityLoss,
-			List<PotionEffect> playerEffects, List<PotionEffect> targetEffects, String[] commands, ReplaceCondition[] conditions, ConditionOperation op) {
-		super(CustomItemType.BOW, itemDamage, name, displayName, lore, attributes, defaultEnchantments, 
-				maxDurability, allowEnchanting, allowAnvil, repairItem, itemFlags, entityHitDurabilityLoss,
-				blockBreakDurabilityLoss, playerEffects, targetEffects, commands, conditions, op);
+	public CustomBow(
+			short itemDamage, String name, String alias, String displayName, 
+			String[] lore, AttributeModifier[] attributes,
+			Enchantment[] defaultEnchantments, long maxDurability, 
+			double damageMultiplier, double speedMultiplier, int knockbackStrength,
+			boolean hasGravity, boolean allowEnchanting, boolean allowAnvil, 
+			Ingredient repairItem, boolean[] itemFlags, int entityHitDurabilityLoss, 
+			int blockBreakDurabilityLoss, int shootDurabilityLoss,
+			List<PotionEffect> playerEffects, List<PotionEffect> targetEffects, 
+			Collection<EquippedPotionEffect> equippedEffects, String[] commands, 
+			ReplaceCondition[] conditions, ConditionOperation op
+	) {
+		super(
+				CustomItemType.BOW, itemDamage, name, alias, displayName, lore, 
+				attributes, defaultEnchantments, maxDurability, allowEnchanting, 
+				allowAnvil, repairItem, itemFlags, entityHitDurabilityLoss,
+				blockBreakDurabilityLoss, playerEffects, targetEffects, 
+				equippedEffects, commands, conditions, op
+		);
 		this.damageMultiplier = damageMultiplier;
 		this.speedMultiplier = speedMultiplier;
 		this.knockbackStrength = knockbackStrength;
