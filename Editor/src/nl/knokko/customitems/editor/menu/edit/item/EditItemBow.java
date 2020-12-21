@@ -112,13 +112,17 @@ public class EditItemBow extends EditItemTool {
 		if (!knockbackStrength.hasValue()) return "The knockback strength must be a positive integer";
 		Option.Int shootDurabilityLoss = this.shootDurabilityLoss.getInt();
 		if (!shootDurabilityLoss.hasValue()) return "The shoot durability loss must be a positive integer";
-		return menu.getSet().addBow(new CustomBow(nameField.getText(), getDisplayName(), lore, attributes, 
-				enchantments, maxUses, damageMultiplier.getValue(), speedMultiplier.getValue(), 
-				knockbackStrength.getValue(), gravity.isChecked(), allowEnchanting.isChecked(), 
+		return menu.getSet().addBow(new CustomBow(
+				nameField.getText(), aliasField.getText(), getDisplayName(), lore, 
+				attributes, enchantments, maxUses, damageMultiplier.getValue(), 
+				speedMultiplier.getValue(), knockbackStrength.getValue(), 
+				gravity.isChecked(), allowEnchanting.isChecked(), 
 				allowAnvil.isChecked(), repairItem.getIngredient(),
-				(BowTextures) textureSelect.getSelected(), itemFlags, entityHitDurabilityLoss,
-				blockBreakDurabilityLoss, shootDurabilityLoss.getValue(), customModel, playerEffects, 
-				targetEffects, commands, conditions, op), true);
+				(BowTextures) textureSelect.getSelected(), itemFlags, 
+				entityHitDurabilityLoss, blockBreakDurabilityLoss, 
+				shootDurabilityLoss.getValue(), customModel, playerEffects, 
+				targetEffects, equippedEffects, commands, conditions, op), true
+		);
 	}
 
 	@Override
@@ -131,12 +135,16 @@ public class EditItemBow extends EditItemTool {
 		if (!knockbackStrength.hasValue()) return "The knockback strength must be a positive integer";
 		Option.Int shootDurabilityLoss = this.shootDurabilityLoss.getInt();
 		if (!shootDurabilityLoss.hasValue()) return "The shoot durability loss must be a positive integer";
-		return menu.getSet().changeBow(toModify, getDisplayName(), lore, attributes, 
-				enchantments, damageMultiplier.getValue(), speedMultiplier.getValue(), 
-				knockbackStrength.getValue(), gravity.isChecked(), allowEnchanting.isChecked(), 
+		return menu.getSet().changeBow(
+				toModify, aliasField.getText(), getDisplayName(), lore, attributes, 
+				enchantments, damageMultiplier.getValue(), 
+				speedMultiplier.getValue(), knockbackStrength.getValue(), 
+				gravity.isChecked(), allowEnchanting.isChecked(), 
 				allowAnvil.isChecked(), repairItem.getIngredient(), maxUses, 
-				(BowTextures) textureSelect.getSelected(), itemFlags, entityHitDurabilityLoss,
-				blockBreakDurabilityLoss, shootDurabilityLoss.getValue(), customModel, playerEffects, 
-				targetEffects, commands, conditions, op, true);
+				(BowTextures) textureSelect.getSelected(), itemFlags, 
+				entityHitDurabilityLoss, blockBreakDurabilityLoss, 
+				shootDurabilityLoss.getValue(), customModel, playerEffects, 
+				targetEffects, equippedEffects, commands, conditions, op, true
+		);
 	}
 }

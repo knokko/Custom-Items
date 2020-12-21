@@ -146,12 +146,15 @@ public class EditItemTool extends EditItemBase {
 	}
 	
 	protected String create(long maxUses, int entityHitDurabilityLoss, int blockBreakDurabilityLoss) {
-		return menu.getSet().addTool(
-				new CustomTool(internalType, nameField.getText(), getDisplayName(),
-						lore, attributes, enchantments, maxUses, allowEnchanting.isChecked(),
-						allowAnvil.isChecked(), repairItem.getIngredient(), textureSelect.getSelected(), 
-						itemFlags, entityHitDurabilityLoss, blockBreakDurabilityLoss, customModel, 
-						playerEffects, targetEffects, commands, conditions, op), true);
+		return menu.getSet().addTool(new CustomTool(
+				internalType, nameField.getText(), aliasField.getText(), 
+				getDisplayName(), lore, attributes, enchantments, maxUses, 
+				allowEnchanting.isChecked(), allowAnvil.isChecked(), 
+				repairItem.getIngredient(), textureSelect.getSelected(), 
+				itemFlags, entityHitDurabilityLoss, blockBreakDurabilityLoss, 
+				customModel, playerEffects, targetEffects, equippedEffects,
+				commands, conditions, op), true
+		);
 	}
 
 	@Override
@@ -169,11 +172,14 @@ public class EditItemTool extends EditItemBase {
 	}
 	
 	protected String apply(long maxUses, int entityHitDurabilityLoss, int blockBreakDurabilityLoss) {
-		return menu.getSet().changeTool(toModify, internalType,
-				getDisplayName(), lore, attributes, enchantments, allowEnchanting.isChecked(),
-				allowAnvil.isChecked(), repairItem.getIngredient(), maxUses, textureSelect.getSelected(),
-				itemFlags, entityHitDurabilityLoss, blockBreakDurabilityLoss, customModel,
-				playerEffects, targetEffects, commands, conditions, op, true);
+		return menu.getSet().changeTool(
+				toModify, internalType, aliasField.getText(), getDisplayName(), 
+				lore, attributes, enchantments, allowEnchanting.isChecked(),
+				allowAnvil.isChecked(), repairItem.getIngredient(), maxUses, 
+				textureSelect.getSelected(), itemFlags, entityHitDurabilityLoss, 
+				blockBreakDurabilityLoss, customModel, playerEffects, targetEffects, 
+				equippedEffects, commands, conditions, op, true
+		);
 	}
 
 	@Override

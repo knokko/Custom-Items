@@ -50,12 +50,15 @@ public class EditItemHoe extends EditItemTool {
 		Option.Int durLoss = tillDurabilityLoss.getInt();
 		if (!durLoss.hasValue())
 			return "The till durability loss must be a positive integer";
-		return menu.getSet().addHoe(
-				new CustomHoe(internalType, nameField.getText(), getDisplayName(),
-						lore, attributes, enchantments, maxUses, allowEnchanting.isChecked(),
-						allowAnvil.isChecked(), repairItem.getIngredient(), textureSelect.getSelected(), itemFlags,
-						entityHitDurabilityLoss, blockBreakDurabilityLoss, durLoss.getValue(), customModel, 
-						playerEffects, targetEffects, commands, conditions, op), true);
+		return menu.getSet().addHoe(new CustomHoe(
+				internalType, nameField.getText(), aliasField.getText(), 
+				getDisplayName(), lore, attributes, enchantments, maxUses, 
+				allowEnchanting.isChecked(), allowAnvil.isChecked(), 
+				repairItem.getIngredient(), textureSelect.getSelected(), itemFlags,
+				entityHitDurabilityLoss, blockBreakDurabilityLoss, 
+				durLoss.getValue(), customModel, playerEffects, targetEffects, 
+				equippedEffects, commands, conditions, op), true
+		);
 	}
 	
 	@Override
@@ -63,10 +66,14 @@ public class EditItemHoe extends EditItemTool {
 		Option.Int durLoss = tillDurabilityLoss.getInt();
 		if (!durLoss.hasValue())
 			return "The shear durability loss must be a positive integer";
-		return menu.getSet().changeHoe(toModify, internalType,
-				getDisplayName(), lore, attributes, enchantments, allowEnchanting.isChecked(),
-				allowAnvil.isChecked(), repairItem.getIngredient(), maxUses, textureSelect.getSelected(),
-				itemFlags, entityHitDurabilityLoss, blockBreakDurabilityLoss, durLoss.getValue(),
-				customModel, playerEffects, targetEffects, commands, conditions, op, true);
+		return menu.getSet().changeHoe(
+				toModify, internalType, aliasField.getText(), getDisplayName(), lore, 
+				attributes, enchantments, allowEnchanting.isChecked(),
+				allowAnvil.isChecked(), repairItem.getIngredient(), maxUses, 
+				textureSelect.getSelected(), itemFlags, entityHitDurabilityLoss, 
+				blockBreakDurabilityLoss, durLoss.getValue(), customModel, 
+				playerEffects, targetEffects, equippedEffects,
+				commands, conditions, op, true
+		);
 	}
 }

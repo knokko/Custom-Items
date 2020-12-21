@@ -1,7 +1,9 @@
 package nl.knokko.customitems.editor.set.item;
 
+import java.util.Collection;
 import java.util.List;
 
+import nl.knokko.customitems.effect.EquippedPotionEffect;
 import nl.knokko.customitems.effect.PotionEffect;
 import nl.knokko.customitems.encoding.ItemEncoding;
 import nl.knokko.customitems.item.AttributeModifier;
@@ -23,12 +25,22 @@ public class CustomWand extends CustomItem {
 	/** The amount of projectiles to shoot each time the wand is used */
 	public int amountPerShot;
 
-	public CustomWand(CustomItemType itemType, String name, String displayName, String[] lore,
-			AttributeModifier[] attributes, Enchantment[] defaultEnchantments, NamedImage texture, boolean[] itemFlags,
-			byte[] customModel, List<PotionEffect> playerEffects, List<PotionEffect> targetEffects, String[] commands, 
-			ReplaceCondition[] conditions, ConditionOperation op, CIProjectile projectile, int cooldown, WandCharges charges, int amountPerShot) {
-		super(itemType, name, displayName, lore, attributes, defaultEnchantments, texture, itemFlags,
-				customModel, playerEffects, targetEffects, commands, conditions, op);
+	public CustomWand(
+			CustomItemType itemType, String name, String alias, String displayName, 
+			String[] lore, AttributeModifier[] attributes, 
+			Enchantment[] defaultEnchantments, NamedImage texture, 
+			boolean[] itemFlags, byte[] customModel, 
+			List<PotionEffect> playerEffects, List<PotionEffect> targetEffects, 
+			Collection<EquippedPotionEffect> equippedEffects, String[] commands, 
+			ReplaceCondition[] conditions, ConditionOperation op, 
+			CIProjectile projectile, int cooldown, WandCharges charges, 
+			int amountPerShot
+	) {
+		super(
+				itemType, name, alias, displayName, lore, attributes, 
+				defaultEnchantments, texture, itemFlags, customModel, playerEffects, 
+				targetEffects, equippedEffects, commands, conditions, op
+		);
 		this.projectile = projectile;
 		this.cooldown = cooldown;
 		this.charges = charges;
@@ -88,6 +100,7 @@ public class CustomWand extends CustomItem {
 		output.addJavaString(itemType.name());
 		output.addShort(itemDamage);
 		output.addJavaString(name);
+		output.addString(name);
 		output.addJavaString(displayName);
 		output.addByte((byte) lore.length);
 		for(String line : lore)
@@ -117,6 +130,7 @@ public class CustomWand extends CustomItem {
 			output.addInt(effect.getDuration());
 			output.addInt(effect.getLevel());
 		}
+		writeEquippedEffects(output);
 		output.addByte((byte) commands.length);
 		for (String command : commands) {
 			output.addJavaString(command);

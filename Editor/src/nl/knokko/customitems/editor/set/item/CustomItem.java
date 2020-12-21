@@ -23,8 +23,10 @@
  *******************************************************************************/
 package nl.knokko.customitems.editor.set.item;
 
+import java.util.Collection;
 import java.util.List;
 
+import nl.knokko.customitems.effect.EquippedPotionEffect;
 import nl.knokko.customitems.effect.PotionEffect;
 import nl.knokko.customitems.item.AttributeModifier;
 import nl.knokko.customitems.item.CustomItemType;
@@ -38,13 +40,21 @@ public abstract class CustomItem extends nl.knokko.customitems.item.CustomItem {
 	protected NamedImage texture;
 	protected byte[] customModel;
 
-	public CustomItem(CustomItemType itemType, String name, String displayName, String[] lore,
-			AttributeModifier[] attributes, Enchantment[] defaultEnchantments, NamedImage texture,
-			boolean[] itemFlags, byte[] customModel, List<PotionEffect> playerEffects, List<PotionEffect> targetEffects, 
-			String[] commands, ReplaceCondition[] conditions, ConditionOperation op) {
+	public CustomItem(
+			CustomItemType itemType, String name, String alias, String displayName, 
+			String[] lore, AttributeModifier[] attributes, 
+			Enchantment[] defaultEnchantments, NamedImage texture,
+			boolean[] itemFlags, byte[] customModel, 
+			List<PotionEffect> playerEffects, List<PotionEffect> targetEffects, 
+			Collection<EquippedPotionEffect> equippedEffects, String[] commands, 
+			ReplaceCondition[] conditions, ConditionOperation op
+	) {
 		// Use internal item damage of -1 until exporting
-		super(itemType, (short) -1, name, displayName, lore, attributes, defaultEnchantments, itemFlags, playerEffects, 
-				targetEffects, commands, conditions, op);
+		super(
+				itemType, (short) -1, name, alias, displayName, lore, attributes, 
+				defaultEnchantments, itemFlags, playerEffects, targetEffects, 
+				equippedEffects, commands, conditions, op
+		);
 		this.texture = texture;
 		this.customModel = customModel;
 	}
@@ -67,6 +77,10 @@ public abstract class CustomItem extends nl.knokko.customitems.item.CustomItem {
 
 	public void setName(String name) {
 		this.name = name;
+	}
+	
+	public void setAlias(String newAlias) {
+		alias = newAlias;
 	}
 
 	public void setDisplayName(String name) {
@@ -117,6 +131,10 @@ public abstract class CustomItem extends nl.knokko.customitems.item.CustomItem {
 		this.targetEffects = targetEffects;
 	}
 	
+	public void setEquippedEffects(Collection<EquippedPotionEffect> newEffects) {
+		equippedEffects = newEffects;
+	}
+	
 	public void setCommands(String[] commands) {
 		this.commands = commands;
 	}
@@ -161,4 +179,13 @@ public abstract class CustomItem extends nl.knokko.customitems.item.CustomItem {
 	}
 
 	public abstract void export(BitOutput output);
+	
+	protected void writeEquippedEffects(BitOutput output) {
+		output.addInt(equippedEffects.size());
+		for (EquippedPotionEffect effect : equippedEffects) {
+			output.addString(effect.getPotionEffect().getEffect().name());
+			output.addInt(effect.getPotionEffect().getLevel());
+			output.addString(effect.getRequiredSlot().name());
+		}
+	}
 }

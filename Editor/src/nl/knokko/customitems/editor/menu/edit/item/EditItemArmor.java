@@ -176,13 +176,17 @@ public class EditItemArmor extends EditItemTool {
 		if (greenValue == -1) return "The green must be an integer at least 0 and at most 255";
 		int blueValue = getColorValue(blue, DEFAULT_BLUE);
 		if (blueValue == -1) return "The blue must be an integer at least 0 and at most 255";
-		return menu.getSet().addArmor(
-				new CustomArmor(internalType, nameField.getText(), getDisplayName(),
-						lore, attributes, enchantments, maxUses, allowEnchanting.isChecked(),
-						allowAnvil.isChecked(), repairItem.getIngredient(), textureSelect.getSelected(),
-						redValue, greenValue, blueValue, itemFlags, entityHitDurabilityLoss, 
-						blockBreakDurabilityLoss, damageResistances, customModel, playerEffects, targetEffects, 
-						commands, conditions, op), true);
+		return menu.getSet().addArmor(new CustomArmor(
+				internalType, nameField.getText(), aliasField.getText(),
+				getDisplayName(), lore, attributes, enchantments, maxUses, 
+				allowEnchanting.isChecked(), allowAnvil.isChecked(), 
+				repairItem.getIngredient(), textureSelect.getSelected(),
+				redValue, greenValue, blueValue, itemFlags, 
+				entityHitDurabilityLoss, blockBreakDurabilityLoss, 
+				damageResistances, customModel, playerEffects, 
+				targetEffects, equippedEffects,
+				commands, conditions, op), true
+		);
 	}
 	
 	@Override
@@ -193,11 +197,15 @@ public class EditItemArmor extends EditItemTool {
 		if (greenValue == -1) return "The green must be an integer at least 0 and at most 255";
 		int blueValue = getColorValue(blue, DEFAULT_BLUE);
 		if (blueValue == -1) return "The blue must be an integer at least 0 and at most 255";
-		return menu.getSet().changeArmor(toModify, internalType,
-				getDisplayName(), lore, attributes, enchantments, allowEnchanting.isChecked(),
-				allowAnvil.isChecked(), repairItem.getIngredient(), maxUses, textureSelect.getSelected(),
-				redValue, greenValue, blueValue, itemFlags, entityHit, blockBreak, damageResistances,
-				customModel, playerEffects, targetEffects, commands, conditions, op, true);
+		return menu.getSet().changeArmor(
+				toModify, internalType, aliasField.getText(), getDisplayName(), 
+				lore, attributes, enchantments, allowEnchanting.isChecked(),
+				allowAnvil.isChecked(), repairItem.getIngredient(), maxUses, 
+				textureSelect.getSelected(), redValue, greenValue, blueValue, 
+				itemFlags, entityHit, blockBreak, damageResistances,
+				customModel, playerEffects, targetEffects, equippedEffects,
+				commands, conditions, op, true
+		);
 	}
 	
 	@Override

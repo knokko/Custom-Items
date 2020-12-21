@@ -23,8 +23,10 @@
  *******************************************************************************/
 package nl.knokko.customitems.editor.set.item;
 
+import java.util.Collection;
 import java.util.List;
 
+import nl.knokko.customitems.effect.EquippedPotionEffect;
 import nl.knokko.customitems.effect.PotionEffect;
 import nl.knokko.customitems.encoding.ItemEncoding;
 import nl.knokko.customitems.item.AttributeModifier;
@@ -38,13 +40,22 @@ public class SimpleCustomItem extends CustomItem {
 	
 	private int maxStacksize;
 
-	public SimpleCustomItem(CustomItemType itemType, String name, String displayName, String[] lore,
-			AttributeModifier[] attributes, Enchantment[] defaultEnchantments, int maxStacksize, 
-			NamedImage texture, boolean[] itemFlags, byte[] customModel, List<PotionEffect> playerEffects, List<PotionEffect> targetEffects, 
-			String[] commands, ReplaceCondition[] conditions, ConditionOperation op) {
+	public SimpleCustomItem(
+			CustomItemType itemType, String name, String alias, String displayName, 
+			String[] lore, AttributeModifier[] attributes, 
+			Enchantment[] defaultEnchantments, int maxStacksize, NamedImage texture, 
+			boolean[] itemFlags, byte[] customModel, 
+			List<PotionEffect> playerEffects, List<PotionEffect> targetEffects, 
+			Collection<EquippedPotionEffect> equippedEffects, String[] commands, 
+			ReplaceCondition[] conditions, ConditionOperation op
+	) {
 		// Use internal item damage of -1 until exporting
-		super(itemType, name, displayName, lore, attributes, defaultEnchantments, texture, 
-				itemFlags, customModel, playerEffects, targetEffects, commands, conditions, op);
+		super(
+				itemType, name, alias, displayName, lore, attributes, 
+				defaultEnchantments, texture, itemFlags, customModel, 
+				playerEffects, targetEffects, equippedEffects, 
+				commands, conditions, op
+		);
 		this.maxStacksize = maxStacksize;
 	}
 	
@@ -194,6 +205,7 @@ public class SimpleCustomItem extends CustomItem {
 		output.addJavaString(itemType.name());
 		output.addShort(itemDamage);
 		output.addJavaString(name);
+		output.addString(alias);
 		output.addJavaString(displayName);
 		output.addByte((byte) lore.length);
 		for(String line : lore)
@@ -224,6 +236,7 @@ public class SimpleCustomItem extends CustomItem {
 			output.addInt(effect.getDuration());
 			output.addInt(effect.getLevel());
 		}
+		writeEquippedEffects(output);
 		output.addByte((byte) commands.length);
 		for (String command : commands) {
 			output.addJavaString(command);

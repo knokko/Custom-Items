@@ -33,14 +33,14 @@ public class EffectsCollectionEdit extends QuickCollectionEdit<PotionEffect> {
 		}), 0.3f, minY, 0.35f, maxY);
 		addComponent(effectButton, 0.375f, minY, 0.5f, maxY);
 		addComponent(new DynamicTextComponent("Duration:", EditProps.LABEL), 0.525f, minY, 0.65f, maxY);
-		addComponent(new EagerIntEditField(original.getDuration(), 0, 
+		addComponent(new EagerIntEditField(original.getDuration(), 1, 
 				EditProps.EDIT_BASE, EditProps.EDIT_ACTIVE, newDuration -> {
 			PotionEffect previous = ownCollection.get(itemIndex);
 			ownCollection.set(itemIndex, new PotionEffect(
 					previous.getEffect(), newDuration, previous.getLevel()));
 		}), 0.675f, minY, 0.725f, maxY);
 		addComponent(new DynamicTextComponent("Level: ", EditProps.LABEL), 0.75f, minY, 0.85f, maxY);
-		addComponent(new EagerIntEditField(original.getLevel(), 0, 
+		addComponent(new EagerIntEditField(original.getLevel(), 1, 
 				EditProps.EDIT_BASE, EditProps.EDIT_ACTIVE, newLevel -> {
 			PotionEffect previous = ownCollection.get(itemIndex);
 			ownCollection.set(itemIndex, new PotionEffect(

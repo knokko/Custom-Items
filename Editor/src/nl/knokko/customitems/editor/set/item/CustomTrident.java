@@ -1,8 +1,10 @@
 package nl.knokko.customitems.editor.set.item;
 
+import java.util.Collection;
 import java.util.List;
 
 import nl.knokko.customitems.editor.set.recipe.ingredient.Ingredient;
+import nl.knokko.customitems.effect.EquippedPotionEffect;
 import nl.knokko.customitems.effect.PotionEffect;
 import nl.knokko.customitems.encoding.ItemEncoding;
 import nl.knokko.customitems.item.AttributeModifier;
@@ -22,16 +24,26 @@ public class CustomTrident extends CustomTool {
 	public byte[] customInHandModel;
 	public byte[] customThrowingModel;
 
-	public CustomTrident(String name, String displayName, String[] lore,
-			AttributeModifier[] attributes, Enchantment[] defaultEnchantments, long durability, boolean allowEnchanting,
-			boolean allowAnvil, double throwDamageMultiplier, double speedMultiplier, Ingredient repairItem, 
-			NamedImage texture, boolean[] itemFlags, int entityHitDurabilityLoss, 
-			int blockBreakDurabilityLoss, int throwDurabilityLoss, byte[] customModel,
-			byte[] customInHandModel, byte[] customThrowingModel, List<PotionEffect> playerEffects, List<PotionEffect> targetEffects, 
-			String[] commands, ReplaceCondition[] conditions, ConditionOperation op) {
-		super(CustomItemType.TRIDENT, name, displayName, lore, attributes, defaultEnchantments, durability, allowEnchanting,
-				allowAnvil, repairItem, texture, itemFlags, entityHitDurabilityLoss, blockBreakDurabilityLoss, customModel, playerEffects, 
-				targetEffects, commands, conditions, op);
+	public CustomTrident(
+			String name, String alias, String displayName, String[] lore,
+			AttributeModifier[] attributes, Enchantment[] defaultEnchantments, 
+			long durability, boolean allowEnchanting, boolean allowAnvil, 
+			double throwDamageMultiplier, double speedMultiplier, 
+			Ingredient repairItem, NamedImage texture, boolean[] itemFlags, 
+			int entityHitDurabilityLoss, int blockBreakDurabilityLoss, 
+			int throwDurabilityLoss, byte[] customModel, byte[] customInHandModel, 
+			byte[] customThrowingModel, List<PotionEffect> playerEffects, 
+			List<PotionEffect> targetEffects, 
+			Collection<EquippedPotionEffect> equippedEffects,
+			String[] commands, ReplaceCondition[] conditions, ConditionOperation op
+	) {
+		super(
+				CustomItemType.TRIDENT, name, alias, displayName, lore, attributes, 
+				defaultEnchantments, durability, allowEnchanting, allowAnvil, 
+				repairItem, texture, itemFlags, entityHitDurabilityLoss, 
+				blockBreakDurabilityLoss, customModel, playerEffects, targetEffects, 
+				equippedEffects, commands, conditions, op
+		);
 		this.throwDamageMultiplier = throwDamageMultiplier;
 		this.speedMultiplier = speedMultiplier;
 		this.throwDurabilityLoss = throwDurabilityLoss;
@@ -116,6 +128,7 @@ public class CustomTrident extends CustomTool {
 		output.addByte(ItemEncoding.ENCODING_TRIDENT_9);
 		output.addShort(itemDamage);
 		output.addJavaString(name);
+		output.addString(alias);
 		output.addJavaString(displayName);
 		output.addByte((byte) lore.length);
 		for(String line : lore)
@@ -151,6 +164,7 @@ public class CustomTrident extends CustomTool {
 			output.addInt(effect.getDuration());
 			output.addInt(effect.getLevel());
 		}
+		writeEquippedEffects(output);
 		output.addByte((byte) commands.length);
 		for (String command : commands) {
 			output.addJavaString(command);

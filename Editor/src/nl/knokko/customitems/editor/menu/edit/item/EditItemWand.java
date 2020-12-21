@@ -91,20 +91,26 @@ public class EditItemWand extends EditItemBase {
 	@Override
 	protected String create() {
 		return withProperties((int cooldown, WandCharges charges, int amount) -> {
-			return menu.getSet().addWand(new CustomWand(internalType, nameField.getText(), 
-					getDisplayName(), lore, attributes, enchantments, textureSelect.getSelected(), 
-					itemFlags, customModel, playerEffects, targetEffects, commands, conditions, op, 
-					projectile, cooldown, charges, amount));
+			return menu.getSet().addWand(new CustomWand(
+					internalType, nameField.getText(), aliasField.getText(),
+					getDisplayName(), lore, attributes, enchantments, 
+					textureSelect.getSelected(), itemFlags, customModel, 
+					playerEffects, targetEffects, equippedEffects, commands, 
+					conditions, op, projectile, cooldown, charges, amount
+			));
 		});
 	}
 
 	@Override
 	protected String apply() {
 		return withProperties((int cooldown, WandCharges charges, int amount) -> {
-			return menu.getSet().changeWand(toModify, internalType,
-					getDisplayName(), lore, attributes, enchantments, textureSelect.getSelected(), 
-					itemFlags, customModel, playerEffects, targetEffects, commands, conditions, op, 
-					projectile, cooldown, charges, amount);
+			return menu.getSet().changeWand(
+					toModify, internalType, aliasField.getText(),
+					getDisplayName(), lore, attributes, enchantments, 
+					textureSelect.getSelected(), itemFlags, customModel, 
+					playerEffects, targetEffects, equippedEffects, commands, 
+					conditions, op, projectile, cooldown, charges, amount
+			);
 		});
 	}
 	

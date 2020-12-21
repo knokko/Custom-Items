@@ -38,22 +38,28 @@ public class EditItemHelmet3D extends EditItemArmor {
 	
 	@Override
 	protected String create(long maxUses, int entityHitDurabilityLoss, int blockBreakDurabilityLoss) {
-		return menu.getSet().addHelmet3D(
-				new CustomHelmet3D(internalType, nameField.getText(), getDisplayName(),
-						lore, attributes, enchantments, maxUses, allowEnchanting.isChecked(),
-						allowAnvil.isChecked(), repairItem.getIngredient(), textureSelect.getSelected(),
-						itemFlags, entityHitDurabilityLoss, 
-						blockBreakDurabilityLoss, damageResistances, customModel, playerEffects, 
-						targetEffects, commands, conditions, op), true);
+		return menu.getSet().addHelmet3D(new CustomHelmet3D(
+				internalType, nameField.getText(), aliasField.getText(), 
+				getDisplayName(), lore, attributes, enchantments, maxUses, 
+				allowEnchanting.isChecked(), allowAnvil.isChecked(), 
+				repairItem.getIngredient(), textureSelect.getSelected(),
+				itemFlags, entityHitDurabilityLoss, 
+				blockBreakDurabilityLoss, damageResistances, customModel, 
+				playerEffects, targetEffects, equippedEffects,
+				commands, conditions, op), true
+		);
 	}
 	
 	@Override
 	protected String apply(long maxUses, int entityHit, int blockBreak) {
-		return menu.getSet().changeHelmet3D((CustomHelmet3D) toModify, internalType,
-				getDisplayName(), lore, attributes, enchantments, allowEnchanting.isChecked(),
-				allowAnvil.isChecked(), repairItem.getIngredient(), maxUses, textureSelect.getSelected(),
+		return menu.getSet().changeHelmet3D(
+				(CustomHelmet3D) toModify, internalType, aliasField.getText(),
+				getDisplayName(), lore, attributes, enchantments, 
+				allowEnchanting.isChecked(), allowAnvil.isChecked(), 
+				repairItem.getIngredient(), maxUses, textureSelect.getSelected(),
 				itemFlags, entityHit, blockBreak, damageResistances,
-				customModel, playerEffects, targetEffects, 
-				commands, conditions, op, true);
+				customModel, playerEffects, targetEffects, equippedEffects,
+				commands, conditions, op, true
+		);
 	}
 }

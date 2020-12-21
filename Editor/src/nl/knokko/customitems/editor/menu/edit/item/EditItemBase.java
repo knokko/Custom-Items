@@ -25,6 +25,7 @@ package nl.knokko.customitems.editor.menu.edit.item;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.List;
 
 import nl.knokko.customitems.editor.Checks;
@@ -37,6 +38,7 @@ import nl.knokko.customitems.editor.menu.edit.texture.TextureEdit;
 import nl.knokko.customitems.editor.set.ItemSet;
 import nl.knokko.customitems.editor.set.item.CustomItem;
 import nl.knokko.customitems.editor.set.item.NamedImage;
+import nl.knokko.customitems.effect.EquippedPotionEffect;
 import nl.knokko.customitems.effect.PotionEffect;
 import nl.knokko.customitems.item.AttributeModifier;
 import nl.knokko.customitems.item.CustomItemType;
@@ -50,9 +52,9 @@ import nl.knokko.customitems.item.ReplaceCondition.ReplacementOperation;
 import nl.knokko.gui.color.GuiColor;
 import nl.knokko.gui.component.menu.GuiMenu;
 import nl.knokko.gui.component.menu.TextArrayEditMenu;
+import nl.knokko.gui.component.text.TextEditField;
 import nl.knokko.gui.component.text.dynamic.DynamicTextButton;
 import nl.knokko.gui.component.text.dynamic.DynamicTextComponent;
-import nl.knokko.gui.component.text.TextEditField;
 
 public abstract class EditItemBase extends GuiMenu {
 
@@ -69,6 +71,7 @@ public abstract class EditItemBase extends GuiMenu {
 
 	protected TextEditField nameField;
 	protected CustomItemType internalType;
+	protected TextEditField aliasField;
 	protected TextEditField displayName;
 	protected String[] lore;
 	protected AttributeModifier[] attributes;
@@ -79,6 +82,7 @@ public abstract class EditItemBase extends GuiMenu {
 	protected byte[] customModel;
 	protected List<PotionEffect> playerEffects;
 	protected List<PotionEffect> targetEffects;
+	protected Collection<EquippedPotionEffect> equippedEffects;
 	protected String[] commands;
 	protected ReplaceCondition[] conditions;
 	protected ConditionOperation op;
@@ -98,6 +102,7 @@ public abstract class EditItemBase extends GuiMenu {
 				nameField = new TextEditField(oldValues.getName(), EditProps.EDIT_BASE, EditProps.EDIT_ACTIVE);
 			}
 			internalType = oldValues.getItemType();
+			aliasField = new TextEditField(oldValues.getAlias(), EditProps.EDIT_BASE, EditProps.EDIT_ACTIVE);
 			displayName = new TextEditField(oldValues.getDisplayName(), EditProps.EDIT_BASE, EditProps.EDIT_ACTIVE);
 			textureSelect = new TextureSelect(oldValues.getTexture(), textureCreateFactory);
 			lore = oldValues.getLore();
@@ -107,6 +112,7 @@ public abstract class EditItemBase extends GuiMenu {
 			customModel = oldValues.getCustomModel();
 			playerEffects = oldValues.getPlayerEffects();
 			targetEffects = oldValues.getTargetEffects();
+			equippedEffects = oldValues.getEquippedEffects();
 			commands = oldValues.getCommands();
 			conditions = oldValues.getReplaceConditions();
 			op = oldValues.getConditionOperator();
@@ -114,6 +120,7 @@ public abstract class EditItemBase extends GuiMenu {
 			if (toModify == null) {
 				nameField = new TextEditField("", EditProps.EDIT_BASE, EditProps.EDIT_ACTIVE);
 			}
+			aliasField = new TextEditField("", EditProps.EDIT_BASE, EditProps.EDIT_ACTIVE);
 			internalType = CustomItemType.DIAMOND_HOE;
 			displayName = new TextEditField("", EditProps.EDIT_BASE, EditProps.EDIT_ACTIVE);
 			textureSelect = new TextureSelect(null, textureCreateFactory);
@@ -124,6 +131,7 @@ public abstract class EditItemBase extends GuiMenu {
 			customModel = null;
 			playerEffects = DEFAULT_PLAYER_EFFECTS;
 			targetEffects = DEFAULT_TARGET_EFFECTS;
+			equippedEffects = new ArrayList<>();
 			commands = new String[] {};
 			conditions = new ReplaceCondition[] {};
 			op = ConditionOperation.NONE;
@@ -160,6 +168,7 @@ public abstract class EditItemBase extends GuiMenu {
 		addComponent(new DynamicTextComponent("Name: ", EditProps.LABEL), LABEL_X, 0.8f, LABEL_X + 0.1f, 0.85f);
 		addComponent(new DynamicTextComponent("Internal item type: ", EditProps.LABEL), LABEL_X, 0.74f, LABEL_X + 0.2f,
 				0.79f);
+		addComponent(new DynamicTextComponent("Alias: ", EditProps.LABEL), LABEL_X, 0.68f, LABEL_X + 0.1f, 0.73f);
 		addComponent(new DynamicTextComponent("Display name: ", EditProps.LABEL), LABEL_X, 0.62f, LABEL_X + 0.18f,
 				0.67f);
 		addComponent(new DynamicTextComponent("Lore: ", EditProps.LABEL), LABEL_X, 0.56f, LABEL_X + 0.1f, 0.61f);
@@ -174,6 +183,7 @@ public abstract class EditItemBase extends GuiMenu {
 		addComponent(new DynamicTextComponent("On-Hit Target effects: ", EditProps.LABEL), LABEL_X, 0.14f, LABEL_X + 0.2f, 0.19f);
 		addComponent(new DynamicTextComponent("Commands: ", EditProps.LABEL), LABEL_X, 0.08f, LABEL_X + 0.125f, 0.13f);
 		addComponent(new DynamicTextComponent("Replace on right click: ", EditProps.LABEL), LABEL_X, 0.02f, LABEL_X + 0.2f, 0.07f);
+		addComponent(new DynamicTextComponent("Held/equipped potion effects: ", EditProps.LABEL), LABEL_X, -0.04f, LABEL_X + 0.2f, 0.01f);
 		
 		// I might add custom bow models later, but I leave it out for now
 		if (!(this instanceof EditItemBow)) {
@@ -217,6 +227,7 @@ public abstract class EditItemBase extends GuiMenu {
 		}, (CustomItemType maybe) -> {
 			return maybe.canServe(getCategory());
 		}, internalType), BUTTON_X, 0.74f, BUTTON_X + 0.1f, 0.79f);
+		addComponent(aliasField, BUTTON_X, 0.68f, BUTTON_X + 0.1f, 0.73f);
 		addComponent(displayName, BUTTON_X, 0.62f, BUTTON_X + 0.1f, 0.67f);
 		addLoreComponent();
 		addAttributesComponent();
@@ -224,6 +235,13 @@ public abstract class EditItemBase extends GuiMenu {
 		addEffectsComponent();
 		addCommandsComponent();
 		addReplaceComponent();
+		addComponent(new DynamicTextButton("Change...", EditProps.BUTTON, EditProps.HOVER, () -> {
+			state.getWindow().setMainComponent(new EquippedEffectsCollectionEdit(
+					equippedEffects, 
+					newEquippedEffects -> equippedEffects = newEquippedEffects, 
+					this
+			));
+		}), BUTTON_X, -0.04f, BUTTON_X + 0.1f, 0.01f);
 		addComponent(new DynamicTextButton("Change...", EditProps.BUTTON, EditProps.HOVER, () -> {
 			state.getWindow().setMainComponent(new ItemFlagMenu(this, itemFlags));
 		}), BUTTON_X, 0.38f, BUTTON_X + 0.1f, 0.43f);

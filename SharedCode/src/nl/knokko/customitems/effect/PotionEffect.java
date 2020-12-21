@@ -1,9 +1,10 @@
 package nl.knokko.customitems.effect;
 
 public class PotionEffect {
-	protected int duration;
-	protected int level;
-	protected EffectType effect;
+	
+	protected final int duration;
+	protected final int level;
+	protected final EffectType effect;
 	
 	public PotionEffect(EffectType effect, int duration, int level) {
 		this.effect = effect;
@@ -21,17 +22,5 @@ public class PotionEffect {
 	
 	public int getLevel () {
 		return this.level;
-	}
-	
-	public void setLevel (int level) {
-		this.level = level;
-	}
-	
-	public void setDuration (int duration) {
-		this.duration = duration;
-	}
-	
-	public void setEffect (EffectType effect) {
-		this.effect = effect;
 	}
 }

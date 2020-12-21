@@ -23,10 +23,12 @@
  *******************************************************************************/
 package nl.knokko.customitems.editor.set.item;
 
+import java.util.Collection;
 import java.util.List;
 
 import nl.knokko.customitems.damage.DamageResistances;
 import nl.knokko.customitems.editor.set.recipe.ingredient.Ingredient;
+import nl.knokko.customitems.effect.EquippedPotionEffect;
 import nl.knokko.customitems.effect.PotionEffect;
 import nl.knokko.customitems.encoding.ItemEncoding;
 import nl.knokko.customitems.item.AttributeModifier;
@@ -44,15 +46,25 @@ public class CustomArmor extends CustomTool {
 	
 	private DamageResistances damageResistances;
 	
-	public CustomArmor(CustomItemType itemType, String name, String displayName, String[] lore,
-			AttributeModifier[] attributes, Enchantment[] defaultEnchantments, long durability, boolean allowEnchanting,
-			boolean allowAnvil, Ingredient repairItem, NamedImage texture, int red, int green, int blue, 
-			boolean[] itemFlags, int entityHitDurabilityLoss, int blockBreakDurabilityLoss,
-			DamageResistances damageResistances, byte[] customModel, List<PotionEffect> playerEffects, 
-			List<PotionEffect> targetEffects, String[] commands, ReplaceCondition[] conditions, ConditionOperation op) {
-		super(itemType, name, displayName, lore, attributes, defaultEnchantments, durability,
-				allowEnchanting, allowAnvil, repairItem, texture, itemFlags, entityHitDurabilityLoss, 
-				blockBreakDurabilityLoss, customModel, playerEffects, targetEffects, commands, conditions, op);
+	public CustomArmor(
+			CustomItemType itemType, String name, String alias, String displayName, 
+			String[] lore, AttributeModifier[] attributes, 
+			Enchantment[] defaultEnchantments, long durability, 
+			boolean allowEnchanting, boolean allowAnvil, Ingredient repairItem, 
+			NamedImage texture, int red, int green, int blue, boolean[] itemFlags, 
+			int entityHitDurabilityLoss, int blockBreakDurabilityLoss, 
+			DamageResistances damageResistances, byte[] customModel, 
+			List<PotionEffect> playerEffects, List<PotionEffect> targetEffects, 
+			Collection<EquippedPotionEffect> equippedEffects, String[] commands, 
+			ReplaceCondition[] conditions, ConditionOperation op
+	) {
+		super(
+				itemType, name, alias, displayName, lore, attributes, 
+				defaultEnchantments, durability, allowEnchanting, allowAnvil, 
+				repairItem, texture, itemFlags, entityHitDurabilityLoss, 
+				blockBreakDurabilityLoss, customModel, playerEffects, 
+				targetEffects, equippedEffects, commands, conditions, op
+		);
 		this.red = red;
 		this.green = green;
 		this.blue = blue;
@@ -239,6 +251,7 @@ public class CustomArmor extends CustomTool {
 		output.addJavaString(itemType.name());
 		output.addShort(itemDamage);
 		output.addJavaString(name);
+		output.addString(alias);
 		output.addJavaString(displayName);
 		output.addByte((byte) lore.length);
 		for(String line : lore)
@@ -277,6 +290,7 @@ public class CustomArmor extends CustomTool {
 			output.addInt(effect.getDuration());
 			output.addInt(effect.getLevel());
 		}
+		writeEquippedEffects(output);
 		output.addByte((byte) commands.length);
 		for (String command : commands) {
 			output.addJavaString(command);

@@ -23,9 +23,11 @@
  *******************************************************************************/
 package nl.knokko.customitems.editor.set.item;
 
+import java.util.Collection;
 import java.util.List;
 
 import nl.knokko.customitems.editor.set.recipe.ingredient.Ingredient;
+import nl.knokko.customitems.effect.EquippedPotionEffect;
 import nl.knokko.customitems.effect.PotionEffect;
 import nl.knokko.customitems.encoding.ItemEncoding;
 import nl.knokko.customitems.item.AttributeModifier;
@@ -47,13 +49,23 @@ public class CustomTool extends CustomItem {
 	protected int entityHitDurabilityLoss;
 	protected int blockBreakDurabilityLoss;
 
-	public CustomTool(CustomItemType itemType, String name, String displayName, String[] lore,
-			AttributeModifier[] attributes, Enchantment[] defaultEnchantments, long durability, boolean allowEnchanting, boolean allowAnvil, 
-			Ingredient repairItem, NamedImage texture, boolean[] itemFlags, int entityHitDurabilityLoss,
-			int blockBreakDurabilityLoss, byte[] customModel, List<PotionEffect> playerEffects, List<PotionEffect> targetEffects, 
-			String[] commands, ReplaceCondition[] conditions, ConditionOperation op) {
-		super(itemType, name, displayName, lore, attributes, defaultEnchantments, texture, 
-				itemFlags, customModel, playerEffects, targetEffects, commands, conditions, op);
+	public CustomTool(
+			CustomItemType itemType, String name, String alias, String displayName, 
+			String[] lore, AttributeModifier[] attributes, 
+			Enchantment[] defaultEnchantments, long durability, 
+			boolean allowEnchanting, boolean allowAnvil, Ingredient repairItem, 
+			NamedImage texture, boolean[] itemFlags, int entityHitDurabilityLoss,
+			int blockBreakDurabilityLoss, byte[] customModel, 
+			List<PotionEffect> playerEffects, List<PotionEffect> targetEffects, 
+			Collection<EquippedPotionEffect> equippedEffects, String[] commands, 
+			ReplaceCondition[] conditions, ConditionOperation op
+	) {
+		super(
+				itemType, name, alias, displayName, lore, attributes, 
+				defaultEnchantments, texture, itemFlags, customModel, 
+				playerEffects, targetEffects, equippedEffects,
+				commands, conditions, op
+		);
 		this.durability = durability;
 		this.allowEnchanting = allowEnchanting;
 		this.allowAnvil = allowAnvil;
@@ -211,6 +223,7 @@ public class CustomTool extends CustomItem {
 		output.addJavaString(itemType.name());
 		output.addShort(itemDamage);
 		output.addJavaString(name);
+		output.addString(alias);
 		output.addJavaString(displayName);
 		output.addByte((byte) lore.length);
 		for(String line : lore)
@@ -245,6 +258,7 @@ public class CustomTool extends CustomItem {
 			output.addInt(effect.getDuration());
 			output.addInt(effect.getLevel());
 		}
+		writeEquippedEffects(output);
 		output.addByte((byte) commands.length);
 		for (String command : commands) {
 			output.addJavaString(command);

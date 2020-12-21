@@ -50,12 +50,15 @@ public class EditItemShears extends EditItemTool {
 		Option.Int durLoss = shearDurabilityLoss.getInt();
 		if (!durLoss.hasValue())
 			return "The shear durability loss must be a positive integer";
-		return menu.getSet().addShears(
-				new CustomShears(nameField.getText(), getDisplayName(),
-						lore, attributes, enchantments, maxUses, allowEnchanting.isChecked(),
-						allowAnvil.isChecked(), repairItem.getIngredient(), textureSelect.getSelected(), itemFlags,
-						entityHitDurabilityLoss, blockBreakDurabilityLoss, durLoss.getValue(), customModel, 
-						playerEffects, targetEffects, commands, conditions, op), true);
+		return menu.getSet().addShears(new CustomShears(
+				nameField.getText(), aliasField.getText(), getDisplayName(),
+				lore, attributes, enchantments, maxUses, allowEnchanting.isChecked(),
+				allowAnvil.isChecked(), repairItem.getIngredient(), 
+				textureSelect.getSelected(), itemFlags,
+				entityHitDurabilityLoss, blockBreakDurabilityLoss, 
+				durLoss.getValue(), customModel, playerEffects, targetEffects, 
+				equippedEffects, commands, conditions, op), true
+		);
 	}
 	
 	@Override
@@ -63,10 +66,13 @@ public class EditItemShears extends EditItemTool {
 		Option.Int durLoss = shearDurabilityLoss.getInt();
 		if (!durLoss.hasValue())
 			return "The shear durability loss must be a positive integer";
-		return menu.getSet().changeShears(toModify,
-				getDisplayName(), lore, attributes, enchantments, allowEnchanting.isChecked(),
-				allowAnvil.isChecked(), repairItem.getIngredient(), maxUses, textureSelect.getSelected(),
-				itemFlags, entityHitDurabilityLoss, blockBreakDurabilityLoss, durLoss.getValue(),
-				customModel, playerEffects, targetEffects, commands, conditions, op, true);
+		return menu.getSet().changeShears(
+				toModify, aliasField.getText(), getDisplayName(), lore, attributes, 
+				enchantments, allowEnchanting.isChecked(), allowAnvil.isChecked(), 
+				repairItem.getIngredient(), maxUses, textureSelect.getSelected(),
+				itemFlags, entityHitDurabilityLoss, blockBreakDurabilityLoss, 
+				durLoss.getValue(), customModel, playerEffects, targetEffects, 
+				equippedEffects, commands, conditions, op, true
+		);
 	}
 }

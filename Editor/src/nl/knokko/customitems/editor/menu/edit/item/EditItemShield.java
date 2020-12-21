@@ -51,13 +51,15 @@ public class EditItemShield extends EditItemTool {
 		Option.Double thresholdDamage = thresholdField.getDouble();
 		if (!thresholdDamage.hasValue())
 			return "The required damage must be a positive number";
-		return menu.getSet().addShield(
-				new CustomShield(nameField.getText(), getDisplayName(),
-						lore, attributes, enchantments, maxUses, allowEnchanting.isChecked(),
-						allowAnvil.isChecked(), repairItem.getIngredient(), textureSelect.getSelected(), 
-						itemFlags, entityHitDurabilityLoss, blockBreakDurabilityLoss, 
-						thresholdDamage.getValue(), customModel, customBlockingModel, playerEffects, 
-						targetEffects, commands, conditions, op), true);
+		return menu.getSet().addShield(new CustomShield(
+				nameField.getText(), aliasField.getText(), getDisplayName(), lore, 
+				attributes, enchantments, maxUses, allowEnchanting.isChecked(),
+				allowAnvil.isChecked(), repairItem.getIngredient(), 
+				textureSelect.getSelected(), itemFlags, entityHitDurabilityLoss, 
+				blockBreakDurabilityLoss, thresholdDamage.getValue(), customModel, 
+				customBlockingModel, playerEffects, targetEffects, equippedEffects,
+				commands, conditions, op), true
+		);
 	}
 	
 	@Override
@@ -65,10 +67,14 @@ public class EditItemShield extends EditItemTool {
 		Option.Double thresholdDamage = thresholdField.getDouble();
 		if (!thresholdDamage.hasValue())
 			return "The required damage must be a positive number";
-		return menu.getSet().changeShield(toModify, 
-				getDisplayName(), lore, attributes, enchantments, allowEnchanting.isChecked(),
-				allowAnvil.isChecked(), repairItem.getIngredient(), maxUses, textureSelect.getSelected(),
-				itemFlags, entityHitDurabilityLoss, blockBreakDurabilityLoss, thresholdDamage.getValue(),
-				customModel, customBlockingModel, playerEffects, targetEffects, commands, conditions, op, true);
+		return menu.getSet().changeShield(
+				toModify, aliasField.getText(), getDisplayName(), lore, attributes, 
+				enchantments, allowEnchanting.isChecked(), allowAnvil.isChecked(), 
+				repairItem.getIngredient(), maxUses, textureSelect.getSelected(),
+				itemFlags, entityHitDurabilityLoss, blockBreakDurabilityLoss, 
+				thresholdDamage.getValue(), customModel, customBlockingModel, 
+				playerEffects, targetEffects, equippedEffects, commands, 
+				conditions, op, true
+		);
 	}
 }
