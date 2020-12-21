@@ -27,7 +27,6 @@ import org.bukkit.inventory.ItemStack;
 
 import nl.knokko.core.plugin.item.ItemHelper;
 import nl.knokko.customitems.item.CIMaterial;
-import nl.knokko.customitems.plugin.set.item.CustomItem;
 import nl.knokko.customitems.plugin.util.ItemUtils;
 
 public class SimpleVanillaIngredient implements Ingredient {
@@ -43,7 +42,7 @@ public class SimpleVanillaIngredient implements Ingredient {
     	if (type == CIMaterial.AIR) {
     		return ItemUtils.isEmpty(item);
     	} else {
-	        return !ItemUtils.isEmpty(item) && !CustomItem.isCustom(item)
+	        return !ItemUtils.isEmpty(item) && !ItemUtils.isCustom(item)
 	        		&& ItemHelper.getMaterialName(item).equals(type.name());
     	}
     }

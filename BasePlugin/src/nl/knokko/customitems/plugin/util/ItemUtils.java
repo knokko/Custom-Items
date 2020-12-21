@@ -25,12 +25,14 @@ public class ItemUtils {
 		return false;
 	}
 	
+	public static boolean isCustom(ItemStack stack) {
+		return CustomItemsPlugin.getInstance().getSet().getItem(stack) != null;
+	}
+	
 	public static int getMaxStacksize(ItemStack stack) {
-		if (CustomItem.isCustom(stack)) {
-			CustomItem customItem = CustomItemsPlugin.getInstance().getSet().getItem(stack);
-			if (customItem != null) {
-				return customItem.getMaxStacksize();
-			}
+		CustomItem customItem = CustomItemsPlugin.getInstance().getSet().getItem(stack);
+		if (customItem != null) {
+			return customItem.getMaxStacksize();
 		}
 		
 		return stack.getMaxStackSize();

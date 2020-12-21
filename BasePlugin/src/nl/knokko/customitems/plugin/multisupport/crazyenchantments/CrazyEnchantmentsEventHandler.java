@@ -39,14 +39,12 @@ public class CrazyEnchantmentsEventHandler implements Listener {
 	@EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
 	public void onHellForge(HellForgedUseEvent event) {
 		ItemStack item = event.getItem();
-		if (CustomItem.isCustom(item)) {
-			CustomItem custom = CustomItemsPlugin.getInstance().getSet().getItem(item);
-			if (custom != null) {
-				event.setCancelled(true);
-				if (custom instanceof CustomTool) {
-					CustomTool tool = (CustomTool) custom;
-					tool.increaseDurability(item, CEnchantments.HELLFORGED.getEnchantment().getPower(item));
-				}
+		CustomItem custom = CustomItemsPlugin.getInstance().getSet().getItem(item);
+		if (custom != null) {
+			event.setCancelled(true);
+			if (custom instanceof CustomTool) {
+				CustomTool tool = (CustomTool) custom;
+				tool.increaseDurability(item, CEnchantments.HELLFORGED.getEnchantment().getPower(item));
 			}
 		}
 	}

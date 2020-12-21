@@ -51,10 +51,6 @@ import nl.knokko.customitems.effect.PotionEffect;
 
 public abstract class CustomItem extends nl.knokko.customitems.item.CustomItem {
 	
-	public static boolean isCustom(ItemStack item) {
-		return item != null && item.hasItemMeta() && item.getItemMeta().isUnbreakable() && item.getDurability() > 0;
-	}
-	
 	public static CIMaterial getMaterial(CustomItemType itemType) {
 		String materialName = itemType.name();
         

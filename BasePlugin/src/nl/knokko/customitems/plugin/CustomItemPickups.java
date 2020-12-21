@@ -39,14 +39,12 @@ public class CustomItemPickups {
 						
 						// That have at least 1 custom item that is not fully stacked
 						for (ItemStack stack : inv.getContents()) {
-							if (CustomItem.isCustom(stack)) {
 								
-								CustomItem custom = set.getItem(stack);
-								if (custom != null) {
-									if (custom.canStack() && stack.getAmount() < custom.getMaxStacksize()) {
-										interestingPlayers.add(player);
-										continue playerLoop;
-									}
+							CustomItem custom = set.getItem(stack);
+							if (custom != null) {
+								if (custom.canStack() && stack.getAmount() < custom.getMaxStacksize()) {
+									interestingPlayers.add(player);
+									continue playerLoop;
 								}
 							}
 						}
@@ -60,7 +58,7 @@ public class CustomItemPickups {
 				// Gather all dropped custom items
 				for (Item item : world.getEntitiesByClass(Item.class)) {
 					ItemStack stack = item.getItemStack();
-					if (CustomItem.isCustom(stack) && set.getItem(stack) != null) {
+					if (set.getItem(stack) != null) {
 						interestingItems.add(item);
 					}
 				}
@@ -82,12 +80,10 @@ public class CustomItemPickups {
 							ItemStack[] inv = player.getInventory().getContents();
 							for (int index = 0; index < inv.length; index++) {
 								ItemStack stack = inv[index];
-								if (CustomItem.isCustom(stack)) {
 									
-									CustomItem custom = set.getItem(stack);
-									if (custom != null && custom.canStack() && stack.getAmount() < custom.getMaxStacksize()) {
-										customSlots.add(index);
-									}
+								CustomItem custom = set.getItem(stack);
+								if (custom != null && custom.canStack() && stack.getAmount() < custom.getMaxStacksize()) {
+									customSlots.add(index);
 								}
 							}
 							

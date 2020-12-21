@@ -146,6 +146,7 @@ import nl.knokko.customitems.plugin.set.item.CustomTool.IncreaseDurabilityResult
 import nl.knokko.customitems.plugin.set.item.CustomTrident;
 import nl.knokko.customitems.plugin.set.item.CustomWand;
 import nl.knokko.customitems.plugin.set.item.update.ItemUpdater;
+import nl.knokko.customitems.plugin.util.ItemUtils;
 
 @SuppressWarnings("deprecation")
 public class CustomItemsEventHandler implements Listener {
@@ -158,10 +159,6 @@ public class CustomItemsEventHandler implements Listener {
 	
 	private ItemSet set() {
 		return plugin().getSet();
-	}
-	
-	private boolean interestingWarnings() {
-		return plugin().showInterestingWarnings();
 	}
 	
 	@EventHandler
@@ -481,29 +478,25 @@ public class CustomItemsEventHandler implements Listener {
 				
 				// TODO Test durability loss here!
 				if (main != null && ItemHelper.getMaterialName(main).equals(CIMaterial.TRIDENT.name())) {
-					if (CustomItem.isCustom(main)) {
-						CustomItem customMain = set.getItem(main);
-						if (customMain instanceof CustomTrident) {
-							customTrident = (CustomTrident) customMain;
-							ItemStack newMain = customTrident.decreaseDurability(main, customTrident.throwDurabilityLoss);
-							if (newMain == null) {
-								trident.setMetadata("CustomTridentBreak", TRIDENT_BREAK_META);
-							} else if (newMain != main) {
-								shooter.getInventory().setItemInMainHand(newMain);
-							}
+					CustomItem customMain = set.getItem(main);
+					if (customMain instanceof CustomTrident) {
+						customTrident = (CustomTrident) customMain;
+						ItemStack newMain = customTrident.decreaseDurability(main, customTrident.throwDurabilityLoss);
+						if (newMain == null) {
+							trident.setMetadata("CustomTridentBreak", TRIDENT_BREAK_META);
+						} else if (newMain != main) {
+							shooter.getInventory().setItemInMainHand(newMain);
 						}
 					}
 				} else if (off != null && ItemHelper.getMaterialName(off).equals(CIMaterial.TRIDENT.name())) {
-					if (CustomItem.isCustom(off)) {
-						CustomItem customOff = set.getItem(off);
-						if (customOff instanceof CustomTrident) {
-							customTrident = (CustomTrident) customOff;
-							ItemStack newOff = customTrident.decreaseDurability(off, customTrident.throwDurabilityLoss);
-							if (newOff == null) {
-								trident.setMetadata("CustomTridentBreak", TRIDENT_BREAK_META);
-							} else if (newOff != off) {
-								shooter.getInventory().setItemInOffHand(newOff);
-							}
+					CustomItem customOff = set.getItem(off);
+					if (customOff instanceof CustomTrident) {
+						customTrident = (CustomTrident) customOff;
+						ItemStack newOff = customTrident.decreaseDurability(off, customTrident.throwDurabilityLoss);
+						if (newOff == null) {
+							trident.setMetadata("CustomTridentBreak", TRIDENT_BREAK_META);
+						} else if (newOff != off) {
+							shooter.getInventory().setItemInOffHand(newOff);
 						}
 					}
 				}
@@ -581,137 +574,130 @@ public class CustomItemsEventHandler implements Listener {
 	@EventHandler(ignoreCancelled = true)
 	public void onBowShoot(EntityShootBowEvent event) {
 		ItemStack oldBow = event.getBow();
-		if (CustomItem.isCustom(oldBow)) {
-			CustomItem customItem = set().getItem(oldBow);
-			if (customItem instanceof CustomBow) {
-				CustomBow bow = (CustomBow) customItem;
-				Entity projectile = event.getProjectile();
-				if (projectile instanceof Arrow) {
-					if (event.getEntity() instanceof Player) {
-						Player player = (Player) event.getEntity();
-						ItemStack newBow = bow.decreaseDurability(oldBow, bow.getShootDurabilityLoss());
-						if (newBow == null) {
-							playBreakSound(player);
-						}
-						if (newBow != oldBow) {
-							ItemStack mainHand = player.getInventory().getItemInMainHand();
-							if (mainHand != null && set().getItem(mainHand) == bow) {
-								player.getInventory().setItemInMainHand(newBow);
-							} else {
-								player.getInventory().setItemInOffHand(newBow);
-							}
+		CustomItem customItem = set().getItem(oldBow);
+		if (customItem instanceof CustomBow) {
+			CustomBow bow = (CustomBow) customItem;
+			Entity projectile = event.getProjectile();
+			if (projectile instanceof Arrow) {
+				if (event.getEntity() instanceof Player) {
+					Player player = (Player) event.getEntity();
+					ItemStack newBow = bow.decreaseDurability(oldBow, bow.getShootDurabilityLoss());
+					if (newBow == null) {
+						playBreakSound(player);
+					}
+					if (newBow != oldBow) {
+						ItemStack mainHand = player.getInventory().getItemInMainHand();
+						if (mainHand != null && set().getItem(mainHand) == bow) {
+							player.getInventory().setItemInMainHand(newBow);
+						} else {
+							player.getInventory().setItemInOffHand(newBow);
 						}
 					}
-
-					Arrow arrow = (Arrow) projectile;
-					arrow.setKnockbackStrength(arrow.getKnockbackStrength() + bow.getKnockbackStrength());
-					arrow.setVelocity(arrow.getVelocity().multiply(bow.getSpeedMultiplier()));
-					arrow.setGravity(bow.hasGravity());
-					String customBowName = bow.getName();
-					arrow.setMetadata("CustomBowName", new MetadataValue() {
-
-						@Override
-						public Object value() {
-							return null;
-						}
-
-						@Override
-						public int asInt() {
-							return 0;
-						}
-
-						@Override
-						public float asFloat() {
-							return 0;
-						}
-
-						@Override
-						public double asDouble() {
-							return 0;
-						}
-
-						@Override
-						public long asLong() {
-							return 0;
-						}
-
-						@Override
-						public short asShort() {
-							return 0;
-						}
-
-						@Override
-						public byte asByte() {
-							return 0;
-						}
-
-						@Override
-						public boolean asBoolean() {
-							return false;
-						}
-
-						@Override
-						public String asString() {
-							return customBowName;
-						}
-
-						@Override
-						public Plugin getOwningPlugin() {
-							return plugin();
-						}
-
-						@Override
-						public void invalidate() {
-						}
-					});
-				} else if (interestingWarnings()) {
-					Bukkit.getLogger().warning("A bow was shot, but it didn't shoot an arrow");
 				}
-			} else if (interestingWarnings()) {
-				Bukkit.getLogger().warning("A bow is being used as custom item, but is not a custom bow");
+
+				Arrow arrow = (Arrow) projectile;
+				arrow.setKnockbackStrength(arrow.getKnockbackStrength() + bow.getKnockbackStrength());
+				arrow.setVelocity(arrow.getVelocity().multiply(bow.getSpeedMultiplier()));
+				arrow.setGravity(bow.hasGravity());
+				String customBowName = bow.getName();
+				arrow.setMetadata("CustomBowName", new MetadataValue() {
+
+					@Override
+					public Object value() {
+						return null;
+					}
+
+					@Override
+					public int asInt() {
+						return 0;
+					}
+
+					@Override
+					public float asFloat() {
+						return 0;
+					}
+
+					@Override
+					public double asDouble() {
+						return 0;
+					}
+
+					@Override
+					public long asLong() {
+						return 0;
+					}
+
+					@Override
+					public short asShort() {
+						return 0;
+					}
+
+					@Override
+					public byte asByte() {
+						return 0;
+					}
+
+					@Override
+					public boolean asBoolean() {
+						return false;
+					}
+
+					@Override
+					public String asString() {
+						return customBowName;
+					}
+
+					@Override
+					public Plugin getOwningPlugin() {
+						return plugin();
+					}
+
+					@Override
+					public void invalidate() {
+					}
+				});
 			}
 		}
 	}
 
 	@EventHandler(ignoreCancelled = true)
 	public void onShear(PlayerShearEntityEvent event) {
+		
 		ItemStack main = event.getPlayer().getInventory().getItemInMainHand();
 		ItemStack off = event.getPlayer().getInventory().getItemInOffHand();
+		
 		CustomItem customMain = CIMaterial.getOrNull(ItemHelper.getMaterialName(main)) == CIMaterial.SHEARS
 				? set().getItem(main) : null;
-				CustomItem customOff = CIMaterial.getOrNull(ItemHelper.getMaterialName(off)) == CIMaterial.SHEARS
-						? set().getItem(off) : null;
-						if (customMain != null) {
-							if (customMain.forbidDefaultUse(main))
-								event.setCancelled(true);
-							else if (customMain instanceof CustomShears) {
-								CustomShears tool = (CustomShears) customMain;
-								ItemStack newMain = tool.decreaseDurability(main, tool.getShearDurabilityLoss());
-								if (newMain != main) {
-									if (newMain == null) {
-										playBreakSound(event.getPlayer());
-									}
-									event.getPlayer().getInventory().setItemInMainHand(newMain);
-								}
-							} else if (interestingWarnings()) {
-								Bukkit.getLogger().warning("Interesting custom main shear: " + main);
-							}
-						} else if (customOff != null) {
-							if (customOff.forbidDefaultUse(off))
-								event.setCancelled(true);
-							else if (customOff instanceof CustomShears) {
-								CustomShears tool = (CustomShears) customOff;
-								ItemStack newOff = tool.decreaseDurability(off, tool.getShearDurabilityLoss());
-								if (newOff != off) {
-									if (newOff == null) {
-										playBreakSound(event.getPlayer());
-									}
-									event.getPlayer().getInventory().setItemInOffHand(newOff);
-								}
-							} else if (interestingWarnings()) {
-								Bukkit.getLogger().warning("Interesting custom off shear: " + off);
-							}
-						}
+		CustomItem customOff = CIMaterial.getOrNull(ItemHelper.getMaterialName(off)) == CIMaterial.SHEARS
+				? set().getItem(off) : null;
+				
+		if (customMain != null) {
+			if (customMain.forbidDefaultUse(main))
+				event.setCancelled(true);
+			else if (customMain instanceof CustomShears) {
+				CustomShears tool = (CustomShears) customMain;
+				ItemStack newMain = tool.decreaseDurability(main, tool.getShearDurabilityLoss());
+				if (newMain != main) {
+					if (newMain == null) {
+						playBreakSound(event.getPlayer());
+					}
+					event.getPlayer().getInventory().setItemInMainHand(newMain);
+				}
+			}
+		} else if (customOff != null) {
+			if (customOff.forbidDefaultUse(off))
+				event.setCancelled(true);
+			else if (customOff instanceof CustomShears) {
+				CustomShears tool = (CustomShears) customOff;
+				ItemStack newOff = tool.decreaseDurability(off, tool.getShearDurabilityLoss());
+				if (newOff != off) {
+					if (newOff == null) {
+						playBreakSound(event.getPlayer());
+					}
+					event.getPlayer().getInventory().setItemInOffHand(newOff);
+				}
+			}
+		}
 	}
 	
 	private boolean collectDrops(Collection<ItemStack> stacksToDrop, Drop drop, Random random, CustomItem mainItem) {
@@ -891,59 +877,62 @@ public class CustomItemsEventHandler implements Listener {
 				ItemStack legs = target.getEquipment().getLeggings();
 				ItemStack boots = target.getEquipment().getBoots();
 	
-				if (CustomItem.isCustom(helmet)) {
-					CustomItem custom = set().getItem(helmet);
-					if (custom != null) {
-						Collection<org.bukkit.potion.PotionEffect> pe = new ArrayList<>();
-	
-						for (PotionEffect effect : custom.getPlayerEffects()) {
-							pe.add(new org.bukkit.potion.PotionEffect(org.bukkit.potion.PotionEffectType.getByName(effect.getEffect().name()), effect.getDuration() * 20, effect.getLevel() - 1));
-						}
-	
-						target.addPotionEffects(pe);
-					} else if (interestingWarnings()) {
-						Bukkit.getLogger().warning("Interesting item: " + helmet);
+				CustomItem customHelmet = set().getItem(helmet);
+				if (customHelmet != null) {
+					Collection<org.bukkit.potion.PotionEffect> pe = new ArrayList<>();
+
+					for (PotionEffect effect : customHelmet.getPlayerEffects()) {
+						pe.add(new org.bukkit.potion.PotionEffect(
+								org.bukkit.potion.PotionEffectType.getByName(
+										effect.getEffect().name()
+								), effect.getDuration() * 20, 
+								effect.getLevel() - 1)
+						);
 					}
+
+					target.addPotionEffects(pe);
 				}
 	
-				if (CustomItem.isCustom(chest)) {
-					CustomItem custom = set().getItem(chest);
-					if (custom != null) {
-						Collection<org.bukkit.potion.PotionEffect> pe = new ArrayList<>();
-						for (PotionEffect effect : custom.getPlayerEffects()) {
-							pe.add(new org.bukkit.potion.PotionEffect(org.bukkit.potion.PotionEffectType.getByName(effect.getEffect().name()), effect.getDuration() * 20, effect.getLevel() - 1));
-						}
-						target.addPotionEffects(pe);
-					} else if (interestingWarnings()) {
-						Bukkit.getLogger().warning("Interesting item: " + chest);
+				CustomItem customChest = set().getItem(chest);
+				if (customChest != null) {
+					Collection<org.bukkit.potion.PotionEffect> pe = new ArrayList<>();
+					for (PotionEffect effect : customChest.getPlayerEffects()) {
+						pe.add(new org.bukkit.potion.PotionEffect(
+								org.bukkit.potion.PotionEffectType.getByName(
+										effect.getEffect().name()
+								), effect.getDuration() * 20, 
+								effect.getLevel() - 1)
+						);
 					}
+					target.addPotionEffects(pe);
 				}
 	
-				if (CustomItem.isCustom(legs)) {
-					CustomItem custom = set().getItem(legs);
-					if (custom != null) {
-						Collection<org.bukkit.potion.PotionEffect> pe = new ArrayList<>();
-						for (PotionEffect effect : custom.getPlayerEffects()) {
-							pe.add(new org.bukkit.potion.PotionEffect(org.bukkit.potion.PotionEffectType.getByName(effect.getEffect().name()), effect.getDuration() * 20, effect.getLevel() - 1));
-						}
-						target.addPotionEffects(pe);
-					} else if (interestingWarnings()) {
-						Bukkit.getLogger().warning("Interesting item: " + legs);
+				CustomItem customLegs = set().getItem(legs);
+				if (customLegs != null) {
+					Collection<org.bukkit.potion.PotionEffect> pe = new ArrayList<>();
+					for (PotionEffect effect : customLegs.getPlayerEffects()) {
+						pe.add(new org.bukkit.potion.PotionEffect(
+								org.bukkit.potion.PotionEffectType.getByName(
+										effect.getEffect().name()
+								), effect.getDuration() * 20, 
+								effect.getLevel() - 1)
+						);
 					}
+					target.addPotionEffects(pe);
 				}
 	
-				if (CustomItem.isCustom(boots)) {
-					CustomItem custom = set().getItem(boots);
-					if (custom != null) {
-						Collection<org.bukkit.potion.PotionEffect> pe = new ArrayList<>();
-						for (PotionEffect effect : custom.getPlayerEffects()) {
-							pe.add(new org.bukkit.potion.PotionEffect(org.bukkit.potion.PotionEffectType.getByName(effect.getEffect().name()), effect.getDuration() * 20, effect.getLevel() - 1));
-						}
-						target.addPotionEffects(pe);
-					} else if (interestingWarnings()) {
-						Bukkit.getLogger().warning("Interesting item: " + boots);
+				CustomItem customBoots = set().getItem(boots);
+				if (customBoots != null) {
+					Collection<org.bukkit.potion.PotionEffect> pe = new ArrayList<>();
+					for (PotionEffect effect : customBoots.getPlayerEffects()) {
+						pe.add(new org.bukkit.potion.PotionEffect(
+								org.bukkit.potion.PotionEffectType.getByName(
+										effect.getEffect().name()
+								), effect.getDuration() * 20, 
+								effect.getLevel() - 1)
+						);
 					}
-	
+					target.addPotionEffects(pe);
 				}
 			
 				if (event.getDamager() instanceof LivingEntity) {
@@ -952,39 +941,51 @@ public class CustomItemsEventHandler implements Listener {
 					
 					if (event.getCause() == DamageCause.ENTITY_ATTACK) {
 						ItemStack weapon = damager.getEquipment().getItemInMainHand();
-						if (CustomItem.isCustom(weapon)) {
-							CustomItem custom = set().getItem(weapon);
-							if (custom != null) {
-								custom.onEntityHit(damager, weapon, event.getEntity());
-							} else if (interestingWarnings()) {
-								Bukkit.getLogger().warning("Interesting item: " + weapon);
-							}
+						CustomItem custom = set().getItem(weapon);
+						if (custom != null) {
+							custom.onEntityHit(damager, weapon, event.getEntity());
 						}
 					}
 	
 					Collection<org.bukkit.potion.PotionEffect> te = new ArrayList<>();
-					CustomItem customHelmet = set().getItem(helmet);
-					CustomItem customChest = set().getItem(chest);
-					CustomItem customLegs = set().getItem(legs);
-					CustomItem customBoots = set().getItem(boots);
 					if (customHelmet != null) {
 						for (PotionEffect effect : customHelmet.getTargetEffects()) {
-							te.add(new org.bukkit.potion.PotionEffect(org.bukkit.potion.PotionEffectType.getByName(effect.getEffect().name()), effect.getDuration() * 20, effect.getLevel() - 1));
+							te.add(new org.bukkit.potion.PotionEffect(
+									org.bukkit.potion.PotionEffectType.getByName(
+											effect.getEffect().name()
+									), effect.getDuration() * 20, 
+									effect.getLevel() - 1)
+							);
 						}
 					}
 					if (customChest != null) {
 						for (PotionEffect effect : customChest.getTargetEffects()) {
-							te.add(new org.bukkit.potion.PotionEffect(org.bukkit.potion.PotionEffectType.getByName(effect.getEffect().name()), effect.getDuration() * 20, effect.getLevel() - 1));
+							te.add(new org.bukkit.potion.PotionEffect(
+									org.bukkit.potion.PotionEffectType.getByName(
+											effect.getEffect().name()
+									), effect.getDuration() * 20, 
+									effect.getLevel() - 1)
+							);
 						}
 					}
 					if (customLegs != null) {
 						for (PotionEffect effect : customLegs.getTargetEffects()) {
-							te.add(new org.bukkit.potion.PotionEffect(org.bukkit.potion.PotionEffectType.getByName(effect.getEffect().name()), effect.getDuration() * 20, effect.getLevel() - 1));
+							te.add(new org.bukkit.potion.PotionEffect(
+									org.bukkit.potion.PotionEffectType.getByName(
+											effect.getEffect().name()
+									), effect.getDuration() * 20, 
+									effect.getLevel() - 1)
+							);
 						}
 					}
 					if (customBoots != null) {
 						for (PotionEffect effect : customBoots.getTargetEffects()) {
-							te.add(new org.bukkit.potion.PotionEffect(org.bukkit.potion.PotionEffectType.getByName(effect.getEffect().name()), effect.getDuration() * 20, effect.getLevel() - 1));
+							te.add(new org.bukkit.potion.PotionEffect(
+									org.bukkit.potion.PotionEffectType.getByName(
+											effect.getEffect().name()
+									), effect.getDuration() * 20, 
+									effect.getLevel() - 1)
+							);
 						}
 					}
 					damager.addPotionEffects(te);
@@ -1047,22 +1048,17 @@ public class CustomItemsEventHandler implements Listener {
 
 				CustomShield shield = null;
 				boolean offhand = true;
+				ItemSet set = set();
 				
-				if (CustomItem.isCustom(player.getInventory().getItemInOffHand())) {
-					ItemSet set = set();
-					CustomItem customMain = set.getItem(player.getInventory().getItemInOffHand());
-					if (customMain instanceof CustomShield) {
-						shield = (CustomShield) customMain;
-					}
+				CustomItem customOff = set.getItem(player.getInventory().getItemInOffHand());
+				if (customOff instanceof CustomShield) {
+					shield = (CustomShield) customOff;
 				}
 
-				if (CustomItem.isCustom(player.getInventory().getItemInMainHand())) {
-					ItemSet set = set();
-					CustomItem customMain = set.getItem(player.getInventory().getItemInMainHand());
-					if (customMain instanceof CustomShield) {
-						shield = (CustomShield) customMain;
-						offhand = false;
-					}
+				CustomItem customMain = set.getItem(player.getInventory().getItemInMainHand());
+				if (customMain instanceof CustomShield) {
+					shield = (CustomShield) customMain;
+					offhand = false;
 				} else if (ItemHelper.getMaterialName(
 							player.getInventory().getItemInMainHand()
 						).equals(CIMaterial.SHIELD.name())) {
@@ -1097,19 +1093,11 @@ public class CustomItemsEventHandler implements Listener {
 	}
 
 	private ItemStack decreaseCustomArmorDurability(ItemStack piece, int damage) {
-		if (CustomItem.isCustom(piece)) {
-			CustomItem custom = set().getItem(piece);
-			if (custom instanceof CustomArmor) {
-				return ((CustomArmor) custom).decreaseDurability(piece, damage);
-			} else {
-				if (interestingWarnings()) {
-					Bukkit.getLogger().warning("Strange item " + piece);
-				}
-				return piece;
-			}
-		} else {
-			return piece;
+		CustomItem custom = set().getItem(piece);
+		if (custom instanceof CustomArmor) {
+			return ((CustomArmor) custom).decreaseDurability(piece, damage);
 		}
+		return piece;
 	}
 
 	@EventHandler(priority = EventPriority.LOW, ignoreCancelled = true)
@@ -1163,15 +1151,11 @@ public class CustomItemsEventHandler implements Listener {
 	}
 
 	private void applyCustomArmorDamageReduction(ItemStack armorPiece, DamageSource source, short[] damageResistances, int resistanceIndex) {
-		if (CustomItem.isCustom(armorPiece)) {
-			CustomItem custom = set().getItem(armorPiece);
-			if (custom instanceof CustomArmor) {
-				CustomArmor armor = (CustomArmor) custom;
-				if (source != null) {
-					damageResistances[resistanceIndex] = armor.getDamageResistances().getResistance(source);
-				}
-			} else if (interestingWarnings()) {
-				Bukkit.getLogger().warning("Strange armor piece " + armorPiece);
+		CustomItem custom = set().getItem(armorPiece);
+		if (custom instanceof CustomArmor) {
+			CustomArmor armor = (CustomArmor) custom;
+			if (source != null) {
+				damageResistances[resistanceIndex] = armor.getDamageResistances().getResistance(source);
 			}
 		}
 	}
@@ -1209,19 +1193,17 @@ public class CustomItemsEventHandler implements Listener {
 		
 		for (int index = 0; index < allEquipment.length; index++) {
 			ItemStack item = allEquipment[index];
-			if (CustomItem.isCustom(item)) {
-				CustomItem custom = set().getItem(item);
-				if (custom != null) {
-					if (item.containsEnchantment(Enchantment.MENDING) && custom instanceof CustomTool) {
-						CustomTool tool = (CustomTool) custom;
-						
-						IncreaseDurabilityResult increaseResult = tool.increaseDurability(item, durAmount);
-						durAmount -= increaseResult.increasedAmount;
-						allEquipment[index] = increaseResult.stack;
-						
-						if (durAmount == 0) {
-							break;
-						}
+			CustomItem custom = set().getItem(item);
+			if (custom != null) {
+				if (item.containsEnchantment(Enchantment.MENDING) && custom instanceof CustomTool) {
+					CustomTool tool = (CustomTool) custom;
+					
+					IncreaseDurabilityResult increaseResult = tool.increaseDurability(item, durAmount);
+					durAmount -= increaseResult.increasedAmount;
+					allEquipment[index] = increaseResult.stack;
+					
+					if (durAmount == 0) {
+						break;
 					}
 				}
 			}
@@ -1252,13 +1234,11 @@ public class CustomItemsEventHandler implements Listener {
 
 	@EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
 	public void processAnvil(PrepareAnvilEvent event) {
+		
 		ItemStack[] contents = event.getInventory().getStorageContents();
-		CustomItem custom1 = null;
-		CustomItem custom2 = null;
-		if (CustomItem.isCustom(contents[0]))
-			custom1 = set().getItem(contents[0]);
-		if (CustomItem.isCustom(contents[1]))
-			custom2 = set().getItem(contents[1]);
+		CustomItem custom1 = set().getItem(contents[0]);
+		CustomItem custom2 = set().getItem(contents[1]);
+
 		if (custom1 != null) {
 			if (custom1.allowAnvilActions()) {
 				if (custom1 instanceof CustomTool) {
@@ -1500,8 +1480,8 @@ public class CustomItemsEventHandler implements Listener {
 						int recipeAmount0 = ingredients.get(0).getAmount();
 						boolean hasSecondIngredient = ingredients.size() > 1 && ingredients.get(1) != null;
 						int recipeAmount1 = hasSecondIngredient ? ingredients.get(1).getAmount() : 0;
-						boolean overrule0 = CustomItem.isCustom(contents[0]) && contents[0].getAmount() > recipeAmount0;
-						boolean overrule1 = CustomItem.isCustom(contents[1]) && contents[1].getAmount() > recipeAmount1;
+						boolean overrule0 = ItemUtils.isCustom(contents[0]) && contents[0].getAmount() > recipeAmount0;
+						boolean overrule1 = ItemUtils.isCustom(contents[1]) && contents[1].getAmount() > recipeAmount1;
 						if (overrule0 || overrule1) {
 
 							event.setCancelled(true);
@@ -1666,10 +1646,14 @@ public class CustomItemsEventHandler implements Listener {
 						// really stackable
 						ItemStack cursor = event.getCursor();
 						ItemStack current = event.getCurrentItem();
-						if (CustomItem.isCustom(cursor) && CustomItem.isCustom(current)
-								&& cursor.getType() == current.getType()
-								&& cursor.getDurability() == current.getDurability()) {
-							CustomItem custom = set().getItem(current);
+						
+						ItemSet set = set();
+						CustomItem customCursor = set.getItem(cursor);
+						CustomItem customCurrent = set.getItem(current);
+						
+						if (customCursor != null && customCursor == customCurrent) {
+							CustomItem custom = customCursor;
+							
 							if (custom != null && custom.canStack()
 									&& cursor.getAmount() + current.getAmount() <= custom.getMaxStacksize()) {
 								Bukkit.getScheduler().scheduleSyncDelayedTask(CustomItemsPlugin.getInstance(), () -> {
@@ -1698,7 +1682,10 @@ public class CustomItemsEventHandler implements Listener {
 				// anvil, so...
 				ItemStack cursor = event.getCursor();
 				ItemStack current = event.getCurrentItem();
-				if (event.getCurrentItem() == null || ItemHelper.getMaterialName(event.getCurrentItem()).equals(CIMaterial.AIR.name())) {
+				
+				ItemSet set = set();
+				CustomItem customCurrent = set.getItem(current);
+				if (ItemUtils.isEmpty(current)) {
 					event.setCancelled(true);
 					Bukkit.getScheduler().scheduleSyncDelayedTask(CustomItemsPlugin.getInstance(), () -> {
 						if (event.getWhoClicked() instanceof Player) {
@@ -1707,9 +1694,9 @@ public class CustomItemsEventHandler implements Listener {
 							player.closeInventory();
 						}
 					});
-				} else if ((cursor == null || ItemHelper.getMaterialName(cursor).equals(CIMaterial.AIR.name())) && CustomItem.isCustom(current)) {
+				} else if (ItemUtils.isEmpty(cursor) && customCurrent != null) {
 					AnvilInventory ai = (AnvilInventory) event.getInventory();
-					CustomItem custom = set().getItem(current);
+					CustomItem custom = customCurrent;
 					ItemStack first = event.getInventory().getItem(0);
 					CustomItem customFirst = set().getItem(first);
 					if (customFirst != null && !customFirst.allowAnvilActions()) {
@@ -1757,33 +1744,34 @@ public class CustomItemsEventHandler implements Listener {
 				|| action == InventoryAction.PICKUP_SOME || action == InventoryAction.SWAP_WITH_CURSOR) {
 			ItemStack cursor = event.getCursor();
 			ItemStack current = event.getCurrentItem();
+			
+			ItemSet set = set();
+			CustomItem customCursor = set.getItem(cursor);
+			CustomItem customCurrent = set.getItem(current);
+			
 			// This block makes custom items stackable
-			if (CustomItem.isCustom(cursor) && CustomItem.isCustom(current)) {
-				ItemSet set = set();
-				CustomItem customCursor = set.getItem(cursor);
-				CustomItem customCurrent = set.getItem(current);
-				if (customCursor != null && customCursor == customCurrent && customCursor.canStack()) {
-					event.setResult(Result.DENY);
-					if (event.isLeftClick()) {
-						int amount = current.getAmount() + cursor.getAmount();
-						if (amount <= customCursor.getMaxStacksize()) {
-							current.setAmount(amount);
-							cursor.setAmount(0);
-						} else {
-							current.setAmount(customCursor.getMaxStacksize());
-							cursor.setAmount(amount - customCursor.getMaxStacksize());
-						}
+			if (customCursor != null && customCursor == customCurrent && customCursor.canStack()) {
+				
+				event.setResult(Result.DENY);
+				if (event.isLeftClick()) {
+					int amount = current.getAmount() + cursor.getAmount();
+					if (amount <= customCursor.getMaxStacksize()) {
+						current.setAmount(amount);
+						cursor.setAmount(0);
 					} else {
-						int newAmount = current.getAmount() + 1;
-						if (newAmount <= customCurrent.getMaxStacksize()) {
-							cursor.setAmount(cursor.getAmount() - 1);
-							current.setAmount(newAmount);
-						}
+						current.setAmount(customCursor.getMaxStacksize());
+						cursor.setAmount(amount - customCursor.getMaxStacksize());
 					}
-					Bukkit.getScheduler().scheduleSyncDelayedTask(CustomItemsPlugin.getInstance(), () -> {
-						event.getView().getPlayer().setItemOnCursor(cursor);
-					});
+				} else {
+					int newAmount = current.getAmount() + 1;
+					if (newAmount <= customCurrent.getMaxStacksize()) {
+						cursor.setAmount(cursor.getAmount() - 1);
+						current.setAmount(newAmount);
+					}
 				}
+				Bukkit.getScheduler().scheduleSyncDelayedTask(CustomItemsPlugin.getInstance(), () -> {
+					event.getView().getPlayer().setItemOnCursor(cursor);
+				});
 			}
 		}
 		// Force a PrepareAnvilEvent
@@ -1806,7 +1794,7 @@ public class CustomItemsEventHandler implements Listener {
 		if (result != null && !ItemHelper.getMaterialName(result).equals(CIMaterial.AIR.name())) {
 			ItemStack[] ingredients = inventory.getStorageContents();
 			for (ItemStack ingredient : ingredients) {
-				if (CustomItem.isCustom(ingredient)) {
+				if (ItemUtils.isCustom(ingredient)) {
 					inventory.setResult(ItemHelper.createStack(CIMaterial.AIR.name(), 1));
 					break;
 				}
@@ -1842,33 +1830,31 @@ public class CustomItemsEventHandler implements Listener {
 	}
 
 	private boolean fixCustomItemPickup(final ItemStack stack, ItemStack[] contents) {
-		if (CustomItem.isCustom(stack)) {
-			CustomItem customItem = set().getItem(stack);
-			if (customItem != null) {
-				int remainingAmount = stack.getAmount();
-				for (ItemStack content : contents) {
-					if (customItem.is(content)) {
-						int remainingSpace = customItem.getMaxStacksize() - content.getAmount();
-						if (remainingSpace > 0) {
-							if (remainingSpace >= remainingAmount) {
-								content.setAmount(content.getAmount() + remainingAmount);
-								stack.setAmount(0);
-								return true;
-							} else {
-								content.setAmount(customItem.getMaxStacksize());
-								remainingAmount -= remainingSpace;
-							}
+		CustomItem customItem = set().getItem(stack);
+		if (customItem != null) {
+			int remainingAmount = stack.getAmount();
+			for (ItemStack content : contents) {
+				if (customItem.is(content)) {
+					int remainingSpace = customItem.getMaxStacksize() - content.getAmount();
+					if (remainingSpace > 0) {
+						if (remainingSpace >= remainingAmount) {
+							content.setAmount(content.getAmount() + remainingAmount);
+							stack.setAmount(0);
+							return true;
+						} else {
+							content.setAmount(customItem.getMaxStacksize());
+							remainingAmount -= remainingSpace;
 						}
 					}
 				}
+			}
 
-				if (remainingAmount != stack.getAmount()) {
-					stack.setAmount(remainingAmount);
+			if (remainingAmount != stack.getAmount()) {
+				stack.setAmount(remainingAmount);
 
-					// Apparently, canceling the event is necessary because it won't let me change
-					// the picked up amount.
-					return true;
-				}
+				// Apparently, canceling the event is necessary because it won't let me change
+				// the picked up amount.
+				return true;
 			}
 		}
 
