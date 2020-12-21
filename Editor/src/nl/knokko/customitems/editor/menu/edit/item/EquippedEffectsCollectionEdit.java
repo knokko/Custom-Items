@@ -69,7 +69,6 @@ public class EquippedEffectsCollectionEdit extends QuickCollectionEdit<EquippedP
 
 	@Override
 	protected String getHelpPage() {
-		// TODO Auto-generated method stub
-		return "ehm...";
+		return "edit%20menu/items/edit/equipped%20effects.html";
 	}
 }
