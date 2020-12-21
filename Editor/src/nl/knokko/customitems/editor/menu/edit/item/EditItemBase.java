@@ -155,6 +155,8 @@ public abstract class EditItemBase extends GuiMenu {
 		addComponent(new DynamicTextButton("Cancel", EditProps.CANCEL_BASE, EditProps.CANCEL_HOVER, () -> {
 			state.getWindow().setMainComponent(menu.getItemOverview());
 		}), 0.025f, 0.7f, 0.15f, 0.8f);
+		addComponent(new DynamicTextComponent("Note:", EditProps.LABEL), 0.05f, 0.6f, 0.1f, 0.65f);
+		addComponent(new DynamicTextComponent("You can scroll down for more", EditProps.LABEL), 0f, 0.55f, 0.2f, 0.6f);
 		addComponent(new DynamicTextComponent("Name: ", EditProps.LABEL), LABEL_X, 0.8f, LABEL_X + 0.1f, 0.85f);
 		addComponent(new DynamicTextComponent("Internal item type: ", EditProps.LABEL), LABEL_X, 0.74f, LABEL_X + 0.2f,
 				0.79f);
