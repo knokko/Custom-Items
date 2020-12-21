@@ -16,8 +16,8 @@ public class CreateBowTest {
 		test.click("Create item");
 		test.click("Bow");
 		test.assertComponentsWithTexts("Cancel", "Create", "Name: ", "Internal item type: ",
-				"INTERNAL item damage: ", "Display name: ", "Lore: ", "Attribute modifiers: ",
-				"Default enchantments: ", "Item flags: ", "Texture: ", "", "1", "Change...",
+				"Display name: ", "Lore: ", "Attribute modifiers: ",
+				"Default enchantments: ", "Item flags: ", "Texture: ", "", "Change...",
 				"None", "Allow enchanting", "Allow anvil actions", "Max uses: ", "Repair item: ",
 				"Durability loss on attack:", "Durability loss on block break:",
 				"Durability loss on shooting:", "Damage multiplier: ", "Speed multiplier: ",
@@ -30,22 +30,22 @@ public class CreateBowTest {
 		AttributeModTest.test(test, "generic.movementSpeed", "Offhand", "Add factor", "1.5", 
 				attribute1, slot1, op1, value1, attribute2, slot2, op2, value2, 8);
 		EnchantmentsTest.test(test, enchantment1, level1, enchantment2, level2, 8);
-		CreateToolTest.attackDurabilityLoss(test, CustomItemType.BOW, attackDurLoss, 10);
-		CreateToolTest.breakDurabilityLoss(test, CustomItemType.BOW, breakDurLoss, 10);
+		CreateToolTest.attackDurabilityLoss(test, CustomItemType.BOW, attackDurLoss, 9);
+		CreateToolTest.breakDurabilityLoss(test, CustomItemType.BOW, breakDurLoss, 9);
 		CreateToolTest.maxUses(test, "500", maxUses);
 		CreateToolTest.repairItem(test, repairItemCategory, repairItem);
 		
 		// The next stuff is bows only
-		test.clickNearestEdit("Durability loss on shooting:", 10);
+		test.clickNearestEdit("Durability loss on shooting:", 9);
 		test.backspace(1);
 		test.type(shootDurLoss);
-		test.clickNearestEdit("Damage multiplier: ", 10);
+		test.clickNearestEdit("Damage multiplier: ", 9);
 		test.backspace(8);
 		test.type(damageMultiplier);
-		test.clickNearestEdit("Speed multiplier: ", 10);
+		test.clickNearestEdit("Speed multiplier: ", 9);
 		test.backspace(8);
 		test.type(speedMultiplier);
-		test.clickNearestEdit("knockback strength: ", 10);
+		test.clickNearestEdit("knockback strength: ", 9);
 		test.backspace(1);
 		test.type(knockbackStrength);
 		test.uncheck("Arrow gravity", 3);

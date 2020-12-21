@@ -14,8 +14,8 @@ public class CreateShearsTest {
 		test.click("Create item");
 		test.click("Shear");
 		test.assertComponentsWithTexts("Cancel", "Create", "Name: ", "Internal item type: ",
-				"INTERNAL item damage: ", "Display name: ", "Lore: ", "Attribute modifiers: ",
-				"Default enchantments: ", "Item flags: ", "Texture: ", "", "1", "Change...",
+				"Display name: ", "Lore: ", "Attribute modifiers: ",
+				"Default enchantments: ", "Item flags: ", "Texture: ", "", "Change...",
 				"None", "Allow enchanting", "Allow anvil actions", "Max uses: ", "Repair item: ",
 				"Durability loss on attack:", "Durability loss on block break:", "Durability loss on shearing:",
 				"500", "0", "1");
@@ -28,14 +28,14 @@ public class CreateShearsTest {
 		AttributeModTest.test(test, "generic.movementSpeed", "Offhand", "Add factor", "1.5", 
 				attribute1, slot1, op1, value1, attribute2, slot2, op2, value2, 9);
 		EnchantmentsTest.test(test, enchantment1, level1, enchantment2, level2, 9);
-		CreateToolTest.toolOnly(test, customItemType, maxUses, repairItemCategory, repairItem, attackDurLoss, breakDurLoss, 7);
+		CreateToolTest.toolOnly(test, customItemType, maxUses, repairItemCategory, repairItem, attackDurLoss, breakDurLoss, 6);
 		
 		// Shears only:
-		test.clickNearestEdit("Durability loss on shearing:", 7);
+		test.clickNearestEdit("Durability loss on shearing:", 6);
 		test.backspace(1);
 		test.click("Create");
 		test.assertComponentWithText("The shear durability loss must be a positive integer");
-		test.clickNearestEdit("Durability loss on shearing:", 7);
+		test.clickNearestEdit("Durability loss on shearing:", 6);
 		test.type(shearDurLoss);
 		test.assertComponentWithText(shearDurLoss);
 		
