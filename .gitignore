@@ -16,3 +16,5 @@ Custom Items Workspace.code-workspace
 /EditorTester/before_test_failed.png
 /Github.io
 *.jar
+*/.idea
+*.iml

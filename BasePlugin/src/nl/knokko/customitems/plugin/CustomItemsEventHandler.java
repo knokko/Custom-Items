@@ -130,6 +130,9 @@ import nl.knokko.customitems.drops.Drop;
 import nl.knokko.customitems.effect.PotionEffect;
 import nl.knokko.customitems.item.CIMaterial;
 import nl.knokko.customitems.item.CustomItemType;
+import nl.knokko.customitems.item.ReplaceCondition;
+import nl.knokko.customitems.item.ReplaceCondition.ConditionOperation;
+import nl.knokko.customitems.item.ReplaceCondition.ReplacementCondition;
 import nl.knokko.customitems.plugin.recipe.CustomRecipe;
 import nl.knokko.customitems.plugin.recipe.ShapedCustomRecipe;
 import nl.knokko.customitems.plugin.recipe.ShapelessCustomRecipe;
@@ -254,12 +257,19 @@ public class CustomItemsEventHandler implements Listener {
 							ItemStack newStack = tool.decreaseDurability(item, customHoe.getTillDurabilityLoss());
 							if (newStack != item) {
 								if (newStack == null) {
+									String newItemName = checkBrokenCondition(tool.getReplaceConditions());
+									if (newItemName != null) {
+										newStack = set().getItem(newItemName).create(1);
+									}
 									playBreakSound(event.getPlayer());
 								}
-								if (event.getHand() == EquipmentSlot.HAND)
-									event.getPlayer().getInventory().setItemInMainHand(newStack);
-								else
-									event.getPlayer().getInventory().setItemInOffHand(newStack);
+								
+								if (newStack != null) {
+									if (event.getHand() == EquipmentSlot.HAND)
+										event.getPlayer().getInventory().setItemInMainHand(newStack);
+									else
+										event.getPlayer().getInventory().setItemInOffHand(newStack);
+								}
 							}
 						}
 					}
@@ -293,24 +303,153 @@ public class CustomItemsEventHandler implements Listener {
 			if (custom != null) {
 				if (custom.forbidDefaultUse(item))
 					event.setCancelled(true);
-				// TODO Uncomment once this is finished!
-				/*
-				if (!custom.getReplaceItem().equals(new String())) {
-					item.setAmount(item.getAmount() - 1);
-					CustomItem replaceItem = set().getItem(custom.getReplaceItem());
-					Player player = event.getPlayer();
-					EquipmentSlot slot = event.getHand();
-					if (replaceItem != null) {
-						ItemStack stack = replaceItem.create(1);
-						if (slot.equals(EquipmentSlot.OFF_HAND)) {
-							player.getInventory().setItemInOffHand(stack);
-						} else {
-							player.getInventory().setItemInMainHand(stack);
+				
+				ReplaceCondition[] conditions = custom.getReplaceConditions();
+				ConditionOperation op = custom.getConditionOperator();
+				boolean replace = false;
+				boolean firstCond = true;
+				Player player = event.getPlayer();
+				int replaceIndex = -1;
+				boolean[] trueConditions = new boolean[conditions.length];
+				
+				for (ReplaceCondition cond : conditions) {
+					replaceIndex++;
+					if (op == ConditionOperation.AND) {
+						if (replace || firstCond) {
+							replace = checkCondition(cond, player);
 						}
+						
+						firstCond = false;
+					} else if (op == ConditionOperation.OR) {
+						if (!replace || firstCond) {
+							replace = checkCondition(cond, player);
+						}
+						
+						firstCond = false;
 					} else {
-						Bukkit.getLogger().log(Level.WARNING, "The item: " + custom.getDisplayName() + " tried to replace itself with nothing. This indicates an error during exporting or a bug in the plugin.");
+						if (!replace || firstCond) {
+							replace = checkCondition(cond, player);
+						}
+						
+						firstCond = false;
 					}
-				}*/
+					
+					trueConditions[replaceIndex] = replace;
+				}
+				
+				for (boolean bool : trueConditions) {
+					if (bool) {
+						replace = true;
+						break;
+					}
+				}
+				
+				if (replace) {
+					switch(op) {
+					case AND:
+						CustomItem replaceItem = set().getCustomItemByName(conditions[0].getReplacingItemName());
+						item.setAmount(item.getAmount() - 1);
+						
+						for (ReplaceCondition condition : conditions) {
+							if (condition.getCondition() == ReplacementCondition.HASITEM) {
+								for (ItemStack stack : player.getInventory()) {
+									CustomItem inventoryItem = set().getItem(stack);
+									if (inventoryItem.getName() == condition.getItemName())
+										stack.setAmount(stack.getAmount() - condition.getValue());
+								}
+							}
+						}
+						
+						replaceItem = set().getCustomItemByName(conditions[replaceIndex].getReplacingItemName());
+						EquipmentSlot slot = event.getHand();
+						if (replaceItem != null) {
+							ItemStack stack = replaceItem.create(1);
+							if (item.getAmount() <= 0) {
+								if (slot.equals(EquipmentSlot.OFF_HAND)) {
+									player.getInventory().setItemInOffHand(stack);
+								} else {
+									player.getInventory().setItemInMainHand(stack);
+								}
+							} else {
+								player.getInventory().addItem(stack);
+							}
+						} else {
+							Bukkit.getLogger().log(Level.WARNING, "The item: " + custom.getDisplayName() + " tried to replace itself with nothing. This indicates an error during exporting or a bug in the plugin.");
+						}
+						
+						break;
+					case OR:
+						for (int index = 0; index < conditions.length; index++) {
+							if (trueConditions[index])
+								replaceIndex = index;
+						}
+						
+						item.setAmount(item.getAmount() - 1);
+						
+						if (conditions[replaceIndex].getCondition() == ReplacementCondition.HASITEM) {
+							for (ItemStack stack : player.getInventory()) {
+								CustomItem inventoryItem = set().getItem(stack);
+								if (inventoryItem.getName() == conditions[replaceIndex].getItemName())
+									stack.setAmount(stack.getAmount() - conditions[replaceIndex].getValue());
+							}
+						}
+						
+						replaceItem = set().getCustomItemByName(conditions[replaceIndex].getReplacingItemName());
+						slot = event.getHand();
+						if (replaceItem != null) {
+							ItemStack stack = replaceItem.create(1);
+							if (item.getAmount() <= 0) {
+								if (slot.equals(EquipmentSlot.OFF_HAND)) {
+									player.getInventory().setItemInOffHand(stack);
+								} else {
+									player.getInventory().setItemInMainHand(stack);
+								}
+							} else {
+								player.getInventory().addItem(stack);
+							}
+						} else {
+							Bukkit.getLogger().log(Level.WARNING, "The item: " + custom.getDisplayName() + " tried to replace itself with nothing. This indicates an error during exporting or a bug in the plugin.");
+						}
+						break;
+					case NONE:
+						for (int index = 0; index < conditions.length; index++) {
+							if (trueConditions[index]) {
+								replaceIndex = index;
+								break;
+							}
+						}
+						
+						if (conditions[replaceIndex].getCondition() == ReplacementCondition.HASITEM) {
+							for (ItemStack stack : player.getInventory()) {
+								CustomItem inventoryItem = set().getItem(stack);
+								if (inventoryItem.getName() == conditions[replaceIndex].getItemName())
+									stack.setAmount(stack.getAmount() - conditions[replaceIndex].getValue());
+							}
+						}
+						item.setAmount(item.getAmount() - 1);
+						replaceItem = set().getCustomItemByName(conditions[replaceIndex].getReplacingItemName());
+						slot = event.getHand();
+						if (replaceItem != null) {
+							ItemStack stack = replaceItem.create(1);
+							if (item.getAmount() <= 0) {
+								if (slot.equals(EquipmentSlot.OFF_HAND)) {
+									player.getInventory().setItemInOffHand(stack);
+								} else {
+									player.getInventory().setItemInMainHand(stack);
+								}
+							} else {
+								player.getInventory().addItem(stack);
+							}
+						} else {
+							Bukkit.getLogger().log(Level.WARNING, "The item: " + custom.getDisplayName() + " tried to replace itself with nothing. This indicates an error during exporting or a bug in the plugin.");
+						}
+						
+						break;
+					default:
+						break;
+					
+					}
+				}
 			}
 		}
 	}
@@ -483,6 +622,11 @@ public class CustomItemsEventHandler implements Listener {
 						customTrident = (CustomTrident) customMain;
 						ItemStack newMain = customTrident.decreaseDurability(main, customTrident.throwDurabilityLoss);
 						if (newMain == null) {
+							String newItemName = checkBrokenCondition(customTrident.getReplaceConditions());
+							if (newItemName != null) {
+								ItemStack newItem = set().getItem(newItemName).create(1);
+								shooter.getInventory().setItemInMainHand(newItem);
+							}
 							trident.setMetadata("CustomTridentBreak", TRIDENT_BREAK_META);
 						} else if (newMain != main) {
 							shooter.getInventory().setItemInMainHand(newMain);
@@ -494,6 +638,11 @@ public class CustomItemsEventHandler implements Listener {
 						customTrident = (CustomTrident) customOff;
 						ItemStack newOff = customTrident.decreaseDurability(off, customTrident.throwDurabilityLoss);
 						if (newOff == null) {
+							String newItemName = checkBrokenCondition(customTrident.getReplaceConditions());
+							if (newItemName != null) {
+								ItemStack newItem = set().getItem(newItemName).create(1);
+								shooter.getInventory().setItemInOffHand(newItem);
+							}
 							trident.setMetadata("CustomTridentBreak", TRIDENT_BREAK_META);
 						} else if (newOff != off) {
 							shooter.getInventory().setItemInOffHand(newOff);
@@ -583,6 +732,10 @@ public class CustomItemsEventHandler implements Listener {
 					Player player = (Player) event.getEntity();
 					ItemStack newBow = bow.decreaseDurability(oldBow, bow.getShootDurabilityLoss());
 					if (newBow == null) {
+						String newItemName = checkBrokenCondition(bow.getReplaceConditions());
+						if (newItemName != null) {
+							newBow = set().getItem(newItemName).create(1);
+						}
 						playBreakSound(player);
 					}
 					if (newBow != oldBow) {
@@ -679,6 +832,10 @@ public class CustomItemsEventHandler implements Listener {
 				ItemStack newMain = tool.decreaseDurability(main, tool.getShearDurabilityLoss());
 				if (newMain != main) {
 					if (newMain == null) {
+						String newItemName = checkBrokenCondition(tool.getReplaceConditions());
+						if (newItemName != null) {
+							newMain = set().getItem(newItemName).create(1);
+						}
 						playBreakSound(event.getPlayer());
 					}
 					event.getPlayer().getInventory().setItemInMainHand(newMain);
@@ -692,6 +849,10 @@ public class CustomItemsEventHandler implements Listener {
 				ItemStack newOff = tool.decreaseDurability(off, tool.getShearDurabilityLoss());
 				if (newOff != off) {
 					if (newOff == null) {
+						String newItemName = checkBrokenCondition(tool.getReplaceConditions());
+						if (newItemName != null) {
+							newOff = set().getItem(newItemName).create(1);
+						}
 						playBreakSound(event.getPlayer());
 					}
 					event.getPlayer().getInventory().setItemInOffHand(newOff);
@@ -1010,6 +1171,13 @@ public class CustomItemsEventHandler implements Listener {
 				ItemStack newHelmet = decreaseCustomArmorDurability(oldHelmet, armorDamage);
 				if (oldHelmet != newHelmet) {
 					if (newHelmet == null) {
+						CustomItem helmet = set().getItem(oldHelmet);
+						if (helmet != null && helmet instanceof CustomHelmet3D || helmet instanceof CustomArmor) {
+							String newItemName = checkBrokenCondition(helmet.getReplaceConditions());
+							if (newItemName != null) {
+								player.getInventory().addItem(set().getItem(newItemName).create(1));
+							}
+						}
 						playBreakSound(player);
 					}
 					e.setHelmet(newHelmet);
@@ -1019,6 +1187,13 @@ public class CustomItemsEventHandler implements Listener {
 				ItemStack newChestplate = decreaseCustomArmorDurability(oldChestplate, armorDamage);
 				if (oldChestplate != newChestplate) {
 					if (newChestplate == null) {
+						CustomItem plate = set().getItem(oldChestplate);
+						if (plate != null && plate instanceof CustomArmor) {
+							String newItemName = checkBrokenCondition(plate.getReplaceConditions());
+							if (newItemName != null) {
+								player.getInventory().addItem(set().getItem(newItemName).create(1));
+							}
+						}
 						playBreakSound(player);
 					}
 					e.setChestplate(newChestplate);
@@ -1028,6 +1203,13 @@ public class CustomItemsEventHandler implements Listener {
 				ItemStack newLeggings = decreaseCustomArmorDurability(oldLeggings, armorDamage);
 				if (oldLeggings != newLeggings) {
 					if (newLeggings == null) {
+						CustomItem leggings = set().getItem(oldLeggings);
+						if (leggings != null && leggings instanceof CustomArmor) {
+							String newItemName = checkBrokenCondition(leggings.getReplaceConditions());
+							if (newItemName != null) {
+								player.getInventory().addItem(set().getItem(newItemName).create(1));
+							}
+						}
 						playBreakSound(player);
 					}
 					e.setLeggings(newLeggings);
@@ -1037,6 +1219,13 @@ public class CustomItemsEventHandler implements Listener {
 				ItemStack newBoots = decreaseCustomArmorDurability(oldBoots, armorDamage);
 				if (oldBoots != newBoots) {
 					if (newBoots == null) {
+						CustomItem boots = set().getItem(oldBoots);
+						if (boots != null && boots instanceof CustomArmor) {
+							String newItemName = checkBrokenCondition(boots.getReplaceConditions());
+							if (newItemName != null) {
+								player.getInventory().addItem(set().getItem(newItemName).create(1));
+							}
+						}
 						playBreakSound(player);
 					}
 					e.setBoots(newBoots);
@@ -1074,6 +1263,10 @@ public class CustomItemsEventHandler implements Listener {
 						if (oldOffHand != newOffHand) {
 							player.getInventory().setItemInOffHand(newOffHand);
 							if (newOffHand == null) {
+								String newItemName = checkBrokenCondition(customOff.getReplaceConditions());
+								if (newItemName != null) {
+									player.getInventory().setItemInOffHand(set().getItem(newItemName).create(1));
+								}
 								playBreakSound(player);
 							}
 						}
@@ -1083,6 +1276,10 @@ public class CustomItemsEventHandler implements Listener {
 						if (oldMainHand != newMainHand) {
 							player.getInventory().setItemInMainHand(newMainHand);
 							if (newMainHand == null) {
+								String newItemName = checkBrokenCondition(customMain.getReplaceConditions());
+								if (newItemName != null) {
+									player.getInventory().setItemInMainHand(set().getItem(newItemName).create(1));
+								}
 								playBreakSound(player);
 							}
 						}
@@ -1976,5 +2173,58 @@ public class CustomItemsEventHandler implements Listener {
 				event.getBlock().getWorld().dropItemNaturally(event.getBlock().getLocation(), stackToDrop);
 			}
 		}
+	}
+	
+	private boolean checkCondition(ReplaceCondition cond, Player player) {
+		for (ItemStack stack : player.getInventory()) {
+			CustomItem inventoryItem = set().getItem(stack);
+			if (inventoryItem != null) {
+				switch(cond.getCondition()) {
+				case HASITEM:
+					if (inventoryItem.getName().contentEquals(cond.getItemName())) {
+						switch(cond.getOp()) {
+						case ATLEAST:
+							return stack.getAmount() >= cond.getValue();
+						case ATMOST:
+							return stack.getAmount() <= cond.getValue();
+						case EXACTLY:
+							return stack.getAmount() == cond.getValue();
+						case NONE:
+							return true;
+						default:
+							break;
+						}
+					}
+					break;
+				case MISSINGITEM:
+					if (inventoryItem.getName().equals(cond.getItemName())) {
+						return false;
+					}
+					
+					break;
+				case ISBROKEN:
+					break;
+				default:
+					break;
+				
+				}
+			}
+		}
+		
+		if (cond.getCondition() == ReplacementCondition.MISSINGITEM) {
+			return true;
+		}
+		
+		return false;
+	}
+	
+	private String checkBrokenCondition(ReplaceCondition[] conditions) {
+		for (ReplaceCondition cond : conditions) {
+			if (cond.getCondition() == ReplacementCondition.ISBROKEN) {
+				return cond.getReplacingItemName();
+			}
+		}
+		
+		return null;
 	}
 }

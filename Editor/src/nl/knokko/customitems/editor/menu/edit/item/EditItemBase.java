@@ -352,25 +352,29 @@ public abstract class EditItemBase extends GuiMenu {
 	}
 	
 	protected ReplaceCondition getExampleReplaceCondition() {
-		return new ReplaceCondition(ReplacementCondition.HASITEM, "None", ReplacementOperation.EXACTLY, 64, new String());
+		return new ReplaceCondition(ReplacementCondition.HASITEM, "None", ReplacementOperation.NONE, 0, new String());
 	}
 	
 	private void addReplaceComponent() {
 		System.out.println(Arrays.toString(conditions));
 		addComponent(new DynamicTextButton("Change...", EditProps.BUTTON, EditProps.HOVER, () -> {
-			state.getWindow().setMainComponent(new ReplacementCollectionEdit(Arrays.asList(conditions), 
-					newConditions -> {
-						Checks.nonNull(conditions);
-						this.conditions = newConditions.toArray(new ReplaceCondition[newConditions.size()]);
-						System.out.println(Arrays.toString(newConditions.toArray()));
-						System.out.println(Arrays.toString(conditions));
-					}, EditItemBase.this, getExampleReplaceCondition(), menu.getSet().getBackingItems(), newOp ->  {
-						if (newOp == null) {
-							newOp = ConditionOperation.NONE;
-						}
-						this.op = newOp;
-						System.out.println("Operator changed!");
-					}));
+			if (menu.getSet().getBackingItems().size() > 0) {
+				state.getWindow().setMainComponent(new ReplacementCollectionEdit(Arrays.asList(conditions), 
+						newConditions -> {
+							Checks.nonNull(conditions);
+							this.conditions = newConditions.toArray(new ReplaceCondition[newConditions.size()]);
+							System.out.println(Arrays.toString(newConditions.toArray()));
+							System.out.println(Arrays.toString(conditions));
+						}, EditItemBase.this, getExampleReplaceCondition(), menu.getSet().getBackingItems(), newOp ->  {
+							if (newOp == null) {
+								newOp = ConditionOperation.NONE;
+							}
+							this.op = newOp;
+							System.out.println("Operator changed!");
+						}));
+			} else {
+				errorComponent.setText("No items defined yet, so cannot replace this item with other items.");
+			}
 		}), BUTTON_X, 0.02f, BUTTON_X + 0.1f, 0.07f);
 	}
 	protected abstract CustomItemType.Category getCategory();

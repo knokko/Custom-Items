@@ -40,6 +40,7 @@ import nl.knokko.customitems.item.CustomItemType;
 import nl.knokko.customitems.item.Enchantment;
 import nl.knokko.customitems.item.ReplaceCondition;
 import nl.knokko.customitems.item.ReplaceCondition.ConditionOperation;
+import nl.knokko.customitems.item.ReplaceCondition.ReplacementCondition;
 import nl.knokko.customitems.plugin.CustomItemsEventHandler;
 import nl.knokko.customitems.plugin.CustomItemsPlugin;
 import nl.knokko.customitems.plugin.recipe.ingredient.Ingredient;
@@ -151,6 +152,12 @@ public class CustomTool extends CustomItem {
 			
 			ItemStack decreased = decreaseDurability(tool, blockBreakDurabilityLoss);
 			if (decreased == null) {
+				for (ReplaceCondition cond : conditions) {
+					if (cond.getCondition() == ReplacementCondition.ISBROKEN) {
+						ItemStack replace = CustomItemsPlugin.getInstance().getSet().getCustomItemByName(cond.getReplacingItemName()).create(1);
+						player.getInventory().addItem(replace);
+					}
+				}
 				CustomItemsEventHandler.playBreakSound(player);
 			}
 			if (decreased != tool) {

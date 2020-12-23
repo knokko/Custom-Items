@@ -1,7 +1,5 @@
 package nl.knokko.customitems.editor.menu.edit.item;
 
-import java.util.List;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.function.Consumer;
 
@@ -25,7 +23,6 @@ public class ReplacementCollectionEdit extends QuickCollectionEdit<ReplaceCondit
 	private final Collection<CustomItem> backingItems;
 	private ConditionOperation op;
 	private Consumer<ConditionOperation> operation;
-	private final List<CustomItem> items;
 	
 	public ReplacementCollectionEdit(Collection<ReplaceCondition> currentCollection, Consumer<Collection<ReplaceCondition>> onApply, GuiComponent returnMenu, 
 			ReplaceCondition exampleCondition, Collection<CustomItem> backingItems, Consumer<ConditionOperation> operation) {
@@ -33,8 +30,6 @@ public class ReplacementCollectionEdit extends QuickCollectionEdit<ReplaceCondit
 		this.exampleCondition = exampleCondition;
 		this.backingItems = backingItems;
 		this.operation = operation;
-		items = new ArrayList<>();
-		items.addAll(backingItems);
 	}
 	
 	@Override
@@ -48,6 +43,17 @@ public class ReplacementCollectionEdit extends QuickCollectionEdit<ReplaceCondit
 		removeComponent(apply);
 		
 		addComponent(new DynamicTextButton("Apply", EditProps.SAVE_BASE, EditProps.SAVE_HOVER, () -> {
+			if (op == ConditionOperation.AND || op == ConditionOperation.OR) {
+				String replacementItem = null;
+				for (ReplaceCondition cond: ownCollection) {
+					if (replacementItem == null) {
+						replacementItem = cond.getReplacingItemName();
+					} else if (replacementItem != cond.getReplacingItemName()) {
+						errorComponent.setText("With the OR and AND operators, all replacement items must be the same item. Use NONE if you want the item to be "
+								+ "replaced by different items based on different conditions");
+					}
+				}
+			}
 			onApply.accept(ownCollection);
 			operation.accept(op);
 			state.getWindow().setMainComponent(returnMenu);
@@ -70,7 +76,7 @@ public class ReplacementCollectionEdit extends QuickCollectionEdit<ReplaceCondit
 			ReplaceCondition previous = ownCollection.get(itemIndex);
 			ownCollection.set(itemIndex, new ReplaceCondition(
 					previous.getCondition(), newItem.getName(), previous.getOp(), previous.getValue(), previous.getReplacingItemName()));
-		}, (CustomItem item) -> { return item.getName(); }, items.get(itemIndex).getName());
+		}, (CustomItem item) -> { return item.getName(); }, ownCollection.get(itemIndex).getItemName());
 		GuiComponent operationButton = EnumSelect.createSelectButton(ReplacementOperation.class, newOperation -> {
 			ReplaceCondition previous = ownCollection.get(itemIndex);
 			ownCollection.set(itemIndex, new ReplaceCondition(
@@ -80,7 +86,7 @@ public class ReplacementCollectionEdit extends QuickCollectionEdit<ReplaceCondit
 			ReplaceCondition previous = ownCollection.get(itemIndex);
 			ownCollection.set(itemIndex, new ReplaceCondition(
 					previous.getCondition(), previous.getItemName(), previous.getOp(), previous.getValue(), newItem.getName()));
-		}, (CustomItem item) -> { return item.getName(); }, items.get(itemIndex).getName());
+		}, (CustomItem item) -> { return item.getName(); }, ownCollection.get(itemIndex).getReplacingItemName());
 		addComponent(new ImageButton(deleteBase, deleteHover, () -> {
 			removeItem(itemIndex);
 		}), 0.25f, minY, 0.3f, maxY);
