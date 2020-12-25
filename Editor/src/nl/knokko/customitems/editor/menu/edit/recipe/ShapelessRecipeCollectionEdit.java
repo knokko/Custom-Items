@@ -5,7 +5,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.LinkedList;
 
-import nl.knokko.customitems.editor.HelpButtons;
 import nl.knokko.customitems.editor.menu.edit.EditMenu;
 import nl.knokko.customitems.editor.menu.edit.EditProps;
 import nl.knokko.customitems.editor.menu.edit.SafeCollectionEdit;
@@ -21,6 +20,7 @@ import nl.knokko.customitems.editor.set.recipe.ingredient.DataVanillaIngredient;
 import nl.knokko.customitems.editor.set.recipe.ingredient.Ingredient;
 import nl.knokko.customitems.editor.set.recipe.ingredient.SimpleVanillaIngredient;
 import nl.knokko.customitems.editor.set.recipe.result.SimpleVanillaResult;
+import nl.knokko.customitems.editor.util.HelpButtons;
 import nl.knokko.customitems.item.CIMaterial;
 import nl.knokko.gui.component.GuiComponent;
 import nl.knokko.gui.component.text.ConditionalTextButton;

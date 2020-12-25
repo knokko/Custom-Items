@@ -27,10 +27,10 @@ import java.util.Collection;
 import java.util.Locale;
 import java.util.function.Consumer;
 
-import nl.knokko.customitems.editor.HelpButtons;
 import nl.knokko.customitems.editor.menu.edit.EditProps;
 import nl.knokko.customitems.editor.set.ItemSet;
 import nl.knokko.customitems.editor.set.item.NamedImage;
+import nl.knokko.customitems.editor.util.HelpButtons;
 import nl.knokko.gui.color.GuiColor;
 import nl.knokko.gui.component.GuiComponent;
 import nl.knokko.gui.component.menu.GuiMenu;

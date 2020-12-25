@@ -2,7 +2,6 @@ package nl.knokko.customitems.editor.menu.edit.recipe;
 
 import java.awt.image.BufferedImage;
 
-import nl.knokko.customitems.editor.HelpButtons;
 import nl.knokko.customitems.editor.menu.edit.CollectionEdit;
 import nl.knokko.customitems.editor.menu.edit.EditMenu;
 import nl.knokko.customitems.editor.menu.edit.EditProps;
@@ -11,6 +10,7 @@ import nl.knokko.customitems.editor.set.recipe.Recipe;
 import nl.knokko.customitems.editor.set.recipe.ShapedRecipe;
 import nl.knokko.customitems.editor.set.recipe.ShapelessRecipe;
 import nl.knokko.customitems.editor.set.recipe.result.CustomItemResult;
+import nl.knokko.customitems.editor.util.HelpButtons;
 import nl.knokko.gui.component.GuiComponent;
 import nl.knokko.gui.component.text.dynamic.DynamicTextButton;
 

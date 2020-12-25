@@ -23,7 +23,6 @@
  *******************************************************************************/
 package nl.knokko.customitems.editor.menu.edit.recipe;
 
-import nl.knokko.customitems.editor.HelpButtons;
 import nl.knokko.customitems.editor.menu.edit.EditMenu;
 import nl.knokko.customitems.editor.menu.edit.EditProps;
 import nl.knokko.customitems.editor.menu.edit.recipe.ingredient.IngredientComponent;
@@ -32,6 +31,7 @@ import nl.knokko.customitems.editor.set.recipe.ShapedRecipe;
 import nl.knokko.customitems.editor.set.recipe.ingredient.Ingredient;
 import nl.knokko.customitems.editor.set.recipe.ingredient.NoIngredient;
 import nl.knokko.customitems.editor.set.recipe.result.SimpleVanillaResult;
+import nl.knokko.customitems.editor.util.HelpButtons;
 import nl.knokko.customitems.item.CIMaterial;
 import nl.knokko.gui.color.GuiColor;
 import nl.knokko.gui.component.menu.GuiMenu;

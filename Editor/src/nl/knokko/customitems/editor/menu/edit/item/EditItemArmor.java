@@ -24,10 +24,10 @@
 package nl.knokko.customitems.editor.menu.edit.item;
 
 import nl.knokko.customitems.damage.DamageResistances;
-import nl.knokko.customitems.editor.HelpButtons;
 import nl.knokko.customitems.editor.menu.edit.EditMenu;
 import nl.knokko.customitems.editor.menu.edit.EditProps;
 import nl.knokko.customitems.editor.set.item.CustomArmor;
+import nl.knokko.customitems.editor.util.HelpButtons;
 import nl.knokko.customitems.item.AttributeModifier;
 import nl.knokko.customitems.item.CustomItemType;
 import nl.knokko.customitems.item.AttributeModifier.Attribute;

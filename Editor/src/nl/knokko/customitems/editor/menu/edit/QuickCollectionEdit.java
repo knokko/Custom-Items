@@ -5,7 +5,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.function.Consumer;
 
-import nl.knokko.customitems.editor.HelpButtons;
+import nl.knokko.customitems.editor.util.HelpButtons;
 import nl.knokko.gui.color.GuiColor;
 import nl.knokko.gui.component.GuiComponent;
 import nl.knokko.gui.component.menu.GuiMenu;

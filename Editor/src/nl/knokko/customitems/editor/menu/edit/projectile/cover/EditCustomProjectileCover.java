@@ -1,11 +1,11 @@
 package nl.knokko.customitems.editor.menu.edit.projectile.cover;
 
-import nl.knokko.customitems.editor.HelpButtons;
 import nl.knokko.customitems.editor.menu.edit.EditMenu;
 import nl.knokko.customitems.editor.menu.edit.EditProps;
 import nl.knokko.customitems.editor.menu.edit.item.EditCustomModel;
 import nl.knokko.customitems.editor.set.projectile.cover.CustomProjectileCover;
 import nl.knokko.customitems.editor.set.projectile.cover.EditorProjectileCover;
+import nl.knokko.customitems.editor.util.HelpButtons;
 import nl.knokko.customitems.item.CustomItemType;
 import nl.knokko.gui.component.text.dynamic.DynamicTextButton;
 import nl.knokko.gui.component.text.dynamic.DynamicTextComponent;

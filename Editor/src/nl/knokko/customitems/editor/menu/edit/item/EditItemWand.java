@@ -2,10 +2,10 @@ package nl.knokko.customitems.editor.menu.edit.item;
 
 import static nl.knokko.customitems.editor.menu.edit.EditProps.*;
 
-import nl.knokko.customitems.editor.HelpButtons;
 import nl.knokko.customitems.editor.menu.edit.CollectionSelect;
 import nl.knokko.customitems.editor.menu.edit.EditMenu;
 import nl.knokko.customitems.editor.set.item.CustomWand;
+import nl.knokko.customitems.editor.util.HelpButtons;
 import nl.knokko.customitems.item.AttributeModifier;
 import nl.knokko.customitems.item.AttributeModifier.Attribute;
 import nl.knokko.customitems.item.AttributeModifier.Operation;

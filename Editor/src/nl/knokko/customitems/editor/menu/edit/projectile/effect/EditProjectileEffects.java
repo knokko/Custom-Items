@@ -5,8 +5,8 @@ import java.util.Collection;
 
 import static nl.knokko.customitems.editor.menu.edit.EditProps.*;
 
-import nl.knokko.customitems.editor.HelpButtons;
 import nl.knokko.customitems.editor.set.ItemSet;
+import nl.knokko.customitems.editor.util.HelpButtons;
 import nl.knokko.customitems.projectile.effects.ProjectileEffect;
 import nl.knokko.customitems.projectile.effects.ProjectileEffects;
 import nl.knokko.gui.color.GuiColor;

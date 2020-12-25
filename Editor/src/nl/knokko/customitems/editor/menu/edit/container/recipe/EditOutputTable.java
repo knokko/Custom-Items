@@ -5,11 +5,11 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Consumer;
 
-import nl.knokko.customitems.editor.HelpButtons;
 import nl.knokko.customitems.editor.menu.edit.EditProps;
 import nl.knokko.customitems.editor.menu.edit.SafeCollectionEdit;
 import nl.knokko.customitems.editor.set.ItemSet;
 import nl.knokko.customitems.editor.set.recipe.result.CustomItemResult;
+import nl.knokko.customitems.editor.util.HelpButtons;
 import nl.knokko.customitems.recipe.OutputTable;
 import nl.knokko.customitems.recipe.OutputTable.Entry;
 import nl.knokko.gui.component.GuiComponent;

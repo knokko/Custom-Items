@@ -3,10 +3,10 @@ package nl.knokko.customitems.editor.menu.edit.projectile.effect;
 import java.awt.image.BufferedImage;
 import java.util.Collection;
 
-import nl.knokko.customitems.editor.HelpButtons;
 import nl.knokko.customitems.editor.menu.edit.CollectionEdit;
 import nl.knokko.customitems.editor.menu.edit.EditProps;
 import nl.knokko.customitems.editor.set.ItemSet;
+import nl.knokko.customitems.editor.util.HelpButtons;
 import nl.knokko.customitems.projectile.effects.*;
 import nl.knokko.gui.component.GuiComponent;
 import nl.knokko.gui.component.text.dynamic.DynamicTextButton;

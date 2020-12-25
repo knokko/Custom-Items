@@ -2,10 +2,10 @@ package nl.knokko.customitems.editor.menu.edit.projectile;
 
 import java.awt.image.BufferedImage;
 
-import nl.knokko.customitems.editor.HelpButtons;
 import nl.knokko.customitems.editor.menu.edit.CollectionEdit;
 import nl.knokko.customitems.editor.menu.edit.EditMenu;
 import nl.knokko.customitems.editor.menu.edit.EditProps;
+import nl.knokko.customitems.editor.util.HelpButtons;
 import nl.knokko.customitems.projectile.CIProjectile;
 import nl.knokko.gui.component.GuiComponent;
 import nl.knokko.gui.component.text.dynamic.DynamicTextButton;

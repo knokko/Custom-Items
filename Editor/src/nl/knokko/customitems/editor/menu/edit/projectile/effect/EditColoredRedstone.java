@@ -4,7 +4,7 @@ import java.util.Collection;
 
 import static nl.knokko.customitems.editor.menu.edit.EditProps.*;
 
-import nl.knokko.customitems.editor.HelpButtons;
+import nl.knokko.customitems.editor.util.HelpButtons;
 import nl.knokko.customitems.projectile.effects.ColoredRedstone;
 import nl.knokko.customitems.projectile.effects.ProjectileEffect;
 import nl.knokko.gui.component.GuiComponent;

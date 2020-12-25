@@ -1,8 +1,8 @@
 package nl.knokko.customitems.editor.menu.edit;
 
 import nl.knokko.customitems.editor.Editor;
-import nl.knokko.customitems.editor.HelpButtons;
 import nl.knokko.customitems.editor.menu.main.MainMenu;
+import nl.knokko.customitems.editor.util.HelpButtons;
 import nl.knokko.gui.color.GuiColor;
 import nl.knokko.gui.component.menu.GuiMenu;
 import nl.knokko.gui.component.text.dynamic.DynamicTextButton;

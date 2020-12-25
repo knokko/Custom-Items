@@ -1,6 +1,5 @@
 package nl.knokko.customitems.editor.menu.edit.projectile.cover;
 
-import nl.knokko.customitems.editor.HelpButtons;
 import nl.knokko.customitems.editor.menu.edit.EditMenu;
 import nl.knokko.customitems.editor.menu.edit.EditProps;
 import nl.knokko.customitems.editor.menu.edit.item.TextureSelectButton;
@@ -8,6 +7,7 @@ import nl.knokko.customitems.editor.menu.edit.texture.TextureEdit;
 import nl.knokko.customitems.editor.set.item.NamedImage;
 import nl.knokko.customitems.editor.set.projectile.cover.EditorProjectileCover;
 import nl.knokko.customitems.editor.set.projectile.cover.SphereProjectileCover;
+import nl.knokko.customitems.editor.util.HelpButtons;
 import nl.knokko.customitems.item.CustomItemType;
 import nl.knokko.gui.component.text.FloatEditField;
 import nl.knokko.gui.component.text.IntEditField;

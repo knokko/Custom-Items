@@ -5,10 +5,10 @@ import java.util.Collection;
 import java.util.function.Consumer;
 
 import nl.knokko.customitems.drops.Drop;
-import nl.knokko.customitems.editor.HelpButtons;
 import nl.knokko.customitems.editor.menu.edit.EditProps;
 import nl.knokko.customitems.editor.menu.edit.container.recipe.EditOutputTable;
 import nl.knokko.customitems.editor.set.ItemSet;
+import nl.knokko.customitems.editor.util.HelpButtons;
 import nl.knokko.customitems.item.CustomItem;
 import nl.knokko.customitems.recipe.OutputTable;
 import nl.knokko.gui.color.GuiColor;

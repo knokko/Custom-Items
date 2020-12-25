@@ -4,12 +4,12 @@ import java.awt.image.BufferedImage;
 import java.util.Collection;
 
 import nl.knokko.customitems.container.slot.CustomSlot;
-import nl.knokko.customitems.editor.HelpButtons;
 import nl.knokko.customitems.editor.menu.edit.CollectionEdit;
 import nl.knokko.customitems.editor.menu.edit.EditProps;
 import nl.knokko.customitems.editor.menu.edit.container.EditContainer;
 import nl.knokko.customitems.editor.set.ItemSet;
 import nl.knokko.customitems.editor.set.recipe.result.CustomItemResult;
+import nl.knokko.customitems.editor.util.HelpButtons;
 import nl.knokko.customitems.recipe.ContainerRecipe;
 import nl.knokko.customitems.recipe.ContainerRecipe.OutputEntry;
 import nl.knokko.customitems.recipe.OutputTable;

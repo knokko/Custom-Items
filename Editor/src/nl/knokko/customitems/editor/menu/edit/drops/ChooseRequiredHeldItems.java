@@ -5,8 +5,8 @@ import java.util.Collection;
 import java.util.Locale;
 import java.util.function.Consumer;
 
-import nl.knokko.customitems.editor.HelpButtons;
 import nl.knokko.customitems.editor.menu.edit.EditProps;
+import nl.knokko.customitems.editor.util.HelpButtons;
 import nl.knokko.customitems.item.CustomItem;
 import nl.knokko.gui.color.GuiColor;
 import nl.knokko.gui.component.GuiComponent;

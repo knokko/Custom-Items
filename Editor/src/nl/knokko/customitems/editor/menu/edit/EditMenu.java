@@ -23,7 +23,6 @@
  *******************************************************************************/
 package nl.knokko.customitems.editor.menu.edit;
 
-import nl.knokko.customitems.editor.HelpButtons;
 import nl.knokko.customitems.editor.menu.edit.container.ContainerPortal;
 import nl.knokko.customitems.editor.menu.edit.drops.DropsMenu;
 import nl.knokko.customitems.editor.menu.edit.item.ItemCollectionEdit;
@@ -32,6 +31,7 @@ import nl.knokko.customitems.editor.menu.edit.recipe.RecipeCollectionEdit;
 import nl.knokko.customitems.editor.menu.edit.texture.TextureCollectionEdit;
 import nl.knokko.customitems.editor.menu.main.MainMenu;
 import nl.knokko.customitems.editor.set.ItemSet;
+import nl.knokko.customitems.editor.util.HelpButtons;
 import nl.knokko.gui.color.GuiColor;
 import nl.knokko.gui.component.GuiComponent;
 import nl.knokko.gui.component.menu.GuiMenu;

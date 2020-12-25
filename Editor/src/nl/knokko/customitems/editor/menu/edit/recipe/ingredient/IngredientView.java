@@ -23,12 +23,12 @@
  *******************************************************************************/
 package nl.knokko.customitems.editor.menu.edit.recipe.ingredient;
 
-import nl.knokko.customitems.editor.HelpButtons;
 import nl.knokko.customitems.editor.menu.edit.EditProps;
 import nl.knokko.customitems.editor.menu.edit.select.item.*;
 import nl.knokko.customitems.editor.set.ItemSet;
 import nl.knokko.customitems.editor.set.item.CustomItem;
 import nl.knokko.customitems.editor.set.recipe.ingredient.*;
+import nl.knokko.customitems.editor.util.HelpButtons;
 import nl.knokko.customitems.item.CIMaterial;
 import nl.knokko.gui.color.GuiColor;
 import nl.knokko.gui.component.menu.GuiMenu;

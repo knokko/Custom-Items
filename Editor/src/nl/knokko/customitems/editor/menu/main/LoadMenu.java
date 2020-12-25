@@ -29,10 +29,10 @@ import java.io.IOException;
 import java.util.Calendar;
 
 import nl.knokko.customitems.editor.Editor;
-import nl.knokko.customitems.editor.HelpButtons;
 import nl.knokko.customitems.editor.menu.edit.EditMenu;
 import nl.knokko.customitems.editor.menu.edit.EditProps;
 import nl.knokko.customitems.editor.set.ItemSet;
+import nl.knokko.customitems.editor.util.HelpButtons;
 import nl.knokko.customitems.trouble.IntegrityException;
 import nl.knokko.customitems.trouble.UnknownEncodingException;
 import nl.knokko.gui.color.GuiColor;

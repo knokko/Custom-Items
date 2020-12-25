@@ -2,13 +2,13 @@ package nl.knokko.customitems.editor.menu.edit.projectile.cover;
 
 import java.awt.image.BufferedImage;
 
-import nl.knokko.customitems.editor.HelpButtons;
 import nl.knokko.customitems.editor.menu.edit.CollectionEdit;
 import nl.knokko.customitems.editor.menu.edit.EditMenu;
 import nl.knokko.customitems.editor.menu.edit.EditProps;
 import nl.knokko.customitems.editor.set.projectile.cover.CustomProjectileCover;
 import nl.knokko.customitems.editor.set.projectile.cover.EditorProjectileCover;
 import nl.knokko.customitems.editor.set.projectile.cover.SphereProjectileCover;
+import nl.knokko.customitems.editor.util.HelpButtons;
 import nl.knokko.gui.component.GuiComponent;
 import nl.knokko.gui.component.text.dynamic.DynamicTextButton;
 

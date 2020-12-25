@@ -3,9 +3,9 @@ package nl.knokko.customitems.editor.menu.edit.drops.mob;
 import java.awt.image.BufferedImage;
 
 import nl.knokko.customitems.drops.EntityDrop;
-import nl.knokko.customitems.editor.HelpButtons;
 import nl.knokko.customitems.editor.menu.edit.*;
 import nl.knokko.customitems.editor.set.recipe.result.CustomItemResult;
+import nl.knokko.customitems.editor.util.HelpButtons;
 import nl.knokko.customitems.recipe.OutputTable;
 import nl.knokko.gui.component.GuiComponent;
 import nl.knokko.gui.component.text.dynamic.DynamicTextButton;

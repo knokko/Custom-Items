@@ -1,10 +1,10 @@
 package nl.knokko.customitems.editor.menu.edit.item;
 
-import nl.knokko.customitems.editor.HelpButtons;
 import nl.knokko.customitems.editor.menu.edit.EditMenu;
 import nl.knokko.customitems.editor.menu.edit.EditProps;
 import nl.knokko.customitems.editor.set.ItemSet;
 import nl.knokko.customitems.editor.set.item.CustomTrident;
+import nl.knokko.customitems.editor.util.HelpButtons;
 import nl.knokko.customitems.item.CustomItemType.Category;
 import nl.knokko.gui.component.text.FloatEditField;
 import nl.knokko.gui.component.text.IntEditField;

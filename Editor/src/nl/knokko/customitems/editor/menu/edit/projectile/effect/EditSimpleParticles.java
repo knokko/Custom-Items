@@ -4,8 +4,8 @@ import static nl.knokko.customitems.editor.menu.edit.EditProps.*;
 
 import java.util.Collection;
 
-import nl.knokko.customitems.editor.HelpButtons;
 import nl.knokko.customitems.editor.menu.edit.EnumSelect;
+import nl.knokko.customitems.editor.util.HelpButtons;
 import nl.knokko.customitems.particle.CIParticle;
 import nl.knokko.customitems.projectile.effects.ProjectileEffect;
 import nl.knokko.customitems.projectile.effects.SimpleParticles;

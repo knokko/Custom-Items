@@ -3,11 +3,11 @@ package nl.knokko.customitems.editor.menu.edit.drops.block;
 import java.awt.image.BufferedImage;
 
 import nl.knokko.customitems.drops.BlockDrop;
-import nl.knokko.customitems.editor.HelpButtons;
 import nl.knokko.customitems.editor.menu.edit.CollectionEdit;
 import nl.knokko.customitems.editor.menu.edit.EditMenu;
 import nl.knokko.customitems.editor.menu.edit.EditProps;
 import nl.knokko.customitems.editor.set.recipe.result.CustomItemResult;
+import nl.knokko.customitems.editor.util.HelpButtons;
 import nl.knokko.customitems.recipe.OutputTable;
 import nl.knokko.gui.component.GuiComponent;
 import nl.knokko.gui.component.text.dynamic.DynamicTextButton;

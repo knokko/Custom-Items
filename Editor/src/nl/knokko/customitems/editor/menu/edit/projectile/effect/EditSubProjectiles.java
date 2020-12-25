@@ -3,9 +3,9 @@ package nl.knokko.customitems.editor.menu.edit.projectile.effect;
 import static nl.knokko.customitems.editor.menu.edit.EditProps.*;
 import java.util.Collection;
 
-import nl.knokko.customitems.editor.HelpButtons;
 import nl.knokko.customitems.editor.menu.edit.CollectionSelect;
 import nl.knokko.customitems.editor.set.ItemSet;
+import nl.knokko.customitems.editor.util.HelpButtons;
 import nl.knokko.customitems.projectile.CIProjectile;
 import nl.knokko.customitems.projectile.effects.ProjectileEffect;
 import nl.knokko.customitems.projectile.effects.SubProjectiles;

@@ -28,7 +28,6 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 
-import nl.knokko.customitems.editor.Checks;
 import nl.knokko.customitems.editor.menu.edit.EditMenu;
 import nl.knokko.customitems.editor.menu.edit.EditProps;
 import nl.knokko.customitems.editor.menu.edit.EnumSelect;
@@ -38,6 +37,7 @@ import nl.knokko.customitems.editor.menu.edit.texture.TextureEdit;
 import nl.knokko.customitems.editor.set.ItemSet;
 import nl.knokko.customitems.editor.set.item.CustomItem;
 import nl.knokko.customitems.editor.set.item.NamedImage;
+import nl.knokko.customitems.editor.util.Checks;
 import nl.knokko.customitems.effect.EquippedPotionEffect;
 import nl.knokko.customitems.effect.PotionEffect;
 import nl.knokko.customitems.item.AttributeModifier;
