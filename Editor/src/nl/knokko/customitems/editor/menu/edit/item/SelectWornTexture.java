@@ -6,6 +6,7 @@ import nl.knokko.customitems.editor.menu.edit.EditProps;
 import nl.knokko.customitems.editor.menu.edit.texture.ArmorTexturesEdit;
 import nl.knokko.customitems.editor.set.ItemSet;
 import nl.knokko.customitems.editor.set.item.texture.ArmorTextures;
+import nl.knokko.customitems.editor.util.HelpButtons;
 import nl.knokko.customitems.editor.util.ReadOnlyReference;
 import nl.knokko.customitems.editor.util.Reference;
 import nl.knokko.gui.color.GuiColor;
@@ -57,6 +58,8 @@ public class SelectWornTexture extends GuiMenu {
 		addComponent(new DynamicTextComponent(
 				"Only players with Optifine will see worn textures", 
 				EditProps.LABEL), 0.55f, 0.8f, 1f, 0.9f);
+		
+		HelpButtons.addHelpLink(this, "edit%20menu/items/edit/worn texture.html");
 	}
 	
 	@Override

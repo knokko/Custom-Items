@@ -6,6 +6,7 @@ import nl.knokko.customitems.editor.menu.edit.CollectionEdit;
 import nl.knokko.customitems.editor.menu.edit.EditProps;
 import nl.knokko.customitems.editor.set.ItemSet;
 import nl.knokko.customitems.editor.set.item.texture.ArmorTextures;
+import nl.knokko.customitems.editor.util.HelpButtons;
 import nl.knokko.customitems.editor.util.Reference;
 import nl.knokko.gui.component.GuiComponent;
 import nl.knokko.gui.component.text.dynamic.DynamicTextButton;
@@ -36,6 +37,8 @@ public class ArmorTexturesCollectionEdit extends CollectionEdit<Reference<ArmorT
 				EditProps.LABEL), 0f, 0.4f, 0.3f, 0.5f);
 		addComponent(new DynamicTextComponent("will see worn armor textures", 
 				EditProps.LABEL), 0f, 0.3f, 0.25f, 0.4f);
+		
+		HelpButtons.addHelpLink(this, "edit%20menu/textures/armor overview.html");
 	}
 
 	private static class ArmorTexturesActionHandler implements ActionHandler<Reference<ArmorTextures>> {

@@ -10,6 +10,7 @@ import javax.imageio.ImageIO;
 import nl.knokko.customitems.editor.menu.edit.EditProps;
 import nl.knokko.customitems.editor.set.ItemSet;
 import nl.knokko.customitems.editor.set.item.texture.ArmorTextures;
+import nl.knokko.customitems.editor.util.HelpButtons;
 import nl.knokko.customitems.editor.util.Reference;
 import nl.knokko.customitems.util.ValidationException;
 import nl.knokko.gui.color.GuiColor;
@@ -104,6 +105,8 @@ public class ArmorTexturesEdit extends GuiMenu {
 				errorComponent.setText(invalid.getMessage());
 			}
 		}), 0.025f, 0.2f, 0.2f, 0.3f);
+		
+		HelpButtons.addHelpLink(this, "edit%20menu/textures/armor edit.html");
 	}
 	
 	private GuiComponent createImageSelect(Consumer<BufferedImage> onChoose) {
