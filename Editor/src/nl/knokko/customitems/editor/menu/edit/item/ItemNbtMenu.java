@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.function.Consumer;
 
 import nl.knokko.customitems.editor.menu.edit.EditProps;
+import nl.knokko.customitems.editor.util.HelpButtons;
 import nl.knokko.customitems.item.nbt.ExtraItemNbt;
 import nl.knokko.customitems.item.nbt.NbtKey;
 import nl.knokko.customitems.item.nbt.NbtPair;
@@ -77,6 +78,8 @@ public class ItemNbtMenu extends GuiMenu {
 				"You can add more nbt tags below if you would like to:", 
 				EditProps.LABEL), 0.02f, 0.3f, 0.7f, 0.4f);
 		addComponent(new PairList(), 0f, 0f, 1f, 0.3f);
+		
+		HelpButtons.addHelpLink(this, "edit%20menu/items/edit/nbt.html");
 	}
 
 	@Override
