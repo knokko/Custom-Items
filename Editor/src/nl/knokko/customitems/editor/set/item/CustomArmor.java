@@ -27,7 +27,9 @@ import java.util.Collection;
 import java.util.List;
 
 import nl.knokko.customitems.damage.DamageResistances;
+import nl.knokko.customitems.editor.set.item.texture.ArmorTextures;
 import nl.knokko.customitems.editor.set.recipe.ingredient.Ingredient;
+import nl.knokko.customitems.editor.util.ReadOnlyReference;
 import nl.knokko.customitems.effect.EquippedPotionEffect;
 import nl.knokko.customitems.effect.PotionEffect;
 import nl.knokko.customitems.encoding.ItemEncoding;
@@ -36,6 +38,7 @@ import nl.knokko.customitems.item.CustomItemType;
 import nl.knokko.customitems.item.Enchantment;
 import nl.knokko.customitems.item.ReplaceCondition;
 import nl.knokko.customitems.item.ReplaceCondition.ConditionOperation;
+import nl.knokko.customitems.item.nbt.ExtraItemNbt;
 import nl.knokko.util.bits.BitOutput;
 
 public class CustomArmor extends CustomTool {
@@ -45,6 +48,7 @@ public class CustomArmor extends CustomTool {
 	private int blue;
 	
 	private DamageResistances damageResistances;
+	private ReadOnlyReference<ArmorTextures> wornTexture;
 	
 	public CustomArmor(
 			CustomItemType itemType, String name, String alias, String displayName, 
@@ -56,19 +60,22 @@ public class CustomArmor extends CustomTool {
 			DamageResistances damageResistances, byte[] customModel, 
 			List<PotionEffect> playerEffects, List<PotionEffect> targetEffects, 
 			Collection<EquippedPotionEffect> equippedEffects, String[] commands, 
-			ReplaceCondition[] conditions, ConditionOperation op
+			ReplaceCondition[] conditions, ConditionOperation op,
+			ExtraItemNbt extraNbt, ReadOnlyReference<ArmorTextures> wornTexture
 	) {
 		super(
 				itemType, name, alias, displayName, lore, attributes, 
 				defaultEnchantments, durability, allowEnchanting, allowAnvil, 
 				repairItem, texture, itemFlags, entityHitDurabilityLoss, 
 				blockBreakDurabilityLoss, customModel, playerEffects, 
-				targetEffects, equippedEffects, commands, conditions, op
+				targetEffects, equippedEffects, commands, conditions, op,
+				extraNbt
 		);
 		this.red = red;
 		this.green = green;
 		this.blue = blue;
 		this.damageResistances = damageResistances;
+		this.wornTexture = wornTexture;
 	}
 	
 	@Override
@@ -304,6 +311,11 @@ public class CustomArmor extends CustomTool {
 			output.addJavaString(condition.getReplacingItemName());
 		}
 		output.addJavaString(op.name());
+		extraNbt.save(output);
+		output.addBoolean(wornTexture != null);
+		if (wornTexture != null) {
+			output.addString(wornTexture.get().getName());
+		}
 	}
 	
 	protected byte getEncoding9() {
@@ -344,5 +356,13 @@ public class CustomArmor extends CustomTool {
 	
 	public void setDamageResistances(DamageResistances newResistances) {
 		damageResistances = newResistances;
+	}
+	
+	public ReadOnlyReference<ArmorTextures> getWornTexture() {
+		return wornTexture;
+	}
+	
+	public void setWornTexture(ReadOnlyReference<ArmorTextures> newWornTexture) {
+		wornTexture = newWornTexture;
 	}
 }

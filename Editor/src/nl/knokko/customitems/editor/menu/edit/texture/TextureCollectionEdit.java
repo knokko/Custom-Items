@@ -21,6 +21,12 @@ public class TextureCollectionEdit extends CollectionEdit<NamedImage> {
 	@Override
 	protected void addComponents() {
 		super.addComponents();
+		addComponent(new DynamicTextButton("Worn armor textures", 
+				EditProps.BUTTON, EditProps.HOVER, () -> {
+			state.getWindow().setMainComponent(
+					new ArmorTexturesCollectionEdit(this, menu.getSet())
+			);
+		}), 0.025f, 0.25f, 0.25f, 0.35f);
 		addComponent(new DynamicTextButton("Load texture", EditProps.BUTTON, EditProps.HOVER, () -> {
 			state.getWindow().setMainComponent(new TextureCreate(menu));
 		}), 0.025f, 0.1f, 0.2f, 0.2f);

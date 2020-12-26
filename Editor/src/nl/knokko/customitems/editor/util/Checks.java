@@ -1,4 +1,4 @@
-package nl.knokko.customitems.editor;
+package nl.knokko.customitems.editor.util;
 
 import java.util.Collection;
 

@@ -34,6 +34,7 @@ import nl.knokko.customitems.item.CustomItemType;
 import nl.knokko.customitems.item.Enchantment;
 import nl.knokko.customitems.item.ReplaceCondition;
 import nl.knokko.customitems.item.ReplaceCondition.ConditionOperation;
+import nl.knokko.customitems.item.nbt.ExtraItemNbt;
 import nl.knokko.util.bits.BitOutput;
 
 public class SimpleCustomItem extends CustomItem {
@@ -47,14 +48,15 @@ public class SimpleCustomItem extends CustomItem {
 			boolean[] itemFlags, byte[] customModel, 
 			List<PotionEffect> playerEffects, List<PotionEffect> targetEffects, 
 			Collection<EquippedPotionEffect> equippedEffects, String[] commands, 
-			ReplaceCondition[] conditions, ConditionOperation op
+			ReplaceCondition[] conditions, ConditionOperation op,
+			ExtraItemNbt extraNbt
 	) {
 		// Use internal item damage of -1 until exporting
 		super(
 				itemType, name, alias, displayName, lore, attributes, 
 				defaultEnchantments, texture, itemFlags, customModel, 
 				playerEffects, targetEffects, equippedEffects, 
-				commands, conditions, op
+				commands, conditions, op, extraNbt
 		);
 		this.maxStacksize = maxStacksize;
 	}
@@ -250,6 +252,7 @@ public class SimpleCustomItem extends CustomItem {
 			output.addJavaString(condition.getReplacingItemName());
 		}
 		output.addJavaString(op.name());
+		extraNbt.save(output);
 	}
 	
 	public int getMaxStacksize() {

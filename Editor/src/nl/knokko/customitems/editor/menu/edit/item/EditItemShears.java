@@ -57,7 +57,7 @@ public class EditItemShears extends EditItemTool {
 				textureSelect.getSelected(), itemFlags,
 				entityHitDurabilityLoss, blockBreakDurabilityLoss, 
 				durLoss.getValue(), customModel, playerEffects, targetEffects, 
-				equippedEffects, commands, conditions, op), true
+				equippedEffects, commands, conditions, op, extraNbt), true
 		);
 	}
 	
@@ -72,7 +72,7 @@ public class EditItemShears extends EditItemTool {
 				repairItem.getIngredient(), maxUses, textureSelect.getSelected(),
 				itemFlags, entityHitDurabilityLoss, blockBreakDurabilityLoss, 
 				durLoss.getValue(), customModel, playerEffects, targetEffects, 
-				equippedEffects, commands, conditions, op, true
+				equippedEffects, commands, conditions, op, extraNbt, true
 		);
 	}
 }

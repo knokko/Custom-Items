@@ -35,6 +35,7 @@ import nl.knokko.customitems.item.CustomItemType;
 import nl.knokko.customitems.item.Enchantment;
 import nl.knokko.customitems.item.ReplaceCondition;
 import nl.knokko.customitems.item.ReplaceCondition.ConditionOperation;
+import nl.knokko.customitems.item.nbt.ExtraItemNbt;
 import nl.knokko.util.bits.BitOutput;
 
 public class CustomTool extends CustomItem {
@@ -58,13 +59,14 @@ public class CustomTool extends CustomItem {
 			int blockBreakDurabilityLoss, byte[] customModel, 
 			List<PotionEffect> playerEffects, List<PotionEffect> targetEffects, 
 			Collection<EquippedPotionEffect> equippedEffects, String[] commands, 
-			ReplaceCondition[] conditions, ConditionOperation op
+			ReplaceCondition[] conditions, ConditionOperation op,
+			ExtraItemNbt extraNbt
 	) {
 		super(
 				itemType, name, alias, displayName, lore, attributes, 
 				defaultEnchantments, texture, itemFlags, customModel, 
 				playerEffects, targetEffects, equippedEffects,
-				commands, conditions, op
+				commands, conditions, op, extraNbt
 		);
 		this.durability = durability;
 		this.allowEnchanting = allowEnchanting;
@@ -272,6 +274,7 @@ public class CustomTool extends CustomItem {
 			output.addJavaString(condition.getReplacingItemName());
 		}
 		output.addJavaString(op.name());
+		extraNbt.save(output);
 	}
 	
 	public boolean allowEnchanting() {

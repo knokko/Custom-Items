@@ -14,6 +14,7 @@ import nl.knokko.customitems.item.CustomItemType;
 import nl.knokko.customitems.item.Enchantment;
 import nl.knokko.customitems.item.ReplaceCondition;
 import nl.knokko.customitems.item.ReplaceCondition.ConditionOperation;
+import nl.knokko.customitems.item.nbt.ExtraItemNbt;
 import nl.knokko.customitems.plugin.recipe.ingredient.Ingredient;
 
 public class CustomHelmet3D extends CustomArmor {
@@ -27,14 +28,16 @@ public class CustomHelmet3D extends CustomArmor {
 			int blockBreakDurabilityLoss, DamageResistances damageResistances,
 			List<PotionEffect> playerEffects, List<PotionEffect> targetEffects, 
 			Collection<EquippedPotionEffect> equippedEffects, String[] commands, 
-			ReplaceCondition[] conditions, ConditionOperation op
+			ReplaceCondition[] conditions, ConditionOperation op,
+			ExtraItemNbt extraNbt
 	) {
 		super(
 				itemType, itemDamage, name, alias, displayName, lore, attributes, 
 				defaultEnchantments, maxDurability, allowEnchanting, allowAnvil, 
 				repairItem, color, itemFlags, entityHitDurabilityLoss, 
 				blockBreakDurabilityLoss, damageResistances, playerEffects, 
-				targetEffects, equippedEffects, commands, conditions, op
+				targetEffects, equippedEffects, commands, conditions, op,
+				extraNbt
 		);
 	}
 	

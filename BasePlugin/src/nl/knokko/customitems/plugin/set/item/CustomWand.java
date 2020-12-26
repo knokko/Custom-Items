@@ -11,6 +11,7 @@ import nl.knokko.customitems.item.Enchantment;
 import nl.knokko.customitems.item.ReplaceCondition;
 import nl.knokko.customitems.item.ReplaceCondition.ConditionOperation;
 import nl.knokko.customitems.item.WandCharges;
+import nl.knokko.customitems.item.nbt.ExtraItemNbt;
 import nl.knokko.customitems.projectile.CIProjectile;
 
 public class CustomWand extends CustomItem {
@@ -28,12 +29,12 @@ public class CustomWand extends CustomItem {
 			Collection<EquippedPotionEffect> equippedEffects, String[] commands, 
 			ReplaceCondition[] conditions, ConditionOperation op, 
 			CIProjectile projectile, int cooldown, WandCharges charges, 
-			int amountPerShot
+			int amountPerShot, ExtraItemNbt extraNbt
 	) {
 		super(
 				itemType, itemDamage, name, alias, displayName, lore, attributes, 
 				defaultEnchantments, itemFlags, playerEffects, targetEffects, 
-				equippedEffects, commands, conditions, op
+				equippedEffects, commands, conditions, op, extraNbt
 		);
 		this.projectile = projectile;
 		this.cooldown = cooldown;

@@ -18,6 +18,9 @@ import nl.knokko.core.plugin.item.attributes.ItemAttributes;
 import nl.knokko.customitems.item.Enchantment;
 import nl.knokko.customitems.item.EnchantmentType;
 import nl.knokko.customitems.item.ItemFlag;
+import nl.knokko.customitems.item.nbt.NbtPair;
+import nl.knokko.customitems.item.nbt.NbtValue;
+import nl.knokko.customitems.item.nbt.NbtValueType;
 import nl.knokko.customitems.plugin.CustomItemsPlugin;
 import nl.knokko.customitems.plugin.container.ContainerInstance;
 import nl.knokko.customitems.plugin.set.ItemSet;
@@ -311,6 +314,23 @@ public class ItemUpdater {
 			}
 		}, afterNbt -> pNewStack[0] = afterNbt);
 		newStack = pNewStack[0];
+		
+		GeneralItemNBT generalNbt = GeneralItemNBT.readWriteInstance(newStack);
+		for (NbtPair oldPair : oldItem.getExtraNbt().getPairs()) {
+			generalNbt.remove(oldPair.getKey().getParts());
+		}
+		for (NbtPair newPair : newItem.getExtraNbt().getPairs()) {
+			NbtValue newValue = newPair.getValue();
+			if (newValue.getType() == NbtValueType.INTEGER) {
+				generalNbt.set(newPair.getKey().getParts(), newValue.getIntValue());
+			} else if (newValue.getType() == NbtValueType.STRING) {
+				generalNbt.set(newPair.getKey().getParts(), newValue.getStringValue());
+			} else {
+				throw new Error("Unknown nbt value type: " + newValue.getType());
+			}
+		}
+		
+		newStack = generalNbt.backToBukkit();
 		
 		upgradeEnchantments(newStack, oldItem, newItem);
 		

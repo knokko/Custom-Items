@@ -33,6 +33,7 @@ import nl.knokko.customitems.item.CustomItemType;
 import nl.knokko.customitems.item.Enchantment;
 import nl.knokko.customitems.item.ReplaceCondition;
 import nl.knokko.customitems.item.ReplaceCondition.ConditionOperation;
+import nl.knokko.customitems.item.nbt.ExtraItemNbt;
 
 public class SimpleCustomItem extends CustomItem {
 	
@@ -44,12 +45,13 @@ public class SimpleCustomItem extends CustomItem {
 			Enchantment[] defaultEnchantments, int stackSize, boolean[] itemFlags, 
 			List<PotionEffect> playerEffects, List<PotionEffect> targetEffects, 
 			Collection<EquippedPotionEffect> equippedEffects, String[] commands, 
-			ReplaceCondition[] conditions, ConditionOperation op
+			ReplaceCondition[] conditions, ConditionOperation op,
+			ExtraItemNbt extraNbt
 	) {
 		super(
 				itemType, itemDamage, name, alias, displayName, lore, attributes, 
 				defaultEnchantments, itemFlags, playerEffects, targetEffects, 
-				equippedEffects, commands, conditions, op
+				equippedEffects, commands, conditions, op, extraNbt
 		);
 		this.stackSize = stackSize;
 	}

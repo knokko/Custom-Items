@@ -22,6 +22,7 @@ import nl.knokko.customitems.item.ItemFlag;
 import nl.knokko.customitems.item.ReplaceCondition;
 import nl.knokko.customitems.item.ReplaceCondition.ConditionOperation;
 import nl.knokko.customitems.item.WandCharges;
+import nl.knokko.customitems.item.nbt.ExtraItemNbt;
 import nl.knokko.customitems.plugin.set.item.CustomWand;
 import nl.knokko.util.bits.BitInput;
 import nl.knokko.util.bits.ByteArrayBitInput;
@@ -36,12 +37,13 @@ public class TestPlayerWandData {
 			new boolean[ItemFlag.values().length], 
 			Lists.newArrayList(new PotionEffect(EffectType.ABSORPTION, 15, 1)), 
 			null, null, null, new ReplaceCondition[0], ConditionOperation.NONE, null, 
-			5, new WandCharges(5, 20), 2);
+			5, new WandCharges(5, 20), 2, new ExtraItemNbt());
 	
 	static final CustomWand WITHOUT = new CustomWand(CustomItemType.SHEARS, (short) 3,
 			"without_charges_one", "", "Without charges 1", new String[0], new AttributeModifier[0],
 			new Enchantment[0], ItemFlag.getDefaultValues(), Collections.emptyList(), 
-			null, null, null, new ReplaceCondition[0], ConditionOperation.NONE, null, 20, null, 3);
+			null, null, null, new ReplaceCondition[0], ConditionOperation.NONE, null, 20, 
+			null, 3, new ExtraItemNbt());
 
 	@Test
 	public void testSaveLoadDiscard() {

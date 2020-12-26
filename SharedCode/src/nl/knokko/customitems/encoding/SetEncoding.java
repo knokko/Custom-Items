@@ -62,7 +62,7 @@ public class SetEncoding {
 	
 	/**
 	 * Added deleted item names to both editor and plugin.
-	 * Added export time and image compression to only editor.
+	 * Added export time, image compression, and armor textures to the editor.
 	 */
 	public static final byte ENCODING_8 = 7;
 }

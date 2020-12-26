@@ -58,7 +58,7 @@ public class EditItemShield extends EditItemTool {
 				textureSelect.getSelected(), itemFlags, entityHitDurabilityLoss, 
 				blockBreakDurabilityLoss, thresholdDamage.getValue(), customModel, 
 				customBlockingModel, playerEffects, targetEffects, equippedEffects,
-				commands, conditions, op), true
+				commands, conditions, op, extraNbt), true
 		);
 	}
 	
@@ -74,7 +74,7 @@ public class EditItemShield extends EditItemTool {
 				itemFlags, entityHitDurabilityLoss, blockBreakDurabilityLoss, 
 				thresholdDamage.getValue(), customModel, customBlockingModel, 
 				playerEffects, targetEffects, equippedEffects, commands, 
-				conditions, op, true
+				conditions, op, extraNbt, true
 		);
 	}
 }

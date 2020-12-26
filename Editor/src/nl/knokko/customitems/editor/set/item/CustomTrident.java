@@ -12,6 +12,7 @@ import nl.knokko.customitems.item.CustomItemType;
 import nl.knokko.customitems.item.Enchantment;
 import nl.knokko.customitems.item.ReplaceCondition;
 import nl.knokko.customitems.item.ReplaceCondition.ConditionOperation;
+import nl.knokko.customitems.item.nbt.ExtraItemNbt;
 import nl.knokko.util.bits.BitOutput;
 
 public class CustomTrident extends CustomTool {
@@ -35,14 +36,15 @@ public class CustomTrident extends CustomTool {
 			byte[] customThrowingModel, List<PotionEffect> playerEffects, 
 			List<PotionEffect> targetEffects, 
 			Collection<EquippedPotionEffect> equippedEffects,
-			String[] commands, ReplaceCondition[] conditions, ConditionOperation op
+			String[] commands, ReplaceCondition[] conditions, ConditionOperation op,
+			ExtraItemNbt extraNbt
 	) {
 		super(
 				CustomItemType.TRIDENT, name, alias, displayName, lore, attributes, 
 				defaultEnchantments, durability, allowEnchanting, allowAnvil, 
 				repairItem, texture, itemFlags, entityHitDurabilityLoss, 
 				blockBreakDurabilityLoss, customModel, playerEffects, targetEffects, 
-				equippedEffects, commands, conditions, op
+				equippedEffects, commands, conditions, op, extraNbt
 		);
 		this.throwDamageMultiplier = throwDamageMultiplier;
 		this.speedMultiplier = speedMultiplier;
@@ -178,5 +180,6 @@ public class CustomTrident extends CustomTool {
 			output.addJavaString(condition.getReplacingItemName());
 		}
 		output.addJavaString(op.name());
+		extraNbt.save(output);
 	}
 }

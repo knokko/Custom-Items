@@ -36,6 +36,7 @@ import nl.knokko.customitems.item.CustomItemType;
 import nl.knokko.customitems.item.Enchantment;
 import nl.knokko.customitems.item.ReplaceCondition;
 import nl.knokko.customitems.item.ReplaceCondition.ConditionOperation;
+import nl.knokko.customitems.item.nbt.ExtraItemNbt;
 import nl.knokko.util.bits.BitOutput;
 
 public class CustomBow extends CustomTool {
@@ -58,14 +59,15 @@ public class CustomBow extends CustomTool {
 			byte[] customModel, List<PotionEffect> playerEffects, 
 			List<PotionEffect> targetEffects, 
 			Collection<EquippedPotionEffect> equippedEffects, String[] commands, 
-			ReplaceCondition[] conditions, ConditionOperation op
+			ReplaceCondition[] conditions, ConditionOperation op,
+			ExtraItemNbt extraNbt
 	) {
 		super(
 				CustomItemType.BOW, name, alias, displayName, lore, attributes, 
 				enchantments, durability, allowEnchanting, allowAnvil, repairItem, 
 				texture, itemFlags, entityHitDurabilityLoss, blockBreakDurabilityLoss, customModel, 
 				playerEffects, targetEffects, equippedEffects, 
-				commands, conditions, op
+				commands, conditions, op, extraNbt
 		);
 		this.damageMultiplier = damageMultiplier;
 		this.speedMultiplier = speedMultiplier;
@@ -269,6 +271,7 @@ public class CustomBow extends CustomTool {
 			output.addJavaString(condition.getReplacingItemName());
 		}
 		output.addJavaString(op.name());
+		extraNbt.save(output);
 	}
 	
 	public double getDamageMultiplier() {

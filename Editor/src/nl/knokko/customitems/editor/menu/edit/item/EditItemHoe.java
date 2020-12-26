@@ -57,7 +57,7 @@ public class EditItemHoe extends EditItemTool {
 				repairItem.getIngredient(), textureSelect.getSelected(), itemFlags,
 				entityHitDurabilityLoss, blockBreakDurabilityLoss, 
 				durLoss.getValue(), customModel, playerEffects, targetEffects, 
-				equippedEffects, commands, conditions, op), true
+				equippedEffects, commands, conditions, op, extraNbt), true
 		);
 	}
 	
@@ -73,7 +73,7 @@ public class EditItemHoe extends EditItemTool {
 				textureSelect.getSelected(), itemFlags, entityHitDurabilityLoss, 
 				blockBreakDurabilityLoss, durLoss.getValue(), customModel, 
 				playerEffects, targetEffects, equippedEffects,
-				commands, conditions, op, true
+				commands, conditions, op, extraNbt, true
 		);
 	}
 }

@@ -46,7 +46,7 @@ public class EditItemHelmet3D extends EditItemArmor {
 				itemFlags, entityHitDurabilityLoss, 
 				blockBreakDurabilityLoss, damageResistances, customModel, 
 				playerEffects, targetEffects, equippedEffects,
-				commands, conditions, op), true
+				commands, conditions, op, extraNbt), true
 		);
 	}
 	
@@ -59,7 +59,7 @@ public class EditItemHelmet3D extends EditItemArmor {
 				repairItem.getIngredient(), maxUses, textureSelect.getSelected(),
 				itemFlags, entityHit, blockBreak, damageResistances,
 				customModel, playerEffects, targetEffects, equippedEffects,
-				commands, conditions, op, true
+				commands, conditions, op, extraNbt, true
 		);
 	}
 }

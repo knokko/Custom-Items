@@ -27,14 +27,17 @@ import nl.knokko.customitems.damage.DamageResistances;
 import nl.knokko.customitems.editor.menu.edit.EditMenu;
 import nl.knokko.customitems.editor.menu.edit.EditProps;
 import nl.knokko.customitems.editor.set.item.CustomArmor;
+import nl.knokko.customitems.editor.set.item.texture.ArmorTextures;
 import nl.knokko.customitems.editor.util.HelpButtons;
+import nl.knokko.customitems.editor.util.ReadOnlyReference;
 import nl.knokko.customitems.item.AttributeModifier;
-import nl.knokko.customitems.item.CustomItemType;
 import nl.knokko.customitems.item.AttributeModifier.Attribute;
 import nl.knokko.customitems.item.AttributeModifier.Operation;
 import nl.knokko.customitems.item.AttributeModifier.Slot;
+import nl.knokko.customitems.item.CustomItemType;
 import nl.knokko.customitems.item.CustomItemType.Category;
 import nl.knokko.gui.component.WrapperComponent;
+import nl.knokko.gui.component.text.ConditionalTextButton;
 import nl.knokko.gui.component.text.ConditionalTextComponent;
 import nl.knokko.gui.component.text.IntEditField;
 import nl.knokko.gui.component.text.dynamic.DynamicTextButton;
@@ -54,6 +57,7 @@ public class EditItemArmor extends EditItemTool {
 	private final ColorEditField blue;
 	
 	protected DamageResistances damageResistances;
+	protected ReadOnlyReference<ArmorTextures> wornTexture;
 
 	public EditItemArmor(EditMenu menu, CustomArmor oldValues, CustomArmor toModify, Category toolCategory) {
 		super(menu, oldValues, toModify, toolCategory);
@@ -63,11 +67,14 @@ public class EditItemArmor extends EditItemTool {
 			green = new ColorEditField(DEFAULT_GREEN);
 			blue = new ColorEditField(DEFAULT_BLUE);
 			damageResistances = new DamageResistances();
+			// This is null by default and optional
+			wornTexture = null;
 		} else {
 			red = new ColorEditField(oldValues.getRed());
 			green = new ColorEditField(oldValues.getGreen());
 			blue = new ColorEditField(oldValues.getBlue());
 			damageResistances = oldValues.getDamageResistances();
+			wornTexture = oldValues.getWornTexture();
 		}
 	}
 	
@@ -176,6 +183,9 @@ public class EditItemArmor extends EditItemTool {
 		if (greenValue == -1) return "The green must be an integer at least 0 and at most 255";
 		int blueValue = getColorValue(blue, DEFAULT_BLUE);
 		if (blueValue == -1) return "The blue must be an integer at least 0 and at most 255";
+		if (internalType.isLeatherArmor()) {
+			wornTexture = null;
+		}
 		return menu.getSet().addArmor(new CustomArmor(
 				internalType, nameField.getText(), aliasField.getText(),
 				getDisplayName(), lore, attributes, enchantments, maxUses, 
@@ -185,7 +195,7 @@ public class EditItemArmor extends EditItemTool {
 				entityHitDurabilityLoss, blockBreakDurabilityLoss, 
 				damageResistances, customModel, playerEffects, 
 				targetEffects, equippedEffects,
-				commands, conditions, op), true
+				commands, conditions, op, extraNbt, wornTexture), true
 		);
 	}
 	
@@ -197,6 +207,9 @@ public class EditItemArmor extends EditItemTool {
 		if (greenValue == -1) return "The green must be an integer at least 0 and at most 255";
 		int blueValue = getColorValue(blue, DEFAULT_BLUE);
 		if (blueValue == -1) return "The blue must be an integer at least 0 and at most 255";
+		if (internalType.isLeatherArmor()) {
+			wornTexture = null;
+		}
 		return menu.getSet().changeArmor(
 				toModify, internalType, aliasField.getText(), getDisplayName(), 
 				lore, attributes, enchantments, allowEnchanting.isChecked(),
@@ -204,7 +217,7 @@ public class EditItemArmor extends EditItemTool {
 				textureSelect.getSelected(), redValue, greenValue, blueValue, 
 				itemFlags, entityHit, blockBreak, damageResistances,
 				customModel, playerEffects, targetEffects, equippedEffects,
-				commands, conditions, op, true
+				commands, conditions, op, extraNbt, wornTexture, true
 		);
 	}
 	
@@ -220,6 +233,16 @@ public class EditItemArmor extends EditItemTool {
 				damageResistances = newResistances;
 			}));
 		}), 0.85f, 0.35f, 0.99f, 0.425f);
+		addComponent(new ConditionalTextComponent(
+				"Worn texture:", EditProps.LABEL, () -> !showColors()), 
+				0.65f, 0.29f, 0.84f, 0.35f);
+		addComponent(new ConditionalTextButton(
+				"Change...", EditProps.BUTTON, EditProps.HOVER, () -> {
+					state.getWindow().setMainComponent(new SelectWornTexture(
+							this, menu.getSet(), 
+							newWornTexture -> wornTexture = newWornTexture
+					));
+				}, () -> !showColors()), 0.85f, 0.29f, 0.99f, 0.35f);
 		addComponent(new ConditionalTextComponent("Red: ", EditProps.LABEL, () -> {return showColors();}), 0.78f, 0.29f, 0.84f, 0.35f);
 		addComponent(new ConditionalTextComponent("Green: ", EditProps.LABEL, () -> {return showColors();}), 0.75f, 0.21f, 0.84f, 0.27f);
 		addComponent(new ConditionalTextComponent("Blue: ", EditProps.LABEL, () -> {return showColors();}), 0.77f, 0.13f, 0.84f, 0.19f);

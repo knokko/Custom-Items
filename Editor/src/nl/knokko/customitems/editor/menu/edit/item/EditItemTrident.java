@@ -88,7 +88,7 @@ public class EditItemTrident extends EditItemTool {
 				entityHitDurabilityLoss, blockBreakDurabilityLoss, 
 				durLoss.getValue(), customModel, customInHandModel, 
 				customThrowingModel, playerEffects, targetEffects, 
-				equippedEffects, commands, conditions, op), true
+				equippedEffects, commands, conditions, op, extraNbt), true
 		);
 	}
 	
@@ -111,7 +111,7 @@ public class EditItemTrident extends EditItemTool {
 				itemFlags, entityHitDurabilityLoss, blockBreakDurabilityLoss, 
 				durLoss.getValue(), customModel, customInHandModel, 
 				customThrowingModel, playerEffects, targetEffects, 
-				equippedEffects, commands, conditions, op, true
+				equippedEffects, commands, conditions, op, extraNbt, true
 		);
 	}
 }

@@ -77,7 +77,7 @@ public class EditItemSimple extends EditItemBase {
 				getDisplayName(), lore, attributes, enchantments, 
 				stackSize.getValue(), textureSelect.getSelected(), itemFlags, 
 				customModel, playerEffects, targetEffects, equippedEffects,
-				commands, conditions, op
+				commands, conditions, op, extraNbt
 		));
 	}
 
@@ -89,7 +89,8 @@ public class EditItemSimple extends EditItemBase {
 				toModify, internalType, aliasField.getText(), getDisplayName(), lore, 
 				attributes, enchantments, textureSelect.getSelected(), 
 				stackSize.getValue(), itemFlags, customModel, playerEffects, 
-				targetEffects, equippedEffects, commands, conditions, op, true
+				targetEffects, equippedEffects, commands, conditions, op, 
+				extraNbt, true
 		);
 	}
 

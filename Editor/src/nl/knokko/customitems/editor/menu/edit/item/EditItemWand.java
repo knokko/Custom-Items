@@ -96,7 +96,8 @@ public class EditItemWand extends EditItemBase {
 					getDisplayName(), lore, attributes, enchantments, 
 					textureSelect.getSelected(), itemFlags, customModel, 
 					playerEffects, targetEffects, equippedEffects, commands, 
-					conditions, op, projectile, cooldown, charges, amount
+					conditions, op, projectile, cooldown, charges, amount,
+					extraNbt
 			));
 		});
 	}
@@ -109,7 +110,7 @@ public class EditItemWand extends EditItemBase {
 					getDisplayName(), lore, attributes, enchantments, 
 					textureSelect.getSelected(), itemFlags, customModel, 
 					playerEffects, targetEffects, equippedEffects, commands, 
-					conditions, op, projectile, cooldown, charges, amount
+					conditions, op, projectile, cooldown, charges, amount, extraNbt
 			);
 		});
 	}

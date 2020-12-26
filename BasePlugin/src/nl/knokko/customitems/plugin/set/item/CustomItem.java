@@ -37,6 +37,7 @@ import org.bukkit.inventory.meta.ItemMeta;
 import com.google.common.collect.Lists;
 
 import nl.knokko.core.plugin.CorePlugin;
+import nl.knokko.core.plugin.item.GeneralItemNBT;
 import nl.knokko.core.plugin.item.attributes.ItemAttributes;
 import nl.knokko.core.plugin.item.attributes.ItemAttributes.Single;
 import nl.knokko.customitems.effect.EquippedPotionEffect;
@@ -47,6 +48,10 @@ import nl.knokko.customitems.item.CustomItemType;
 import nl.knokko.customitems.item.Enchantment;
 import nl.knokko.customitems.item.ReplaceCondition;
 import nl.knokko.customitems.item.ReplaceCondition.ConditionOperation;
+import nl.knokko.customitems.item.nbt.ExtraItemNbt;
+import nl.knokko.customitems.item.nbt.NbtPair;
+import nl.knokko.customitems.item.nbt.NbtValue;
+import nl.knokko.customitems.item.nbt.NbtValueType;
 import nl.knokko.customitems.plugin.CustomItemsPlugin;
 import nl.knokko.customitems.plugin.util.ItemUtils;
 
@@ -78,12 +83,13 @@ public abstract class CustomItem extends nl.knokko.customitems.item.CustomItem {
     		Enchantment[] defaultEnchantments, boolean[] itemFlags, 
     		List<PotionEffect> playerEffects, List<PotionEffect> targetEffects, 
     		Collection<EquippedPotionEffect> equippedEffects, String[] commands, 
-    		ReplaceCondition[] conditions, ConditionOperation op
+    		ReplaceCondition[] conditions, ConditionOperation op, 
+    		ExtraItemNbt extraNbt
     ){
         super(
         		itemType, itemDamage, name, alias, displayName, lore, attributes, 
         		defaultEnchantments, itemFlags, playerEffects, targetEffects, 
-        		equippedEffects, commands, conditions, op
+        		equippedEffects, commands, conditions, op, extraNbt
         );
         
         material = getMaterial(itemType);
@@ -154,6 +160,25 @@ public abstract class CustomItem extends nl.knokko.customitems.item.CustomItem {
         	nbt.set(name, lastModified, null, boolRepresentation);
         	initNBT(nbt);
         }, result -> pResult[0] = result);
+        
+        // Give it the extra nbt, if needed
+        Collection<NbtPair> extraNbtPairs = extraNbt.getPairs();
+        if (!extraNbtPairs.isEmpty()) {
+        	GeneralItemNBT nbt = GeneralItemNBT.readWriteInstance(pResult[0]);
+        	for (NbtPair extraPair : extraNbtPairs) {
+        		NbtValue value = extraPair.getValue();
+        		if (value.getType() == NbtValueType.INTEGER) {
+        			nbt.set(extraPair.getKey().getParts(), value.getIntValue());
+        		} else if (value.getType() == NbtValueType.STRING) {
+        			nbt.set(extraPair.getKey().getParts(), value.getStringValue());
+        		} else {
+        			throw new Error("Unknown nbt value type: " + value.getType());
+        		}
+        	}
+        	
+        	pResult[0] = nbt.backToBukkit();
+        }
+        
         return pResult[0];
     }
     

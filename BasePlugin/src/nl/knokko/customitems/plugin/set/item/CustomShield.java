@@ -10,6 +10,7 @@ import nl.knokko.customitems.item.CustomItemType;
 import nl.knokko.customitems.item.Enchantment;
 import nl.knokko.customitems.item.ReplaceCondition;
 import nl.knokko.customitems.item.ReplaceCondition.ConditionOperation;
+import nl.knokko.customitems.item.nbt.ExtraItemNbt;
 import nl.knokko.customitems.plugin.recipe.ingredient.Ingredient;
 
 public class CustomShield extends CustomTool {
@@ -25,14 +26,15 @@ public class CustomShield extends CustomTool {
 			int blockBreakDurabilityLoss, double durabilityThreshold,  
 			List<PotionEffect> playerEffects, List<PotionEffect> targetEffects, 
 			Collection<EquippedPotionEffect> equippedEffects, String[] commands, 
-			ReplaceCondition[] conditions, ConditionOperation op
+			ReplaceCondition[] conditions, ConditionOperation op,
+			ExtraItemNbt extraNbt
 	) {
 		super(
 				CustomItemType.SHIELD, itemDamage, name, alias, displayName, lore, 
 				attributes, defaultEnchantments, maxDurability, allowEnchanting,
 				allowAnvil, repairItem, itemFlags, entityHitDurabilityLoss, 
 				blockBreakDurabilityLoss, playerEffects, targetEffects, 
-				equippedEffects, commands, conditions, op
+				equippedEffects, commands, conditions, op, extraNbt
 		);
 		this.durabilityThreshold = durabilityThreshold;
 	}

@@ -153,7 +153,7 @@ public class EditItemTool extends EditItemBase {
 				repairItem.getIngredient(), textureSelect.getSelected(), 
 				itemFlags, entityHitDurabilityLoss, blockBreakDurabilityLoss, 
 				customModel, playerEffects, targetEffects, equippedEffects,
-				commands, conditions, op), true
+				commands, conditions, op, extraNbt), true
 		);
 	}
 
@@ -178,7 +178,7 @@ public class EditItemTool extends EditItemBase {
 				allowAnvil.isChecked(), repairItem.getIngredient(), maxUses, 
 				textureSelect.getSelected(), itemFlags, entityHitDurabilityLoss, 
 				blockBreakDurabilityLoss, customModel, playerEffects, targetEffects, 
-				equippedEffects, commands, conditions, op, true
+				equippedEffects, commands, conditions, op, extraNbt, true
 		);
 	}
 

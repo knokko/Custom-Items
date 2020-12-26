@@ -33,6 +33,7 @@ import nl.knokko.customitems.item.CustomItemType;
 import nl.knokko.customitems.item.Enchantment;
 import nl.knokko.customitems.item.ReplaceCondition;
 import nl.knokko.customitems.item.ReplaceCondition.ConditionOperation;
+import nl.knokko.customitems.item.nbt.ExtraItemNbt;
 import nl.knokko.util.bits.BitOutput;
 
 public abstract class CustomItem extends nl.knokko.customitems.item.CustomItem {
@@ -47,13 +48,14 @@ public abstract class CustomItem extends nl.knokko.customitems.item.CustomItem {
 			boolean[] itemFlags, byte[] customModel, 
 			List<PotionEffect> playerEffects, List<PotionEffect> targetEffects, 
 			Collection<EquippedPotionEffect> equippedEffects, String[] commands, 
-			ReplaceCondition[] conditions, ConditionOperation op
+			ReplaceCondition[] conditions, ConditionOperation op,
+			ExtraItemNbt extraNbt
 	) {
 		// Use internal item damage of -1 until exporting
 		super(
 				itemType, (short) -1, name, alias, displayName, lore, attributes, 
 				defaultEnchantments, itemFlags, playerEffects, targetEffects, 
-				equippedEffects, commands, conditions, op
+				equippedEffects, commands, conditions, op, extraNbt
 		);
 		this.texture = texture;
 		this.customModel = customModel;
@@ -145,6 +147,10 @@ public abstract class CustomItem extends nl.knokko.customitems.item.CustomItem {
 	
 	public void setConditionOperator(ConditionOperation op) {
 		this.op = op;
+	}
+	
+	public void setExtraNbt(ExtraItemNbt extraNbt) {
+		this.extraNbt = extraNbt;
 	}
 
 	public final void save1(BitOutput output) {

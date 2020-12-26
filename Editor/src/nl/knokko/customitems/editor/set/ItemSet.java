@@ -27,7 +27,14 @@ import static nl.knokko.customitems.MCVersions.FIRST_VERSION;
 import static nl.knokko.customitems.MCVersions.LAST_VERSION;
 import static nl.knokko.customitems.MCVersions.VERSION1_12;
 import static nl.knokko.customitems.NameHelper.versionName;
-import static nl.knokko.customitems.encoding.SetEncoding.*;
+import static nl.knokko.customitems.encoding.SetEncoding.ENCODING_1;
+import static nl.knokko.customitems.encoding.SetEncoding.ENCODING_2;
+import static nl.knokko.customitems.encoding.SetEncoding.ENCODING_3;
+import static nl.knokko.customitems.encoding.SetEncoding.ENCODING_4;
+import static nl.knokko.customitems.encoding.SetEncoding.ENCODING_5;
+import static nl.knokko.customitems.encoding.SetEncoding.ENCODING_6;
+import static nl.knokko.customitems.encoding.SetEncoding.ENCODING_7;
+import static nl.knokko.customitems.encoding.SetEncoding.ENCODING_8;
 
 import java.awt.image.BufferedImage;
 import java.io.File;
@@ -86,6 +93,7 @@ import nl.knokko.customitems.editor.set.item.CustomTrident;
 import nl.knokko.customitems.editor.set.item.CustomWand;
 import nl.knokko.customitems.editor.set.item.NamedImage;
 import nl.knokko.customitems.editor.set.item.SimpleCustomItem;
+import nl.knokko.customitems.editor.set.item.texture.ArmorTextures;
 import nl.knokko.customitems.editor.set.item.texture.BowTextures;
 import nl.knokko.customitems.editor.set.projectile.cover.CustomProjectileCover;
 import nl.knokko.customitems.editor.set.projectile.cover.EditorProjectileCover;
@@ -103,6 +111,8 @@ import nl.knokko.customitems.editor.set.recipe.result.CustomItemResult;
 import nl.knokko.customitems.editor.set.recipe.result.DataVanillaResult;
 import nl.knokko.customitems.editor.set.recipe.result.Result;
 import nl.knokko.customitems.editor.set.recipe.result.SimpleVanillaResult;
+import nl.knokko.customitems.editor.util.ReadOnlyReference;
+import nl.knokko.customitems.editor.util.Reference;
 import nl.knokko.customitems.effect.EffectType;
 import nl.knokko.customitems.effect.EquippedPotionEffect;
 import nl.knokko.customitems.effect.PotionEffect;
@@ -125,20 +135,23 @@ import nl.knokko.customitems.item.ReplaceCondition.ConditionOperation;
 import nl.knokko.customitems.item.ReplaceCondition.ReplacementCondition;
 import nl.knokko.customitems.item.ReplaceCondition.ReplacementOperation;
 import nl.knokko.customitems.item.WandCharges;
+import nl.knokko.customitems.item.nbt.ExtraItemNbt;
 import nl.knokko.customitems.projectile.CIProjectile;
 import nl.knokko.customitems.projectile.ProjectileCover;
 import nl.knokko.customitems.projectile.effects.ProjectileEffect;
 import nl.knokko.customitems.projectile.effects.ProjectileEffects;
 import nl.knokko.customitems.recipe.ContainerRecipe;
-import nl.knokko.customitems.recipe.OutputTable;
 import nl.knokko.customitems.recipe.ContainerRecipe.InputEntry;
 import nl.knokko.customitems.recipe.ContainerRecipe.OutputEntry;
+import nl.knokko.customitems.recipe.OutputTable;
 import nl.knokko.customitems.trouble.IntegrityException;
 import nl.knokko.customitems.trouble.UnknownEncodingException;
+import nl.knokko.customitems.util.ValidationException;
 import nl.knokko.gui.keycode.KeyCode;
 import nl.knokko.gui.window.input.WindowInput;
 import nl.knokko.util.bits.BitInput;
 import nl.knokko.util.bits.BitOutput;
+import nl.knokko.util.bits.BooleanArrayBitOutput;
 import nl.knokko.util.bits.ByteArrayBitInput;
 import nl.knokko.util.bits.ByteArrayBitOutput;
 
@@ -244,7 +257,8 @@ public class ItemSet implements ItemSetBase {
 				new Enchantment[0], 64, texture, ItemFlag.getDefaultValues(), 
 				customModel, new ArrayList<>(), new ArrayList<>(), 
 				new ArrayList<>(), new String[] {}, 
-				new ReplaceCondition[0], ConditionOperation.NONE
+				new ReplaceCondition[0], ConditionOperation.NONE, 
+				new ExtraItemNbt()
 		);
 	}
 
@@ -270,7 +284,8 @@ public class ItemSet implements ItemSetBase {
 				new Enchantment[0], 64, texture, ItemFlag.getDefaultValues(), 
 				customModel, new ArrayList<>(), new ArrayList<>(), 
 				new ArrayList<>(), new String[] {}, 
-				new ReplaceCondition[0], ConditionOperation.NONE
+				new ReplaceCondition[0], ConditionOperation.NONE, 
+				new ExtraItemNbt()
 		);
 	}
 	
@@ -299,7 +314,8 @@ public class ItemSet implements ItemSetBase {
 				defaultEnchantments, 64, texture, ItemFlag.getDefaultValues(), 
 				customModel, new ArrayList<>(), new ArrayList<>(), 
 				new ArrayList<>(), new String[] {}, 
-				new ReplaceCondition[0], ConditionOperation.NONE
+				new ReplaceCondition[0], ConditionOperation.NONE, 
+				new ExtraItemNbt()
 		);
 	}
 	
@@ -329,7 +345,8 @@ public class ItemSet implements ItemSetBase {
 				defaultEnchantments, maxStacksize, texture, 
 				ItemFlag.getDefaultValues(), customModel, 
 				new ArrayList<>(), new ArrayList<>(), new ArrayList<>(),
-				new String[] {}, new ReplaceCondition[0], ConditionOperation.NONE
+				new String[] {}, new ReplaceCondition[0], ConditionOperation.NONE,
+				new ExtraItemNbt()
 		);
 	}
 	
@@ -362,7 +379,8 @@ public class ItemSet implements ItemSetBase {
 				itemType, name, "", displayName, lore, attributes, 
 				defaultEnchantments, maxStacksize, texture, itemFlags, customModel, 
 				new ArrayList<>(), new ArrayList<>(), new ArrayList<>(),
-				new String[] {}, new ReplaceCondition[0], ConditionOperation.NONE
+				new String[] {}, new ReplaceCondition[0], ConditionOperation.NONE,
+				new ExtraItemNbt()
 		);
 	}
 	
@@ -416,11 +434,14 @@ public class ItemSet implements ItemSetBase {
 				itemType, name, "", displayName, lore, attributes, 
 				defaultEnchantments, maxStacksize, texture, itemFlags, customModel, 
 				playerEffects, targetEffects, new ArrayList<>(), commands, 
-				new ReplaceCondition[0], ConditionOperation.NONE
+				new ReplaceCondition[0], ConditionOperation.NONE,
+				new ExtraItemNbt()
 		);
 	}
 	
-	private CustomItem loadSimpleItem9(BitInput input, boolean checkCustomModel) {
+	private CustomItem loadSimpleItem9(
+			BitInput input, boolean checkCustomModel
+	) throws UnknownEncodingException {
 		CustomItemType itemType = CustomItemType.valueOf(input.readJavaString());
 		input.readShort();
 		String name = input.readJavaString();
@@ -462,6 +483,7 @@ public class ItemSet implements ItemSetBase {
 			conditions[index] = loadReplaceCondition(input);
 		}
 		ConditionOperation op = ConditionOperation.valueOf(input.readJavaString());
+		ExtraItemNbt extraNbt = ExtraItemNbt.load(input);
 		
 		String imageName = input.readJavaString();
 		NamedImage texture = null;
@@ -478,7 +500,7 @@ public class ItemSet implements ItemSetBase {
 				itemType, name, alias, displayName, lore, attributes, 
 				defaultEnchantments, maxStacksize, texture, itemFlags, customModel, 
 				playerEffects, targetEffects, equippedEffects, 
-				commands, conditions, op
+				commands, conditions, op, extraNbt
 		);
 	}
 
@@ -510,7 +532,8 @@ public class ItemSet implements ItemSetBase {
 				CustomToolDurability.defaultBlockBreakDurabilityLoss(itemType), 
 				customModel, new ArrayList<>(), new ArrayList<>(), 
 				new ArrayList<>(), new String[] {}, 
-				new ReplaceCondition[0], ConditionOperation.NONE
+				new ReplaceCondition[0], ConditionOperation.NONE,
+				new ExtraItemNbt()
 		);
 	}
 
@@ -543,7 +566,8 @@ public class ItemSet implements ItemSetBase {
 				CustomToolDurability.defaultBlockBreakDurabilityLoss(itemType), 
 				customModel, new ArrayList<>(), new ArrayList<>(), 
 				new ArrayList<>(), new String[] {}, 
-				new ReplaceCondition[0], ConditionOperation.NONE
+				new ReplaceCondition[0], ConditionOperation.NONE,
+				new ExtraItemNbt()
 		);
 	}
 	
@@ -579,7 +603,8 @@ public class ItemSet implements ItemSetBase {
 				CustomToolDurability.defaultBlockBreakDurabilityLoss(itemType), 
 				customModel, new ArrayList<>(), new ArrayList<>(), 
 				new ArrayList<>(), new String[] {}, 
-				new ReplaceCondition[0], ConditionOperation.NONE
+				new ReplaceCondition[0], ConditionOperation.NONE,
+				new ExtraItemNbt()
 		);
 	}
 	
@@ -619,7 +644,8 @@ public class ItemSet implements ItemSetBase {
 				repairItem, texture, itemFlags, entityHitDurabilityLoss, 
 				blockBreakDurabilityLoss, customModel,
 				new ArrayList<>(), new ArrayList<>(), new ArrayList<>(),
-				new String[] {}, new ReplaceCondition[0], ConditionOperation.NONE
+				new String[] {}, new ReplaceCondition[0], ConditionOperation.NONE,
+				new ExtraItemNbt()
 		);
 	}
 	
@@ -680,11 +706,14 @@ public class ItemSet implements ItemSetBase {
 				repairItem, texture, itemFlags, entityHitDurabilityLoss, 
 				blockBreakDurabilityLoss, customModel, playerEffects, targetEffects, 
 				new ArrayList<>(), commands, 
-				new ReplaceCondition[0], ConditionOperation.NONE
+				new ReplaceCondition[0], ConditionOperation.NONE,
+				new ExtraItemNbt()
 		);
 	}
 	
-	private CustomItem loadTool9(BitInput input, boolean checkCustomModel) throws UnknownEncodingException {
+	private CustomItem loadTool9(
+			BitInput input, boolean checkCustomModel
+	) throws UnknownEncodingException {
 		CustomItemType itemType = CustomItemType.valueOf(input.readJavaString());
 		input.readShort();
 		String name = input.readJavaString();
@@ -730,6 +759,7 @@ public class ItemSet implements ItemSetBase {
 			conditions[index] = loadReplaceCondition(input);
 		}
 		ConditionOperation op = ConditionOperation.valueOf(input.readJavaString());
+		ExtraItemNbt extraNbt = ExtraItemNbt.load(input);
 		
 		String imageName = input.readJavaString();
 		NamedImage texture = null;
@@ -747,7 +777,7 @@ public class ItemSet implements ItemSetBase {
 				defaultEnchantments, durability, allowEnchanting, allowAnvil, 
 				repairItem, texture, itemFlags, entityHitDurabilityLoss, 
 				blockBreakDurabilityLoss, customModel, playerEffects, targetEffects, 
-				equippedEffects, commands, conditions, op
+				equippedEffects, commands, conditions, op, extraNbt
 		);
 	}
 	
@@ -788,7 +818,8 @@ public class ItemSet implements ItemSetBase {
 				repairItem, texture, itemFlags, entityHitDurabilityLoss, 
 				blockBreakDurabilityLoss, tillDurabilityLoss, customModel, 
 				new ArrayList<>(), new ArrayList<>(), new ArrayList<>(), 
-				new String[] {}, new ReplaceCondition[0], ConditionOperation.NONE
+				new String[] {}, new ReplaceCondition[0], ConditionOperation.NONE,
+				new ExtraItemNbt()
 		);
 	}
 	
@@ -850,11 +881,14 @@ public class ItemSet implements ItemSetBase {
 				repairItem, texture, itemFlags, entityHitDurabilityLoss, 
 				blockBreakDurabilityLoss, tillDurabilityLoss, customModel, 
 				playerEffects, targetEffects, new ArrayList<>(), commands, 
-				new ReplaceCondition[0], ConditionOperation.NONE
+				new ReplaceCondition[0], ConditionOperation.NONE,
+				new ExtraItemNbt()
 		);
 	}
 	
-	private CustomItem loadHoe9(BitInput input, boolean checkCustomModel) throws UnknownEncodingException {
+	private CustomItem loadHoe9(
+			BitInput input, boolean checkCustomModel
+	) throws UnknownEncodingException {
 		CustomItemType itemType = CustomItemType.valueOf(input.readJavaString());
 		input.readShort();
 		String name = input.readJavaString();
@@ -901,6 +935,7 @@ public class ItemSet implements ItemSetBase {
 			conditions[index] = loadReplaceCondition(input);
 		}
 		ConditionOperation op = ConditionOperation.valueOf(input.readJavaString());
+		ExtraItemNbt extraNbt = ExtraItemNbt.load(input);
 		
 		String imageName = input.readJavaString();
 		NamedImage texture = null;
@@ -919,7 +954,7 @@ public class ItemSet implements ItemSetBase {
 				repairItem, texture, itemFlags, entityHitDurabilityLoss, 
 				blockBreakDurabilityLoss, tillDurabilityLoss, customModel, 
 				playerEffects, targetEffects, equippedEffects, 
-				commands, conditions, op
+				commands, conditions, op, extraNbt
 		);
 	}
 	
@@ -960,7 +995,8 @@ public class ItemSet implements ItemSetBase {
 				itemFlags, entityHitDurabilityLoss, blockBreakDurabilityLoss, 
 				shearDurabilityLoss, customModel, new ArrayList<>(), 
 				new ArrayList<>(), new ArrayList<>(), new String[] {}, 
-				new ReplaceCondition[0], ConditionOperation.NONE
+				new ReplaceCondition[0], ConditionOperation.NONE,
+				new ExtraItemNbt()
 		);
 	}
 	
@@ -1022,11 +1058,14 @@ public class ItemSet implements ItemSetBase {
 				itemFlags, entityHitDurabilityLoss, blockBreakDurabilityLoss, 
 				shearDurabilityLoss, customModel, playerEffects, targetEffects, 
 				new ArrayList<>(), commands, 
-				new ReplaceCondition[0], ConditionOperation.NONE
+				new ReplaceCondition[0], ConditionOperation.NONE,
+				new ExtraItemNbt()
 		);
 	}
 	
-	private CustomItem loadShear9(BitInput input, boolean checkCustomModel) throws UnknownEncodingException {
+	private CustomItem loadShear9(
+			BitInput input, boolean checkCustomModel
+	) throws UnknownEncodingException {
 		input.readShort();
 		String name = input.readJavaString();
 		String alias = input.readString();
@@ -1073,6 +1112,7 @@ public class ItemSet implements ItemSetBase {
 			conditions[index] = loadReplaceCondition(input);
 		}
 		ConditionOperation op = ConditionOperation.valueOf(input.readJavaString());
+		ExtraItemNbt extraNbt = ExtraItemNbt.load(input);
 		
 		String imageName = input.readJavaString();
 		NamedImage texture = null;
@@ -1090,7 +1130,7 @@ public class ItemSet implements ItemSetBase {
 				durability, allowEnchanting, allowAnvil, repairItem, texture, 
 				itemFlags, entityHitDurabilityLoss, blockBreakDurabilityLoss, 
 				shearDurabilityLoss, customModel, playerEffects, targetEffects, 
-				equippedEffects, commands, conditions, op
+				equippedEffects, commands, conditions, op, extraNbt
 		);
 	}
 
@@ -1125,7 +1165,8 @@ public class ItemSet implements ItemSetBase {
 				(BowTextures) texture, ItemFlag.getDefaultValues(), 0, 0, 1, 
 				customModel, new ArrayList<>(), new ArrayList<>(), 
 				new ArrayList<>(), new String[] {}, 
-				new ReplaceCondition[0], ConditionOperation.NONE
+				new ReplaceCondition[0], ConditionOperation.NONE,
+				new ExtraItemNbt()
 		);
 	}
 	
@@ -1163,7 +1204,8 @@ public class ItemSet implements ItemSetBase {
 				(BowTextures) texture, ItemFlag.getDefaultValues(), 0, 0, 1, 
 				customModel, new ArrayList<>(), new ArrayList<>(), 
 				new ArrayList<>(), new String[] {}, 
-				new ReplaceCondition[0], ConditionOperation.NONE
+				new ReplaceCondition[0], ConditionOperation.NONE,
+				new ExtraItemNbt()
 		);
 	}
 	
@@ -1208,7 +1250,8 @@ public class ItemSet implements ItemSetBase {
 				(BowTextures) texture, itemFlags, entityHitDurabilityLoss, 
 				blockBreakDurabilityLoss, shootDurabilityLoss, customModel, 
 				new ArrayList<>(), new ArrayList<>(), new ArrayList<>(), 
-				new String[] {}, new ReplaceCondition[0], ConditionOperation.NONE
+				new String[] {}, new ReplaceCondition[0], ConditionOperation.NONE,
+				new ExtraItemNbt()
 		);
 	}
 	
@@ -1274,7 +1317,8 @@ public class ItemSet implements ItemSetBase {
 				(BowTextures) texture, itemFlags, entityHitDurabilityLoss, 
 				blockBreakDurabilityLoss, shootDurabilityLoss, customModel, 
 				playerEffects, targetEffects, new ArrayList<>(),
-				commands, new ReplaceCondition[0], ConditionOperation.NONE
+				commands, new ReplaceCondition[0], ConditionOperation.NONE,
+				new ExtraItemNbt()
 		);
 	}
 	
@@ -1329,6 +1373,7 @@ public class ItemSet implements ItemSetBase {
 			conditions[index] = loadReplaceCondition(input);
 		}
 		ConditionOperation op = ConditionOperation.valueOf(input.readJavaString());
+		ExtraItemNbt extraNbt = ExtraItemNbt.load(input);
 		
 		String imageName = input.readJavaString();
 		NamedImage texture = null;
@@ -1348,7 +1393,7 @@ public class ItemSet implements ItemSetBase {
 				(BowTextures) texture, itemFlags, entityHitDurabilityLoss, 
 				blockBreakDurabilityLoss, shootDurabilityLoss, customModel, 
 				playerEffects, targetEffects, equippedEffects,
-				commands, conditions, op
+				commands, conditions, op, extraNbt
 		);
 	}
 	
@@ -1394,7 +1439,8 @@ public class ItemSet implements ItemSetBase {
 				repairItem, texture, red, green, blue, ItemFlag.getDefaultValues(), 
 				0, 0, new DamageResistances(), customModel, new ArrayList<>(), 
 				new ArrayList<>(), new ArrayList<>(), new String[] {}, 
-				new ReplaceCondition[0], ConditionOperation.NONE
+				new ReplaceCondition[0], ConditionOperation.NONE,
+				new ExtraItemNbt(), null
 		);
 	}
 	
@@ -1447,7 +1493,8 @@ public class ItemSet implements ItemSetBase {
 				entityHitDurabilityLoss, blockBreakDurabilityLoss, 
 				new DamageResistances(), customModel, new ArrayList<>(), 
 				new ArrayList<>(), new ArrayList<>(), new String[] {}, 
-				new ReplaceCondition[0], ConditionOperation.NONE
+				new ReplaceCondition[0], ConditionOperation.NONE,
+				new ExtraItemNbt(), null
 		);
 	}
 	
@@ -1501,7 +1548,8 @@ public class ItemSet implements ItemSetBase {
 				green, blue, itemFlags, entityHitDurabilityLoss, 
 				blockBreakDurabilityLoss, resistances, customModel, 
 				new ArrayList<>(), new ArrayList<>(), new ArrayList<>(), 
-				new String[] {}, new ReplaceCondition[0], ConditionOperation.NONE
+				new String[] {}, new ReplaceCondition[0], ConditionOperation.NONE,
+				new ExtraItemNbt(), null
 		);
 	}
 	
@@ -1556,7 +1604,8 @@ public class ItemSet implements ItemSetBase {
 				entityHitDurabilityLoss, blockBreakDurabilityLoss, resistances, 
 				customModel, new ArrayList<>(), new ArrayList<>(),
 				new ArrayList<>(), new String[] {}, 
-				new ReplaceCondition[0], ConditionOperation.NONE
+				new ReplaceCondition[0], ConditionOperation.NONE,
+				new ExtraItemNbt(), null
 		);
 	}
 	
@@ -1631,7 +1680,8 @@ public class ItemSet implements ItemSetBase {
 				repairItem, texture, red, green, blue, itemFlags, 
 				entityHitDurabilityLoss, blockBreakDurabilityLoss, resistances, 
 				customModel, playerEffects, targetEffects, new ArrayList<>(), 
-				commands, new ReplaceCondition[0], ConditionOperation.NONE
+				commands, new ReplaceCondition[0], ConditionOperation.NONE,
+				new ExtraItemNbt(), null
 		);
 	}
 	
@@ -1696,6 +1746,13 @@ public class ItemSet implements ItemSetBase {
 			conditions[index] = loadReplaceCondition(input);
 		}
 		ConditionOperation op = ConditionOperation.valueOf(input.readJavaString());
+		ExtraItemNbt extraNbt = ExtraItemNbt.load(input);
+		ReadOnlyReference<ArmorTextures> wornTexture;
+		if (input.readBoolean()) {
+			wornTexture = getArmorTexture(input.readString());
+		} else {
+			wornTexture = null;
+		}
 		
 		String imageName = input.readJavaString();
 		NamedImage texture = null;
@@ -1714,7 +1771,7 @@ public class ItemSet implements ItemSetBase {
 				repairItem, texture, red, green, blue, itemFlags, 
 				entityHitDurabilityLoss, blockBreakDurabilityLoss, resistances, 
 				customModel, playerEffects, targetEffects, equippedEffects, 
-				commands, conditions, op
+				commands, conditions, op, extraNbt, wornTexture
 		);
 	}
 	
@@ -1767,6 +1824,9 @@ public class ItemSet implements ItemSetBase {
 			conditions[index] = loadReplaceCondition(input);
 		}
 		ConditionOperation op = ConditionOperation.valueOf(input.readJavaString());
+		ExtraItemNbt extraNbt = ExtraItemNbt.load(input);
+		// Discard worn texture flag, which is always false for 3d helmets
+		input.readBoolean();
 		
 		String imageName = input.readJavaString();
 		NamedImage texture = null;
@@ -1784,7 +1844,7 @@ public class ItemSet implements ItemSetBase {
 				defaultEnchantments, durability, allowEnchanting, allowAnvil, 
 				repairItem, texture, itemFlags, entityHitDurabilityLoss, 
 				blockBreakDurabilityLoss, resistances, customModel, playerEffects, 
-				targetEffects, equippedEffects, commands, conditions, op
+				targetEffects, equippedEffects, commands, conditions, op, extraNbt
 		);
 	}
 	
@@ -1826,7 +1886,8 @@ public class ItemSet implements ItemSetBase {
 				itemFlags, entityHitDurabilityLoss, blockBreakDurabilityLoss, 
 				thresholdDamage, customModel, customBlockingModel, 
 				new ArrayList<>(), new ArrayList<>(), new ArrayList<>(), 
-				new String[] {}, new ReplaceCondition[0], ConditionOperation.NONE
+				new String[] {}, new ReplaceCondition[0], ConditionOperation.NONE,
+				new ExtraItemNbt()
 		);
 	}
 	
@@ -1889,7 +1950,8 @@ public class ItemSet implements ItemSetBase {
 				itemFlags, entityHitDurabilityLoss, blockBreakDurabilityLoss, 
 				thresholdDamage, customModel, customBlockingModel, playerEffects, 
 				targetEffects, new ArrayList<>(), commands, 
-				new ReplaceCondition[0], ConditionOperation.NONE
+				new ReplaceCondition[0], ConditionOperation.NONE,
+				new ExtraItemNbt()
 		);
 	}
 	
@@ -1940,6 +2002,7 @@ public class ItemSet implements ItemSetBase {
 			conditions[index] = loadReplaceCondition(input);
 		}
 		ConditionOperation op = ConditionOperation.valueOf(input.readJavaString());
+		ExtraItemNbt extraNbt = ExtraItemNbt.load(input);
 		
 		String imageName = input.readJavaString();
 		NamedImage texture = null;
@@ -1959,7 +2022,7 @@ public class ItemSet implements ItemSetBase {
 				itemFlags, entityHitDurabilityLoss, blockBreakDurabilityLoss, 
 				thresholdDamage, customModel, customBlockingModel, 
 				playerEffects, targetEffects, equippedEffects, 
-				commands, conditions, op
+				commands, conditions, op, extraNbt
 		);
 	}
 	
@@ -2005,7 +2068,8 @@ public class ItemSet implements ItemSetBase {
 				throwDurabilityLoss, customModel, customInHandModel, 
 				customThrowingModel, new ArrayList<>(), new ArrayList<>(),
 				new ArrayList<>(), new String[] {}, 
-				new ReplaceCondition[0], ConditionOperation.NONE
+				new ReplaceCondition[0], ConditionOperation.NONE,
+				new ExtraItemNbt()
 		);
 	}
 	
@@ -2071,7 +2135,8 @@ public class ItemSet implements ItemSetBase {
 				entityHitDurabilityLoss, blockBreakDurabilityLoss, 
 				throwDurabilityLoss, customModel, customInHandModel, 
 				customThrowingModel, playerEffects, targetEffects, new ArrayList<>(),
-				commands, new ReplaceCondition[0], ConditionOperation.NONE
+				commands, new ReplaceCondition[0], ConditionOperation.NONE,
+				new ExtraItemNbt()
 		);
 	}
 	
@@ -2124,6 +2189,7 @@ public class ItemSet implements ItemSetBase {
 			conditions[index] = loadReplaceCondition(input);
 		}
 		ConditionOperation op = ConditionOperation.valueOf(input.readJavaString());
+		ExtraItemNbt extraNbt = ExtraItemNbt.load(input);
 		
 		String imageName = input.readJavaString();
 		NamedImage texture = null;
@@ -2145,7 +2211,7 @@ public class ItemSet implements ItemSetBase {
 				entityHitDurabilityLoss, blockBreakDurabilityLoss, 
 				throwDurabilityLoss, customModel, customInHandModel, 
 				customThrowingModel, playerEffects, targetEffects, equippedEffects, 
-				commands, conditions, op
+				commands, conditions, op, extraNbt
 		);
 	}
 	
@@ -2209,11 +2275,11 @@ public class ItemSet implements ItemSetBase {
 				defaultEnchantments, texture, itemFlags, customModel, 
 				playerEffects, targetEffects, new ArrayList<>(), commands, 
 				new ReplaceCondition[0], ConditionOperation.NONE, projectile, 
-				cooldown, charges, amountPerShot
+				cooldown, charges, amountPerShot, new ExtraItemNbt()
 		);
 	}
 	
-	private CustomItem loadWand9(BitInput input) {
+	private CustomItem loadWand9(BitInput input) throws UnknownEncodingException {
 		CustomItemType itemType = CustomItemType.valueOf(input.readJavaString());
 		input.readShort();
 		String name = input.readJavaString();
@@ -2254,6 +2320,7 @@ public class ItemSet implements ItemSetBase {
 			conditions[index] = loadReplaceCondition(input);
 		}
 		ConditionOperation op = ConditionOperation.valueOf(input.readJavaString());
+		ExtraItemNbt extraNbt = ExtraItemNbt.load(input);
 		
 		CIProjectile projectile = getProjectileByName(input.readString());
 		int cooldown = input.readInt();
@@ -2280,7 +2347,7 @@ public class ItemSet implements ItemSetBase {
 				itemType, name, alias, displayName, lore, attributes, 
 				defaultEnchantments, texture, itemFlags, customModel, playerEffects, 
 				targetEffects, equippedEffects, commands, conditions, op,
-				projectile, cooldown, charges, amountPerShot
+				projectile, cooldown, charges, amountPerShot, extraNbt
 		);
 	}
 
@@ -2311,6 +2378,7 @@ public class ItemSet implements ItemSetBase {
 	private Collection<CustomFuelRegistry> fuelRegistries;
 	private Collection<CustomContainer> containers;
 	private Collection<String> deletedItems;
+	private Collection<Reference<ArmorTextures>> armorTextures;
 
 	public ItemSet(String fileName) {
 		this.fileName = fileName;
@@ -2324,6 +2392,7 @@ public class ItemSet implements ItemSetBase {
 		fuelRegistries = new ArrayList<>();
 		containers = new ArrayList<>();
 		deletedItems = new ArrayList<>();
+		armorTextures = new ArrayList<>();
 	}
 
 	public ItemSet(String fileName, BitInput input) 
@@ -2398,6 +2467,9 @@ public class ItemSet implements ItemSetBase {
 		
 		// Deleted item names aren't remembered in this encoding
 		deletedItems = new ArrayList<>();
+		
+		// There are no armor textures in this encoding
+		armorTextures = new ArrayList<>();
 	}
 
 	private void load2(BitInput input) throws UnknownEncodingException, IOException {
@@ -2440,6 +2512,9 @@ public class ItemSet implements ItemSetBase {
 		
 		// Deleted item names aren't remembered in this encoding
 		deletedItems = new ArrayList<>();
+		
+		// There are no armor textures in this encoding
+		armorTextures = new ArrayList<>();
 	}
 	
 	private void load3(BitInput input) throws UnknownEncodingException, IOException {
@@ -2497,6 +2572,9 @@ public class ItemSet implements ItemSetBase {
 		
 		// Deleted item names aren't remembered in this encoding
 		deletedItems = new ArrayList<>();
+		
+		// There are no armor textures in this encoding
+		armorTextures = new ArrayList<>();
 	}
 	
 	private void load4(BitInput input) throws UnknownEncodingException, IOException {
@@ -2554,6 +2632,9 @@ public class ItemSet implements ItemSetBase {
 		
 		// Deleted item names aren't remembered in this encoding
 		deletedItems = new ArrayList<>();
+		
+		// There are no armor textures in this encoding
+		armorTextures = new ArrayList<>();
 	}
 	
 	private void load5(BitInput input) throws UnknownEncodingException, IOException {
@@ -2623,6 +2704,9 @@ public class ItemSet implements ItemSetBase {
 		
 		// Deleted item names aren't remembered in this encoding
 		deletedItems = new ArrayList<>();
+		
+		// There are no armor textures in this encoding
+		armorTextures = new ArrayList<>();
 	}
 	
 	private void load6(BitInput rawInput) 
@@ -2708,6 +2792,9 @@ public class ItemSet implements ItemSetBase {
 		
 		// Deleted item names aren't remembered in this encoding
 		deletedItems = new ArrayList<>();
+		
+		// There are no armor textures in this encoding
+		armorTextures = new ArrayList<>();
 	}
 	
 	private void load7(BitInput rawInput) 
@@ -2802,6 +2889,9 @@ public class ItemSet implements ItemSetBase {
 		
 		// Deleted item names aren't remembered in this encoding
 		deletedItems = new ArrayList<>();
+		
+		// There are no armor textures in this encoding
+		armorTextures = new ArrayList<>();
 	}
 	
 	private void load8(BitInput rawInput) 
@@ -2832,6 +2922,13 @@ public class ItemSet implements ItemSetBase {
 				textures.add(new NamedImage(input, true));
 			else
 				throw new UnknownEncodingException("Texture", textureType);
+		}
+		
+		// Armor textures
+		int numArmorTextures = input.readInt();
+		armorTextures = new ArrayList<>(numArmorTextures);
+		for (int counter = 0; counter < numArmorTextures; counter++) {
+			armorTextures.add(new Reference<>(ArmorTextures.load(input)));
 		}
 		
 		// Projectile covers
@@ -3215,6 +3312,62 @@ public class ItemSet implements ItemSetBase {
 		return exportFor13Or14(MCVersions.VERSION1_16, 6);
 	}
 	
+	private void exportOptifineArmor(ZipOutputStream zipOutput) throws IOException {
+		// Armor textures
+		for (Reference<ArmorTextures> armorTexture : armorTextures) {
+			String prefix = 
+					"assets/minecraft/optifine/cit/"
+					+ "customarmor/" + armorTexture.get().getName() + "/";
+			ZipEntry firstLayerEntry = new ZipEntry(prefix + "layer_1.png");
+			zipOutput.putNextEntry(firstLayerEntry);
+			ImageIO.write(
+					armorTexture.get().getLayer1(), 
+					"PNG", 
+					new MemoryCacheImageOutputStream(zipOutput)
+			);
+			zipOutput.closeEntry();
+			
+			ZipEntry secondLayerEntry = new ZipEntry(prefix + "layer_2.png");
+			zipOutput.putNextEntry(secondLayerEntry);
+			ImageIO.write(
+					armorTexture.get().getLayer2(), 
+					"PNG", 
+					new MemoryCacheImageOutputStream(zipOutput)
+			);
+			zipOutput.closeEntry();
+		}
+		
+		// Link the custom armor to their textures
+		for (CustomItem item : items) {
+			if (item instanceof CustomArmor) {
+				
+				CustomArmor armor = (CustomArmor) item;
+				if (armor.getWornTexture() != null) {
+					
+					ArmorTextures wornTexture = armor.getWornTexture().get();
+					String prefix = 
+							"assets/minecraft/optifine/cit/"
+							+ "customarmor/" + wornTexture.getName() + "/";
+					ZipEntry armorEntry = new ZipEntry(prefix + armor.getName() + ".properties");
+					zipOutput.putNextEntry(armorEntry);
+					
+					PrintWriter propertyWriter = new PrintWriter(zipOutput);
+					propertyWriter.println("type=armor");
+					String vanillaName = armor.getItemType().getModelName14();
+					propertyWriter.println("items=" + vanillaName);
+					vanillaName = armor.getItemType().getTextureName12();
+					String vanillaMaterial = vanillaName.substring(0, vanillaName.indexOf('_'));
+					propertyWriter.println("texture." + vanillaMaterial + "_layer_1=layer_1");
+					propertyWriter.println("texture." + vanillaMaterial + "_layer_2=layer_2");
+					propertyWriter.println("nbt.KnokkosCustomItems.Name=" + armor.getName());
+					propertyWriter.flush();
+					
+					zipOutput.closeEntry();
+				}
+			}
+		}
+	}
+	
 	private String exportFor13Or14(int mcVersion, int packFormat) {
 		String versionError = validateExportVersion(mcVersion);
 		if (versionError != null) {
@@ -3273,6 +3426,8 @@ public class ItemSet implements ItemSetBase {
 				ImageIO.write(texture.getImage(), "PNG", new MemoryCacheImageOutputStream(zipOutput));
 				zipOutput.closeEntry();
 			}
+			
+			exportOptifineArmor(zipOutput);
 
 			// Custom item models
 			for (CustomItem item : items) {
@@ -3966,6 +4121,8 @@ public class ItemSet implements ItemSetBase {
 				ImageIO.write(texture.getImage(), "PNG", new MemoryCacheImageOutputStream(zipOutput));
 				zipOutput.closeEntry();
 			}
+			
+			exportOptifineArmor(zipOutput);
 
 			// Custom item models
 			for (CustomItem item : items) {
@@ -4513,6 +4670,7 @@ public class ItemSet implements ItemSetBase {
 			ioex.printStackTrace();
 			return ioex.getMessage();
 		}
+		
 	}
 
 	@SuppressWarnings("unused")
@@ -4853,8 +5011,9 @@ public class ItemSet implements ItemSetBase {
 	private void save8(BitOutput outerOutput) throws IOException {
 		outerOutput.addByte(ENCODING_8);
 		
-		// Prepare integrity
-		ByteArrayBitOutput output = new ByteArrayBitOutput();
+		// BooleanArrayBitOutput requires more memory, but is also much faster
+		// than ByteArrayBitOutput
+		BooleanArrayBitOutput output = new BooleanArrayBitOutput();
 		
 		output.addInt(textures.size());
 		for (NamedImage texture : textures) {
@@ -4863,6 +5022,11 @@ public class ItemSet implements ItemSetBase {
 			else
 				output.addByte(NamedImage.ENCODING_SIMPLE);
 			texture.save(output, true);
+		}
+		
+		output.addInt(armorTextures.size());
+		for (Reference<ArmorTextures> textureRef : armorTextures) {
+			textureRef.get().save(output);
 		}
 		
 		output.addInt(projectileCovers.size());
@@ -5106,7 +5270,9 @@ public class ItemSet implements ItemSetBase {
 			byte[] newCustomModel, List<PotionEffect> playerEffects, 
 			List<PotionEffect> targetEffects, 
 			Collection<EquippedPotionEffect> newEquippedEffects, String[] commands, 
-			ReplaceCondition[] conditions, ConditionOperation op, boolean checkClass
+			ReplaceCondition[] conditions, ConditionOperation op, 
+			ExtraItemNbt newExtraNbt, 
+			ReadOnlyReference<ArmorTextures> newWornTexture, boolean checkClass
 	) {
 		if (!bypassChecks()) {
 			if (armor == null)
@@ -5127,13 +5293,15 @@ public class ItemSet implements ItemSetBase {
 				newEnchantments, allowEnchanting, allowAnvil, repairItem, 
 				newDurability, newTexture, itemFlags, entityHitDurabilityLoss, 
 				blockBreakDurabilityLoss, newCustomModel, playerEffects, 
-				targetEffects, newEquippedEffects, commands, conditions, op, false
+				targetEffects, newEquippedEffects, commands, conditions, op, 
+				newExtraNbt, false
 		);
 		if (error == null) {
 			armor.setRed(newRed);
 			armor.setGreen(newGreen);
 			armor.setBlue(newBlue);
 			armor.setDamageResistances(resistances);
+			armor.setWornTexture(newWornTexture);
 			return null;
 		} else {
 			return error;
@@ -5178,7 +5346,8 @@ public class ItemSet implements ItemSetBase {
 			List<PotionEffect> playerEffects, List<PotionEffect> targetEffects, 
 			Collection<EquippedPotionEffect> newEquippedEffects, String[] commands,
 			ReplaceCondition[] newReplaceConditions, 
-			ConditionOperation newConditionOp, boolean checkClass
+			ConditionOperation newConditionOp, ExtraItemNbt newExtraNbt,
+			boolean checkClass
 	) {
 		if (!bypassChecks()) {
 			if (helmet == null) return "Can't change null helmets";
@@ -5193,7 +5362,9 @@ public class ItemSet implements ItemSetBase {
 				newDurability, newTexture, 0, 0, 0, itemFlags, 
 				entityHitDurabilityLoss, blockBreakDurabilityLoss, resistances, 
 				newCustomModel, playerEffects, targetEffects, newEquippedEffects,
-				commands, newReplaceConditions, newConditionOp, false
+				commands, newReplaceConditions, newConditionOp, newExtraNbt, 
+				// 3d helmets never use a worn texture
+				null, false
 		);
 		
 		// CustomHelmet3D doesn't have any properties CustomArmor doesn't have
@@ -5238,7 +5409,8 @@ public class ItemSet implements ItemSetBase {
 			int shootDurabilityLoss, byte[] newCustomModel, 
 			List<PotionEffect> playerEffects, List<PotionEffect> targetEffects, 
 			Collection<EquippedPotionEffect> newEquippedEffects, String[] commands, 
-			ReplaceCondition[] conditions, ConditionOperation op, boolean checkClass
+			ReplaceCondition[] conditions, ConditionOperation op, 
+			ExtraItemNbt newExtraNbt, boolean checkClass
 	) {
 		if (!bypassChecks()) {
 			if (bow == null)
@@ -5261,7 +5433,7 @@ public class ItemSet implements ItemSetBase {
 				repairItem, newDurability, newTextures, itemFlags,
 				entityHitDurabilityLoss, blockBreakDurabilityLoss, newCustomModel, 
 				playerEffects, targetEffects, newEquippedEffects, 
-				commands, conditions, op, false
+				commands, conditions, op, newExtraNbt, false
 		);
 		if (error == null) {
 			bow.setDamageMultiplier(newDamageMultiplier);
@@ -5301,7 +5473,8 @@ public class ItemSet implements ItemSetBase {
 			byte[] newCustomBlockingModel, List<PotionEffect> playerEffects, 
 			List<PotionEffect> targetEffects, 
 			Collection<EquippedPotionEffect> newEquippedEffects, String[] commands, 
-			ReplaceCondition[] conditions, ConditionOperation op, boolean checkClass
+			ReplaceCondition[] conditions, ConditionOperation op, 
+			ExtraItemNbt newExtraNbt, boolean checkClass
 	) {
 		if (!bypassChecks()) {
 			if (shield == null)
@@ -5320,7 +5493,7 @@ public class ItemSet implements ItemSetBase {
 				repairItem, newDurability, newImage, itemFlags,
 				entityHitDurabilityLoss, blockBreakDurabilityLoss, newCustomModel, 
 				playerEffects, targetEffects, newEquippedEffects,
-				commands, conditions, op, false
+				commands, conditions, op, newExtraNbt, false
 		);
 		if (error != null) {
 			return error;
@@ -5414,7 +5587,8 @@ public class ItemSet implements ItemSetBase {
 			byte[] newCustomModel, List<PotionEffect> playerEffects, 
 			List<PotionEffect> targetEffects, 
 			Collection<EquippedPotionEffect> newEquippedEffects, String[] commands, 
-			ReplaceCondition[] conditions, ConditionOperation op, boolean checkClass
+			ReplaceCondition[] conditions, ConditionOperation op, 
+			ExtraItemNbt newExtraNbt, boolean checkClass
 	) {
 		if (!bypassChecks()) {
 			if (checkClass && item.getClass() != CustomTool.class)
@@ -5435,7 +5609,7 @@ public class ItemSet implements ItemSetBase {
 				item, newType, newAlias, newDisplayName, newLore, newAttributes, 
 				newEnchantments, newImage, itemFlags, newCustomModel,
 				playerEffects, targetEffects, newEquippedEffects, 
-				commands, conditions, op
+				commands, conditions, op, newExtraNbt
 		);
 		if (error == null) {
 			item.setAllowEnchanting(allowEnchanting);
@@ -5460,7 +5634,8 @@ public class ItemSet implements ItemSetBase {
 			byte[] newCustomModel, List<PotionEffect> playerEffects, 
 			List<PotionEffect> targetEffects, 
 			Collection<EquippedPotionEffect> newEquippedEffects, String[] commands, 
-			ReplaceCondition[] conditions, ConditionOperation op, boolean checkClass
+			ReplaceCondition[] conditions, ConditionOperation op, 
+			ExtraItemNbt newExtraNbt, boolean checkClass
 	) {
 		if (!bypassChecks()) {
 			if (shearDurabilityLoss < 0) {
@@ -5476,7 +5651,7 @@ public class ItemSet implements ItemSetBase {
 				repairItem, newDurability, newImage, itemFlags,
 				entityHitDurabilityLoss, blockBreakDurabilityLoss, newCustomModel, 
 				playerEffects, targetEffects, newEquippedEffects, 
-				commands, conditions, op, false
+				commands, conditions, op, newExtraNbt, false
 		);
 		if (error == null) {
 			shears.setShearDurabilityLoss(shearDurabilityLoss);
@@ -5496,7 +5671,8 @@ public class ItemSet implements ItemSetBase {
 			int tillDurabilityLoss, byte[] newCustomModel, 
 			List<PotionEffect> playerEffects, List<PotionEffect> targetEffects, 
 			Collection<EquippedPotionEffect> newEquippedEffects, String[] commands, 
-			ReplaceCondition[] conditions, ConditionOperation op, boolean checkClass
+			ReplaceCondition[] conditions, ConditionOperation op, 
+			ExtraItemNbt newExtraNbt, boolean checkClass
 	) {
 		if (!bypassChecks()) {
 			if (tillDurabilityLoss < 0) {
@@ -5511,7 +5687,8 @@ public class ItemSet implements ItemSetBase {
 				newEnchantments, allowEnchanting, allowAnvil, repairItem, 
 				newDurability, newImage, itemFlags, entityHitDurabilityLoss, 
 				blockBreakDurabilityLoss, newCustomModel, playerEffects, 
-				targetEffects, newEquippedEffects, commands, conditions, op, false
+				targetEffects, newEquippedEffects, commands, conditions, op, 
+				newExtraNbt, false
 		);
 		if (error == null) {
 			hoe.setTillDurabilityLoss(tillDurabilityLoss);
@@ -5534,7 +5711,8 @@ public class ItemSet implements ItemSetBase {
 			byte[] newCustomThrowingModel, List<PotionEffect> playerEffects, 
 			List<PotionEffect> targetEffects, 
 			Collection<EquippedPotionEffect> newEquippedEffects, String[] commands, 
-			ReplaceCondition[] conditions, ConditionOperation op, boolean checkClass
+			ReplaceCondition[] conditions, ConditionOperation op, 
+			ExtraItemNbt newExtraNbt, boolean checkClass
 	) {
 		if (!bypassChecks()) {
 			if (trident == null)
@@ -5554,7 +5732,7 @@ public class ItemSet implements ItemSetBase {
 				newEnchantments, allowEnchanting, allowAnvil, repairItem, newDurability, newImage, itemFlags,
 				entityHitDurabilityLoss, blockBreakDurabilityLoss, newCustomModel, 
 				playerEffects, targetEffects, newEquippedEffects,
-				commands, conditions, op, false
+				commands, conditions, op, newExtraNbt, false
 		);
 		if (error == null) {
 			trident.throwDurabilityLoss = throwDurabilityLoss;
@@ -5606,7 +5784,7 @@ public class ItemSet implements ItemSetBase {
 			Collection<EquippedPotionEffect> newEquippedEffects, String[] commands, 
 			ReplaceCondition[] conditions, ConditionOperation op, 
 			CIProjectile newProjectile, int newCooldown, WandCharges newCharges, 
-			int newAmountPerShot
+			int newAmountPerShot, ExtraItemNbt newExtraNbt
 	) {
 		if (!bypassChecks()) {
 			if (original == null)
@@ -5626,7 +5804,8 @@ public class ItemSet implements ItemSetBase {
 		String error = changeItem(
 				original, newType, newAlias, newDisplayName, newLore, newAttributes, 
 				newEnchantments, newImage, itemFlags, newCustomModel, playerEffects,
-				targetEffects, newEquippedEffects, commands, conditions, op
+				targetEffects, newEquippedEffects, commands, conditions, op,
+				newExtraNbt
 		);
 		if (error == null) {
 			original.projectile = newProjectile;
@@ -5926,7 +6105,8 @@ public class ItemSet implements ItemSetBase {
 			byte[] newCustomModel, List<PotionEffect> playerEffects, 
 			List<PotionEffect> targetEffects, 
 			Collection<EquippedPotionEffect> newEquippedEffects, String[] commands, 
-			ReplaceCondition[] conditions, ConditionOperation op, boolean checkClass
+			ReplaceCondition[] conditions, ConditionOperation op, 
+			ExtraItemNbt newExtraNbt, boolean checkClass
 	) {
 		if (!bypassChecks()) {
 			if (checkClass && item.getClass() != SimpleCustomItem.class)
@@ -5941,7 +6121,7 @@ public class ItemSet implements ItemSetBase {
 				item, newType, newAlias, newDisplayName, newLore, newAttributes,
 				newEnchantments, newImage, newItemFlags, newCustomModel, 
 				playerEffects, targetEffects, newEquippedEffects, commands, 
-				conditions, op
+				conditions, op, newExtraNbt
 		);
 		
 		if (error != null) {
@@ -5967,7 +6147,8 @@ public class ItemSet implements ItemSetBase {
 			NamedImage newImage, boolean[] itemFlags, byte[] newCustomModel, 
 			List<PotionEffect> newPlayerEffects, List<PotionEffect> newTargetEffects, 
 			Collection<EquippedPotionEffect> newEquippedEffects, String[] newCommands, 
-			ReplaceCondition[] conditions, ConditionOperation op
+			ReplaceCondition[] conditions, ConditionOperation op, 
+			ExtraItemNbt newExtraNbt
 	) {
 		if (!bypassChecks()) {
 			if (item == null)
@@ -6035,6 +6216,8 @@ public class ItemSet implements ItemSetBase {
 				return "The replace conditions cannot be null";
 			if(conditions.length > 1 && op == ConditionOperation.NONE)
 				return "There are multiple replace conditions but no operator has been specified";
+			if (newExtraNbt == null)
+				return "The extra nbt can't be null (but can be empty)";
 		}
 		item.setItemType(newType);
 		item.setAlias(newAlias);
@@ -6051,6 +6234,7 @@ public class ItemSet implements ItemSetBase {
 		item.setCommands(newCommands);
 		item.setConditions(conditions);
 		item.setConditionOperator(op);
+		item.setExtraNbt(newExtraNbt);
 		return null;
 	}
 
@@ -6819,6 +7003,51 @@ public class ItemSet implements ItemSetBase {
 			return "This container wasn't in the list of containers";
 		}
 	}
+	
+	public void addArmorTextures(ArmorTextures toAdd) throws ValidationException {
+		for (Reference<ArmorTextures> existing : armorTextures) {
+			if (existing.get().getName().equals(toAdd.getName())) {
+				throw new ValidationException(
+						"There is already a worn armor texture "
+						+ "with name " + toAdd.getName()
+				);
+			}
+		}
+		
+		armorTextures.add(new Reference<>(toAdd));
+	}
+	
+	public void changeArmorTextures(
+			Reference<ArmorTextures> toModify, ArmorTextures newProperties
+	) throws ValidationException {
+		for (Reference<ArmorTextures> existing : armorTextures) {
+			if (existing != toModify && 
+					existing.get().getName().equals(newProperties.getName())) {
+				throw new ValidationException("There is a different worn armor "
+						+ "texture with name " + existing.get().getName()
+				);
+			}
+		}
+		
+		toModify.set(newProperties);
+	}
+	
+	public String removeArmorTextures(Reference<ArmorTextures> toRemove) {
+		for (CustomItem item : items) {
+			if (item instanceof CustomArmor) {
+				CustomArmor armor = (CustomArmor) item;
+				if (armor.getWornTexture().get() == toRemove.get()) {
+					return "The armor " + armor.getName() + " still uses this worn texture";
+				}
+			}
+		}
+		
+		if (armorTextures.remove(toRemove)) {
+			return null;
+		} else {
+			return "This armor texture wasn't in the list of armor textures";
+		}
+	}
 
 	/**
 	 * Do not modify this collection directly!
@@ -6886,6 +7115,10 @@ public class ItemSet implements ItemSetBase {
 	public Collection<CustomContainer> getBackingContainers() {
 		return containers;
 	}
+	
+	public Collection<Reference<ArmorTextures>> getBackingArmorTextures() {
+		return armorTextures;
+	}
 
 	@Override
 	public CustomItem getCustomItemByName(String name) {
@@ -6946,6 +7179,16 @@ public class ItemSet implements ItemSetBase {
 		for (CustomContainer container : containers) {
 			if (container.getName().equals(name)) {
 				return container;
+			}
+		}
+		
+		return null;
+	}
+	
+	public ReadOnlyReference<ArmorTextures> getArmorTexture(String name) {
+		for (Reference<ArmorTextures> armorTexture : armorTextures) {
+			if (armorTexture.get().getName().equals(name)) {
+				return new ReadOnlyReference<>(armorTexture);
 			}
 		}
 		

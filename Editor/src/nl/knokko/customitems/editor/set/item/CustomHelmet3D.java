@@ -13,6 +13,7 @@ import nl.knokko.customitems.item.CustomItemType;
 import nl.knokko.customitems.item.Enchantment;
 import nl.knokko.customitems.item.ReplaceCondition;
 import nl.knokko.customitems.item.ReplaceCondition.ConditionOperation;
+import nl.knokko.customitems.item.nbt.ExtraItemNbt;
 
 public class CustomHelmet3D extends CustomArmor {
 
@@ -26,15 +27,17 @@ public class CustomHelmet3D extends CustomArmor {
 			byte[] customModel, List<PotionEffect> playerEffects,
 			List<PotionEffect> targetEffects, 
 			Collection<EquippedPotionEffect> equippedEffects, String[] commands, 
-			ReplaceCondition[] conditions, ConditionOperation op
+			ReplaceCondition[] conditions, ConditionOperation op,
+			ExtraItemNbt extraNbt
 	) {
+		// The null is because 3d custom helmets don't need a worn texture
 		super(
 				itemType, name, alias, displayName, lore, attributes, 
 				defaultEnchantments, durability, allowEnchanting, allowAnvil, 
 				repairItem, texture, 0, 0, 0, itemFlags, entityHitDurabilityLoss, 
 				blockBreakDurabilityLoss, damageResistances, customModel, 
 				playerEffects, targetEffects, equippedEffects, commands, 
-				conditions, op
+				conditions, op, extraNbt, null
 		);
 	}
 	

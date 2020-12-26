@@ -31,6 +31,7 @@ import nl.knokko.customitems.effect.EquippedPotionEffect;
 import nl.knokko.customitems.effect.PassivePotionEffect;
 import nl.knokko.customitems.effect.PotionEffect;
 import nl.knokko.customitems.item.ReplaceCondition.ConditionOperation;
+import nl.knokko.customitems.item.nbt.ExtraItemNbt;
 import nl.knokko.util.bits.BitInput;
 
 public abstract class CustomItem {
@@ -76,13 +77,16 @@ public abstract class CustomItem {
     protected ReplaceCondition[] conditions;
     protected ConditionOperation op;
     
+    protected ExtraItemNbt extraNbt;
+    
     public CustomItem(
     		CustomItemType itemType, short itemDamage, String name, String alias,
     		String displayName, String[] lore, AttributeModifier[] attributes, 
     		Enchantment[] defaultEnchantments, boolean[] itemFlags, 
     		List<PotionEffect> playerEffects, List<PotionEffect> targetEffects, 
     		Collection<EquippedPotionEffect> equippedEffects, String[] commands, 
-    		ReplaceCondition[] conditions, ConditionOperation op
+    		ReplaceCondition[] conditions, ConditionOperation op,
+    		ExtraItemNbt extraNbt
     ){
         this.itemType = itemType;
         this.itemDamage = itemDamage;
@@ -100,6 +104,7 @@ public abstract class CustomItem {
         this.commands = commands;
         this.conditions = conditions;
         this.op = op;
+        this.extraNbt = extraNbt;
     }
     
     // For validation checks (and some other stuff), it is very important that the equals() method of custom 
@@ -163,5 +168,9 @@ public abstract class CustomItem {
     
     public ConditionOperation getConditionOperator() {
     	return op;
+    }
+    
+    public ExtraItemNbt getExtraNbt() {
+    	return extraNbt;
     }
 }

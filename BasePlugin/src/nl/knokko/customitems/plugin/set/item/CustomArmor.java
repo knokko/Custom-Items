@@ -39,6 +39,7 @@ import nl.knokko.customitems.item.CustomItemType;
 import nl.knokko.customitems.item.Enchantment;
 import nl.knokko.customitems.item.ReplaceCondition;
 import nl.knokko.customitems.item.ReplaceCondition.ConditionOperation;
+import nl.knokko.customitems.item.nbt.ExtraItemNbt;
 import nl.knokko.customitems.plugin.recipe.ingredient.Ingredient;
 
 public class CustomArmor extends CustomTool {
@@ -56,14 +57,15 @@ public class CustomArmor extends CustomTool {
 			int blockBreakDurabilityLoss, DamageResistances damageResistances, 
 			List<PotionEffect> playerEffects, List<PotionEffect> targetEffects, 
 			Collection<EquippedPotionEffect> equippedEffects, String[] commands, 
-			ReplaceCondition[] conditions, ConditionOperation op
+			ReplaceCondition[] conditions, ConditionOperation op,
+			ExtraItemNbt extraNbt
 	) {
 		super(
 				itemType, itemDamage, name, alias, displayName, lore, attributes, 
 				defaultEnchantments, maxDurability, allowEnchanting, allowAnvil, 
 				repairItem, itemFlags, entityHitDurabilityLoss, blockBreakDurabilityLoss, 
 				playerEffects, targetEffects, equippedEffects, 
-				commands, conditions, op
+				commands, conditions, op, extraNbt
 		);
 		this.color = color;
 		this.damageResistances = damageResistances;

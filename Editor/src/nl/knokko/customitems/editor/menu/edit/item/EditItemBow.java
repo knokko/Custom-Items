@@ -121,7 +121,8 @@ public class EditItemBow extends EditItemTool {
 				(BowTextures) textureSelect.getSelected(), itemFlags, 
 				entityHitDurabilityLoss, blockBreakDurabilityLoss, 
 				shootDurabilityLoss.getValue(), customModel, playerEffects, 
-				targetEffects, equippedEffects, commands, conditions, op), true
+				targetEffects, equippedEffects, commands, conditions, op,
+				extraNbt), true
 		);
 	}
 
@@ -144,7 +145,8 @@ public class EditItemBow extends EditItemTool {
 				(BowTextures) textureSelect.getSelected(), itemFlags, 
 				entityHitDurabilityLoss, blockBreakDurabilityLoss, 
 				shootDurabilityLoss.getValue(), customModel, playerEffects, 
-				targetEffects, equippedEffects, commands, conditions, op, true
+				targetEffects, equippedEffects, commands, conditions, op, 
+				extraNbt, true
 		);
 	}
 }

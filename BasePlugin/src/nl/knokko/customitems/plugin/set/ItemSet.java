@@ -73,6 +73,7 @@ import nl.knokko.customitems.item.ReplaceCondition.ConditionOperation;
 import nl.knokko.customitems.item.ReplaceCondition.ReplacementCondition;
 import nl.knokko.customitems.item.ReplaceCondition.ReplacementOperation;
 import nl.knokko.customitems.item.WandCharges;
+import nl.knokko.customitems.item.nbt.ExtraItemNbt;
 import nl.knokko.customitems.plugin.CustomItemsPlugin;
 import nl.knokko.customitems.plugin.container.ContainerInfo;
 import nl.knokko.customitems.plugin.recipe.CustomRecipe;
@@ -719,7 +720,8 @@ public class ItemSet implements ItemSetBase {
 				itemType, damage, name, "", displayName, lore, attributes, 
 				new Enchantment[0], 64, ItemFlag.getDefaultValues(), 
 				new ArrayList<>(), new ArrayList<>(), new ArrayList<>(),
-				new String[] {}, new ReplaceCondition[] {}, ConditionOperation.NONE
+				new String[] {}, new ReplaceCondition[] {}, ConditionOperation.NONE,
+				new ExtraItemNbt()
 		);
 	}
 
@@ -738,7 +740,8 @@ public class ItemSet implements ItemSetBase {
 				itemType, damage, name, "", displayName, lore, attributes, 
 				new Enchantment[0], 64, ItemFlag.getDefaultValues(), 
 				new ArrayList<>(), new ArrayList<>(), new ArrayList<>(),
-				new String[] {}, new ReplaceCondition[] {}, ConditionOperation.NONE
+				new String[] {}, new ReplaceCondition[] {}, ConditionOperation.NONE,
+				new ExtraItemNbt()
 		);
 	}
 
@@ -760,7 +763,8 @@ public class ItemSet implements ItemSetBase {
 				itemType, damage, name, "", displayName, lore, attributes, 
 				defaultEnchantments, 64, ItemFlag.getDefaultValues(), 
 				new ArrayList<>(), new ArrayList<>(), new ArrayList<>(),
-				new String[] {}, new ReplaceCondition[] {}, ConditionOperation.NONE
+				new String[] {}, new ReplaceCondition[] {}, ConditionOperation.NONE,
+				new ExtraItemNbt()
 		);
 	}
 
@@ -783,7 +787,8 @@ public class ItemSet implements ItemSetBase {
 				itemType, damage, name, "", displayName, lore, attributes, 
 				defaultEnchantments, stackSize, ItemFlag.getDefaultValues(), 
 				new ArrayList<>(), new ArrayList<>(), new ArrayList<>(),
-				new String[] {}, new ReplaceCondition[] {}, ConditionOperation.NONE
+				new String[] {}, new ReplaceCondition[] {}, ConditionOperation.NONE,
+				new ExtraItemNbt()
 		);
 	}
 
@@ -807,7 +812,8 @@ public class ItemSet implements ItemSetBase {
 				itemType, damage, name, "", displayName, lore, attributes, 
 				defaultEnchantments, stackSize, itemFlags, new ArrayList<>(), 
 				new ArrayList<>(), new ArrayList<>(), new String[] {},
-				new ReplaceCondition[] {}, ConditionOperation.NONE
+				new ReplaceCondition[] {}, ConditionOperation.NONE,
+				new ExtraItemNbt()
 		);
 	}
 	
@@ -845,11 +851,14 @@ public class ItemSet implements ItemSetBase {
 				itemType, damage, name, "", displayName, lore, attributes, 
 				defaultEnchantments, stackSize, itemFlags, playerEffects, 
 				targetEffects, new ArrayList<>(), commands, 
-				new ReplaceCondition[] {}, ConditionOperation.NONE
+				new ReplaceCondition[] {}, ConditionOperation.NONE,
+				new ExtraItemNbt()
 		);
 	}
 	
-	private static CustomItem loadSimpleItem9(BitInput input) {
+	private static CustomItem loadSimpleItem9(
+			BitInput input
+	) throws UnknownEncodingException {
 		CustomItemType itemType = CustomItemType.valueOf(input.readJavaString());
 		short damage = input.readShort();
 		String name = input.readJavaString();
@@ -887,11 +896,13 @@ public class ItemSet implements ItemSetBase {
 			conditions[index] = loadReplaceCondition(input);
 		}
 		ConditionOperation op = ConditionOperation.valueOf(input.readJavaString());
+		ExtraItemNbt extraNbt = ExtraItemNbt.load(input);
 		
 		return new SimpleCustomItem(
 				itemType, damage, name, alias, displayName, lore, attributes, 
 				defaultEnchantments, stackSize, itemFlags, playerEffects, 
-				targetEffects, equippedEffects, commands, conditions, op
+				targetEffects, equippedEffects, commands, conditions, op,
+				extraNbt
 		);
 	}
 
@@ -916,7 +927,8 @@ public class ItemSet implements ItemSetBase {
 				CustomToolDurability.defaultEntityHitDurabilityLoss(itemType),
 				CustomToolDurability.defaultBlockBreakDurabilityLoss(itemType), 
 				new ArrayList<>(), new ArrayList<>(), new ArrayList<>(), 
-				new String[] {}, new ReplaceCondition[] {}, ConditionOperation.NONE
+				new String[] {}, new ReplaceCondition[] {}, ConditionOperation.NONE,
+				new ExtraItemNbt()
 		);
 	}
 
@@ -944,7 +956,8 @@ public class ItemSet implements ItemSetBase {
 				CustomToolDurability.defaultEntityHitDurabilityLoss(itemType),
 				CustomToolDurability.defaultBlockBreakDurabilityLoss(itemType), 
 				new ArrayList<>(), new ArrayList<>(), new ArrayList<>(),
-				new String[] {}, new ReplaceCondition[] {}, ConditionOperation.NONE
+				new String[] {}, new ReplaceCondition[] {}, ConditionOperation.NONE,
+				new ExtraItemNbt()
 		);
 	}
 
@@ -975,7 +988,8 @@ public class ItemSet implements ItemSetBase {
 				CustomToolDurability.defaultEntityHitDurabilityLoss(itemType),
 				CustomToolDurability.defaultBlockBreakDurabilityLoss(itemType), 
 				new ArrayList<>(), new ArrayList<>(), new ArrayList<>(), 
-				new String[] {}, new ReplaceCondition[] {}, ConditionOperation.NONE
+				new String[] {}, new ReplaceCondition[] {}, ConditionOperation.NONE,
+				new ExtraItemNbt()
 		);
 	}
 
@@ -1008,7 +1022,7 @@ public class ItemSet implements ItemSetBase {
 				repairItem, itemFlags, entityHitDurabilityLoss, 
 				blockBreakDurabilityLoss, new ArrayList<>(), new ArrayList<>(), 
 				new ArrayList<>(), new String[] {}, new ReplaceCondition[] {}, 
-				ConditionOperation.NONE
+				ConditionOperation.NONE, new ExtraItemNbt()
 		);
 	}
 	
@@ -1055,7 +1069,8 @@ public class ItemSet implements ItemSetBase {
 				repairItem, itemFlags, entityHitDurabilityLoss, 
 				blockBreakDurabilityLoss, playerEffects, targetEffects, 
 				new ArrayList<>(), commands, 
-				new ReplaceCondition[] {}, ConditionOperation.NONE
+				new ReplaceCondition[] {}, ConditionOperation.NONE, 
+				new ExtraItemNbt()
 		);
 	}
 	
@@ -1104,13 +1119,14 @@ public class ItemSet implements ItemSetBase {
 			conditions[index] = loadReplaceCondition(input);
 		}
 		ConditionOperation op = ConditionOperation.valueOf(input.readJavaString());
+		ExtraItemNbt extraNbt = ExtraItemNbt.load(input);
 		
 		return new CustomTool(
 				itemType, damage, name, alias, displayName, lore, attributes, 
 				defaultEnchantments, durability, allowEnchanting, allowAnvil, 
 				repairItem, itemFlags, entityHitDurabilityLoss, blockBreakDurabilityLoss, 
 				playerEffects, targetEffects, equippedEffects,
-				commands, conditions, op
+				commands, conditions, op, extraNbt
 		);
 	}
 	
@@ -1144,7 +1160,8 @@ public class ItemSet implements ItemSetBase {
 				repairItem, itemFlags, entityHitDurabilityLoss, 
 				blockBreakDurabilityLoss, tillDurabilityLoss, new ArrayList<>(), 
 				new ArrayList<>(), new ArrayList<>(), new String[] {}, 
-				new ReplaceCondition[] {}, ConditionOperation.NONE
+				new ReplaceCondition[] {}, ConditionOperation.NONE,
+				new ExtraItemNbt()
 		);
 	}
 	
@@ -1192,7 +1209,8 @@ public class ItemSet implements ItemSetBase {
 				repairItem, itemFlags, entityHitDurabilityLoss, 
 				blockBreakDurabilityLoss, tillDurabilityLoss, playerEffects, 
 				targetEffects, new ArrayList<>(), commands, 
-				new ReplaceCondition[] {}, ConditionOperation.NONE
+				new ReplaceCondition[] {}, ConditionOperation.NONE,
+				new ExtraItemNbt()
 		);
 	}
 	
@@ -1242,13 +1260,15 @@ public class ItemSet implements ItemSetBase {
 			conditions[index] = loadReplaceCondition(input);
 		}
 		ConditionOperation op = ConditionOperation.valueOf(input.readJavaString());
+		ExtraItemNbt extraNbt = ExtraItemNbt.load(input);
 		
 		return new CustomHoe(
 				itemType, damage, name, alias, displayName, lore, attributes, 
 				defaultEnchantments, durability, allowEnchanting, allowAnvil, 
 				repairItem, itemFlags, entityHitDurabilityLoss, 
 				blockBreakDurabilityLoss, tillDurabilityLoss, playerEffects, 
-				targetEffects, equippedEffects, commands, conditions, op
+				targetEffects, equippedEffects, commands, conditions, op,
+				extraNbt
 		);
 	}
 	
@@ -1282,7 +1302,8 @@ public class ItemSet implements ItemSetBase {
 				repairItem, itemFlags, entityHitDurabilityLoss, blockBreakDurabilityLoss, 
 				shearDurabilityLoss, new ArrayList<>(), new ArrayList<>(), 
 				new ArrayList<>(), new String[] {}, 
-				new ReplaceCondition[] {}, ConditionOperation.NONE
+				new ReplaceCondition[] {}, ConditionOperation.NONE,
+				new ExtraItemNbt()
 		);
 	}
 	
@@ -1330,7 +1351,8 @@ public class ItemSet implements ItemSetBase {
 				repairItem, itemFlags, entityHitDurabilityLoss, 
 				blockBreakDurabilityLoss, shearDurabilityLoss, playerEffects, 
 				targetEffects, new ArrayList<>(), commands, 
-				new ReplaceCondition[] {}, ConditionOperation.NONE
+				new ReplaceCondition[] {}, ConditionOperation.NONE,
+				new ExtraItemNbt()
 		);
 	}
 	
@@ -1379,13 +1401,15 @@ public class ItemSet implements ItemSetBase {
 			conditions[index] = loadReplaceCondition(input);
 		}
 		ConditionOperation op = ConditionOperation.valueOf(input.readJavaString());
+		ExtraItemNbt extraNbt = new ExtraItemNbt();
 		
 		return new CustomShears(
 				damage, name, alias, displayName, lore, attributes, 
 				defaultEnchantments, durability, allowEnchanting, allowAnvil, 
 				repairItem, itemFlags, entityHitDurabilityLoss, 
 				blockBreakDurabilityLoss, shearDurabilityLoss, playerEffects, 
-				targetEffects, equippedEffects, commands, conditions, op
+				targetEffects, equippedEffects, commands, conditions, op,
+				extraNbt
 		);
 	}
 
@@ -1421,7 +1445,8 @@ public class ItemSet implements ItemSetBase {
 				repairItem, color, ItemFlag.getDefaultValues(), 0, 0,
 				new DamageResistances(), new ArrayList<>(), new ArrayList<>(), 
 				new ArrayList<>(), new String[] {}, 
-				new ReplaceCondition[] {}, ConditionOperation.NONE
+				new ReplaceCondition[] {}, ConditionOperation.NONE,
+				new ExtraItemNbt()
 		);
 	}
 
@@ -1460,7 +1485,8 @@ public class ItemSet implements ItemSetBase {
 				repairItem, color, itemFlags, entityHitDurabilityLoss,
 				blockBreakDurabilityLoss, new DamageResistances(), new ArrayList<>(), 
 				new ArrayList<>(), new ArrayList<>(), new String[] {}, 
-				new ReplaceCondition[] {}, ConditionOperation.NONE
+				new ReplaceCondition[] {}, ConditionOperation.NONE,
+				new ExtraItemNbt()
 		);
 	}
 
@@ -1500,7 +1526,8 @@ public class ItemSet implements ItemSetBase {
 				repairItem, color, itemFlags, entityHitDurabilityLoss,
 				blockBreakDurabilityLoss, damageResistances, new ArrayList<>(), 
 				new ArrayList<>(), new ArrayList<>(), new String[] {}, 
-				new ReplaceCondition[] {}, ConditionOperation.NONE
+				new ReplaceCondition[] {}, ConditionOperation.NONE,
+				new ExtraItemNbt()
 		);
 	}
 	
@@ -1540,7 +1567,8 @@ public class ItemSet implements ItemSetBase {
 				repairItem, color, itemFlags, entityHitDurabilityLoss,
 				blockBreakDurabilityLoss, damageResistances, new ArrayList<>(), 
 				new ArrayList<>(), new ArrayList<>(), new String[] {}, 
-				new ReplaceCondition[] {}, ConditionOperation.NONE
+				new ReplaceCondition[] {}, ConditionOperation.NONE,
+				new ExtraItemNbt()
 		);
 	}
 	
@@ -1594,7 +1622,8 @@ public class ItemSet implements ItemSetBase {
 				repairItem, color, itemFlags, entityHitDurabilityLoss,
 				blockBreakDurabilityLoss, damageResistances, playerEffects, 
 				targetEffects, new ArrayList<>(), commands, 
-				new ReplaceCondition[] {}, ConditionOperation.NONE
+				new ReplaceCondition[] {}, ConditionOperation.NONE,
+				new ExtraItemNbt()
 		);
 	}
 	
@@ -1650,13 +1679,20 @@ public class ItemSet implements ItemSetBase {
 			conditions[index] = loadReplaceCondition(input);
 		}
 		ConditionOperation op = ConditionOperation.valueOf(input.readJavaString());
+		ExtraItemNbt extraNbt = ExtraItemNbt.load(input);
+		
+		// Discard the worn texture name, because the plug-in doesn't really care
+		if (input.readBoolean()) {
+			input.readString();
+		}
 		
 		return new CustomArmor(
 				itemType, damage, name, alias, displayName, lore, attributes, 
 				defaultEnchantments, durability, allowEnchanting, allowAnvil, 
 				repairItem, color, itemFlags, entityHitDurabilityLoss,
 				blockBreakDurabilityLoss, damageResistances, playerEffects, 
-				targetEffects, equippedEffects, commands, conditions, op
+				targetEffects, equippedEffects, commands, conditions, op,
+				extraNbt
 		);
 	}
 	
@@ -1712,13 +1748,17 @@ public class ItemSet implements ItemSetBase {
 			conditions[index] = loadReplaceCondition(input);
 		}
 		ConditionOperation op = ConditionOperation.valueOf(input.readJavaString());
+		ExtraItemNbt extraNbt = ExtraItemNbt.load(input);
+		// Discard the flag for the worn texture
+		input.readBoolean();
 		
 		return new CustomHelmet3D(
 				itemType, damage, name, alias, displayName, lore, attributes, 
 				defaultEnchantments, durability, allowEnchanting, allowAnvil, 
 				repairItem, color, itemFlags, entityHitDurabilityLoss,
 				blockBreakDurabilityLoss, damageResistances, playerEffects, 
-				targetEffects, equippedEffects, commands, conditions, op
+				targetEffects, equippedEffects, commands, conditions, op,
+				extraNbt
 		);
 	}
 
@@ -1748,7 +1788,8 @@ public class ItemSet implements ItemSetBase {
 				gravity, allowEnchanting, allowAnvil, repairItem,
 				ItemFlag.getDefaultValues(), 0, 0, 1, new ArrayList<>(), 
 				new ArrayList<>(), new ArrayList<>(), new String[] {}, 
-				new ReplaceCondition[] {}, ConditionOperation.NONE
+				new ReplaceCondition[] {}, ConditionOperation.NONE,
+				new ExtraItemNbt()
 		);
 	}
 
@@ -1781,7 +1822,8 @@ public class ItemSet implements ItemSetBase {
 				gravity, allowEnchanting, allowAnvil, repairItem,
 				ItemFlag.getDefaultValues(), 0, 0, 1, new ArrayList<>(), 
 				new ArrayList<>(), new ArrayList<>(), new String[] {}, 
-				new ReplaceCondition[] {}, ConditionOperation.NONE
+				new ReplaceCondition[] {}, ConditionOperation.NONE,
+				new ExtraItemNbt()
 		);
 	}
 
@@ -1819,7 +1861,8 @@ public class ItemSet implements ItemSetBase {
 				itemFlags, entityHitDurabilityLoss, blockBreakDurabilityLoss, 
 				shootDurabilityLoss, new ArrayList<>(), new ArrayList<>(), 
 				new ArrayList<>(), new String[] {}, 
-				new ReplaceCondition[] {}, ConditionOperation.NONE
+				new ReplaceCondition[] {}, ConditionOperation.NONE,
+				new ExtraItemNbt()
 		);
 	}
 	
@@ -1870,7 +1913,8 @@ public class ItemSet implements ItemSetBase {
 				knockbackStrength, gravity, allowEnchanting, allowAnvil, repairItem,
 				itemFlags, entityHitDurabilityLoss, blockBreakDurabilityLoss, 
 				shootDurabilityLoss, playerEffects, targetEffects, new ArrayList<>(), 
-				commands, new ReplaceCondition[] {}, ConditionOperation.NONE
+				commands, new ReplaceCondition[] {}, ConditionOperation.NONE,
+				new ExtraItemNbt()
 		);
 	}
 	
@@ -1923,6 +1967,7 @@ public class ItemSet implements ItemSetBase {
 			conditions[index] = loadReplaceCondition(input);
 		}
 		ConditionOperation op = ConditionOperation.valueOf(input.readJavaString());
+		ExtraItemNbt extraNbt = ExtraItemNbt.load(input);
 		
 		return new CustomBow(
 				damage, name, alias, displayName, lore, attributes, 
@@ -1930,7 +1975,7 @@ public class ItemSet implements ItemSetBase {
 				knockbackStrength, gravity, allowEnchanting, allowAnvil, repairItem,
 				itemFlags, entityHitDurabilityLoss, blockBreakDurabilityLoss, 
 				shootDurabilityLoss, playerEffects, targetEffects, 
-				equippedEffects, commands, conditions, op
+				equippedEffects, commands, conditions, op, extraNbt
 		);
 	}
 	
@@ -1964,7 +2009,8 @@ public class ItemSet implements ItemSetBase {
 				entityHitDurabilityLoss, blockBreakDurabilityLoss, 
 				durabilityThreshold, new ArrayList<>(), new ArrayList<>(), 
 				new ArrayList<>(), new String[] {}, 
-				new ReplaceCondition[] {}, ConditionOperation.NONE
+				new ReplaceCondition[] {}, ConditionOperation.NONE,
+				new ExtraItemNbt()
 		);
 	}
 	
@@ -2012,7 +2058,8 @@ public class ItemSet implements ItemSetBase {
 				entityHitDurabilityLoss, blockBreakDurabilityLoss, 
 				durabilityThreshold, playerEffects, targetEffects, 
 				new ArrayList<>(), commands, 
-				new ReplaceCondition[] {}, ConditionOperation.NONE
+				new ReplaceCondition[] {}, ConditionOperation.NONE,
+				new ExtraItemNbt()
 		);
 	}
 	
@@ -2061,6 +2108,7 @@ public class ItemSet implements ItemSetBase {
 			conditions[index] = loadReplaceCondition(input);
 		}
 		ConditionOperation op = ConditionOperation.valueOf(input.readJavaString());
+		ExtraItemNbt extraNbt = ExtraItemNbt.load(input);
 		
 		return new CustomShield(
 				damage, name, alias, displayName, lore, attributes, 
@@ -2068,7 +2116,7 @@ public class ItemSet implements ItemSetBase {
 				repairItem, itemFlags, entityHitDurabilityLoss, 
 				blockBreakDurabilityLoss, durabilityThreshold, 
 				playerEffects, targetEffects, equippedEffects, 
-				commands, conditions, op
+				commands, conditions, op, extraNbt
 		);
 	}
 	
@@ -2104,7 +2152,8 @@ public class ItemSet implements ItemSetBase {
 				entityHitDurabilityLoss, blockBreakDurabilityLoss, 
 				throwDurabilityLoss, new ArrayList<>(), new ArrayList<>(), 
 				new ArrayList<>(), new String[] {}, 
-				new ReplaceCondition[] {}, ConditionOperation.NONE
+				new ReplaceCondition[] {}, ConditionOperation.NONE,
+				new ExtraItemNbt()
 		);
 	}
 	
@@ -2154,7 +2203,8 @@ public class ItemSet implements ItemSetBase {
 				entityHitDurabilityLoss, blockBreakDurabilityLoss, 
 				throwDurabilityLoss, playerEffects, targetEffects, 
 				new ArrayList<>(), commands, 
-				new ReplaceCondition[] {}, ConditionOperation.NONE
+				new ReplaceCondition[] {}, ConditionOperation.NONE,
+				new ExtraItemNbt()
 		);
 	}
 	
@@ -2205,6 +2255,7 @@ public class ItemSet implements ItemSetBase {
 			conditions[index] = loadReplaceCondition(input);
 		}
 		ConditionOperation op = ConditionOperation.valueOf(input.readJavaString());
+		ExtraItemNbt extraNbt = ExtraItemNbt.load(input);
 		
 		return new CustomTrident(
 				damage, name, alias, displayName, lore, attributes, 
@@ -2212,7 +2263,7 @@ public class ItemSet implements ItemSetBase {
 				throwDamageMultiplier, speedMultiplier, repairItem, itemFlags, 
 				entityHitDurabilityLoss, blockBreakDurabilityLoss, 
 				throwDurabilityLoss, playerEffects, targetEffects, 
-				equippedEffects, commands, conditions, op
+				equippedEffects, commands, conditions, op, extraNbt
 		);
 	}
 	
@@ -2264,13 +2315,13 @@ public class ItemSet implements ItemSetBase {
 				defaultEnchantments, itemFlags, playerEffects, targetEffects, 
 				new ArrayList<>(), commands, new ReplaceCondition[] {}, 
 				ConditionOperation.NONE, projectile, cooldown, charges,
-				amountPerShot
+				amountPerShot, new ExtraItemNbt()
 		);
 	}
 	
 	private static CustomItem loadWand9(
 			BitInput input, ProjectileByName getProjectileByName
-	) {
+	) throws UnknownEncodingException {
 		CustomItemType itemType = CustomItemType.valueOf(input.readJavaString());
 		short damage = input.readShort();
 		String name = input.readJavaString();
@@ -2318,12 +2369,13 @@ public class ItemSet implements ItemSetBase {
 		int amountPerShot = input.readInt();
 		
 		CIProjectile projectile = getProjectileByName.apply(projectileName);
+		ExtraItemNbt extraNbt = ExtraItemNbt.load(input);
 		
 		return new CustomWand(
 				itemType, damage, name, alias, displayName, lore, attributes, 
 				defaultEnchantments, itemFlags, playerEffects, targetEffects, 
 				equippedEffects, commands, conditions, op, projectile, cooldown, 
-				charges, amountPerShot
+				charges, amountPerShot, extraNbt
 		);
 	}
 
