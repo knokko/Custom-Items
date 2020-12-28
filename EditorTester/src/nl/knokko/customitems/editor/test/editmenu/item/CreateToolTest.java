@@ -55,17 +55,17 @@ public class CreateToolTest {
 		
 		ItemNameTest.test(test, itemName);
 		SimpleTextureTest.test(test, textureName);
-		DisplayNameTest.test(test, itemName, 2);
-		LoreTest.test(test, lore1, lore2, 9);
+		DisplayNameTest.test(test, itemName, 3);
+		LoreTest.test(test, lore1, lore2, 11);
 		
 		// Not my most pretty solution ever, but will do the trick
 		CustomItemType customItemType = CustomItemType.valueOf("IRON_" + toolType.toUpperCase(Locale.ROOT));
 		AttributeModTest.test(test, "generic.attackDamage", "Mainhand", "Add", 
 				new DecimalFormat("#.############").format(CustomItemDamage.getDefaultAttackDamage(customItemType)), 
-				attribute1, slot1, op1, value1, attribute2, slot2, op2, value2, 9);
-		EnchantmentsTest.test(test, enchantment1, level1, enchantment2, level2, 9);
+				attribute1, slot1, op1, value1, attribute2, slot2, op2, value2, 11);
+		EnchantmentsTest.test(test, enchantment1, level1, enchantment2, level2, 11);
 		
-		toolOnly(test, customItemType, maxUses, repairItemCategory, repairItem, attackDurLoss, breakDurLoss, 5);
+		toolOnly(test, customItemType, maxUses, repairItemCategory, repairItem, attackDurLoss, breakDurLoss, 7);
 
 		test.click("Create");
 		test.assertComponentsWithTexts("Create item", itemName);
@@ -112,7 +112,7 @@ public class CreateToolTest {
 		test.backspace(Integer.toString(defaultAttackDurLoss).length());
 		test.click("Create");
 		test.assertComponentWithText("The entity hit durability loss should be a positive integer");
-		test.click("");
+		test.clickNearest("", "Max uses: ", 2);
 		test.type(attackDurLoss);
 	}
 	
@@ -122,7 +122,7 @@ public class CreateToolTest {
 		test.backspace(Integer.toString(defaultBreakDurLoss).length());
 		test.click("Create");
 		test.assertComponentWithText("The block break durability loss should be a positive integer");
-		test.click("");
+		test.clickNearest("", "Max uses: ", 2);
 		test.type(breakDurLoss);
 	}
 	
@@ -133,7 +133,7 @@ public class CreateToolTest {
 		test.backspace(15);
 		test.click("Create");
 		test.assertComponentWithText("The durability must be an integer");
-		test.click("");
+		test.clickNearest("", "Max uses: ", 2);
 		test.type(newMaxUses);
 	}
 	

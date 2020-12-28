@@ -38,7 +38,7 @@ public class ItemNameTest {
 		String badName = itemName.replace('_', ' ');
 		test.click("Create");
 		test.assertComponentWithText("You can't leave the name empty.");
-		test.clickNearest("", "Name: ", 2);
+		test.clickNearest("", "Name: ", 3);
 		test.type(badName);
 		test.click("Create");
 		test.assertComponentWithText("The _ character is the only special character that is allowed in names.");

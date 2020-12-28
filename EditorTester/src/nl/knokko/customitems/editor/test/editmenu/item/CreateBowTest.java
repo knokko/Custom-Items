@@ -24,28 +24,28 @@ public class CreateBowTest {
 				"knockback strength: ", "Arrow gravity", "500", "0", "1", "1");
 		SimpleTextureTest.test(test, textureName);
 		ItemNameTest.test(test, "fragile_bow");
-		DisplayNameTest.test(test, itemName, 1);
-		LoreTest.test(test, lore1, lore2, 8);
+		DisplayNameTest.test(test, itemName, 2);
+		LoreTest.test(test, lore1, lore2, 10);
 		
 		AttributeModTest.test(test, "generic.movementSpeed", "Offhand", "Add factor", "1.5", 
-				attribute1, slot1, op1, value1, attribute2, slot2, op2, value2, 8);
-		EnchantmentsTest.test(test, enchantment1, level1, enchantment2, level2, 8);
-		CreateToolTest.attackDurabilityLoss(test, CustomItemType.BOW, attackDurLoss, 9);
-		CreateToolTest.breakDurabilityLoss(test, CustomItemType.BOW, breakDurLoss, 9);
+				attribute1, slot1, op1, value1, attribute2, slot2, op2, value2, 10);
+		EnchantmentsTest.test(test, enchantment1, level1, enchantment2, level2, 10);
+		CreateToolTest.attackDurabilityLoss(test, CustomItemType.BOW, attackDurLoss, 11);
+		CreateToolTest.breakDurabilityLoss(test, CustomItemType.BOW, breakDurLoss, 11);
 		CreateToolTest.maxUses(test, "500", maxUses);
 		CreateToolTest.repairItem(test, repairItemCategory, repairItem);
 		
 		// The next stuff is bows only
-		test.clickNearestEdit("Durability loss on shooting:", 9);
+		test.clickNearestEdit("Durability loss on shooting:", 11);
 		test.backspace(1);
 		test.type(shootDurLoss);
-		test.clickNearestEdit("Damage multiplier: ", 9);
+		test.clickNearestEdit("Damage multiplier: ", 11);
 		test.backspace(8);
 		test.type(damageMultiplier);
-		test.clickNearestEdit("Speed multiplier: ", 9);
+		test.clickNearestEdit("Speed multiplier: ", 11);
 		test.backspace(8);
 		test.type(speedMultiplier);
-		test.clickNearestEdit("knockback strength: ", 9);
+		test.clickNearestEdit("knockback strength: ", 11);
 		test.backspace(1);
 		test.type(knockbackStrength);
 		test.uncheck("Arrow gravity", 3);
