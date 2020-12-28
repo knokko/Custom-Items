@@ -11,7 +11,19 @@ import nl.knokko.customitems.container.fuel.CustomFuelRegistry;
 import nl.knokko.customitems.editor.Editor;
 import nl.knokko.customitems.editor.menu.edit.EditProps;
 import nl.knokko.customitems.editor.set.ItemSet;
-import nl.knokko.customitems.editor.set.item.*;
+import nl.knokko.customitems.editor.set.item.CustomArmor;
+import nl.knokko.customitems.editor.set.item.CustomBow;
+import nl.knokko.customitems.editor.set.item.CustomHelmet3D;
+import nl.knokko.customitems.editor.set.item.CustomHoe;
+import nl.knokko.customitems.editor.set.item.CustomItem;
+import nl.knokko.customitems.editor.set.item.CustomShears;
+import nl.knokko.customitems.editor.set.item.CustomShield;
+import nl.knokko.customitems.editor.set.item.CustomTool;
+import nl.knokko.customitems.editor.set.item.CustomTrident;
+import nl.knokko.customitems.editor.set.item.CustomWand;
+import nl.knokko.customitems.editor.set.item.NamedImage;
+import nl.knokko.customitems.editor.set.item.SimpleCustomItem;
+import nl.knokko.customitems.editor.set.item.texture.ArmorTextures;
 import nl.knokko.customitems.editor.set.item.texture.BowTextures;
 import nl.knokko.customitems.editor.set.projectile.cover.CustomProjectileCover;
 import nl.knokko.customitems.editor.set.projectile.cover.EditorProjectileCover;
@@ -19,7 +31,9 @@ import nl.knokko.customitems.editor.set.projectile.cover.SphereProjectileCover;
 import nl.knokko.customitems.editor.set.recipe.Recipe;
 import nl.knokko.customitems.editor.set.recipe.ShapedRecipe;
 import nl.knokko.customitems.editor.set.recipe.ShapelessRecipe;
+import nl.knokko.customitems.editor.util.Reference;
 import nl.knokko.customitems.projectile.CIProjectile;
+import nl.knokko.customitems.util.ValidationException;
 import nl.knokko.gui.color.GuiColor;
 import nl.knokko.gui.component.menu.GuiMenu;
 import nl.knokko.gui.component.text.TextEditField;
@@ -51,10 +65,17 @@ public class CombineMenu extends GuiMenu {
 			state.getWindow().setMainComponent(new SelectSets());
 		}), 0.025f, 0.1f, 0.2f, 0.2f);
 		
-		addComponent(new DynamicTextComponent("You can combine 2 item sets into a single item set that will have the content of both item sets.", EditProps.LABEL), 0f, 0.7f, 0.95f, 0.8f);
-		addComponent(new DynamicTextComponent("You will need to select a primary item set and a secundary item set.", EditProps.LABEL), 0f, 0.6f, 0.65f, 0.7f);
-		addComponent(new DynamicTextComponent("If you have used any of the item sets on your server before, you must use that set as primary item set.", EditProps.ERROR), 0f, 0.5f, 0.98f, 0.6f);
-		addComponent(new DynamicTextComponent("If you haven't used any of the item sets on your server yet, it doesn't matter which one is the primary.", EditProps.LABEL), 0f, 0.4f, 0.98f, 0.5f);
+		addComponent(new DynamicTextComponent(
+				"You can combine 2 item sets into a single item set that will "
+				+ "have the content of both item sets.", EditProps.LABEL), 
+				0f, 0.7f, 0.95f, 0.8f);
+		addComponent(new DynamicTextComponent(
+				"You will need to select a primary item set and a secundary item set.", 
+				EditProps.LABEL), 0f, 0.6f, 0.65f, 0.7f);
+		addComponent(new DynamicTextComponent(
+				"It is no longer important which one is the primary set and which "
+				+ "one is the secundary set.", EditProps.LABEL), 
+				0f, 0.5f, 0.9f, 0.6f);
 	}
 	
 	@Override
@@ -172,6 +193,14 @@ public class CombineMenu extends GuiMenu {
 					if (error != null) {
 						errorComponent.setText("Error with " + texture.getName() + ": " + error);
 						return;
+					}
+				}
+				
+				for (Reference<ArmorTextures> armorTextures : secundarySet.getBackingArmorTextures()) {
+					try {
+						primarySet.addArmorTextures(armorTextures.get());
+					} catch (ValidationException problem) {
+						errorComponent.setText("Armor texture combine: " + problem.getMessage());
 					}
 				}
 				
