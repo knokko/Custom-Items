@@ -304,7 +304,7 @@ public abstract class EditItemBase extends GuiMenu {
 	protected final String create() {
 		Option.Float attackRange = attackRangeField.getFloat();
 		if (!attackRange.hasValue()) {
-			return "The attack range must be a number";
+			return "The attack range must be a positive number";
 		}
 		return create(attackRange.getValue());
 	}
@@ -312,7 +312,7 @@ public abstract class EditItemBase extends GuiMenu {
 	protected final String apply() {
 		Option.Float attackRange = attackRangeField.getFloat();
 		if (!attackRange.hasValue()) {
-			return "The attack range must be a number";
+			return "The attack range must be a positive number";
 		}
 		return apply(attackRange.getValue());
 	}
