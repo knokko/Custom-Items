@@ -32,16 +32,19 @@ public class EditItemShield extends EditItemTool {
 	@Override
 	protected void addComponents() {
 		super.addComponents();
-		addComponent(new DynamicTextComponent("Required damage to lose durability:", EditProps.LABEL), 0.5f, 0.325f, 0.84f, 0.4f);
+		addComponent(new DynamicTextComponent("Required damage to lose durability:", 
+				EditProps.LABEL), 0.5f, 0.325f, 0.84f, 0.4f);
 		addComponent(thresholdField, 0.85f, 0.325f, 0.95f, 0.425f);
 		
-		addComponent(new DynamicTextComponent("Blocking model: ", EditProps.LABEL), LABEL_X, -0.04f, LABEL_X + 0.2f, 0.01f);
-		addComponent(new DynamicTextButton("Change...", EditProps.BUTTON, EditProps.HOVER, () -> {
+		addComponent(new DynamicTextComponent("Blocking model: ", EditProps.LABEL), 
+				0.65f, 0.25f, 0.84f, 0.325f);
+		addComponent(new DynamicTextButton("Change...", 
+				EditProps.BUTTON, EditProps.HOVER, () -> {
 			state.getWindow()
 					.setMainComponent(new EditCustomModel(ItemSet.getDefaultModelBlockingShield(textureSelect.getSelected() != null ? textureSelect.getSelected().getName() : "TEXTURE_NAME"), this, (byte[] array) -> {
 								customBlockingModel = array;
 							}, customBlockingModel));
-		}), BUTTON_X, -0.04f, BUTTON_X + 0.1f, 0.01f);
+		}), 0.85f, 0.25f, 0.95f, 0.325f);
 		
 		HelpButtons.addHelpLink(this, "edit%20menu/items/edit/shield.html");
 	}
