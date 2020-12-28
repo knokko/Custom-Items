@@ -236,22 +236,24 @@ public class EditItemArmor extends EditItemTool {
 				damageResistances = newResistances;
 			}));
 		}), 0.85f, 0.35f, 0.99f, 0.425f);
-		addComponent(new ConditionalTextComponent(
-				"Worn texture:", EditProps.LABEL, () -> !showColors()), 
-				0.65f, 0.29f, 0.84f, 0.35f);
-		addComponent(new ConditionalTextButton(
-				"Change...", EditProps.BUTTON, EditProps.HOVER, () -> {
-					state.getWindow().setMainComponent(new SelectWornTexture(
-							this, menu.getSet(), 
-							newWornTexture -> wornTexture = newWornTexture
-					));
-				}, () -> !showColors()), 0.85f, 0.29f, 0.99f, 0.35f);
-		addComponent(new ConditionalTextComponent("Red: ", EditProps.LABEL, () -> {return showColors();}), 0.78f, 0.29f, 0.84f, 0.35f);
-		addComponent(new ConditionalTextComponent("Green: ", EditProps.LABEL, () -> {return showColors();}), 0.75f, 0.21f, 0.84f, 0.27f);
-		addComponent(new ConditionalTextComponent("Blue: ", EditProps.LABEL, () -> {return showColors();}), 0.77f, 0.13f, 0.84f, 0.19f);
-		addComponent(red, 0.85f, 0.28f, 0.9f, 0.35f);
-		addComponent(green, 0.85f, 0.20f, 0.9f, 0.27f);
-		addComponent(blue, 0.85f, 0.12f, 0.9f, 0.19f);
+		if (!(this instanceof EditItemHelmet3D)) {
+			addComponent(new ConditionalTextComponent(
+					"Worn texture:", EditProps.LABEL, () -> !showColors()), 
+					0.65f, 0.29f, 0.84f, 0.35f);
+			addComponent(new ConditionalTextButton(
+					"Change...", EditProps.BUTTON, EditProps.HOVER, () -> {
+						state.getWindow().setMainComponent(new SelectWornTexture(
+								this, menu.getSet(), 
+								newWornTexture -> wornTexture = newWornTexture
+						));
+					}, () -> !showColors()), 0.85f, 0.29f, 0.99f, 0.35f);
+			addComponent(new ConditionalTextComponent("Red: ", EditProps.LABEL, () -> {return showColors();}), 0.78f, 0.29f, 0.84f, 0.35f);
+			addComponent(new ConditionalTextComponent("Green: ", EditProps.LABEL, () -> {return showColors();}), 0.75f, 0.21f, 0.84f, 0.27f);
+			addComponent(new ConditionalTextComponent("Blue: ", EditProps.LABEL, () -> {return showColors();}), 0.77f, 0.13f, 0.84f, 0.19f);
+			addComponent(red, 0.85f, 0.28f, 0.9f, 0.35f);
+			addComponent(green, 0.85f, 0.20f, 0.9f, 0.27f);
+			addComponent(blue, 0.85f, 0.12f, 0.9f, 0.19f);
+		}
 		errorComponent.setProperties(EditProps.LABEL);
 		errorComponent.setText("Hint: Use attribute modifiers to set the armor (toughness) of this piece.");
 		
