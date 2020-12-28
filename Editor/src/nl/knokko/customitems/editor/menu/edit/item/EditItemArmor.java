@@ -176,7 +176,9 @@ public class EditItemArmor extends EditItemTool {
 	}
 	
 	@Override
-	protected String create(long maxUses, int entityHitDurabilityLoss, int blockBreakDurabilityLoss) {
+	protected String create(
+			long maxUses, int entityHitDurabilityLoss, int blockBreakDurabilityLoss,
+			float attackRange) {
 		int redValue = getColorValue(red, DEFAULT_RED);
 		if (redValue == -1) return "The red must be an integer at least 0 and at most 255";
 		int greenValue = getColorValue(green, DEFAULT_GREEN);
@@ -195,12 +197,13 @@ public class EditItemArmor extends EditItemTool {
 				entityHitDurabilityLoss, blockBreakDurabilityLoss, 
 				damageResistances, customModel, playerEffects, 
 				targetEffects, equippedEffects,
-				commands, conditions, op, extraNbt, wornTexture), true
+				commands, conditions, op, extraNbt, wornTexture, attackRange), true
 		);
 	}
 	
 	@Override
-	protected String apply(long maxUses, int entityHit, int blockBreak) {
+	protected String apply(
+			long maxUses, int entityHit, int blockBreak, float attackRange) {
 		int redValue = getColorValue(red, DEFAULT_RED);
 		if (redValue == -1) return "The red must be an integer at least 0 and at most 255";
 		int greenValue = getColorValue(green, DEFAULT_GREEN);
@@ -217,7 +220,7 @@ public class EditItemArmor extends EditItemTool {
 				textureSelect.getSelected(), redValue, greenValue, blueValue, 
 				itemFlags, entityHit, blockBreak, damageResistances,
 				customModel, playerEffects, targetEffects, equippedEffects,
-				commands, conditions, op, extraNbt, wornTexture, true
+				commands, conditions, op, extraNbt, wornTexture, attackRange, true
 		);
 	}
 	

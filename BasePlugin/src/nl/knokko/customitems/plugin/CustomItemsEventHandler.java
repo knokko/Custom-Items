@@ -79,8 +79,8 @@ import org.bukkit.entity.HumanEntity;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.Projectile;
-import org.bukkit.event.Event.Result;
 import org.bukkit.event.Event;
+import org.bukkit.event.Event.Result;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
@@ -123,7 +123,11 @@ import org.bukkit.inventory.meta.Repairable;
 import org.bukkit.metadata.MetadataValue;
 import org.bukkit.plugin.Plugin;
 
+import nl.knokko.core.plugin.CorePlugin;
+import nl.knokko.core.plugin.entity.EntityLineIntersection;
 import nl.knokko.core.plugin.item.ItemHelper;
+import nl.knokko.core.plugin.world.RaytraceResult;
+import nl.knokko.core.plugin.world.Raytracer;
 import nl.knokko.customitems.damage.DamageSource;
 import nl.knokko.customitems.drops.BlockDrop;
 import nl.knokko.customitems.drops.Drop;
@@ -162,6 +166,55 @@ public class CustomItemsEventHandler implements Listener {
 	
 	private ItemSet set() {
 		return plugin().getSet();
+	}
+	
+	@EventHandler(priority = EventPriority.MONITOR)
+	public void handleLongAttackRange(PlayerInteractEvent event) {
+		if (event.getAction() == Action.LEFT_CLICK_AIR) {
+			Player player = event.getPlayer();
+			ItemStack mainItem = player.getInventory().getItemInMainHand();
+			CustomItem customMain = set().getItem(mainItem);
+			if (customMain != null && customMain.getAttackRange() > 1) {
+				double baseAttackRange = getBaseAttackRange(player.getGameMode());
+				
+				double attackRange = baseAttackRange * customMain.getAttackRange();
+				double damageAmount = player.getAttribute(Attribute.GENERIC_ATTACK_DAMAGE).getValue();
+				
+				RaytraceResult raytrace = Raytracer.raytrace(
+						player.getEyeLocation(), 
+						player.getEyeLocation().getDirection().multiply(attackRange), 
+						player
+				);
+				if (raytrace != null && raytrace.getHitEntity() instanceof LivingEntity) {
+					LivingEntity hit = (LivingEntity) raytrace.getHitEntity();
+					hit.damage(damageAmount, event.getPlayer());
+				}
+			}
+		}
+	}
+	
+	@EventHandler(priority = EventPriority.LOW, ignoreCancelled = true)
+	public void handleShortAttackRange(EntityDamageByEntityEvent event) {
+		if (event.getDamager() instanceof Player) {
+			Player damager = (Player) event.getDamager();
+			ItemStack mainItem = damager.getInventory().getItemInMainHand();
+			CustomItem customMain = set().getItem(mainItem);
+			if (customMain != null && customMain.getAttackRange() < 1) {
+				double baseAttackRange = getBaseAttackRange(damager.getGameMode());
+				double attackRange = baseAttackRange * customMain.getAttackRange();
+				
+				double attackDistance = EntityLineIntersection.distanceToStart(
+						event.getEntity(), 
+						damager.getEyeLocation(), 
+						damager.getEyeLocation().getDirection(), 
+						6
+				);
+
+				if (attackDistance > attackRange) {
+					event.setCancelled(true);
+				}
+			}
+		}
 	}
 	
 	@EventHandler
@@ -234,6 +287,21 @@ public class CustomItemsEventHandler implements Listener {
 					inv.setHelmet(item);
 				}
 			});
+		}
+	}
+	
+	private double getBaseAttackRange(GameMode gamemode) {
+		if (gamemode == GameMode.CREATIVE) {
+			if (CorePlugin.useNewCommands()) {
+				// In 1.13 and later versions, the creative range is 5 blocks
+				return 5;
+			} else {
+				// In 1.12 and earlier versions, the creative range is 4 blocks
+				return 4;
+			}
+		} else {
+			// In the other gamemodes, its simply 3
+			return 3;
 		}
 	}
 
@@ -1027,7 +1095,7 @@ public class CustomItemsEventHandler implements Listener {
 		event.getDrops().addAll(stacksToDrop);
 	}
 
-	@EventHandler
+	@EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
 	public void onEntityHit(EntityDamageByEntityEvent event) {
 		if (event.getEntity() instanceof LivingEntity) {
 			LivingEntity target = (LivingEntity) event.getEntity();

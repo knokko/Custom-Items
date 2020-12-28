@@ -46,7 +46,9 @@ public class EditItemHoe extends EditItemTool {
 	}
 	
 	@Override
-	protected String create(long maxUses, int entityHitDurabilityLoss, int blockBreakDurabilityLoss) {
+	protected String create(
+			long maxUses, int entityHitDurabilityLoss, int blockBreakDurabilityLoss,
+			float attackRange) {
 		Option.Int durLoss = tillDurabilityLoss.getInt();
 		if (!durLoss.hasValue())
 			return "The till durability loss must be a positive integer";
@@ -57,12 +59,14 @@ public class EditItemHoe extends EditItemTool {
 				repairItem.getIngredient(), textureSelect.getSelected(), itemFlags,
 				entityHitDurabilityLoss, blockBreakDurabilityLoss, 
 				durLoss.getValue(), customModel, playerEffects, targetEffects, 
-				equippedEffects, commands, conditions, op, extraNbt), true
+				equippedEffects, commands, conditions, op, extraNbt, attackRange), true
 		);
 	}
 	
 	@Override
-	protected String apply(long maxUses, int entityHitDurabilityLoss, int blockBreakDurabilityLoss) {
+	protected String apply(
+			long maxUses, int entityHitDurabilityLoss, int blockBreakDurabilityLoss,
+			float attackRange) {
 		Option.Int durLoss = tillDurabilityLoss.getInt();
 		if (!durLoss.hasValue())
 			return "The shear durability loss must be a positive integer";
@@ -73,7 +77,7 @@ public class EditItemHoe extends EditItemTool {
 				textureSelect.getSelected(), itemFlags, entityHitDurabilityLoss, 
 				blockBreakDurabilityLoss, durLoss.getValue(), customModel, 
 				playerEffects, targetEffects, equippedEffects,
-				commands, conditions, op, extraNbt, true
+				commands, conditions, op, extraNbt, attackRange, true
 		);
 	}
 }

@@ -61,7 +61,8 @@ public class CustomArmor extends CustomTool {
 			List<PotionEffect> playerEffects, List<PotionEffect> targetEffects, 
 			Collection<EquippedPotionEffect> equippedEffects, String[] commands, 
 			ReplaceCondition[] conditions, ConditionOperation op,
-			ExtraItemNbt extraNbt, ReadOnlyReference<ArmorTextures> wornTexture
+			ExtraItemNbt extraNbt, ReadOnlyReference<ArmorTextures> wornTexture,
+			float attackRange
 	) {
 		super(
 				itemType, name, alias, displayName, lore, attributes, 
@@ -69,7 +70,7 @@ public class CustomArmor extends CustomTool {
 				repairItem, texture, itemFlags, entityHitDurabilityLoss, 
 				blockBreakDurabilityLoss, customModel, playerEffects, 
 				targetEffects, equippedEffects, commands, conditions, op,
-				extraNbt
+				extraNbt, attackRange
 		);
 		this.red = red;
 		this.green = green;
@@ -316,6 +317,7 @@ public class CustomArmor extends CustomTool {
 		if (wornTexture != null) {
 			output.addString(wornTexture.get().getName());
 		}
+		output.addFloat(attackRange);
 	}
 	
 	protected byte getEncoding9() {

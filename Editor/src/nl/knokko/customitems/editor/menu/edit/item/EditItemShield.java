@@ -47,7 +47,9 @@ public class EditItemShield extends EditItemTool {
 	}
 	
 	@Override
-	protected String create(long maxUses, int entityHitDurabilityLoss, int blockBreakDurabilityLoss) {
+	protected String create(
+			long maxUses, int entityHitDurabilityLoss, int blockBreakDurabilityLoss,
+			float attackRange) {
 		Option.Double thresholdDamage = thresholdField.getDouble();
 		if (!thresholdDamage.hasValue())
 			return "The required damage must be a positive number";
@@ -58,12 +60,14 @@ public class EditItemShield extends EditItemTool {
 				textureSelect.getSelected(), itemFlags, entityHitDurabilityLoss, 
 				blockBreakDurabilityLoss, thresholdDamage.getValue(), customModel, 
 				customBlockingModel, playerEffects, targetEffects, equippedEffects,
-				commands, conditions, op, extraNbt), true
+				commands, conditions, op, extraNbt, attackRange), true
 		);
 	}
 	
 	@Override
-	protected String apply(long maxUses, int entityHitDurabilityLoss, int blockBreakDurabilityLoss) {
+	protected String apply(
+			long maxUses, int entityHitDurabilityLoss, int blockBreakDurabilityLoss,
+			float attackRange) {
 		Option.Double thresholdDamage = thresholdField.getDouble();
 		if (!thresholdDamage.hasValue())
 			return "The required damage must be a positive number";
@@ -74,7 +78,7 @@ public class EditItemShield extends EditItemTool {
 				itemFlags, entityHitDurabilityLoss, blockBreakDurabilityLoss, 
 				thresholdDamage.getValue(), customModel, customBlockingModel, 
 				playerEffects, targetEffects, equippedEffects, commands, 
-				conditions, op, extraNbt, true
+				conditions, op, extraNbt, attackRange, true
 		);
 	}
 }

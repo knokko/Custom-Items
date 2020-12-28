@@ -31,14 +31,14 @@ public class CustomTrident extends CustomTool {
 			List<PotionEffect> targetEffects, 
 			Collection<EquippedPotionEffect> equippedEffects, String[] commands, 
 			ReplaceCondition[] conditions, ConditionOperation op,
-			ExtraItemNbt extraNbt
+			ExtraItemNbt extraNbt, float attackRange
 	) {
 		super(
 				CustomItemType.TRIDENT, itemDamage, name, alias, displayName, lore, 
 				attributes, defaultEnchantments, maxDurability, allowEnchanting,
 				allowAnvil, repairItem, itemFlags, entityHitDurabilityLoss, 
 				blockBreakDurabilityLoss, playerEffects, targetEffects, 
-				equippedEffects, commands, conditions, op, extraNbt
+				equippedEffects, commands, conditions, op, extraNbt, attackRange
 		);
 		this.throwDurabilityLoss = throwDurabilityLoss;
 		this.throwSpeedMultiplier = throwSpeedMultiplier;

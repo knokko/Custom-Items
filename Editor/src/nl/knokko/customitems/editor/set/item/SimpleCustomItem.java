@@ -49,14 +49,14 @@ public class SimpleCustomItem extends CustomItem {
 			List<PotionEffect> playerEffects, List<PotionEffect> targetEffects, 
 			Collection<EquippedPotionEffect> equippedEffects, String[] commands, 
 			ReplaceCondition[] conditions, ConditionOperation op,
-			ExtraItemNbt extraNbt
+			ExtraItemNbt extraNbt, float attackRange
 	) {
 		// Use internal item damage of -1 until exporting
 		super(
 				itemType, name, alias, displayName, lore, attributes, 
 				defaultEnchantments, texture, itemFlags, customModel, 
 				playerEffects, targetEffects, equippedEffects, 
-				commands, conditions, op, extraNbt
+				commands, conditions, op, extraNbt, attackRange
 		);
 		this.maxStacksize = maxStacksize;
 	}
@@ -253,6 +253,7 @@ public class SimpleCustomItem extends CustomItem {
 		}
 		output.addJavaString(op.name());
 		extraNbt.save(output);
+		output.addFloat(attackRange);
 	}
 	
 	public int getMaxStacksize() {

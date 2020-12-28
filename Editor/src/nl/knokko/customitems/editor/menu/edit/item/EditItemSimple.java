@@ -69,7 +69,7 @@ public class EditItemSimple extends EditItemBase {
 	}
 
 	@Override
-	protected String create() {
+	protected String create(float attackRange) {
 		Option.Int stackSize = maxStacksize.getInt();
 		if (!stackSize.hasValue()) return "The max stacksize should be an integer at least 1 and at most 64";
 		return menu.getSet().addSimpleItem(new SimpleCustomItem(
@@ -77,12 +77,12 @@ public class EditItemSimple extends EditItemBase {
 				getDisplayName(), lore, attributes, enchantments, 
 				stackSize.getValue(), textureSelect.getSelected(), itemFlags, 
 				customModel, playerEffects, targetEffects, equippedEffects,
-				commands, conditions, op, extraNbt
+				commands, conditions, op, extraNbt, attackRange
 		));
 	}
 
 	@Override
-	protected String apply() {
+	protected String apply(float attackRange) {
 		Option.Int stackSize = maxStacksize.getInt();
 		if (!stackSize.hasValue()) return "The max stacksize should be an integer at least 1 and at most 64";
 		return menu.getSet().changeSimpleItem(
@@ -90,7 +90,7 @@ public class EditItemSimple extends EditItemBase {
 				attributes, enchantments, textureSelect.getSelected(), 
 				stackSize.getValue(), itemFlags, customModel, playerEffects, 
 				targetEffects, equippedEffects, commands, conditions, op, 
-				extraNbt, true
+				extraNbt, attackRange, true
 		);
 	}
 

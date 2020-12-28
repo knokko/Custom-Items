@@ -49,13 +49,13 @@ public abstract class CustomItem extends nl.knokko.customitems.item.CustomItem {
 			List<PotionEffect> playerEffects, List<PotionEffect> targetEffects, 
 			Collection<EquippedPotionEffect> equippedEffects, String[] commands, 
 			ReplaceCondition[] conditions, ConditionOperation op,
-			ExtraItemNbt extraNbt
+			ExtraItemNbt extraNbt, float attackRange
 	) {
 		// Use internal item damage of -1 until exporting
 		super(
 				itemType, (short) -1, name, alias, displayName, lore, attributes, 
 				defaultEnchantments, itemFlags, playerEffects, targetEffects, 
-				equippedEffects, commands, conditions, op, extraNbt
+				equippedEffects, commands, conditions, op, extraNbt, attackRange
 		);
 		this.texture = texture;
 		this.customModel = customModel;
@@ -151,6 +151,10 @@ public abstract class CustomItem extends nl.knokko.customitems.item.CustomItem {
 	
 	public void setExtraNbt(ExtraItemNbt extraNbt) {
 		this.extraNbt = extraNbt;
+	}
+	
+	public void setAttackRange(float attackRange) {
+		this.attackRange = attackRange;
 	}
 
 	public final void save1(BitOutput output) {

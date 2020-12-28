@@ -60,14 +60,14 @@ public class CustomBow extends CustomTool {
 			List<PotionEffect> targetEffects, 
 			Collection<EquippedPotionEffect> equippedEffects, String[] commands, 
 			ReplaceCondition[] conditions, ConditionOperation op,
-			ExtraItemNbt extraNbt
+			ExtraItemNbt extraNbt, float attackRange
 	) {
 		super(
 				CustomItemType.BOW, name, alias, displayName, lore, attributes, 
 				enchantments, durability, allowEnchanting, allowAnvil, repairItem, 
 				texture, itemFlags, entityHitDurabilityLoss, blockBreakDurabilityLoss, customModel, 
 				playerEffects, targetEffects, equippedEffects, 
-				commands, conditions, op, extraNbt
+				commands, conditions, op, extraNbt, attackRange
 		);
 		this.damageMultiplier = damageMultiplier;
 		this.speedMultiplier = speedMultiplier;
@@ -272,6 +272,7 @@ public class CustomBow extends CustomTool {
 		}
 		output.addJavaString(op.name());
 		extraNbt.save(output);
+		output.addFloat(attackRange);
 	}
 	
 	public double getDamageMultiplier() {

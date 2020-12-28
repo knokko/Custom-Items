@@ -145,7 +145,9 @@ public class EditItemTool extends EditItemBase {
 		}
 	}
 	
-	protected String create(long maxUses, int entityHitDurabilityLoss, int blockBreakDurabilityLoss) {
+	protected String create(
+			long maxUses, int entityHitDurabilityLoss, int blockBreakDurabilityLoss,
+			float attackRange) {
 		return menu.getSet().addTool(new CustomTool(
 				internalType, nameField.getText(), aliasField.getText(), 
 				getDisplayName(), lore, attributes, enchantments, maxUses, 
@@ -153,12 +155,12 @@ public class EditItemTool extends EditItemBase {
 				repairItem.getIngredient(), textureSelect.getSelected(), 
 				itemFlags, entityHitDurabilityLoss, blockBreakDurabilityLoss, 
 				customModel, playerEffects, targetEffects, equippedEffects,
-				commands, conditions, op, extraNbt), true
+				commands, conditions, op, extraNbt, attackRange), true
 		);
 	}
 
 	@Override
-	protected String create() {
+	protected String create(float attackRange) {
 		Option.Long maybeDurability = this.durability.getLong();
 		if (!maybeDurability.hasValue()) return "The durability must be an integer";
 		long durability = maybeDurability.getValue();
@@ -168,22 +170,24 @@ public class EditItemTool extends EditItemBase {
 		if (!entityHit.hasValue()) return "The entity hit durability loss should be a positive integer";
 		Option.Int blockBreak = blockBreakDurabilityLoss.getInt();
 		if (!blockBreak.hasValue()) return "The block break durability loss should be a positive integer";
-		return create(durability, entityHit.getValue(), blockBreak.getValue());
+		return create(durability, entityHit.getValue(), blockBreak.getValue(), attackRange);
 	}
 	
-	protected String apply(long maxUses, int entityHitDurabilityLoss, int blockBreakDurabilityLoss) {
+	protected String apply(
+			long maxUses, int entityHitDurabilityLoss, int blockBreakDurabilityLoss,
+			float attackRange) {
 		return menu.getSet().changeTool(
 				toModify, internalType, aliasField.getText(), getDisplayName(), 
 				lore, attributes, enchantments, allowEnchanting.isChecked(),
 				allowAnvil.isChecked(), repairItem.getIngredient(), maxUses, 
 				textureSelect.getSelected(), itemFlags, entityHitDurabilityLoss, 
 				blockBreakDurabilityLoss, customModel, playerEffects, targetEffects, 
-				equippedEffects, commands, conditions, op, extraNbt, true
+				equippedEffects, commands, conditions, op, extraNbt, attackRange, true
 		);
 	}
 
 	@Override
-	protected String apply() {
+	protected String apply(float attackRange) {
 		Option.Long maybeDurability = this.durability.getLong();
 		if (!maybeDurability.hasValue()) return "The durability must be an integer";
 		long durability = maybeDurability.getValue();
@@ -193,7 +197,7 @@ public class EditItemTool extends EditItemBase {
 		if (!entityHit.hasValue()) return "The entity hit durability loss should be a positive integer";
 		Option.Int blockBreak = blockBreakDurabilityLoss.getInt();
 		if (!blockBreak.hasValue()) return "The block break durability loss should be a positive integer";
-		return apply(durability, entityHit.getValue(), blockBreak.getValue());
+		return apply(durability, entityHit.getValue(), blockBreak.getValue(), attackRange);
 	}
 
 	@Override

@@ -53,6 +53,7 @@ import nl.knokko.customitems.item.nbt.ExtraItemNbt;
 import nl.knokko.gui.color.GuiColor;
 import nl.knokko.gui.component.menu.GuiMenu;
 import nl.knokko.gui.component.menu.TextArrayEditMenu;
+import nl.knokko.gui.component.text.FloatEditField;
 import nl.knokko.gui.component.text.TextEditField;
 import nl.knokko.gui.component.text.dynamic.DynamicTextButton;
 import nl.knokko.gui.component.text.dynamic.DynamicTextComponent;
@@ -89,6 +90,7 @@ public abstract class EditItemBase extends GuiMenu {
 	protected ReplaceCondition[] conditions;
 	protected ConditionOperation op;
 	protected ExtraItemNbt extraNbt;
+	protected FloatEditField attackRangeField;
 
 	public EditItemBase(EditMenu menu, CustomItem oldValues, CustomItem toModify, Category category) {
 		this.menu = menu;
@@ -120,6 +122,10 @@ public abstract class EditItemBase extends GuiMenu {
 			conditions = oldValues.getReplaceConditions();
 			op = oldValues.getConditionOperator();
 			extraNbt = oldValues.getExtraNbt();
+			attackRangeField = new FloatEditField(
+					oldValues.getAttackRange(), 0f, 
+					EditProps.EDIT_BASE, EditProps.EDIT_ACTIVE
+			);
 		} else {
 			if (toModify == null) {
 				nameField = new TextEditField("", EditProps.EDIT_BASE, EditProps.EDIT_ACTIVE);
@@ -140,6 +146,9 @@ public abstract class EditItemBase extends GuiMenu {
 			conditions = new ReplaceCondition[] {};
 			op = ConditionOperation.NONE;
 			extraNbt = new ExtraItemNbt();
+			attackRangeField = new FloatEditField(
+					1f, 0f, EditProps.EDIT_BASE, EditProps.EDIT_ACTIVE
+			);
 		}
 		
 		Checks.nonNull(lore);
@@ -190,6 +199,7 @@ public abstract class EditItemBase extends GuiMenu {
 		addComponent(new DynamicTextComponent("Replace on right click: ", EditProps.LABEL), LABEL_X, 0.02f, LABEL_X + 0.2f, 0.07f);
 		addComponent(new DynamicTextComponent("Held/equipped potion effects: ", EditProps.LABEL), LABEL_X, -0.04f, LABEL_X + 0.2f, 0.01f);
 		addComponent(new DynamicTextComponent("NBT: ", EditProps.LABEL), LABEL_X, -0.1f, LABEL_X + 0.08f, -0.05f);
+		addComponent(new DynamicTextComponent("Attack range multiplier: ", EditProps.LABEL), LABEL_X, -0.16f, LABEL_X + 0.2f, -0.11f);
 		
 		// I might add custom bow models later, but I leave it out for now
 		if (!(this instanceof EditItemBow)) {
@@ -266,6 +276,7 @@ public abstract class EditItemBase extends GuiMenu {
 				extraNbt = newExtraNbt;
 			}, this, name, hasDurability));
 		}), BUTTON_X, -0.1f, BUTTON_X + 0.1f, -0.05f);
+		addComponent(attackRangeField, BUTTON_X, -0.16f, BUTTON_X + 0.1f, -0.11f);
 		addComponent(new DynamicTextButton("Change...", EditProps.BUTTON, EditProps.HOVER, () -> {
 			state.getWindow().setMainComponent(new ItemFlagMenu(this, itemFlags));
 		}), BUTTON_X, 0.38f, BUTTON_X + 0.1f, 0.43f);
@@ -289,10 +300,26 @@ public abstract class EditItemBase extends GuiMenu {
 	void setItemFlags(boolean[] newFlags) {
 		this.itemFlags = newFlags;
 	}
+	
+	protected final String create() {
+		Option.Float attackRange = attackRangeField.getFloat();
+		if (!attackRange.hasValue()) {
+			return "The attack range must be a number";
+		}
+		return create(attackRange.getValue());
+	}
+	
+	protected final String apply() {
+		Option.Float attackRange = attackRangeField.getFloat();
+		if (!attackRange.hasValue()) {
+			return "The attack range must be a number";
+		}
+		return apply(attackRange.getValue());
+	}
 
-	protected abstract String create();
+	protected abstract String create(float attackRange);
 
-	protected abstract String apply();
+	protected abstract String apply(float attackRange);
 
 	protected String getDisplayName() {
 		return displayName.getText().replace('&', (char) 167);

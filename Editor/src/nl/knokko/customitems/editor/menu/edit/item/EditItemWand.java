@@ -89,7 +89,7 @@ public class EditItemWand extends EditItemBase {
 	}
 
 	@Override
-	protected String create() {
+	protected String create(float attackRange) {
 		return withProperties((int cooldown, WandCharges charges, int amount) -> {
 			return menu.getSet().addWand(new CustomWand(
 					internalType, nameField.getText(), aliasField.getText(),
@@ -97,20 +97,21 @@ public class EditItemWand extends EditItemBase {
 					textureSelect.getSelected(), itemFlags, customModel, 
 					playerEffects, targetEffects, equippedEffects, commands, 
 					conditions, op, projectile, cooldown, charges, amount,
-					extraNbt
+					extraNbt, attackRange
 			));
 		});
 	}
 
 	@Override
-	protected String apply() {
+	protected String apply(float attackRange) {
 		return withProperties((int cooldown, WandCharges charges, int amount) -> {
 			return menu.getSet().changeWand(
 					toModify, internalType, aliasField.getText(),
 					getDisplayName(), lore, attributes, enchantments, 
 					textureSelect.getSelected(), itemFlags, customModel, 
 					playerEffects, targetEffects, equippedEffects, commands, 
-					conditions, op, projectile, cooldown, charges, amount, extraNbt
+					conditions, op, projectile, cooldown, charges, amount, extraNbt,
+					attackRange
 			);
 		});
 	}

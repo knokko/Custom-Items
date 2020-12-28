@@ -35,12 +35,13 @@ public class CustomWand extends CustomItem {
 			Collection<EquippedPotionEffect> equippedEffects, String[] commands, 
 			ReplaceCondition[] conditions, ConditionOperation op, 
 			CIProjectile projectile, int cooldown, WandCharges charges, 
-			int amountPerShot, ExtraItemNbt extraNbt
+			int amountPerShot, ExtraItemNbt extraNbt, float attackRange
 	) {
 		super(
 				itemType, name, alias, displayName, lore, attributes, 
 				defaultEnchantments, texture, itemFlags, customModel, playerEffects, 
-				targetEffects, equippedEffects, commands, conditions, op, extraNbt
+				targetEffects, equippedEffects, commands, conditions, op, extraNbt,
+				attackRange
 		);
 		this.projectile = projectile;
 		this.cooldown = cooldown;
@@ -154,5 +155,6 @@ public class CustomWand extends CustomItem {
 		}
 		output.addInt(amountPerShot);
 		extraNbt.save(output);
+		output.addFloat(attackRange);
 	}
 }

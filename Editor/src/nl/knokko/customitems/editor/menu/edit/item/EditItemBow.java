@@ -103,7 +103,9 @@ public class EditItemBow extends EditItemTool {
 	}
 
 	@Override
-	protected String create(long maxUses, int entityHitDurabilityLoss, int blockBreakDurabilityLoss) {
+	protected String create(
+			long maxUses, int entityHitDurabilityLoss, int blockBreakDurabilityLoss,
+			float attackRange) {
 		Option.Double damageMultiplier = this.damageMultiplier.getDouble();
 		if (!damageMultiplier.hasValue()) return "The damage multiplier must be a positive number";
 		Option.Double speedMultiplier = this.speedMultiplier.getDouble();
@@ -122,12 +124,14 @@ public class EditItemBow extends EditItemTool {
 				entityHitDurabilityLoss, blockBreakDurabilityLoss, 
 				shootDurabilityLoss.getValue(), customModel, playerEffects, 
 				targetEffects, equippedEffects, commands, conditions, op,
-				extraNbt), true
+				extraNbt, attackRange), true
 		);
 	}
 
 	@Override
-	protected String apply(long maxUses, int entityHitDurabilityLoss, int blockBreakDurabilityLoss) {
+	protected String apply(
+			long maxUses, int entityHitDurabilityLoss, int blockBreakDurabilityLoss,
+			float attackRange) {
 		Option.Double damageMultiplier = this.damageMultiplier.getDouble();
 		if (!damageMultiplier.hasValue()) return "The damage multiplier must be a positive number";
 		Option.Double speedMultiplier = this.speedMultiplier.getDouble();
@@ -146,7 +150,7 @@ public class EditItemBow extends EditItemTool {
 				entityHitDurabilityLoss, blockBreakDurabilityLoss, 
 				shootDurabilityLoss.getValue(), customModel, playerEffects, 
 				targetEffects, equippedEffects, commands, conditions, op, 
-				extraNbt, true
+				extraNbt, attackRange, true
 		);
 	}
 }

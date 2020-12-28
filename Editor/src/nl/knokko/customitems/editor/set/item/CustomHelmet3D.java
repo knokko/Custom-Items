@@ -28,7 +28,7 @@ public class CustomHelmet3D extends CustomArmor {
 			List<PotionEffect> targetEffects, 
 			Collection<EquippedPotionEffect> equippedEffects, String[] commands, 
 			ReplaceCondition[] conditions, ConditionOperation op,
-			ExtraItemNbt extraNbt
+			ExtraItemNbt extraNbt, float attackRange
 	) {
 		// The null is because 3d custom helmets don't need a worn texture
 		super(
@@ -37,7 +37,7 @@ public class CustomHelmet3D extends CustomArmor {
 				repairItem, texture, 0, 0, 0, itemFlags, entityHitDurabilityLoss, 
 				blockBreakDurabilityLoss, damageResistances, customModel, 
 				playerEffects, targetEffects, equippedEffects, commands, 
-				conditions, op, extraNbt, null
+				conditions, op, extraNbt, null, attackRange
 		);
 	}
 	

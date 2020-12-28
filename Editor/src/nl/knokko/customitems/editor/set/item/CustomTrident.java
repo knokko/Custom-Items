@@ -37,14 +37,14 @@ public class CustomTrident extends CustomTool {
 			List<PotionEffect> targetEffects, 
 			Collection<EquippedPotionEffect> equippedEffects,
 			String[] commands, ReplaceCondition[] conditions, ConditionOperation op,
-			ExtraItemNbt extraNbt
+			ExtraItemNbt extraNbt, float attackRange
 	) {
 		super(
 				CustomItemType.TRIDENT, name, alias, displayName, lore, attributes, 
 				defaultEnchantments, durability, allowEnchanting, allowAnvil, 
 				repairItem, texture, itemFlags, entityHitDurabilityLoss, 
 				blockBreakDurabilityLoss, customModel, playerEffects, targetEffects, 
-				equippedEffects, commands, conditions, op, extraNbt
+				equippedEffects, commands, conditions, op, extraNbt, attackRange
 		);
 		this.throwDamageMultiplier = throwDamageMultiplier;
 		this.speedMultiplier = speedMultiplier;
@@ -181,5 +181,6 @@ public class CustomTrident extends CustomTool {
 		}
 		output.addJavaString(op.name());
 		extraNbt.save(output);
+		output.addFloat(attackRange);
 	}
 }

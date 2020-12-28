@@ -78,6 +78,7 @@ public abstract class CustomItem {
     protected ConditionOperation op;
     
     protected ExtraItemNbt extraNbt;
+    protected float attackRange;
     
     public CustomItem(
     		CustomItemType itemType, short itemDamage, String name, String alias,
@@ -86,7 +87,7 @@ public abstract class CustomItem {
     		List<PotionEffect> playerEffects, List<PotionEffect> targetEffects, 
     		Collection<EquippedPotionEffect> equippedEffects, String[] commands, 
     		ReplaceCondition[] conditions, ConditionOperation op,
-    		ExtraItemNbt extraNbt
+    		ExtraItemNbt extraNbt, float attackRange
     ){
         this.itemType = itemType;
         this.itemDamage = itemDamage;
@@ -105,6 +106,7 @@ public abstract class CustomItem {
         this.conditions = conditions;
         this.op = op;
         this.extraNbt = extraNbt;
+        this.attackRange = attackRange;
     }
     
     // For validation checks (and some other stuff), it is very important that the equals() method of custom 
@@ -172,5 +174,9 @@ public abstract class CustomItem {
     
     public ExtraItemNbt getExtraNbt() {
     	return extraNbt;
+    }
+    
+    public float getAttackRange() {
+    	return attackRange;
     }
 }

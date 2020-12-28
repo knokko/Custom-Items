@@ -37,13 +37,13 @@ public class TestPlayerWandData {
 			new boolean[ItemFlag.values().length], 
 			Lists.newArrayList(new PotionEffect(EffectType.ABSORPTION, 15, 1)), 
 			null, null, null, new ReplaceCondition[0], ConditionOperation.NONE, null, 
-			5, new WandCharges(5, 20), 2, new ExtraItemNbt());
+			5, new WandCharges(5, 20), 2, new ExtraItemNbt(), 1f);
 	
 	static final CustomWand WITHOUT = new CustomWand(CustomItemType.SHEARS, (short) 3,
 			"without_charges_one", "", "Without charges 1", new String[0], new AttributeModifier[0],
 			new Enchantment[0], ItemFlag.getDefaultValues(), Collections.emptyList(), 
 			null, null, null, new ReplaceCondition[0], ConditionOperation.NONE, null, 20, 
-			null, 3, new ExtraItemNbt());
+			null, 3, new ExtraItemNbt(), 1f);
 
 	@Test
 	public void testSaveLoadDiscard() {

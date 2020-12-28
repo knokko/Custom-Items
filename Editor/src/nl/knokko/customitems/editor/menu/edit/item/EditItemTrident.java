@@ -69,7 +69,9 @@ public class EditItemTrident extends EditItemTool {
 	}
 	
 	@Override
-	protected String create(long maxUses, int entityHitDurabilityLoss, int blockBreakDurabilityLoss) {
+	protected String create(
+			long maxUses, int entityHitDurabilityLoss, int blockBreakDurabilityLoss,
+			float attackRange) {
 		Option.Int durLoss = throwDurabilityLoss.getInt();
 		if (!durLoss.hasValue())
 			return "The throw durability loss must be a positive integer";
@@ -88,12 +90,15 @@ public class EditItemTrident extends EditItemTool {
 				entityHitDurabilityLoss, blockBreakDurabilityLoss, 
 				durLoss.getValue(), customModel, customInHandModel, 
 				customThrowingModel, playerEffects, targetEffects, 
-				equippedEffects, commands, conditions, op, extraNbt), true
+				equippedEffects, commands, conditions, op, extraNbt, 
+				attackRange), true
 		);
 	}
 	
 	@Override
-	protected String apply(long maxUses, int entityHitDurabilityLoss, int blockBreakDurabilityLoss) {
+	protected String apply(
+			long maxUses, int entityHitDurabilityLoss, int blockBreakDurabilityLoss,
+			float attackRange) {
 		Option.Int durLoss = throwDurabilityLoss.getInt();
 		if (!durLoss.hasValue())
 			return "The shear durability loss must be a positive integer";
@@ -111,7 +116,8 @@ public class EditItemTrident extends EditItemTool {
 				itemFlags, entityHitDurabilityLoss, blockBreakDurabilityLoss, 
 				durLoss.getValue(), customModel, customInHandModel, 
 				customThrowingModel, playerEffects, targetEffects, 
-				equippedEffects, commands, conditions, op, extraNbt, true
+				equippedEffects, commands, conditions, op, extraNbt, 
+				attackRange, true
 		);
 	}
 }

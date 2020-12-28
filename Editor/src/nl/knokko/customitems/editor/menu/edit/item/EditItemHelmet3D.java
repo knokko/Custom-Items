@@ -37,7 +37,9 @@ public class EditItemHelmet3D extends EditItemArmor {
 	}
 	
 	@Override
-	protected String create(long maxUses, int entityHitDurabilityLoss, int blockBreakDurabilityLoss) {
+	protected String create(
+			long maxUses, int entityHitDurabilityLoss, int blockBreakDurabilityLoss,
+			float attackRange) {
 		return menu.getSet().addHelmet3D(new CustomHelmet3D(
 				internalType, nameField.getText(), aliasField.getText(), 
 				getDisplayName(), lore, attributes, enchantments, maxUses, 
@@ -46,12 +48,13 @@ public class EditItemHelmet3D extends EditItemArmor {
 				itemFlags, entityHitDurabilityLoss, 
 				blockBreakDurabilityLoss, damageResistances, customModel, 
 				playerEffects, targetEffects, equippedEffects,
-				commands, conditions, op, extraNbt), true
+				commands, conditions, op, extraNbt, attackRange), true
 		);
 	}
 	
 	@Override
-	protected String apply(long maxUses, int entityHit, int blockBreak) {
+	protected String apply(
+			long maxUses, int entityHit, int blockBreak, float attackRange) {
 		return menu.getSet().changeHelmet3D(
 				(CustomHelmet3D) toModify, internalType, aliasField.getText(),
 				getDisplayName(), lore, attributes, enchantments, 
@@ -59,7 +62,7 @@ public class EditItemHelmet3D extends EditItemArmor {
 				repairItem.getIngredient(), maxUses, textureSelect.getSelected(),
 				itemFlags, entityHit, blockBreak, damageResistances,
 				customModel, playerEffects, targetEffects, equippedEffects,
-				commands, conditions, op, extraNbt, true
+				commands, conditions, op, extraNbt, attackRange, true
 		);
 	}
 }

@@ -29,7 +29,7 @@ public class CustomHelmet3D extends CustomArmor {
 			List<PotionEffect> playerEffects, List<PotionEffect> targetEffects, 
 			Collection<EquippedPotionEffect> equippedEffects, String[] commands, 
 			ReplaceCondition[] conditions, ConditionOperation op,
-			ExtraItemNbt extraNbt
+			ExtraItemNbt extraNbt, float attackRange
 	) {
 		super(
 				itemType, itemDamage, name, alias, displayName, lore, attributes, 
@@ -37,7 +37,7 @@ public class CustomHelmet3D extends CustomArmor {
 				repairItem, color, itemFlags, entityHitDurabilityLoss, 
 				blockBreakDurabilityLoss, damageResistances, playerEffects, 
 				targetEffects, equippedEffects, commands, conditions, op,
-				extraNbt
+				extraNbt, attackRange
 		);
 	}
 	

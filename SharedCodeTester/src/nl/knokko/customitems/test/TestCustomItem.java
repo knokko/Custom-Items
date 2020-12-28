@@ -19,6 +19,6 @@ public class TestCustomItem extends CustomItem {
 				new boolean[ItemFlag.values().length], new ArrayList<>(0),
 				new ArrayList<>(0), new ArrayList<>(), new String[0], 
 				new ReplaceCondition[0], ConditionOperation.NONE,
-				new ExtraItemNbt());
+				new ExtraItemNbt(), 1f);
 	}
 }

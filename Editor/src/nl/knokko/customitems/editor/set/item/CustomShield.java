@@ -31,14 +31,14 @@ public class CustomShield extends CustomTool {
 			List<PotionEffect> playerEffects, List<PotionEffect> targetEffects, 
 			Collection<EquippedPotionEffect> equippedEffects,
 			String[] commands, ReplaceCondition[] conditions, ConditionOperation op,
-			ExtraItemNbt extraNbt
+			ExtraItemNbt extraNbt, float attackRange
 	) {
 		super(
 				CustomItemType.SHIELD, name, alias, displayName, lore, attributes, 
 				defaultEnchantments, durability, allowEnchanting, allowAnvil, 
 				repairItem, texture, itemFlags, entityHitDurabilityLoss, 
 				blockBreakDurabilityLoss, customModel, playerEffects, targetEffects, 
-				equippedEffects, commands, conditions, op, extraNbt
+				equippedEffects, commands, conditions, op, extraNbt, attackRange
 		);
 		this.thresholdDamage = thresholdDamage;
 		this.customBlockingModel = customBlockingModel;
@@ -174,6 +174,7 @@ public class CustomShield extends CustomTool {
 		}
 		output.addJavaString(op.name());
 		extraNbt.save(output);
+		output.addFloat(attackRange);
 	}
 	
 	public double getThresholdDamage() {
