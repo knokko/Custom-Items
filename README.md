@@ -1,6 +1,10 @@
 # Custom-Items
 Work in progress plug-in for minecraft that can add custom items with an editor.
 
+# Archived
+This repository is the old setup for this plug-in. This repository is now archived in favor of the new gradle setup:
+https://github.com/knokko/custom-items-gradle
+
 
 This project is work in progress, so the features are not yet complete.
 However, there are already quite some things that can be achieved.
